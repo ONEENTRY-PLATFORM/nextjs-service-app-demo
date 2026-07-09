@@ -11,6 +11,7 @@ import { getApi, useGetFormByMarkerQuery } from '@/app/api';
 import { useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import type { FormProps } from '@/app/types/global';
+import { getFormAttributes } from '@/components/utils';
 
 import AuthError from '../pages/AuthError';
 import SpinnerLoader from '../shared/SpinnerLoader';
@@ -48,8 +49,8 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
   const fields = useAppSelector((state) => state.formFieldsReducer.fields);
 
   /** Prepare form data for user update */
-  const formData = (data?.attributes as IAttributes[] | undefined)
-    ?.map((field: IAttributes) => {
+  const formData = getFormAttributes(data)
+    .map((field: IAttributes) => {
       if (field.marker !== 'email_notification_reg') {
         return {
           marker: field.marker,
@@ -129,8 +130,8 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
     >
       {/** Render form fields excluding email notification field */}
       <div className="relative mb-4 box-border flex shrink-0 flex-col gap-4">
-        {(data?.attributes as IAttributes[] | undefined)
-          ?.filter(
+        {getFormAttributes(data)
+          .filter(
             (field: { marker: string }) =>
               field.marker !== 'email_notification_reg',
           )

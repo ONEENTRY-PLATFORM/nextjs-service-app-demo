@@ -207,6 +207,33 @@ address {
   );
 }
 
+/* services page (static-html PricesPage): hero photo veil, stats strip and
+   the "First Visit" promo banner */
+@utility bg-gradient-hero-veil {
+  background-image: linear-gradient(
+    135deg,
+    rgb(14 222 251 / 55%),
+    rgb(246 14 251 / 70%),
+    rgb(0 0 0 / 35%)
+  );
+}
+@utility bg-gradient-stats {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-accent-pink-bright),
+    var(--color-accent-pink),
+    var(--color-accent-cyan)
+  );
+}
+@utility bg-gradient-promo {
+  background-image: linear-gradient(
+    120deg,
+    rgb(246 14 251 / 93%),
+    rgb(237 33 241 / 80%),
+    rgb(16 154 169 / 53%)
+  );
+}
+
 /* gradient-line */
 @utility gradient-bg-line-20 {
   height: 20px;

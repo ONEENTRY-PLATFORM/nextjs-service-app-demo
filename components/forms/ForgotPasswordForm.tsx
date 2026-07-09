@@ -8,6 +8,7 @@ import { getApi, useGetFormByMarkerQuery } from '@/app/api';
 import { useAppSelector } from '@/app/store/hooks';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
+import { getFormAttributes } from '@/components/utils';
 
 import SpinnerLoader from '../shared/SpinnerLoader';
 import ErrorMessage from './inputs/ErrorMessage';
@@ -88,8 +89,8 @@ export const ForgotPasswordForm = ({
         </div>
 
         <div className="relative mb-8 box-border flex shrink-0 flex-col gap-4">
-          {(data.attributes as unknown as IAttributes[] | undefined)
-            ?.filter((field: IAttributes) => field.marker === 'email_reg')
+          {getFormAttributes(data)
+            .filter((field: IAttributes) => field.marker === 'email_reg')
             .map((field: IAttributes, index: number) => (
               <FormInput key={index} index={index} {...field} />
             ))}

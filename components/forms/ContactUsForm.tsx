@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import { getApi, useGetFormByMarkerQuery } from '@/app/api';
 import { useAppSelector } from '@/app/store/hooks';
+import { getFormAttributes } from '@/components/utils';
 
 import SpinnerLoader from '../shared/SpinnerLoader';
 import ErrorMessage from './inputs/ErrorMessage';
@@ -38,12 +39,10 @@ const ContactUsForm = ({ className }: { className: string }): JSX.Element => {
   const fieldsData = useAppSelector((state) => state.formFieldsReducer.fields);
 
   /** Sort form fields by position to maintain correct order */
-  const formFields = (data?.attributes as IAttributes[] | undefined)
-    ?.slice()
-    .sort(
-      (a: { position: number }, b: { position: number }) =>
-        a.position - b.position,
-    );
+  const formFields = getFormAttributes(data).sort(
+    (a: { position: number }, b: { position: number }) =>
+      a.position - b.position,
+  );
 
   /**
    * Handle form submission
@@ -54,7 +53,7 @@ const ContactUsForm = ({ className }: { className: string }): JSX.Element => {
     e.preventDefault();
 
     /** Early return if form fields or reCAPTCHA token are missing */
-    if (!formFields || !token) return;
+    if (!formFields.length || !token) return;
 
     /** Transform form data to match API requirements */
     const transformedFormData = formFields.map(
@@ -117,7 +116,7 @@ const ContactUsForm = ({ className }: { className: string }): JSX.Element => {
       onSubmit={handleSubmit}
     >
       <div className="relative mb-4 box-border flex shrink-0 flex-col gap-4">
-        {formFields?.map((field: IAttributes, index: number) => {
+        {formFields.map((field: IAttributes, index: number) => {
           switch (field.type) {
             case 'button':
               return (

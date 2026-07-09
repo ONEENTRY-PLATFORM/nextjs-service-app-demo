@@ -2,42 +2,68 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
-import { getBlockByMarker, getPageByUrl } from '@/app/api';
+import { getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import CatalogSection from '@/components/layout/catalog-grid';
-import GradientLine from '@/components/shared/GradientLine';
+import PromoBanner from '@/components/layout/services-page/PromoBanner';
+import ServicesCatalog from '@/components/layout/services-page/ServicesCatalog';
+import ServicesHero from '@/components/layout/services-page/ServicesHero';
+import StatsStrip from '@/components/layout/services-page/StatsStrip';
+
+import { getServicesCatalogData } from './catalog-data';
 
 /**
- * ServicesPageLayout component renders the services page
+ * ServicesPageLayout component renders the "Services & Prices" page following
+ * the static-html mock (`PricesPage.tsx`): photo hero with the page title,
+ * gradient stats strip, the interactive catalog (salon selector, search,
+ * category/subcategory tabs, service cards) and the "First Visit" promo
+ * banner.
+ *
+ * The catalog data is optional — while the CMS holds no categories/products
+ * the page still renders with the hero, an empty catalog and the promo
+ * banner instead of a 404.
  * @returns {Promise<JSX.Element>} JSX element representing the services page
  * @see {@link https://nextjs.org/docs/app/api-reference/file-conventions/page Next.js docs}
  */
 const ServicesPageLayout = async (): Promise<JSX.Element> => {
   /** All three fetches are independent — run in parallel. */
-  const [dict, { page, isError }, { block }] = await Promise.all([
-    getDictionary(),
-    getPageByUrl('services'),
-    getBlockByMarker('home_catalog'),
-  ]);
+  const [dict, { page, isError }, { categories, salons, services }] =
+    await Promise.all([
+      getDictionary(),
+      getPageByUrl('services'),
+      getServicesCatalogData(),
+    ]);
   ServerProvider('dict', dict);
 
-  /**
-     The catalog block only provides the section title — the page must not
-     404 while the `home_catalog` block is not created in the CMS yet.
-   */
   if (!page || isError) {
     return notFound();
   }
 
+  const title = page.localizeInfos?.title ?? 'Services & Prices';
+  /** Stats line under the hero title — only when the CMS has services */
+  const subtitle =
+    services.length > 0
+      ? `${services.length} services · ${salons.length || 3} locations across Dubai`
+      : undefined;
+
   return (
     <>
-      <GradientLine />
-      <section className="flex w-full flex-col items-center bg-white px-16 pt-12 pb-4 max-md:px-5 max-md:pb-20">
-        <div className="mb-10 flex w-220 max-w-full flex-col gap-10">
-          <CatalogSection block={block} />
-        </div>
-      </section>
+      <ServicesHero title={title} subtitle={subtitle} />
+      {services.length > 0 && (
+        <StatsStrip
+          stats={[
+            [services.length, 'Services'],
+            [salons.length, 'Locations'],
+            [categories.length, 'Categories'],
+          ]}
+        />
+      )}
+      <ServicesCatalog
+        categories={categories}
+        salons={salons}
+        services={services}
+      />
+      <PromoBanner />
     </>
   );
 };

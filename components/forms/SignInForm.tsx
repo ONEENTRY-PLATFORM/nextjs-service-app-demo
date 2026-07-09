@@ -13,6 +13,7 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import FormFieldAnimations from '@/components/forms/animations/FormFieldAnimations';
+import { getFormAttributes } from '@/components/utils';
 
 import CreateAccountButton from './inputs/CreateAccountButton';
 import ErrorMessage from './inputs/ErrorMessage';
@@ -72,12 +73,10 @@ const SignInForm = ({
   /** Sort form fields by their position property */
   const formFields = useMemo(
     () =>
-      (data?.attributes as IAttributes[] | undefined)
-        ?.slice()
-        .sort(
-          (a: { position: number }, b: { position: number }) =>
-            a.position - b.position,
-        ),
+      getFormAttributes(data).sort(
+        (a: { position: number }, b: { position: number }) =>
+          a.position - b.position,
+      ),
     [data],
   );
 
@@ -141,7 +140,7 @@ const SignInForm = ({
   /** Render sign in form with email/phone tabs and form fields */
   return (
     <FormAnimations
-      isLoading={isLoading || !formFields}
+      isLoading={isLoading || !data}
       className={className}
       isActive={isActive}
     >
@@ -169,7 +168,7 @@ const SignInForm = ({
 
         {/** Render form fields based on active tab */}
         <div className="relative mb-4 box-border flex shrink-0 flex-col gap-4">
-          {formFields?.map((field: IAttributes, index: number) => {
+          {formFields.map((field: IAttributes, index: number) => {
             if (
               field.marker === `${tab}_reg` ||
               field.marker === 'password_reg'

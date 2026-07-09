@@ -28,11 +28,12 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
       getChildPagesByParentUrl('salons'),
     ]);
 
-  if (!page || isError || salonsError) {
+  if (!page || isError) {
     return notFound();
   }
 
-  if (!pages || !Array.isArray(pages)) {
+  /** Missing salons list must degrade to a fallback, not a 404. */
+  if (salonsError || !pages || !Array.isArray(pages) || pages.length === 0) {
     return (
       <>
         <LineAnimations

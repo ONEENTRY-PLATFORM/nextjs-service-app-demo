@@ -16,6 +16,7 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { FormProps } from '@/app/types/global';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
+import { getFormAttributes } from '@/components/utils';
 
 import ErrorMessage from './inputs/ErrorMessage';
 import FormInput from './inputs/FormInput';
@@ -73,10 +74,7 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
   const fields = useAppSelector((state) => state.formFieldsReducer.fields);
 
   /** All form attributes (unfiltered) from CMS. */
-  const attributes = useMemo(
-    () => (data?.attributes as FormField[] | undefined) ?? [],
-    [data],
-  );
+  const attributes = useMemo(() => getFormAttributes<FormField>(data), [data]);
 
   /**
    * Visible fields for the sign-up form: everything except pure-notification

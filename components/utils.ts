@@ -1,6 +1,28 @@
+import type { IAttributes } from 'oneentry/dist/base/utils';
 import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
 
 import { CurrencyEnum, IntlEnum } from '@/app/types/enum';
+
+/**
+ * Extract form attributes (fields) from a OneEntry form entity as an array.
+ *
+ * The Forms API returns `attributes` either as an array of fields or as a
+ * plain object — in particular an empty `{}` when the form has no fields
+ * configured in the admin panel. This helper normalizes both shapes so
+ * consumers can safely call array methods (`sort`, `map`, `filter`).
+ * @param   {object | undefined} form - Form entity from the OneEntry Forms API (or undefined while loading)
+ * @returns {Array}                   Shallow copy of the attributes array, or an empty array
+ * @example
+ * ```typescript
+ * const fields = getFormAttributes(data).sort((a, b) => a.position - b.position);
+ * ```
+ */
+export const getFormAttributes = <T = IAttributes>(
+  form: { attributes?: unknown } | undefined,
+): T[] => {
+  const attributes = form?.attributes;
+  return Array.isArray(attributes) ? ([...attributes] as T[]) : [];
+};
 
 /**
  * Format a price with currency symbol based on locale.
