@@ -22,8 +22,10 @@ const ServicesPageLayout = async (): Promise<JSX.Element> => {
   ]);
   ServerProvider('dict', dict);
 
-  /** The catalog block only provides the section title — the page must not
-      404 while the `home_catalog` block is not created in the CMS yet. */
+  /**
+     The catalog block only provides the section title — the page must not
+     404 while the `home_catalog` block is not created in the CMS yet.
+   */
   if (!page || isError) {
     return notFound();
   }

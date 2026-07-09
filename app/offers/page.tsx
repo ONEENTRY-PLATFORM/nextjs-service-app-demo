@@ -63,7 +63,11 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
             {page.localizeInfos?.title}
           </h1>
           {sections.map(({ category, offers }) => (
-            <OffersTable key={category.id} products={offers} service={category} />
+            <OffersTable
+              key={category.id}
+              products={offers}
+              service={category}
+            />
           ))}
         </div>
       </section>

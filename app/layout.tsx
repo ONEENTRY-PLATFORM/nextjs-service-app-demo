@@ -144,7 +144,8 @@ export default async function RootLayout({
             <OpenDrawerProvider>
               <Header menu={menu} />
               <TransitionProvider>
-                <div className="h-32.5 max-xl:h-27.5 max-lg:h-27.5 max-md:h-22.5 max-sm:h-18.75"></div>
+                {/* Spacer matching the fixed header height (h-20) */}
+                <div className="h-20"></div>
                 <main className="flex grow flex-col overflow-hidden">
                   {children}
                 </main>

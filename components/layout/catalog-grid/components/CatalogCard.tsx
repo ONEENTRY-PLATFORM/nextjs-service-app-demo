@@ -5,12 +5,15 @@ import type { JSX } from 'react';
 import CardAnimations from '../animations/CardAnimations';
 import CatalogCardIcon from './CatalogCardIcon';
 import CatalogCardTitle from './CatalogCardTitle';
+import CategoryTile, { categoryTileKey } from './CategoryTile';
 
 /**
  * CatalogCard component representing a single service category card in the catalog grid.
  *
- * This component displays a circular card with an icon and title for a service category.
- * It links to the specific service page and includes animation effects.
+ * For the four main categories (hair / face / body / nails) it renders the
+ * complete tile from the ICONS_CATEGORY.svg sprite (outlined circle + icon +
+ * label), as in the static-html mock's SERVICE section. Other categories fall
+ * back to the icon + title circle card.
  * @param   {object}       props       - Component properties.
  * @param   {IPagesEntity} props.item  - The page entity data containing service information.
  * @param   {number}       props.index - Index for animation sequencing.
@@ -25,6 +28,28 @@ const CatalogCard = ({
 }): JSX.Element => {
   /** Extract localized information and page URL from item */
   const { localizeInfos, pageUrl } = item;
+
+  /** Tile key from the mock sprite, when the category is one of the four main ones */
+  const tile = categoryTileKey(pageUrl, localizeInfos?.title);
+
+  if (tile) {
+    return (
+      <CardAnimations
+        className={'relative flex shrink-0 flex-col'}
+        index={index}
+      >
+        <Link
+          title={localizeInfos?.title}
+          href={`/services/${pageUrl}`}
+          className="z-10 block transition-transform duration-300 hover:scale-105 focus:outline-none"
+        >
+          <div className="size-36 md:size-44 lg:size-56">
+            <CategoryTile tile={tile} suffix={`${tile}_${index}`} />
+          </div>
+        </Link>
+      </CardAnimations>
+    );
+  }
 
   /** Render animated catalog card with link, icon and title */
   return (

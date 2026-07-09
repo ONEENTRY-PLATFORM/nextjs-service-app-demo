@@ -1,9 +1,7 @@
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
 import TitleAnimations from '@/app/animations/TitleAnimations';
-import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 import OffersFeed from './components/OffersFeed';
 
@@ -18,11 +16,9 @@ const OffersFeedBlock = async ({
 }: {
   block: IBlockEntity;
 }): Promise<JSX.Element> => {
-  /** Get dictionary for localization */
-  const [dict] = ServerProvider<IAttributeValues>('dict');
   return (
     <section className="flex w-full justify-center bg-white py-10 pb-4">
-      <div className="mx-auto mb-6 w-full max-w-350 flex-col max-md:max-w-full max-md:px-5">
+      <div className="mx-auto mb-6 w-full max-w-350 flex-col px-5 max-md:max-w-full">
         <div className="flex w-full flex-col items-center justify-center">
           <TitleAnimations
             delay={0.25}
@@ -33,7 +29,7 @@ const OffersFeedBlock = async ({
             </h2>
             <hr className="relative mb-2.5 h-px w-full max-w-37.5 self-center border-b border-solid border-b-gray-600" />
           </TitleAnimations>
-          <OffersFeed dict={dict} block={block} />
+          <OffersFeed block={block} />
         </div>
       </div>
     </section>

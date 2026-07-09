@@ -47,7 +47,7 @@ const SalonsGrid = async (): Promise<JSX.Element> => {
             </h2>
             {/** Display salon address and phone information */}
             <address className="not-italic">
-              <p className="mb-2 text-sm opacity-90 sm:min-h-10 xl:min-h-0">
+              <p className="mb-2 text-sm opacity-90 xl:min-h-0 sm:min-h-10">
                 {item.address}
               </p>
               <a

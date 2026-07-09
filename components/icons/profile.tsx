@@ -2,9 +2,9 @@ import { UserCircle } from 'lucide-react';
 
 /**
  * Account icon — lucide `UserCircle`, same as the static-html mock header.
- * @param   {object}  [props]        - Component properties
- * @param   {boolean} [props.active] - Whether the icon is in the active (pink) state
- * @returns {JSX.Element}            Profile icon
+ * @param   {object}      [props]        - Component properties
+ * @param   {boolean}     [props.active] - Whether the icon is in the active (pink) state
+ * @returns {JSX.Element}                Profile icon
  */
 const ProfileIcon = (props?: { active?: boolean }) => {
   return (

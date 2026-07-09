@@ -42,8 +42,7 @@ const SpecialistRow = ({
   const name = adminAttr(admin, 'master_name');
   const role = adminAttr(admin, 'master_short_description');
   const photoArr = admin.attributeValues?.master_image?.value as
-    | Array<{ downloadLink?: string }>
-    | undefined;
+    Array<{ downloadLink?: string }> | undefined;
   const photo = photoArr?.[0]?.downloadLink;
 
   return (

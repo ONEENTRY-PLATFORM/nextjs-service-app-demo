@@ -21,9 +21,9 @@ const MenuSection = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
   const { opening_time_text, follow_us_text } = dict;
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-3 pt-6 pb-6 text-black md:px-8 md:pt-12">
+    <div className="mx-auto w-full max-w-7xl px-3 py-6 text-black md:px-8 md:pt-12">
       {/* Salons + Opening Time */}
-      <div className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-3 xl:grid-cols-[1fr_1fr_1fr_9rem]">
+      <div className="grid grid-cols-1 gap-x-4 gap-y-6 xl:grid-cols-[1fr_1fr_1fr_9rem] sm:grid-cols-3">
         <SalonsGrid />
 
         {/* Opening Time — 4th column on desktop */}
@@ -41,16 +41,20 @@ const MenuSection = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
       <div className="mt-6 h-px bg-black/80" />
 
       {/* Services | About us | — | Follow us */}
-      <div className="mt-8 grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3 xl:grid-cols-[1fr_1fr_1fr_9rem]">
+      <div className="mt-8 grid grid-cols-1 gap-x-4 gap-y-8 xl:grid-cols-[1fr_1fr_1fr_9rem] sm:grid-cols-3">
         <VerticalMenu
           className="min-w-0"
           menuName="services"
           baseUrl="services"
         />
-        <VerticalMenu className="min-w-0 xl:pl-4" menuName="about_us" baseUrl="" />
+        <VerticalMenu
+          className="min-w-0 xl:pl-4"
+          menuName="about_us"
+          baseUrl=""
+        />
 
         {/* Follow Us Section */}
-        <div className="flex flex-col sm:col-start-3 xl:col-start-4 xl:pl-4">
+        <div className="flex flex-col xl:col-start-4 xl:pl-4 sm:col-start-3">
           <h3 className="mb-3 text-base font-bold">
             {(follow_us_text?.value as string | undefined) ?? 'Follow us'}:
           </h3>

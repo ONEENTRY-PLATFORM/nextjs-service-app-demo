@@ -29,6 +29,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Figma-экспорт верстки — референс дизайна, не рабочий код
+    "static-html/**",
   ]),
 
   // Main ruleset for JS/TS/JSX/TSX

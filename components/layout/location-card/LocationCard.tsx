@@ -8,7 +8,8 @@ import LocationIcon from '@/components/icons/location';
 import PhoneIcon from '@/components/icons/phone';
 
 /** Fallback photo when the location name is not recognized. */
-const DEFAULT_PHOTO = '/images/Beauty content/Contacts/Downtown/Downtown_01.jpeg';
+const DEFAULT_PHOTO =
+  '/images/Beauty content/Contacts/Downtown/Downtown_01.jpeg';
 
 /** Salon location photos shipped with the layout, keyed by location name. */
 const LOCATION_PHOTOS: Record<string, string> = {
