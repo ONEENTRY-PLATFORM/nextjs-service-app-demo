@@ -1,31 +1,52 @@
 import parse from 'html-react-parser';
 import type { JSX, Key } from 'react';
 
-import { getBlockByMarker } from '@/app/api';
+/** A single opening-time row from the `opening_time` block attribute. */
+export type OpeningTimeRow = { header: string; htmlValue: string };
 
 /**
- * OpeningTime component to display opening hours
- * @returns {Promise<JSX.Element>} JSX.Element representing the opening time section
+ * OpeningTime component to display opening hours (presentational).
+ *
+ * Two variants matching the static-html footer mock: `column` — the desktop
+ * 4th column (day and hours as stacked lines), `row` — the mobile collapse
+ * (day and hours justified in one row).
+ * @param   {object}           props           - Component properties
+ * @param   {OpeningTimeRow[]} props.rows      - Opening time rows from the CMS block
+ * @param   {'column' | 'row'} [props.variant] - Layout variant (default `column`)
+ * @returns {JSX.Element}                      JSX.Element representing the opening time rows
  */
-const OpeningTime = async (): Promise<JSX.Element> => {
-  /** Fetch block data by marker for opening time information */
-  const { block } = await getBlockByMarker('opening_time');
-  /** Extract opening time values from block attributes with fallback to empty array */
-  const openingTime =
-    (block?.attributeValues.opening_time?.value as
-      { header: string; htmlValue: string }[] | undefined) || [];
+const OpeningTime = ({
+  rows,
+  variant = 'column',
+}: {
+  rows: OpeningTimeRow[];
+  variant?: 'column' | 'row';
+}): JSX.Element => {
+  if (variant === 'row') {
+    return (
+      <>
+        {rows.map((time, i: Key) => (
+          <div key={i} className="flex justify-between gap-8 text-sm">
+            <span className="font-medium">{time.header}</span>
+            <span className="opacity-90">
+              {time.htmlValue && parse(time.htmlValue)}
+            </span>
+          </div>
+        ))}
+      </>
+    );
+  }
 
-  /** Render opening time entries as formatted rows */
   return (
     <>
-      {openingTime.map((time, i: Key) => {
-        return (
-          <div key={i} className="flex justify-between gap-5">
-            <div>{time.header}</div>
-            <div>{time.htmlValue && parse(time.htmlValue)}</div>
+      {rows.map((time, i: Key) => (
+        <div key={i}>
+          <p className="mb-2 text-sm opacity-90">{time.header}</p>
+          <div className="mb-2 text-sm opacity-90">
+            {time.htmlValue && parse(time.htmlValue)}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </>
   );
 };

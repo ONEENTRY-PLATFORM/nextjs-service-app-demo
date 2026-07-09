@@ -4,19 +4,15 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
 import CardAnimations from '@/app/animations/CardAnimations';
+import { defaultSalonPhoto, salonPhotosData } from '@/components/data';
 import LocationIcon from '@/components/icons/location';
 import PhoneIcon from '@/components/icons/phone';
 
 /** Fallback photo when the location name is not recognized. */
-const DEFAULT_PHOTO =
-  '/images/Beauty content/Contacts/Downtown/Downtown_01.jpeg';
+const DEFAULT_PHOTO: string = defaultSalonPhoto;
 
-/** Salon location photos shipped with the layout, keyed by location name. */
-const LOCATION_PHOTOS: Record<string, string> = {
-  downtown: DEFAULT_PHOTO,
-  marina: '/images/Beauty content/Contacts/Marina/Marina_01.jpeg',
-  jbr: '/images/Beauty content/Contacts/JBR/JBR_01.jpeg',
-};
+/** Salon location photos (mock data in `components/data.js`) by location name. */
+const LOCATION_PHOTOS: Record<string, string> = salonPhotosData;
 
 /**
  * LocationCard component displays information about a salon location.

@@ -1,66 +1,166 @@
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IMenusEntity, IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 
+import { getBlockByMarker, getMenuByMarker } from '@/app/api';
+import { flatMenuToNested } from '@/components/utils';
+
 import Copyrights from './Copyrights';
+import FollowUs from './FollowUs';
+import FooterCollapse from './FooterCollapse';
+import type { FooterMenuItem } from './FooterServicesMenu';
+import FooterServicesMenu from './FooterServicesMenu';
+import type { OpeningTimeRow } from './OpeningTime';
 import OpeningTime from './OpeningTime';
 import SalonsGrid from './SalonsGrid';
-import SocialButtons from './SocialButtons';
-import VerticalMenu from './VerticalMenu';
+
+/**
+ * Convert a CMS menu to plain footer menu items (nested one level).
+ * @param   {IMenusEntity | undefined} menu    - Menu entity from the CMS
+ * @param   {string}                   baseUrl - Base URL prefix for item links (e.g. `services`)
+ * @returns {FooterMenuItem[]}                 Plain menu items for client components
+ */
+const toFooterItems = (
+  menu: IMenusEntity | undefined,
+  baseUrl: string,
+): FooterMenuItem[] => {
+  const pages = flatMenuToNested(
+    Array.isArray(menu?.pages) ? (menu.pages as IMenusPages[]) : [],
+    null,
+  );
+  const href = (pageUrl: string | null) =>
+    baseUrl ? `/${baseUrl}/${pageUrl ?? ''}` : `/${pageUrl ?? ''}`;
+
+  return pages.map((page) => {
+    const children = Array.isArray(page.children) ? page.children : [];
+    return {
+      title: (page.localizeInfos?.menuTitle as string | undefined) ?? '',
+      href: href(page.pageUrl),
+      ...(children.length > 0
+        ? {
+            children: children.map((child) => ({
+              title:
+                (child.localizeInfos?.menuTitle as string | undefined) ?? '',
+              href: href(child.pageUrl),
+            })),
+          }
+        : {}),
+    };
+  });
+};
 
 /**
  * MenuSection component to render the main content of the footer.
  *
- * Layout follows the static-html mock: a 4-column grid with the three salons
- * and opening time on the first row, a divider, then Services / About us
- * menus with the social links, and the copyright line at the bottom.
+ * Full port of the static-html footer: salons grid with the Opening Time
+ * column (desktop), mobile collapses for salons / Opening Time / Services /
+ * About us with dividers, the desktop Services–About–Follow row and the
+ * copyright line.
  * @param   {object}           props      - Component properties
  * @param   {IAttributeValues} props.dict - Dictionary object containing localized text values from OneEntry CMS
- * @returns {JSX.Element}                 JSX.Element representing the footer menu section with all its components
+ * @returns {Promise<JSX.Element>}        JSX.Element representing the footer menu section with all its components
  */
-const MenuSection = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
+const MenuSection = async ({
+  dict,
+}: {
+  dict: IAttributeValues;
+}): Promise<JSX.Element> => {
   const { opening_time_text, follow_us_text } = dict;
 
+  /** All three fetches are independent — run in parallel. */
+  const [servicesResult, aboutResult, openingResult] = await Promise.all([
+    getMenuByMarker('services'),
+    getMenuByMarker('about_us'),
+    getBlockByMarker('opening_time'),
+  ]);
+
+  const servicesItems = toFooterItems(servicesResult.menu, 'services');
+  const aboutItems = toFooterItems(aboutResult.menu, '');
+  const openingRows =
+    (openingResult.block?.attributeValues?.opening_time?.value as
+      | OpeningTimeRow[]
+      | undefined) ?? [];
+
+  const servicesTitle = servicesResult.menu?.localizeInfos?.title ?? 'Services';
+  const aboutTitle = aboutResult.menu?.localizeInfos?.title ?? 'About us';
+  const openingTitle =
+    (opening_time_text?.value as string | undefined) ?? 'Opening Time';
+  const followTitle =
+    (follow_us_text?.value as string | undefined) ?? 'Follow us';
+
   return (
-    <div className="mx-auto w-full max-w-7xl px-3 py-6 text-black md:px-8 md:pt-12">
-      {/* Salons + Opening Time */}
-      <div className="grid grid-cols-1 gap-x-4 gap-y-6 xl:grid-cols-[1fr_1fr_1fr_9rem] sm:grid-cols-3">
+    <div className="mx-auto w-full max-w-7xl px-3 pt-6 pb-6 text-black md:px-8 md:pt-12">
+      {/* Salons + Opening Time (desktop 4th column) */}
+      <div className="grid grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-3 sm:gap-y-6 xl:grid-cols-[1fr_1fr_1fr_9rem]">
         <SalonsGrid />
 
-        {/* Opening Time — 4th column on desktop */}
-        <div className="min-w-0 xl:border-l xl:border-black/80 xl:pl-4">
+        <div className="hidden min-w-0 xl:block xl:border-l xl:border-black/80 xl:pl-4">
           <p className="mb-3 text-sm font-bold tracking-wide uppercase">
-            {(opening_time_text?.value as string | undefined) ?? 'Opening Time'}
+            {openingTitle}
           </p>
-          <div className="flex flex-col gap-2 text-sm opacity-90">
-            <OpeningTime />
-          </div>
+          <OpeningTime rows={openingRows} />
         </div>
       </div>
 
-      {/* Divider under the salons */}
-      <div className="mt-6 h-px bg-black/80" />
+      {/* Mobile/tablet divider between the salons and Opening Time */}
+      <div className="h-px bg-black/80 sm:mt-5 xl:hidden" />
 
-      {/* Services | About us | — | Follow us */}
-      <div className="mt-8 grid grid-cols-1 gap-x-4 gap-y-8 xl:grid-cols-[1fr_1fr_1fr_9rem] sm:grid-cols-3">
-        <VerticalMenu
-          className="min-w-0"
-          menuName="services"
-          baseUrl="services"
-        />
-        <VerticalMenu
-          className="min-w-0 xl:pl-4"
-          menuName="about_us"
-          baseUrl=""
-        />
-
-        {/* Follow Us Section */}
-        <div className="flex flex-col xl:col-start-4 xl:pl-4 sm:col-start-3">
-          <h3 className="mb-3 text-base font-bold">
-            {(follow_us_text?.value as string | undefined) ?? 'Follow us'}:
-          </h3>
-          <div className="flex items-center gap-3">
-            <SocialButtons />
+      {/* Mobile/tablet: Opening Time — collapsible */}
+      {openingRows.length > 0 && (
+        <>
+          <div className="pt-4 pb-4 xl:hidden">
+            <FooterCollapse title={openingTitle}>
+              <div className="space-y-2">
+                <OpeningTime rows={openingRows} variant="row" />
+              </div>
+            </FooterCollapse>
           </div>
+          <div className="h-px bg-black/80 xl:hidden" />
+        </>
+      )}
+
+      {/* Mobile/tablet: Services & About us collapses, Follow us at the bottom */}
+      <div className="xl:hidden">
+        {servicesItems.length > 0 && (
+          <>
+            <div className="pt-4 pb-4">
+              <FooterCollapse title={servicesTitle}>
+                <FooterServicesMenu items={servicesItems} />
+              </FooterCollapse>
+            </div>
+            <div className="h-px bg-black/80" />
+          </>
+        )}
+        {aboutItems.length > 0 && (
+          <>
+            <div className="pt-4 pb-4">
+              <FooterCollapse title={aboutTitle}>
+                <FooterServicesMenu items={aboutItems} />
+              </FooterCollapse>
+            </div>
+            <div className="h-px bg-black/80" />
+          </>
+        )}
+        <div className="pt-4">
+          <FollowUs title={followTitle} />
+        </div>
+      </div>
+
+      {/* Desktop divider under the salons */}
+      <div className="mt-6 hidden h-px bg-black/80 xl:block" />
+
+      {/* Desktop row: Services | About us | — | Follow us */}
+      <div className="mt-8 hidden gap-x-4 xl:grid xl:grid-cols-[1fr_1fr_1fr_9rem]">
+        <div className="min-w-0">
+          <p className="mb-3 text-base font-bold">{servicesTitle}</p>
+          <FooterServicesMenu items={servicesItems} dividers />
+        </div>
+        <div className="min-w-0 xl:pl-4">
+          <p className="mb-3 text-base font-bold">{aboutTitle}</p>
+          <FooterServicesMenu items={aboutItems} dividers />
+        </div>
+        <div className="xl:col-start-4 xl:pl-4">
+          <FollowUs title={followTitle} />
         </div>
       </div>
 

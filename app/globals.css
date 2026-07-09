@@ -37,6 +37,9 @@
   --color-violet-300: #d597fc;
   --color-violet-350: #c37bfe;
   --color-violet-400: #c082ff;
+  /* static-html gallery: LIGHT pill bg and chip/input border */
+  --color-slate-50: #f7f7fb;
+  --color-slate-150: #e8e8f0;
   --color-slate-100: #f6f7f9;
   --color-slate-200: #cbd5e1;
   --color-slate-250: #d9dae1;
