@@ -41,9 +41,9 @@ const NavGroup = async (): Promise<JSX.Element> => {
       <div className="hidden gap-4 max-md:gap-4 max-sm:gap-2 md:flex">
         <Link
           href="/booking/"
-          className="h-auto justify-center self-center rounded-md bg-fuchsia-500 px-5 py-1.5 text-sm leading-6 text-white uppercase transition duration-500 ease-in-out outline-none hover:bg-fuchsia-600 focus:bg-fuchsia-600 focus:outline-none disabled:bg-neutral-300/50"
+          className="h-auto justify-center self-center rounded-xl bg-gradient-brand px-6 py-3 text-base leading-6 font-bold tracking-wide text-white uppercase shadow-[0_4px_16px_rgba(237,33,241,0.27)] transition duration-300 ease-in-out outline-none hover:opacity-90 focus:opacity-90 focus:outline-none disabled:bg-neutral-300/50"
         >
-          {book_text?.value as string}
+          {(book_text?.value as string | undefined) || 'Book Online'}
         </Link>
         <NavItemProfile userMenu={menu as IMenusEntity} />
       </div>

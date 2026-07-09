@@ -44,9 +44,9 @@ const VerticalMenu = async ({
   return (
     <nav className={className}>
       {/** Display menu title */}
-      <h3 className="text-lg font-bold">{menu.localizeInfos?.title}</h3>
+      <h3 className="mb-3 text-base font-bold">{menu.localizeInfos?.title}</h3>
       {/** Render menu items list */}
-      <ul className="relative box-border flex shrink-0 flex-col gap-2.5 leading-4">
+      <ul className="relative box-border flex shrink-0 flex-col">
         {pages.map((page, index) => {
           return <MenuItem key={index} page={page} baseUrl={baseUrl} />;
         })}

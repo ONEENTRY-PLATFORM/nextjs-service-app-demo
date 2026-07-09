@@ -22,16 +22,19 @@ import NavigationMenuItem from './NavigationMenuItem';
  */
 const NavigationMenu = ({ menu }: { menu: IMenusPages[] }): JSX.Element => {
   return (
-    <nav className="hidden text-neutral-600 fade-in lg:flex">
-      <ul className="nav-menu my-auto flex flex-row flex-wrap gap-5">
-        {menu.map((item, index) => (
-          <li key={index} className={item.children ? 'group' : ''}>
+    <nav className="hidden text-slate-400 fade-in lg:flex">
+      <ul className="nav-menu my-auto flex flex-row flex-wrap items-center gap-8">
+        {menu.map((item, index) => {
+          const hasChildren =
+            Array.isArray(item.children) && item.children.length > 0;
+          return (
+          <li key={index} className={hasChildren ? 'group' : ''}>
             <NavigationMenuItem
               label={item.localizeInfos.menuTitle ?? ''}
               href={`/${item.pageUrl !== 'home' ? item.pageUrl : ''}`}
-              hasDropdown={Boolean(item.children)}
+              hasDropdown={hasChildren}
             />
-            {Array.isArray(item.children) && (
+            {Array.isArray(item.children) && item.children.length > 0 && (
               <ul className="fixed z-50 hidden flex-col overflow-hidden rounded-b-2xl bg-white p-6 leading-8 shadow-lg group-hover:flex">
                 {item.children.map((child, childIndex) => (
                   <li key={childIndex} className="menu-item px-4">
@@ -47,7 +50,8 @@ const NavigationMenu = ({ menu }: { menu: IMenusPages[] }): JSX.Element => {
               </ul>
             )}
           </li>
-        ))}
+          );
+        })}
       </ul>
     </nav>
   );

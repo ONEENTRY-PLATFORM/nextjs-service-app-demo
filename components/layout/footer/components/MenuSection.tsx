@@ -1,18 +1,18 @@
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
-import ContactInfo from './ContactInfo';
 import Copyrights from './Copyrights';
 import OpeningTime from './OpeningTime';
+import SalonsGrid from './SalonsGrid';
 import SocialButtons from './SocialButtons';
 import VerticalMenu from './VerticalMenu';
 
 /**
  * MenuSection component to render the main content of the footer.
  *
- * This component displays various sections in the footer including contact information,
- * vertical menus (services and about us), opening times, and social media buttons.
- * It uses a responsive layout that adapts to different screen sizes.
+ * Layout follows the static-html mock: a 4-column grid with the three salons
+ * and opening time on the first row, a divider, then Services / About us
+ * menus with the social links, and the copyright line at the bottom.
  * @param   {object}           props      - Component properties
  * @param   {IAttributeValues} props.dict - Dictionary object containing localized text values from OneEntry CMS
  * @returns {JSX.Element}                 JSX.Element representing the footer menu section with all its components
@@ -21,50 +21,48 @@ const MenuSection = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
   const { opening_time_text, follow_us_text } = dict;
 
   return (
-    <div className="mx-auto flex w-full max-w-360 justify-between gap-10 px-5 py-16 text-black max-lg:flex-wrap max-lg:justify-center max-md:max-w-full max-sm:gap-0">
-      {/* Contact Information */}
-      <ContactInfo />
+    <div className="mx-auto w-full max-w-7xl px-3 pt-6 pb-6 text-black md:px-8 md:pt-12">
+      {/* Salons + Opening Time */}
+      <div className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-3 xl:grid-cols-[1fr_1fr_1fr_9rem]">
+        <SalonsGrid />
 
-      {/* Main Content Section */}
-      <div className="relative box-border flex shrink-0 flex-row gap-9 max-md:gap-2 max-sm:w-full max-sm:flex-row max-sm:flex-wrap">
-        {/* Services Menu */}
-        <VerticalMenu
-          className="flex w-auto flex-col gap-5 px-2.5 max-md:mr-auto max-sm:mr-4 max-sm:w-[35%] max-sm:px-0"
-          menuName="services"
-          baseUrl="services"
-        />
-
-        {/* About Us Menu */}
-        <VerticalMenu
-          className="flex flex-col gap-5 px-2.5 max-md:mr-9 max-sm:mr-0 max-sm:w-6/12 max-sm:px-0"
-          menuName="about_us"
-          baseUrl=""
-        />
-
-        {/* Opening Times */}
-        <div className="flex min-w-65.5 grow flex-col border border-solid border-black p-5 max-md:pb-5 max-sm:w-full max-sm:min-w-50">
-          <h3 className="mb-3.5 text-lg font-bold">
-            {opening_time_text?.value as string | undefined}
-          </h3>
-          <div className="flex flex-col gap-2 text-base leading-5 whitespace-nowrap">
+        {/* Opening Time — 4th column on desktop */}
+        <div className="min-w-0 xl:border-l xl:border-black/80 xl:pl-4">
+          <p className="mb-3 text-sm font-bold tracking-wide uppercase">
+            {(opening_time_text?.value as string | undefined) ?? 'Opening Time'}
+          </p>
+          <div className="flex flex-col gap-2 text-sm opacity-90">
             <OpeningTime />
           </div>
         </div>
+      </div>
+
+      {/* Divider under the salons */}
+      <div className="mt-6 h-px bg-black/80" />
+
+      {/* Services | About us | — | Follow us */}
+      <div className="mt-8 grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3 xl:grid-cols-[1fr_1fr_1fr_9rem]">
+        <VerticalMenu
+          className="min-w-0"
+          menuName="services"
+          baseUrl="services"
+        />
+        <VerticalMenu className="min-w-0 xl:pl-4" menuName="about_us" baseUrl="" />
 
         {/* Follow Us Section */}
-        <div className="hidden w-33.5 max-w-full flex-col max-sm:flex max-sm:w-full">
-          <h3 className="mb-3 text-sm font-bold">
-            {follow_us_text?.value as string | undefined}:
+        <div className="flex flex-col sm:col-start-3 xl:col-start-4 xl:pl-4">
+          <h3 className="mb-3 text-base font-bold">
+            {(follow_us_text?.value as string | undefined) ?? 'Follow us'}:
           </h3>
-          <div className="mb-2 flex items-end justify-around gap-5 max-sm:justify-start">
+          <div className="flex items-center gap-3">
             <SocialButtons />
           </div>
         </div>
+      </div>
 
-        {/* Copyrights */}
-        <div className="mb-4 hidden text-left text-base font-medium tracking-wide max-md:max-w-full max-sm:flex max-sm:text-left">
-          <Copyrights />
-        </div>
+      {/* Copyrights */}
+      <div className="mt-10 text-sm">
+        <Copyrights />
       </div>
     </div>
   );

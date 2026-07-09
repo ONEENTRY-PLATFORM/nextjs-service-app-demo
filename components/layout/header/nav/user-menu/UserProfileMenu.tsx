@@ -58,9 +58,11 @@ const UserProfileMenu = ({
       <Link
         href="/profile"
         onPointerEnter={() => setIsOpen(true)}
-        className="group relative my-auto box-border flex size-6 shrink-0"
+        className="group relative my-auto box-border flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-fuchsia-500 bg-fuchsia-500/5 shadow-[0_0_12px_rgba(237,33,241,0.27)]"
       >
-        <ProfileIcon />
+        <span className="flex size-5">
+          <ProfileIcon active />
+        </span>
       </Link>
       <ProfileMenuAnimations
         state={isOpen}

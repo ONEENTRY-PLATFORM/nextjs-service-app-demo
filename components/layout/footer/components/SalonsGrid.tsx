@@ -7,9 +7,9 @@ import Phone2Icon from '@/components/icons/phone-2';
 /**
  * SalonsGrid component to display a grid of salon contact information.
  *
- * This component fetches salon data from the API and displays each salon's
- * title, address, and phone number in a grid layout. It includes phone icons
- * and properly formatted phone links for direct calling.
+ * Renders one grid cell per salon (grid itself lives in MenuSection):
+ * uppercase salon name, address and phone with a vertical divider between
+ * columns, following the static-html footer mock.
  * @returns {Promise<JSX.Element>} JSX.Element representing a grid of salon contact information
  */
 const SalonsGrid = async (): Promise<JSX.Element> => {
@@ -27,33 +27,37 @@ const SalonsGrid = async (): Promise<JSX.Element> => {
     };
   });
 
-  /** Render salon contact information in a grid layout */
+  /** Render salon contact information as grid cells */
   return (
     <>
       {contactsData?.map((item, i: number) => {
         return (
-          <div key={i} className="flex">
-            <div className="flex flex-col">
-              {/** Display salon title */}
-              <h2 className="mb-5 text-base tracking-wide uppercase max-sm:mb-3">
-                {item.title}
-              </h2>
-              {/** Display salon address and phone information */}
-              <address className="not-italic">
-                <p className="mb-1.5 text-sm">{item.address}</p>
-                <a
-                  href={'tel:' + item.phone}
-                  className="flex gap-2 text-sm font-bold focus:outline-none"
-                >
-                  <Phone2Icon />
-                  <p>{item.phoneFormatted}</p>
-                </a>
-              </address>
-            </div>
-            {/** Render divider between salon entries except for the last one */}
-            {contactsData.length - 1 > i && (
-              <div className="relative ml-4 box-border flex h-[110%] w-px shrink-0 flex-col self-stretch bg-black max-md:flex max-sm:hidden"></div>
-            )}
+          <div
+            key={i}
+            className={
+              'min-w-0' +
+              (i > 0
+                ? ' border-t border-black/80 pt-4 sm:border-t-0 sm:border-l sm:border-black/80 sm:pt-0 sm:pl-4'
+                : '')
+            }
+          >
+            {/** Display salon title */}
+            <h2 className="mb-3 text-sm font-bold tracking-wide uppercase sm:text-base">
+              {item.title}
+            </h2>
+            {/** Display salon address and phone information */}
+            <address className="not-italic">
+              <p className="mb-2 text-sm opacity-90 sm:min-h-10 xl:min-h-0">
+                {item.address}
+              </p>
+              <a
+                href={'tel:' + item.phone}
+                className="flex items-center gap-1.5 text-sm focus:outline-none"
+              >
+                <Phone2Icon />
+                <p className="whitespace-nowrap">{item.phoneFormatted}</p>
+              </a>
+            </address>
           </div>
         );
       })}

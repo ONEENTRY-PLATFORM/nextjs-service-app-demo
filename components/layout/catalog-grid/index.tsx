@@ -14,13 +14,17 @@ import CatalogGrid from './components/CatalogGrid';
  * This component displays the main catalog section with a title and a grid of service categories.
  * It includes background animations with "Beauty Salon" text and title animations for enhanced
  * visual presentation. The component uses data from a block entity to display localized content.
- * @param   {object}       props       - Component properties
- * @param   {IBlockEntity} props.block - Block entity containing localized information for the section title
- * @returns {JSX.Element}              JSX.Element representing the complete catalog section with background animations
+ * @param   {object}       props         - Component properties
+ * @param   {IBlockEntity} [props.block] - Block entity with the section title; falls back to the mock's "Service" heading when the block is not filled in the CMS yet
+ * @returns {JSX.Element}                JSX.Element representing the complete catalog section with background animations
  */
-const CatalogSection = ({ block }: { block: IBlockEntity }): JSX.Element => {
+const CatalogSection = ({
+  block,
+}: {
+  block?: IBlockEntity | undefined;
+}): JSX.Element => {
   /** Extract title from block's localized information */
-  const title = block?.localizeInfos?.title;
+  const title = block?.localizeInfos?.title ?? 'Service';
 
   /** Wrap title words in spans for animation effects */
   const title1 = wrapCharactersInSpan('Beauty');

@@ -31,12 +31,12 @@ const MenuItem = ({
 
   /** Render menu item with link and active state styling */
   return (
-    <li className="relative box-border">
+    <li className="relative box-border border-b border-black/80">
       <Link
         prefetch={false}
         className={
-          'focus:outline-none hover:text-fuchsia-500 transition-colors ' +
-          (isActive ? 'text-fuchsia-500' : '')
+          'flex py-3 text-base transition-opacity hover:opacity-70 focus:outline-none ' +
+          (isActive ? 'font-bold' : '')
         }
         href={baseUrl ? '/' + baseUrl + '/' + page.pageUrl : '/' + page.pageUrl}
       >

@@ -14,8 +14,13 @@ const SocialButtons = async (): Promise<JSX.Element[]> => {
     const Icon = icons[item.icon as keyof typeof icons];
     /** Render social media link with icon */
     return (
-      <a key={i} href={item.link} className="size-6 focus:outline-none">
-        <Icon size={6} />
+      <a
+        key={i}
+        href={item.link}
+        aria-label={item.title}
+        className="transition-transform hover:scale-110 focus:outline-none"
+      >
+        <Icon size={22} />
       </a>
     );
   });

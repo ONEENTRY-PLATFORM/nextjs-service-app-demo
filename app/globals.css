@@ -190,6 +190,23 @@ address {
   );
 }
 
+/* brand gradients (static-html: buttons 135deg PINK2→PINK, footer 120deg purple→pink) */
+@utility bg-gradient-brand {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-accent-pink-bright),
+    var(--color-accent-pink)
+  );
+}
+@utility bg-gradient-footer {
+  background-image: linear-gradient(
+    120deg,
+    var(--color-accent-purple) 0%,
+    var(--color-accent-pink-bright) 55%,
+    var(--color-accent-pink) 100%
+  );
+}
+
 /* gradient-line */
 @utility gradient-bg-line-20 {
   height: 20px;

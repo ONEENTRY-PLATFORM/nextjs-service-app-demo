@@ -1,5 +1,6 @@
 'use client';
 
+import { ArrowUpRight, Scissors } from 'lucide-react';
 import Link from 'next/link';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
@@ -60,15 +61,26 @@ const ProductRow = ({
     dispatch(setTabsState({ key: 'services', value: true }));
   };
 
-  /* Render product row with link to service page */
+  /* Render product row with link to service page (styled as in the static-html mock) */
   return (
     <Link
       prefetch={false}
       href={`/services/${pageData?.pageUrl || ''}`}
       onClick={() => onApplyHandle()}
-      className="flex w-full py-2 hover:text-fuchsia-500"
+      className="flex w-full items-center gap-3 px-5 py-2.5 text-left transition-colors hover:bg-gray-50"
     >
-      {product.localizeInfos?.title}
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-fuchsia-500/10">
+        <Scissors size={15} className="text-fuchsia-500" />
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate text-base font-semibold text-slate-400">
+          {product.localizeInfos?.title}
+        </span>
+        <span className="block truncate text-base text-neutral-300">
+          {pageData?.localizeInfos?.title}
+        </span>
+      </span>
+      <ArrowUpRight size={14} className="ml-auto shrink-0 text-neutral-300" />
     </Link>
   );
 };

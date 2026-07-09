@@ -160,6 +160,10 @@ export const flatMenuToNested = (
       const children = flatMenuToNested(data, element.id);
       if (children.length) {
         object.children = children;
+      } else {
+        // The API returns `children: []` on every page — drop the empty array
+        // so consumers can rely on `children` meaning "has a submenu".
+        delete object.children;
       }
       r.push(object);
     }
