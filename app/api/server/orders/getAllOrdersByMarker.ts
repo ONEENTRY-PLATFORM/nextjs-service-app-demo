@@ -1,0 +1,45 @@
+import type { IError } from 'oneentry/dist/base/utils';
+import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
+
+import { getApi } from '@/app/api';
+import { isError } from '@/app/api';
+
+/**
+ * Getting all orders from the orders storage object created by the user.
+ * @param   {object}          props        - Parameter object.
+ * @param   {string}          props.marker - The text identifier of the order storage object.
+ * @param   {number}          props.offset - Offset parameter. Default 0.
+ * @param   {number}          props.limit  - Limit parameter. Default 30.
+ * @returns {Promise<object>}              All user orders.
+ * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
+ */
+export const getAllOrdersByMarker = async ({
+  marker,
+  offset,
+  limit,
+}: {
+  marker: string;
+  offset: number;
+  limit: number;
+}): Promise<{
+  isError: boolean;
+  error?: IError;
+  orders?: IOrderByMarkerEntity[];
+  total: number;
+}> => {
+  try {
+    const data = await getApi().Orders.getAllOrdersByMarker(
+      marker,
+      undefined,
+      offset,
+      limit,
+    );
+
+    if (isError(data)) {
+      return { isError: true, error: data, total: 0 };
+    }
+    return { isError: false, orders: data.items, total: data.total };
+  } catch (e) {
+    return { isError: true, error: e as IError, total: 0 };
+  }
+};

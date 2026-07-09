@@ -1,0 +1,71 @@
+'use client';
+
+import Link from 'next/link';
+import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
+import type { JSX } from 'react';
+import { useContext } from 'react';
+
+import { AuthContext } from '@/app/store/providers/AuthContext';
+import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
+import ProfileIcon from '@/components/icons/profile';
+
+import UserProfileMenu from './user-menu/UserProfileMenu';
+
+/**
+ * NavItemProfile component to render either a sign-in button or user profile link/menu.
+ *
+ * This component conditionally renders different elements based on the user's authentication state:
+ * - For unauthenticated users: a sign-in button that opens the sign-in form in a drawer
+ * - For authenticated users: either a user profile menu (if userMenu data is provided) or a link to the profile page
+ * @param   {object}       props          - Component properties
+ * @param   {IMenusEntity} props.userMenu - Optional menu entity for authenticated users
+ * @returns {JSX.Element}                 JSX.Element representing either a sign-in button or user profile navigation element
+ */
+const NavItemProfile = ({
+  userMenu,
+}: {
+  userMenu?: IMenusEntity;
+}): JSX.Element => {
+  /** Get drawer state and control functions from context */
+  const { open, setOpen, setComponent } = useContext(OpenDrawerContext);
+  /** Check user authentication status from context */
+  const { isAuth } = useContext(AuthContext);
+
+  /** Handle sign in button click to open sign in form in drawer */
+  const handleSignInClick = () => {
+    setOpen(!open);
+    setComponent('SignInForm');
+  };
+
+  /** Render sign in button when user is not authenticated */
+  if (!isAuth) {
+    return (
+      <button
+        onClick={handleSignInClick}
+        className="group relative my-auto box-border flex size-6 shrink-0"
+        aria-label="Sign In"
+      >
+        <ProfileIcon />
+      </button>
+    );
+  }
+
+  /** Render user profile menu when user is authenticated and menu data exists */
+  if (userMenu) {
+    return <UserProfileMenu userMenu={userMenu} />;
+  }
+
+  /** Render profile link when user is authenticated but no menu data */
+  return (
+    <Link
+      prefetch={false}
+      href="/profile"
+      className="group relative my-auto box-border flex size-6 shrink-0"
+      aria-label="Profile"
+    >
+      <ProfileIcon />
+    </Link>
+  );
+};
+
+export default NavItemProfile;

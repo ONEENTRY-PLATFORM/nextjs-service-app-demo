@@ -1,0 +1,354 @@
+@import "tailwindcss";
+
+/* Design tokens. Palette migrated from tailwind.config.ts (Tailwind v4 does
+   not auto-load the JS config); sm/md/lg/2xl breakpoints matched the defaults
+   and are omitted. */
+@theme {
+  --breakpoint-xs: 480px;
+  --breakpoint-xl: 1240px;
+
+  /* form/base text and display headings */
+  --text-md: 17px;
+  --text-display: 110px;
+
+  /* card corner radius (was rounded-[30px] everywhere) */
+  --radius-card: 30px;
+
+  /* master photo / specialist card portrait ratios */
+  --aspect-photo: 0.88;
+  --aspect-card: 0.86;
+
+  --color-fuchsia-50: #fff8ff;
+  --color-fuchsia-300: #f587f7;
+  --color-fuchsia-400: #f33de2;
+  --color-fuchsia-450: #f60efb;
+  --color-fuchsia-500: #ed21f1;
+  --color-fuchsia-600: #cd11d1;
+
+  /* Thalia brand accents (static-html: offers.ts / thalia_logo.svg).
+     PINK = fuchsia-500, PINK2 = fuchsia-450, DARK = slate-400. */
+  --color-accent-pink: #ed21f1;
+  --color-accent-pink-bright: #f60efb;
+  --color-accent-cyan: #109aa9;
+  --color-accent-cyan-light: #26d2e6;
+  --color-accent-purple: #9b4fb2;
+  --color-accent-purple-soft: #7e63ae;
+  --color-logo-dot: #fb0ee3;
+  --color-violet-300: #d597fc;
+  --color-violet-350: #c37bfe;
+  --color-violet-400: #c082ff;
+  --color-slate-100: #f6f7f9;
+  --color-slate-200: #cbd5e1;
+  --color-slate-250: #d9dae1;
+  --color-slate-300: #b0bcce;
+  --color-slate-400: #4c4d56;
+  --color-slate-600: #475569;
+  --color-neutral-300: #a8a9b5;
+  --color-neutral-400: #656565;
+  --color-neutral-600: #525252;
+  --color-blue-350: #0edefb;
+  /* headings/dark text */
+  --color-ink: #414253;
+
+  /* api-test dev dashboard (dark UI): light "paper" text on dark panels,
+     brand accent matches the site's fuchsia */
+  --color-paper: #f6f7f9;
+  --color-brand: #ed21f1;
+  --color-brand-hover: #cd11d1;
+  --tracking-fine: 0.08em;
+  --radius-panel: 16px;
+}
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
+  }
+}
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+  display: none;
+}
+
+html,
+body {
+  @apply h-full;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: Lato, sans-serif;
+  font-weight: 400;
+}
+
+section {
+  position: relative;
+}
+
+.bg-wrapper {
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.section-bg {
+  position: absolute;
+  top: 140px;
+  left: 50%;
+  z-index: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+/* forms */
+input.border-b {
+  padding-right: 0;
+  padding-left: 0;
+  font-size: var(--text-md, 17px);
+  appearance: none;
+  border: none !important;
+  border-bottom: 1px solid #c3ccda !important;
+  outline: none;
+  box-shadow: none !important;
+
+  &:focus {
+    border-bottom: 1px solid var(--color-fuchsia-500) !important;
+    outline: none;
+    transition: border-color 300ms ease-in-out;
+  }
+}
+[type='radio']:checked {
+  background-image: none !important;
+}
+[placeholder]:focus::placeholder {
+  text-indent: -100%;
+  transition: text-indent 0.35s ease-in-out; 
+}
+
+/* header */
+#header {
+  position: relative;
+  z-index: 245;
+}
+#header header {
+  position: fixed;
+  width: 100%;
+}
+
+@media (width < 768px) {
+  .logo svg {
+    max-width: 150px;
+  }
+}
+
+/* footer */
+#footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-violet-400) -2.98%,
+    var(--color-fuchsia-500) 89.65%
+  );
+}
+#footer.bg-white {
+  background-color: white;
+  background-image: none;
+}
+
+address {
+  font-style: normal !important;
+}
+
+/* bg-gradient */
+@utility bg-gradient-1 {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-violet-300) -2.98%,
+    var(--color-fuchsia-400) 89.65%
+  );
+}
+@utility bg-gradient-2 {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-violet-350) -2.98%,
+    var(--color-fuchsia-500) 89.65%
+  );
+}
+
+/* gradient-line */
+@utility gradient-bg-line-20 {
+  height: 20px;
+  background: linear-gradient(
+    90deg,
+    var(--color-violet-400) -2.98%,
+    var(--color-fuchsia-500) 89.65%
+  );
+}
+@utility gradient-bg-line-100 {
+  height: 100px;
+  background: linear-gradient(
+    90deg,
+    var(--color-violet-400) -2.98%,
+    var(--color-fuchsia-500) 89.65%
+  );
+}
+
+/* gallery */
+.gallery-card-info {
+  position: absolute;
+  bottom: -120px;
+  height: 120px;
+  transition: all 350ms ease-in-out;
+}
+.group:hover .gallery-card-info {
+  bottom: 0;
+  z-index: 10;
+  transition: all 350ms ease-in-out;
+}
+.gallery-card-info-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ee21f18c;
+}
+.gallery-card-content {
+  position: relative;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.slide-up {
+  /* opacity: 0; */
+}
+/* GSAP animation start state */
+@utility fade-in {
+  opacity: 0;
+}
+
+@media (width < 768px) {
+  .login-btn {
+    padding-right: 5vw;
+    padding-left: 65px;
+  } 
+}
+@media (width < 420px) {
+  .login-btn {
+    padding-right: 5vw;
+    padding-left: 10vw;
+  }
+}
+
+/* toastify */
+:root {
+  --toastify-color-progress-light: linear-gradient(
+    to right,
+    var(--color-violet-350),
+    var(--color-fuchsia-500)
+  ) !important;
+  --toastify-color-progress-dark: var(--color-fuchsia-500);
+}
+
+/* dropdown */
+@layer components {
+  .dropdown:has(input:checked) {
+    @apply 
+      border 
+      border-fuchsia-500 
+      border-solid;
+  }
+  .card-label {
+    @apply 
+      flex gap-5 justify-between pr-2.5 mb-5 border border-solid border-neutral-200 w-full rounded-2xl
+    ;
+  }
+  .card-label:has(input:checked) {
+    @apply 
+      border 
+      border-solid
+      border-fuchsia-500 ;
+  }
+}
+
+.dropdown-container {
+  overflow: hidden;
+}
+
+.slider,
+.title,
+.item {}
+
+.menu-item {}
+
+/* intro */
+.intro #logo_wrapper {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  z-index: 40;
+}
+.intro #logo_wrapper .logo svg {
+  width: 30vw;
+  height: auto;
+}
+#intro_mask {
+  z-index: 20;
+  position: absolute;
+  min-width: 100%;
+  min-height: 100%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+#hero_mask {
+  position: absolute;
+  height: 102%;
+  width: 102%;
+  left: -1%;
+  top: -1%;
+  z-index: 50;
+}
+
+.gallery-card-img {
+  max-width: 100%;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+button, a { 
+  cursor: pointer;
+}

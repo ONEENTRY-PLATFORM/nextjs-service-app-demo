@@ -1,0 +1,47 @@
+.nav-menu {
+  li {
+    a {
+      &:hover {
+        color: #ed21f1;
+      }
+    }
+
+    &.current {
+      a {
+        color: #ed21f1;
+      }
+    }
+
+    &:hover {
+      ul {
+        display: flex;
+        visibility: visible;
+        
+        a:hover {
+          color: #ed21f1;
+        }
+      }
+
+      &:has(> ul.sub-menu:hover) {
+        a {
+          color: #ed21f1;
+        }
+
+        ul {
+          a {
+            color: #2c292c;
+
+            &:hover {
+              color: #ed21f1;
+            }
+          }
+          
+        }
+  
+      }
+
+    }
+
+  }
+
+}

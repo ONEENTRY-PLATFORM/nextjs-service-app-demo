@@ -1,0 +1,73 @@
+import type { Dispatch, JSX } from 'react';
+import { useEffect } from 'react';
+
+/**
+ * FormCaptcha component renders a reCAPTCHA widget.
+ * @param   {object}            props              - Component props
+ * @param   {Dispatch<string>}  props.setToken     - Function to set the token
+ * @param   {Dispatch<boolean>} props.setIsCaptcha - Function to set captcha state
+ * @param   {string}            props.captchaKey   - Captcha key
+ * @returns {JSX.Element}                          FormCaptcha component
+ */
+const FormCaptcha = ({
+  // setToken,
+  setIsCaptcha,
+  // captchaKey,
+}: {
+  setToken: Dispatch<string>;
+  setIsCaptcha: Dispatch<boolean>;
+  captchaKey: string;
+}): JSX.Element => {
+  const testKey = '6LdF4HcqAAAAAD7Mia-zF5SMzY-XjHd_SU2xr0uQ';
+  // const siteKey = 'AIzaSyBC4rSjMl4SspgQ2J046ZyRv1IX44v3jgc';
+
+  useEffect(() => {
+    setIsCaptcha(true);
+  }, [setIsCaptcha]);
+
+  const handleLoaded = () => {
+    if (!window) {
+      return;
+    }
+
+    // window.grecaptcha?.enterprise.ready(() => {
+    //   window.grecaptcha?.enterprise
+    //     .execute(testKey, { action: 'homepage' })
+    //     .then((token: string) => {
+    //       const validationObject = {
+    //         event: {
+    //           token,
+    //           siteKey: testKey,
+    //         },
+    //       };
+    //       validateRecaptcha(validationObject);
+    //     });
+    // });
+  };
+
+  // const validateRecaptcha = async (validationObject: {
+  //   event: { token: string; siteKey: string };
+  // }) => {
+  //   const url = `https://recaptchaenterprise.googleapis.com/v1/projects/oneentrys-captchas/assessments?key=${siteKey}`;
+  //   await fetch(url, { method: 'post', body: JSON.stringify(validationObject) })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       // eslint-disable-next-line no-console
+  //       console.log('validation result', data);
+  //     });
+  // };
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = `https://www.google.com/recaptcha/enterprise.js?render=${testKey}`;
+    script.addEventListener('load', handleLoaded);
+    document.body.appendChild(script);
+    return () => {
+      script.removeEventListener('load', handleLoaded);
+    };
+  }, []);
+
+  return <></>;
+};
+
+export default FormCaptcha;
