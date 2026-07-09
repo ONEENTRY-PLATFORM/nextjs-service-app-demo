@@ -1,45 +1,51 @@
 import { expect, test } from '@playwright/test';
 
-// The payment tab is rendered only for authorized users (Payments API
-// requires a user token), so a guest sees the six steps below
-const GUEST_BOOKING_TABS = [
-  'salons',
-  'services',
-  'products',
-  'masters',
-  'calendar',
-  'signin',
-] as const;
-
-test.describe('Booking form', () => {
-  test('renders all guest booking step tabs and hides payment', async ({
-    page,
-  }) => {
+// The booking page is the step wizard ported from the static-html mock
+// (`BookingPage.tsx`): a hero, an entry screen with two flows and the
+// "Your Appointment" summary in the right column (desktop).
+test.describe('Booking wizard', () => {
+  test('renders the hero and the entry screen', async ({ page }) => {
     await page.goto('/booking');
 
-    for (const tab of GUEST_BOOKING_TABS) {
-      await expect(page.getByTestId(`booking-tab-${tab}`)).toBeVisible();
-    }
-    await expect(page.getByTestId('booking-tab-payment')).toHaveCount(0);
-  });
-
-  test('salons step is expanded initially and offers at least one option', async ({
-    page,
-  }) => {
-    await page.goto('/booking');
-
-    // Salons tab is active in the initial CartSlice state — its radio group
-    // must be rendered (options come from the OneEntry Pages API)
-    await expect(page.locator('input[type="radio"]').first()).toBeAttached({
+    await expect(
+      page.getByRole('heading', { name: /book online/i }),
+    ).toBeVisible();
+    await expect(page.getByText('How would you like to start?')).toBeVisible({
       timeout: 15_000,
     });
+    await expect(page.getByText('Browse the studio')).toBeVisible();
+    await expect(page.getByText('Choose a specialist').first()).toBeVisible();
   });
 
-  test('clicking a step tab toggles it without errors', async ({ page }) => {
+  test('studio-first flow walks to the studio step', async ({ page }) => {
     await page.goto('/booking');
 
-    const servicesTab = page.getByTestId('booking-tab-services');
-    await servicesTab.click();
-    await expect(servicesTab).toBeVisible();
+    // Desktop entry card of the salon-first flow
+    await page.getByText('Browse the studio').click();
+    await expect(page.getByText('Choose your studio')).toBeVisible();
+
+    // The summary sidebar reflects the started flow
+    await expect(page.getByText('Your Appointment')).toBeVisible();
+    await expect(page.getByText('Studio-first flow')).toBeVisible();
+
+    // Picking a studio enables Continue → the service step opens
+    const continueBtn = page.getByRole('button', { name: /continue/i }).first();
+    await expect(continueBtn).toBeDisabled();
+    await page.locator('#booking-section').getByText('Thalia').first().click();
+    await expect(continueBtn).toBeEnabled();
+    await continueBtn.click();
+    await expect(page.getByText('Choose a service')).toBeVisible();
+  });
+
+  test('back from the first step returns to the entry screen', async ({
+    page,
+  }) => {
+    await page.goto('/booking');
+
+    await page.getByText('Choose a specialist').first().click();
+    await expect(page.getByText('Choose your specialist')).toBeVisible();
+
+    await page.getByRole('button', { name: /change start/i }).click();
+    await expect(page.getByText('How would you like to start?')).toBeVisible();
   });
 });

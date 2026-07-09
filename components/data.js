@@ -175,6 +175,94 @@ export const offerBannersData = [
   '/images/Offer/banner_04.jpeg',
 ];
 
+// Contacts page demo studios — the three salons from the static-html mock
+// (`ContactsPage.tsx` → SALONS). Used while the CMS salon pages have no
+// `salon_address` attribute filled.
+export const contactSalonsData = [
+  {
+    id: 's1',
+    name: 'Thalia Downtown',
+    address: 'Sheikh Mohammed bin Rashid Blvd, Downtown Dubai',
+    phone: '+971 4 701 2200',
+    tel: '+97147012200',
+    mapSrc:
+      'https://www.google.com/maps?q=25.1972,55.2744&z=15&hl=en&output=embed',
+    mapsLink:
+      'https://www.google.com/maps/dir/?api=1&destination=25.1972,55.2744',
+    color: '#ed21f1',
+  },
+  {
+    id: 's2',
+    name: 'Thalia Marina',
+    address: 'Marina Walk, Dubai Marina',
+    phone: '+971 4 702 3300',
+    tel: '+97147023300',
+    mapSrc:
+      'https://www.google.com/maps?q=25.0808,55.1414&z=15&hl=en&output=embed',
+    mapsLink:
+      'https://www.google.com/maps/dir/?api=1&destination=25.0808,55.1414',
+    color: '#109aa9',
+  },
+  {
+    id: 's3',
+    name: 'Thalia JBR',
+    address: 'The Walk, Jumeirah Beach Residence',
+    phone: '+971 4 703 4400',
+    tel: '+97147034400',
+    mapSrc:
+      'https://www.google.com/maps?q=25.0801,55.1357&z=15&hl=en&output=embed',
+    mapsLink:
+      'https://www.openstreetmap.org/?mlat=25.0801&mlon=55.1357#map=15/25.0801/55.1357',
+    color: '#9b4fb2',
+  },
+];
+
+// "Reach out" cards of the contacts page — the mock's hardcoded studio
+// contacts (`ContactsPage.tsx` → ContactInfo) until they move to the CMS.
+export const contactInfoData = [
+  {
+    icon: 'phone',
+    label: 'General phone',
+    value: '+971 4 784 0098',
+    color: '#ed21f1',
+    href: 'tel:+97147840098',
+  },
+  {
+    icon: 'mail',
+    label: 'E-mail us',
+    value: 'hello@beautystudio.com',
+    color: '#109aa9',
+    href: 'mailto:hello@beautystudio.com',
+  },
+  {
+    icon: 'map-pin',
+    label: 'Head office',
+    value: 'Sheikh Mohammed bin Rashid Blvd, Downtown Dubai',
+    color: '#9b4fb2',
+    href: '#',
+  },
+  {
+    icon: 'clock',
+    label: 'Working hours',
+    value: 'Daily 10:00–22:00',
+    color: '#9b4fb2',
+    href: '#',
+  },
+];
+
+// Weekly schedule of the contacts page ("Opening Hours" section) — mock data
+// (`ContactsPage.tsx` → HOURS) until the `opening_time` block is filled in
+// the CMS.
+export const openingHoursData = [
+  { day: 'Monday', hours: '10:00 – 22:00' },
+  { day: 'Tuesday', hours: '10:00 – 22:00' },
+  { day: 'Wednesday', hours: '10:00 – 22:00' },
+  { day: 'Thursday', hours: '10:00 – 22:00' },
+  { day: 'Friday', hours: '10:00 – 22:00' },
+  { day: 'Saturday', hours: '10:00 – 22:00' },
+  { day: 'Sunday', hours: '10:00 – 22:00' },
+];
+
 // Fallback photo of the contacts location cards when the location name is
 // not recognized.
 export const defaultSalonPhoto =
@@ -185,6 +273,175 @@ export const salonPhotosData = {
   downtown: defaultSalonPhoto,
   marina: '/images/Beauty content/Contacts/Marina/Marina_01.jpeg',
   jbr: '/images/Beauty content/Contacts/JBR/JBR_01.jpeg',
+};
+
+// Booking wizard demo services — the 17 bookable services from the
+// static-html mock (`App.tsx` → SERVICES). Used while the CMS holds no
+// products (see app/booking/getLocalBookingData.ts).
+export const bookingServicesData = [
+  {
+    id: 'sv1',
+    category: 'Hair',
+    name: 'Haircut',
+    duration: '60 min',
+    price: 260,
+  },
+  {
+    id: 'sv2',
+    category: 'Hair',
+    name: 'Coloring',
+    duration: '150 min',
+    price: 550,
+  },
+  {
+    id: 'sv3',
+    category: 'Hair',
+    name: 'Styling',
+    duration: '45 min',
+    price: 180,
+  },
+  {
+    id: 'sv4',
+    category: 'Nails',
+    name: 'Manicure',
+    duration: '45 min',
+    price: 120,
+  },
+  {
+    id: 'sv5',
+    category: 'Nails',
+    name: 'Pedicure',
+    duration: '60 min',
+    price: 180,
+  },
+  {
+    id: 'sv6',
+    category: 'Face',
+    name: 'Day Makeup',
+    duration: '45 min',
+    price: 290,
+  },
+  {
+    id: 'sv7',
+    category: 'Face',
+    name: 'Evening Makeup',
+    duration: '60 min',
+    price: 450,
+  },
+  {
+    id: 'sv8',
+    category: 'Body',
+    name: 'Relax Massage',
+    duration: '60 min',
+    price: 380,
+  },
+  {
+    id: 'sv9',
+    category: 'Body',
+    name: 'Hot Stone Massage',
+    duration: '75 min',
+    price: 560,
+  },
+  {
+    id: 'sv10',
+    category: 'Body',
+    name: 'Moroccan Bath',
+    duration: '60 min',
+    price: 450,
+  },
+  {
+    id: 'sv11',
+    category: 'Body',
+    name: 'Henna Hand Design',
+    duration: '45 min',
+    price: 180,
+  },
+  {
+    id: 'sv12',
+    category: 'Hair',
+    name: 'Keratin Treatment',
+    duration: '180 min',
+    price: 1000,
+  },
+  {
+    id: 'sv13',
+    category: 'Face',
+    name: 'Express Facial',
+    duration: '30 min',
+    price: 260,
+  },
+  {
+    id: 'sv14',
+    category: 'Face',
+    name: 'Chemical Peel',
+    duration: '45 min',
+    price: 550,
+  },
+  {
+    id: 'sv15',
+    category: 'Face',
+    name: 'Brow Shaping',
+    duration: '30 min',
+    price: 110,
+  },
+  {
+    id: 'sv16',
+    category: 'Body',
+    name: 'Detox Wrap',
+    duration: '75 min',
+    price: 560,
+  },
+  {
+    id: 'sv17',
+    category: 'Body',
+    name: 'Full Legs Waxing',
+    duration: '45 min',
+    price: 260,
+  },
+];
+
+// Booking wizard demo roster metadata per profession section of
+// `localMasterSectionsData` — which demo services the section performs, the
+// specialties line of the card and the "from" price (mock `App.tsx` → MASTERS).
+export const bookingSectionMetaData = {
+  'hair-stylist': {
+    specialties: ['Hair'],
+    serviceIds: ['sv1', 'sv2', 'sv3', 'sv12'],
+    price: 180,
+  },
+  'beauty-therapist': {
+    specialties: ['Face', 'Body'],
+    serviceIds: [
+      'sv8',
+      'sv9',
+      'sv10',
+      'sv11',
+      'sv13',
+      'sv14',
+      'sv15',
+      'sv16',
+      'sv17',
+    ],
+    price: 110,
+  },
+  'makeup-artist': {
+    specialties: ['Makeup'],
+    serviceIds: ['sv6', 'sv7', 'sv15'],
+    price: 110,
+  },
+  'nail-technician': {
+    specialties: ['Manicure', 'Pedicure'],
+    serviceIds: ['sv4', 'sv5'],
+    price: 120,
+  },
+};
+
+// "Any specialist" team photo per demo salon id (mock `BookingPage.tsx` →
+// ANY_GROUP); the booking wizard falls back to Downtown when no salon chosen.
+export const anySpecialistPhotosData = {
+  downtown: '/images/Any_specialist/Downtown_group.jpg',
+  marina: '/images/Any_specialist/Marina_group.jpg',
+  jbr: '/images/Any_specialist/JBR_group.jpg',
 };
 
 export const orderStates = [

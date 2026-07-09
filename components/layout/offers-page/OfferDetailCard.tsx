@@ -14,10 +14,7 @@ import {
   selectActiveItemId,
   setTabsState,
 } from '@/app/store/reducers/CartSlice';
-import {
-  offerAccentGradientsData,
-  offerBannersData,
-} from '@/components/data';
+import { offerAccentGradientsData, offerBannersData } from '@/components/data';
 import Dirham from '@/components/shared/Dirham';
 
 /**

@@ -57,7 +57,7 @@ const SalonCell = ({
       <div className={`${open ? 'block' : 'hidden'} mt-3 sm:mt-0 sm:block`}>
         <address className="not-italic">
           {address && (
-            <p className="mb-2 text-sm opacity-90 sm:min-h-10 xl:min-h-0">
+            <p className="mb-2 text-sm opacity-90 xl:min-h-0 sm:min-h-10">
               {address}
             </p>
           )}

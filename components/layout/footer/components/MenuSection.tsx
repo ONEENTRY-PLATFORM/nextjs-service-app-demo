@@ -1,5 +1,8 @@
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { IMenusEntity, IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
+import type {
+  IMenusEntity,
+  IMenusPages,
+} from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 
 import { getBlockByMarker, getMenuByMarker } from '@/app/api';
@@ -56,9 +59,9 @@ const toFooterItems = (
  * column (desktop), mobile collapses for salons / Opening Time / Services /
  * About us with dividers, the desktop Services–About–Follow row and the
  * copyright line.
- * @param   {object}           props      - Component properties
- * @param   {IAttributeValues} props.dict - Dictionary object containing localized text values from OneEntry CMS
- * @returns {Promise<JSX.Element>}        JSX.Element representing the footer menu section with all its components
+ * @param   {object}               props      - Component properties
+ * @param   {IAttributeValues}     props.dict - Dictionary object containing localized text values from OneEntry CMS
+ * @returns {Promise<JSX.Element>}            JSX.Element representing the footer menu section with all its components
  */
 const MenuSection = async ({
   dict,
@@ -78,8 +81,7 @@ const MenuSection = async ({
   const aboutItems = toFooterItems(aboutResult.menu, '');
   const openingRows =
     (openingResult.block?.attributeValues?.opening_time?.value as
-      | OpeningTimeRow[]
-      | undefined) ?? [];
+      OpeningTimeRow[] | undefined) ?? [];
 
   const servicesTitle = servicesResult.menu?.localizeInfos?.title ?? 'Services';
   const aboutTitle = aboutResult.menu?.localizeInfos?.title ?? 'About us';
@@ -89,9 +91,9 @@ const MenuSection = async ({
     (follow_us_text?.value as string | undefined) ?? 'Follow us';
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-3 pt-6 pb-6 text-black md:px-8 md:pt-12">
+    <div className="mx-auto w-full max-w-7xl px-3 py-6 text-black md:px-8 md:pt-12">
       {/* Salons + Opening Time (desktop 4th column) */}
-      <div className="grid grid-cols-1 gap-x-4 gap-y-0 sm:grid-cols-3 sm:gap-y-6 xl:grid-cols-[1fr_1fr_1fr_9rem]">
+      <div className="grid grid-cols-1 gap-x-4 gap-y-0 xl:grid-cols-[1fr_1fr_1fr_9rem] sm:grid-cols-3 sm:gap-y-6">
         <SalonsGrid />
 
         <div className="hidden min-w-0 xl:block xl:border-l xl:border-black/80 xl:pl-4">
@@ -103,12 +105,12 @@ const MenuSection = async ({
       </div>
 
       {/* Mobile/tablet divider between the salons and Opening Time */}
-      <div className="h-px bg-black/80 sm:mt-5 xl:hidden" />
+      <div className="h-px bg-black/80 xl:hidden sm:mt-5" />
 
       {/* Mobile/tablet: Opening Time — collapsible */}
       {openingRows.length > 0 && (
         <>
-          <div className="pt-4 pb-4 xl:hidden">
+          <div className="py-4 xl:hidden">
             <FooterCollapse title={openingTitle}>
               <div className="space-y-2">
                 <OpeningTime rows={openingRows} variant="row" />
@@ -123,7 +125,7 @@ const MenuSection = async ({
       <div className="xl:hidden">
         {servicesItems.length > 0 && (
           <>
-            <div className="pt-4 pb-4">
+            <div className="py-4">
               <FooterCollapse title={servicesTitle}>
                 <FooterServicesMenu items={servicesItems} />
               </FooterCollapse>
@@ -133,7 +135,7 @@ const MenuSection = async ({
         )}
         {aboutItems.length > 0 && (
           <>
-            <div className="pt-4 pb-4">
+            <div className="py-4">
               <FooterCollapse title={aboutTitle}>
                 <FooterServicesMenu items={aboutItems} />
               </FooterCollapse>

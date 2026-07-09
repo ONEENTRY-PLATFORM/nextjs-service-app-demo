@@ -63,7 +63,12 @@ const MasterCard = ({ item }: { item: MasterItem }): JSX.Element => {
   );
 
   return item.href ? (
-    <Link href={item.href} title={item.name} className={className} style={style}>
+    <Link
+      href={item.href}
+      title={item.name}
+      className={className}
+      style={style}
+    >
       {inner}
     </Link>
   ) : (

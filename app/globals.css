@@ -42,6 +42,8 @@
   --color-slate-150: #e8e8f0;
   --color-slate-100: #f6f7f9;
   --color-slate-200: #cbd5e1;
+  /* static-html contacts: form input borders and inactive scroll dots */
+  --color-slate-240: #d4d5e1;
   --color-slate-250: #d9dae1;
   --color-slate-300: #b0bcce;
   --color-slate-400: #4c4d56;
@@ -234,6 +236,24 @@ address {
     rgb(246 14 251 / 93%),
     rgb(237 33 241 / 80%),
     rgb(16 154 169 / 53%)
+  );
+}
+/* contacts page (static-html ContactsPage): hero photo veil, purple→pink→black */
+@utility bg-gradient-contacts-veil {
+  background-image: linear-gradient(
+    135deg,
+    rgb(176 64 232 / 60%),
+    rgb(237 33 241 / 70%),
+    rgb(0 0 0 / 30%)
+  );
+}
+/* booking page (static-html BookingPage): hero photo veil, purple→pink 120deg */
+@utility bg-gradient-booking-veil {
+  background-image: linear-gradient(
+    120deg,
+    rgb(155 79 178 / 80%) 0%,
+    rgb(246 14 251 / 80%) 55%,
+    rgb(237 33 241 / 80%) 100%
   );
 }
 

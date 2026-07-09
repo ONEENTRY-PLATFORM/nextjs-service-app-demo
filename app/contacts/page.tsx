@@ -1,66 +1,142 @@
 import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
-import type { JSX, Key } from 'react';
+import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
+import { getDictionary } from '@/app/api/utils/dictionaries';
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { contactSalonsData } from '@/components/data';
+import BookCtaBanner from '@/components/layout/contacts-page/BookCtaBanner';
+import ContactFormCard from '@/components/layout/contacts-page/ContactFormCard';
+import ContactInfoCard from '@/components/layout/contacts-page/ContactInfoCard';
+import ContactsHero from '@/components/layout/contacts-page/ContactsHero';
+import OpeningHours from '@/components/layout/contacts-page/OpeningHours';
+import type { ContactSalon } from '@/components/layout/contacts-page/SalonLocations';
+import SalonLocations from '@/components/layout/contacts-page/SalonLocations';
+import StatsStrip from '@/components/layout/services-page/StatsStrip';
+import SectionHeading from '@/components/shared/SectionHeading';
 
-import LineAnimations from '../animations/LineAnimations';
-
-const LocationCard = dynamic(
-  () => import('@/components/layout/location-card/LocationCard'),
-  { ssr: true },
-);
+/** Card accent colors cycled over the salon cards (mock: PINK, CYAN, PURPLE) */
+const SALON_COLORS = ['#ed21f1', '#109aa9', '#9b4fb2'];
 
 /**
- * Contacts page layout component that displays salon locations
+ * Map a CMS salon page onto the location card shape. A salon without the
+ * `salon_address` attribute is unusable for the design and is dropped — when
+ * every salon is dropped the page falls back to the mock's demo studios.
+ * @param   {IPagesEntity}        page  - CMS salon child page
+ * @param   {number}              index - Position in the list (accent color cycling)
+ * @returns {ContactSalon | null}       Normalized salon or `null` when the address is empty
+ */
+const toContactSalon = (
+  page: IPagesEntity,
+  index: number,
+): ContactSalon | null => {
+  const attrs = page.attributeValues ?? {};
+  const address = (attrs.salon_address?.value as string | undefined) ?? '';
+  if (!address) return null;
+
+  const phone = (attrs.salon_phone?.value as string | undefined) ?? '';
+  const phoneFormatted =
+    (attrs.salon_phone_formatted?.value as string | undefined) || phone;
+  /** The CMS holds no coordinates — build the map links from the address */
+  const query = encodeURIComponent(address);
+
+  return {
+    id: String(page.id),
+    name: page.localizeInfos?.title ?? 'Salon',
+    address,
+    phone: phoneFormatted,
+    tel: (phone || phoneFormatted).replace(/[^+\d]/g, ''),
+    mapSrc: `https://www.google.com/maps?q=${query}&z=15&hl=en&output=embed`,
+    mapsLink: `https://www.google.com/maps/dir/?api=1&destination=${query}`,
+    color: SALON_COLORS[index % SALON_COLORS.length] ?? '#ed21f1',
+  };
+};
+
+/**
+ * ContactsPageLayout component renders the contacts page following the
+ * static-html mock (`ContactsPage.tsx`): mobile gradient strip / desktop
+ * photo hero, stats strip, "Our Locations" salon cards with maps, the
+ * "Get in Touch" form + info sidebar, "Opening Hours" and the booking CTA
+ * banner.
  *
- * This component fetches and displays all salon locations in a grid layout.
- * If no locations are available, it shows a message indicating that.
+ * Salons come from the CMS `salons` child pages; while their address
+ * attributes are empty the page falls back to the mock's three demo studios
+ * so the design stays reviewable — it never 404s over missing salons.
  * @returns {Promise<JSX.Element>} JSX.Element representing the contacts page
+ * @see {@link https://nextjs.org/docs/app/api-reference/file-conventions/page Next.js docs}
  */
 const ContactsPageLayout = async (): Promise<JSX.Element> => {
-  /** Both calls are independent — run in parallel. */
-  const [{ page, isError }, { pages, isError: salonsError }] =
-    await Promise.all([
-      getPageByUrl('contacts'),
-      getChildPagesByParentUrl('salons'),
-    ]);
+  /** All three fetches are independent — run in parallel. */
+  const [dict, { page, isError }, salonsResult] = await Promise.all([
+    getDictionary(),
+    getPageByUrl('contacts'),
+    getChildPagesByParentUrl('salons'),
+  ]);
+  ServerProvider('dict', dict);
 
   if (!page || isError) {
     return notFound();
   }
 
-  /** Missing salons list must degrade to a fallback, not a 404. */
-  if (salonsError || !pages || !Array.isArray(pages) || pages.length === 0) {
-    return (
-      <>
-        <LineAnimations
-          className="h-12.5 w-screen bg-gradient-1 xl:h-22.5 sm:h-15 lg:h-20 2xl:h-25"
-          delay={0}
-        />
-        <section className="mx-auto mt-12.5 grid min-h-[50vh] w-screen max-w-360 grid-cols-3 items-center gap-24 bg-white px-5 pt-7 pb-16 max-xl:grid-cols-3 max-lg:grid-cols-2 max-lg:gap-12 max-md:grid-cols-1 max-md:gap-8 max-md:px-5 max-sm:grid-cols-1">
-          <p className="col-span-full text-center text-neutral-600">
-            No salon locations available at the moment.
-          </p>
-        </section>
-      </>
-    );
-  }
+  const cmsSalons = (salonsResult.pages ?? [])
+    .map(toContactSalon)
+    .filter((salon): salon is ContactSalon => salon !== null);
+  /** Demo studios from the mock while the CMS salons have no attributes */
+  const salons: ContactSalon[] =
+    cmsSalons.length > 0 ? cmsSalons : contactSalonsData;
+
+  const title = page.localizeInfos?.title ?? 'Contacts';
 
   return (
-    <>
-      <LineAnimations
-        className="h-12.5 w-screen bg-gradient-1 xl:h-22.5 sm:h-15 lg:h-20 2xl:h-25"
-        delay={0}
+    <div className="bg-white">
+      {/* Mobile: thin gradient strip instead of the hero */}
+      <div className="h-1.25 bg-gradient-stats md:hidden" />
+
+      {/* Hero (desktop only) */}
+      <ContactsHero
+        title={title}
+        subtitle={`${salons.length} locations · Always happy to see you`}
       />
-      <section className="mx-auto mt-12.5 grid min-h-[50vh] w-screen max-w-360 grid-cols-3 items-center gap-24 bg-white px-5 pt-7 pb-16 max-xl:grid-cols-3 max-lg:grid-cols-2 max-lg:gap-12 max-md:grid-cols-1 max-md:gap-8 max-md:px-5 max-sm:grid-cols-1">
-        {pages.map((page: IPagesEntity, i: Key | number) => {
-          return <LocationCard key={i} index={i as number} page={page} />;
-        })}
+
+      {/* Stats strip (desktop only) */}
+      <div className="hidden md:block">
+        <StatsStrip
+          stats={[
+            [salons.length, 'Locations'],
+            ['Daily', '10:00–22:00'],
+            ['Dubai', 'UAE'],
+          ]}
+        />
+      </div>
+
+      {/* Location cards */}
+      <SalonLocations salons={salons} />
+
+      {/* Get in touch */}
+      <section className="bg-white pt-2 pb-6 md:pt-6 md:pb-10">
+        <div className="mx-auto max-w-7xl px-3 md:px-8">
+          <div className="mb-6 text-center md:mb-10">
+            <SectionHeading size="lg">Get in Touch</SectionHeading>
+          </div>
+          <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-5">
+            <div className="lg:col-span-3">
+              <ContactFormCard />
+            </div>
+            <div className="lg:col-span-2">
+              <ContactInfoCard />
+            </div>
+          </div>
+        </div>
       </section>
-    </>
+
+      {/* Opening hours */}
+      <OpeningHours />
+
+      {/* Book CTA banner */}
+      <BookCtaBanner />
+    </div>
   );
 };
 

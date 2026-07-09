@@ -18,10 +18,10 @@ export type FooterMenuItem = {
  * sub-items; plain items are links. With `dividers` every row gets a bottom
  * border (desktop footer variant), otherwise rows are spaced (mobile
  * collapse variant).
- * @param   {object}           props          - Component properties
- * @param   {FooterMenuItem[]} props.items    - Menu items to render
+ * @param   {object}           props            - Component properties
+ * @param   {FooterMenuItem[]} props.items      - Menu items to render
  * @param   {boolean}          [props.dividers] - Render rows with divider borders (desktop variant)
- * @returns {JSX.Element}                     Footer menu list
+ * @returns {JSX.Element}                       Footer menu list
  */
 const FooterServicesMenu = ({
   items,

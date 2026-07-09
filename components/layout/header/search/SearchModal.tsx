@@ -261,7 +261,7 @@ const SearchModal = ({ placeholder }: { placeholder: string }): JSX.Element => {
         >
           <div className="w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-2xl">
             {/* Search input */}
-            <div className="flex items-center gap-3 border-b border-[#e8e8f0] px-5 py-4">
+            <div className="flex items-center gap-3 border-b border-slate-150 px-5 py-4">
               <Search size={20} className="text-fuchsia-500" />
               <input
                 ref={inputRef}

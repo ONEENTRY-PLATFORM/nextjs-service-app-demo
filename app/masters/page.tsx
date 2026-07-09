@@ -50,11 +50,11 @@ const fileUrl = (value: unknown): string => {
 
 /**
  * Map a CMS admin onto the normalized specialist shape of the masters page.
- * @param   {IAdminEntity}                          props                     - Function parameters
- * @param   {IAdminEntity}                          props.admin               - CMS admin entity
- * @param   {Map<number, MastersMainCategory>}      props.categoryByServiceId - Services child page id → main category
- * @param   {Map<string, string>}                   props.salonNameById       - Salon page id → salon title
- * @returns {MasterItem | null}                                               Normalized specialist or `null` when `master_name` is empty
+ * @param   {IAdminEntity}                     props                     - Function parameters
+ * @param   {IAdminEntity}                     props.admin               - CMS admin entity
+ * @param   {Map<number, MastersMainCategory>} props.categoryByServiceId - Services child page id → main category
+ * @param   {Map<string, string>}              props.salonNameById       - Salon page id → salon title
+ * @returns {MasterItem | null}                                          Normalized specialist or `null` when `master_name` is empty
  */
 const toMasterItem = ({
   admin,
@@ -71,9 +71,7 @@ const toMasterItem = ({
 
   /** Service category links → main categories of the filter */
   const services = attrs.services?.value as
-    | Array<{ id: number }>
-    | ''
-    | undefined;
+    Array<{ id: number }> | '' | undefined;
   const serviceIds = Array.isArray(services)
     ? services.map((service) => service.id)
     : [];
@@ -87,9 +85,7 @@ const toMasterItem = ({
 
   /** Salon link → filter id + the salon suffix of the role line */
   const salonArr = attrs.master_salon?.value as
-    | Array<{ id?: number }>
-    | ''
-    | undefined;
+    Array<{ id?: number }> | '' | undefined;
   const firstSalon = Array.isArray(salonArr) ? salonArr[0] : undefined;
   const salonId = firstSalon?.id !== undefined ? String(firstSalon.id) : '';
   const salonName = salonNameById.get(salonId);
@@ -106,9 +102,7 @@ const toMasterItem = ({
     section: sectionOfRole(shortDescription),
     /** A master without service links stays visible under every category */
     categories:
-      categories.length > 0
-        ? categories
-        : ['HAIR', 'FACE', 'BODY', 'NAILS'],
+      categories.length > 0 ? categories : ['HAIR', 'FACE', 'BODY', 'NAILS'],
     salonId,
     rating: Number(attrs.master_rating?.value) || 5,
     photo: fileUrl(attrs.master_image?.value),

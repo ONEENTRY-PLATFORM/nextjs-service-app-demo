@@ -99,7 +99,7 @@ const OfferCard = ({
 
   /**
    * Render offer card following the static-html mock
-   * @param e
+   * @param e -
    */
   return (
     <CardAnimations

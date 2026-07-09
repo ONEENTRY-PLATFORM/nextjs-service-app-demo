@@ -1,17 +1,20 @@
 'use client';
 
-import { ChevronDown, ChevronRight, MapPin, Search, Star, X } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronRight,
+  MapPin,
+  Search,
+  Star,
+  X,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { JSX } from 'react';
 import { useMemo, useState } from 'react';
 
 import MasterCard from './components/MasterCard';
-import type {
-  MasterItem,
-  MastersMainCategory,
-  SalonOption,
-} from './taxonomy';
+import type { MasterItem, MastersMainCategory, SalonOption } from './taxonomy';
 import { MASTERS_MAIN_CATS } from './taxonomy';
 
 /**
@@ -24,10 +27,10 @@ import { MASTERS_MAIN_CATS } from './taxonomy';
  *
  * Pure client-side filtering over a pre-built specialist list — degrades to
  * an empty-state message when nothing matches.
- * @param   {object}       props         - Component properties
- * @param   {MasterItem[]} props.masters - Full specialist list
- * @param   {SalonOption[]} props.salons - Salon filter options
- * @returns {JSX.Element}                Masters page content
+ * @param   {object}        props         - Component properties
+ * @param   {MasterItem[]}  props.masters - Full specialist list
+ * @param   {SalonOption[]} props.salons  - Salon filter options
+ * @returns {JSX.Element}                 Masters page content
  */
 const MastersPageContent = ({
   masters,
@@ -49,8 +52,7 @@ const MastersPageContent = ({
     () =>
       masters.filter(
         (m) =>
-          (!salonId || m.salonId === salonId) &&
-          m.categories.includes(mainCat),
+          (!salonId || m.salonId === salonId) && m.categories.includes(mainCat),
       ),
     [masters, salonId, mainCat],
   );
