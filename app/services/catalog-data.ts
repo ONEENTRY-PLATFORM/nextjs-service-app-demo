@@ -73,7 +73,7 @@ const toServiceItem = (
 /**
  * Collect everything the services page catalog needs from the CMS: the
  * category tree under the `services` page, the salons list and the flat list
- * of plain services (products; `service_set` products are special offers and
+ * of plain services (products; `offer` products are special offers and
  * are excluded — they live on the offers page).
  *
  * Every fetch failure degrades to an empty list so the page renders with
@@ -141,9 +141,9 @@ export const getServicesCatalogData = async (): Promise<{
       const services: ServiceItem[] = [];
       for (const { subcategoryUrl, products } of lists) {
         for (const product of products) {
-          /** Special offers (`service_set`) belong to the offers page */
+          /** Special offers (`offer`) belong to the offers page */
           if (
-            product.attributeSetIdentifier === 'service_set' ||
+            product.attributeSetIdentifier === 'offer' ||
             seen.has(product.id)
           ) {
             continue;

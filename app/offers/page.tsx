@@ -20,7 +20,7 @@ const DARK = '#4c4d56';
 const PINK = '#ed21f1';
 
 /**
- * Collect special offers (`service_set` products) from every service
+ * Collect special offers (`offer` products) from every service
  * category and subcategory, keeping the CMS category order. Fetch failures
  * degrade to an empty list — the page renders a fallback message instead of
  * a 404.
@@ -54,7 +54,7 @@ const getOffers = async (): Promise<IProductsEntity[]> => {
         .flat()
         .filter(
           (product) =>
-            product.attributeSetIdentifier === 'service_set' &&
+            product.attributeSetIdentifier === 'offer' &&
             !seen.has(product.id) &&
             (seen.add(product.id) || true),
         );
@@ -70,7 +70,7 @@ const getOffers = async (): Promise<IProductsEntity[]> => {
  * link, underlined page heading, full-width offer detail cards and the
  * "Good to know" terms block.
  *
- * Offers are optional — while the CMS holds no `service_set` products the
+ * Offers are optional — while the CMS holds no `offer` products the
  * page renders the heading, a fallback message and the terms instead of a
  * 404.
  * @returns {Promise<JSX.Element>} JSX element representing the offers page

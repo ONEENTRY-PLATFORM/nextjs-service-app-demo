@@ -25,7 +25,7 @@ test.describe('CMS content pages', () => {
     // hrefs instead of hardcoding pageUrl markers, and navigate directly
     // since the links are hidden behind a GSAP scroll reveal. Not every
     // category is guaranteed to have plain products (some hold only
-    // service_set offers), so scan until a products table is found
+    // 'offer' offers), so scan until a products table is found
     await expect(page.locator('a[href^="/services/"]').first()).toBeAttached({
       timeout: 15_000,
     });

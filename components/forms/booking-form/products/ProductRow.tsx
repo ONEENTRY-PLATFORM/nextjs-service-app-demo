@@ -33,7 +33,7 @@ const ProductRow = ({
   const services = attributeValues.services?.value as
     { title: string }[] | undefined;
   const title =
-    attributeSetIdentifier === 'service_set'
+    attributeSetIdentifier === 'offer'
       ? services?.map((p) => p.title).join(' + ')
       : localizeInfos?.title;
 

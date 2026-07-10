@@ -41,7 +41,7 @@ const OffersTable = ({
       return [];
     }
     return products.filter(
-      (product) => product.attributeSetIdentifier === 'service_set',
+      (product) => product.attributeSetIdentifier === 'offer',
     );
   }, [products]);
 

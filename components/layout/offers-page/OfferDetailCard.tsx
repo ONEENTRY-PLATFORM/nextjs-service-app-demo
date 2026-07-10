@@ -41,7 +41,7 @@ const FALLBACK_IMAGES: string[] = offerBannersData;
  * The button adds the offer to the booking cart and navigates to the booking
  * page — same flow as the home page `OfferCard`.
  * @param   {object}          props         - Component properties
- * @param   {IProductsEntity} props.product - Product entity representing the special offer (`service_set`)
+ * @param   {IProductsEntity} props.product - Product entity representing the special offer (`offer`)
  * @param   {number}          props.index   - Card index — used for animation stagger and the fallback photo
  * @returns {JSX.Element}                   Special-offer detail card
  */

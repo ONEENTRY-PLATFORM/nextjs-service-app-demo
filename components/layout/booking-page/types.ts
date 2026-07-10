@@ -12,7 +12,7 @@ export interface BookingSalon {
   name: string;
   /** Street address from the `salon_address` attribute */
   address: string;
-  /** Phone from `salon_phone_formatted` / `salon_phone` (may be empty) */
+  /** Phone from `salon_phone`, formatted via `formatUaePhone` (may be empty) */
   phone: string;
 }
 

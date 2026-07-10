@@ -7,6 +7,7 @@ import CardAnimations from '@/app/animations/CardAnimations';
 import { defaultSalonPhoto, salonPhotosData } from '@/components/data';
 import LocationIcon from '@/components/icons/location';
 import PhoneIcon from '@/components/icons/phone';
+import { formatUaePhone } from '@/components/utils';
 
 /** Fallback photo when the location name is not recognized. */
 const DEFAULT_PHOTO: string = defaultSalonPhoto;
@@ -42,9 +43,7 @@ const LocationCard = ({
   const phone =
     (attributeValues?.salon_phone?.value as string | undefined) ?? '';
   /** Get formatted phone number or use raw phone number as fallback */
-  const phoneFormatted =
-    (attributeValues?.salon_phone_formatted?.value as string | undefined) ??
-    phone;
+  const phoneFormatted = formatUaePhone(phone);
   /** Pick a salon photo by location name, defaulting to the flagship studio */
   const photoKey = Object.keys(LOCATION_PHOTOS).find((key) =>
     String(title).toLowerCase().includes(key),

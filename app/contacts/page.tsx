@@ -16,6 +16,7 @@ import type { ContactSalon } from '@/components/layout/contacts-page/SalonLocati
 import SalonLocations from '@/components/layout/contacts-page/SalonLocations';
 import StatsStrip from '@/components/layout/services-page/StatsStrip';
 import SectionHeading from '@/components/shared/SectionHeading';
+import { formatUaePhone } from '@/components/utils';
 
 /** Card accent colors cycled over the salon cards (mock: PINK, CYAN, PURPLE) */
 const SALON_COLORS = ['#ed21f1', '#109aa9', '#9b4fb2'];
@@ -37,8 +38,7 @@ const toContactSalon = (
   if (!address) return null;
 
   const phone = (attrs.salon_phone?.value as string | undefined) ?? '';
-  const phoneFormatted =
-    (attrs.salon_phone_formatted?.value as string | undefined) || phone;
+  const phoneFormatted = formatUaePhone(phone);
   /** The CMS holds no coordinates — build the map links from the address */
   const query = encodeURIComponent(address);
 

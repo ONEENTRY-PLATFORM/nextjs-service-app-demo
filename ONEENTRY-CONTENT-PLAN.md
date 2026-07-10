@@ -2,7 +2,7 @@
 
 > **Источник контента:** верстка салона красоты «Thalia» (Dubai) в [static-html/](static-html/) — React-экспорт из Figma, запущен на <http://localhost:5173/>.
 > **Потребитель контента:** Next.js-шаблон в корне проекта (`app/`, `components/`), который уже читает конкретные маркеры из OneEntry.
-> Все маркеры ниже взяты из кода шаблона — их нужно воспроизводить в админке **точно** (включая опечатку `master_expirience`).
+> Все маркеры ниже взяты из кода шаблона — их нужно воспроизводить в админке.
 
 **🔎 Аудит по реальному API — 2026-07-09** (скрипты `.claude/temp/audit-content-plan.mjs`, `audit-content-plan2.mjs`).
 Обозначения: ✅ выполнено · 🟡 частично / сделано иначе · ❌ не сделано. Пометки «**Статус:**» добавлены в каждую секцию.
@@ -56,14 +56,14 @@
    | `gallery` | `master_id` | list | мастер-админ, автор работы |
    | `gallery` | `gallery_photos` | image (multiple) | сами фото |
 
-   | `service` | `title` | string | заголоввок |
-   | `service` | `description` | text | описание |
-   | `service` | `price` | number | базовая цена |
-   | `service` | `sale` | number | цена распродажи |
-   | `service` | `type` | list | бейдж-грейд (Top Stylist…) |
-   | `service` | `sku` | string | `hh01`, `hc02`… — участвует в поиске |
-   | `service` | `stickers` | list | |
-   | `service` | `color` | list | |
+   | `service` | `service_title` | string | заголоввок |
+   | `service` | `service_description` | text | описание |
+   | `service` | `service_price` | number | базовая цена |
+   | `service` | `service_sale` | number | цена распродажи |
+   | `service` | `service_type` | list | бейдж-грейд (Top Stylist…) |
+   | `service` | `service_sku` | string | `hh01`, `hc02`… — участвует в поиске |
+   | `service` | `service_stickers` | list | |
+   | `service` | `service_color` | list | |
 
    | `offer` | `offer_type` | list | extended value = акцентный цвет |
    | `offer` | `offer_price` | number | базовая цена |
@@ -72,17 +72,17 @@
 
    | `master` | `master_name` | string | признак «это мастер» для кода |
    | `master` | `master_image` | image | портрет |
-   | `master` | `master_rating` | number | 4–5 |
+   | `master` | `master_rating` | real | 4–5 (дробный; код `Number(value)`) |
    | `master` | `master_expirience` | string | ⚠️ опечатка намеренная — так в коде |
    | `master` | `master_short_description` | string | роль (Top Stylist / Makeup Artist…) |
    | `master` | `master_description` | text | bio из `MastersPage.tsx` DETAILS |
-   | `master` | `services` | list | категории услуг мастера (п. 2.2) |
-   | `master` | `master_salon` | list | ссылки на страницы салонов |
-   | `master` | `master_schedule` | interval | рабочие дни + тайм-слоты |
-   | `master` | `master_portfolio` | list | страницы-фото галереи с работами |
+   | `master` | `master_services` | **entity** | связь на страницы-категории услуг и/или продукты-услуги (код читает `.id`/`.title`, НЕ `list`) |
+   | `master` | `master_salon` | **entity** | связь на страницы салонов (код читает `.id`) |
+   | `master` | `master_schedule` | timeInterval | рабочие дни + тайм-слоты |
+   | `master` | `master_portfolio` | **entity** | связь на страницы-фото галереи с работами |
 
    Сеты по сущностям:
-   `service_page` — страницы-категории услуг (п. 2.2),
+   `page_simple` — страницы-категории услуг (п. 2.2),
    `salon` — страницы салонов (п. 2.3),
    `gallery` — галерея (п. 2.4),
    `service` — услуги-продукты (п. 3),
@@ -131,9 +131,9 @@
 | `marina` | Thalia Marina | Marina Walk, Dubai Marina | +971 4 702 3300 |
 | `jbr` | Thalia JBR | The Walk, Jumeirah Beach Residence | +971 4 703 4400 |
 
-Плюс `salon_phone_formatted`, списки `products`/`services` (какие услуги доступны в салоне — из матрицы цен `priceList.ts`: например, Balayage недоступен в JBR), фото салона из `Beauty content/Contacts/`. Тексты about/tagline/highlights — из `SALON_DETAILS` в `ContactsPage.tsx`.
+Списки `products`/`services` (какие услуги доступны в салоне — из матрицы цен `priceList.ts`: например, Balayage недоступен в JBR), фото салона из `Beauty content/Contacts/`. Тексты about/tagline/highlights — из `SALON_DETAILS` в `ContactsPage.tsx`. **Форматированный телефон в CMS не хранится** — `salon_phone_formatted` убран, фронт форматирует `salon_phone` через `formatUaePhone` (`components/utils.ts`).
 
-> **Статус:** ❌ практически не сделано: родитель `salons` есть, но ребёнок один — `beauty_one` («Beauty One», не из верстки) и **без единого атрибута** (`salon_address`/`salon_phone` пустые). Трёх салонов Downtown/Marina/JBR нет — страница contacts шаблона живёт на демо-фолбэке.
+> **Статус (2026-07-10):** 🟡 в основном сделано: `beauty_one` удалён, заведены 3 ребёнка `downtown`/`marina`/`jbr` (набор `salon`: `salon_address`, `salon_phone` string + лишний `salon_time` timeInterval, кодом не читается). `salon_address` заполнен у всех трёх; `salon_phone` у `downtown` = `+97147012200` (виден). Телефоны `marina`/`jbr` **заполнены в админке руками**, но API стабильно отдаёт `""` при идентичном заполнении с `downtown` — похоже на баг распространения/кэша на стороне OneEntry (эскалировано команде OneEntry). Форматтер `formatUaePhone` проверен на contacts (`+971 4 701 2200`). ⏳ Ждём фикса от OneEntry, затем перепроверить `salon_phone` у `marina` (`+97147023300`) и `jbr` (`+97147034400`). Списки `products`/`services`, фото и тексты салонов — отдельной задачей (код их пока не читает).
 
 ### 2.4 Галерея — родитель `gallery` → категории → страницы-фото
 
@@ -268,13 +268,39 @@
 
 ## 10. Порядок работ (чеклист)
 
-- [x] **Этап 1 — фундамент** 🟡: локаль `en_US` ✅; наборы атрибутов — только продуктовый (и другой, чем в плане) ❌; медиа — только hero-баннеры 🟡.
-- [x] **Этап 2 — структура** 🟡: системные страницы ✅ (кроме `payment_success`/`payment_canceled`); категории услуг ✅ (двухуровнево: 4 категории + 15 подкатегорий, без hero-атрибутов); салоны ❌ (1 «Beauty One» без атрибутов вместо 3); меню ✅ (кроме `bottom_web`, `user_menu` без Book Online).
-- [x] **Этап 3 — каталог** 🟡: 77 услуг-продуктов ✅ (sku/duration/грейд, но `price` строкой и без `sale`); офферы `service_set` ❌ (0 шт.).
-- [ ] **Этап 4 — мастера** ❌: админов 2, ни одного с `master_name`.
-- [ ] **Этап 5 — галерея** ❌: у `gallery` нет детей.
-- [ ] **Этап 6 — блоки** 🟡: `home_hero` (3 слайда) / `home_catalog` / `home_gallery` ✅; `home_offers_feed` есть, но не привязан к home; `home_discounts`, `home_masters`, `reviews_carousel`, `system_content`, `opening_time` ❌.
-- [ ] **Этап 7 — формы и заказы** 🟡: формы `reg`/`contact_us`/`order` созданы, но без полей ❌; auth-провайдеров нет ❌; оплата `cash`+`stripe` ✅; storage `orders` не проверен (401).
+- [x] **Этап 1 — фундамент** 🟡:
+локаль `en_US` ✅;
+наборы атрибутов — только продуктовый (и другой, чем в плане) ❌;
+медиа — только hero-баннеры 🟡.
+
+- [x] **Этап 2 — структура** 🟡:
+системные страницы ✅ (кроме `payment_success`/`payment_canceled`);
+категории услуг ✅ (двухуровнево: 4 категории + 15 подкатегорий, без hero-атрибутов);
+салоны 🟡 (3 салона Downtown/Marina/JBR с адресами; телефон только у Downtown — дозаполнить `salon_phone` у Marina/JBR; форматирование телефона перенесено на фронт `formatUaePhone`);
+меню ✅ (кроме `bottom_web`, `user_menu` без Book Online).
+
+- [x] **Этап 3 — каталог** 🟡:
+77 услуг-продуктов ✅ (sku/duration/грейд, но `price` строкой и без `sale`);
+офферы `offer` ❌ (0 шт.).
+
+- [ ] **Этап 4 — мастера** ❌:
+админов 2,
+ни одного с `master_name`.
+
+- [ ] **Этап 5 — галерея** ❌:
+у `gallery` нет детей.
+
+- [ ] **Этап 6 — блоки** 🟡:
+`home_hero` (3 слайда) / `home_catalog` / `home_gallery` ✅;
+`home_offers_feed` есть, но не привязан к home;
+`home_discounts`, `home_masters`, `reviews_carousel`, `system_content`, `opening_time` ❌.
+
+- [ ] **Этап 7 — формы и заказы** 🟡:
+формы `reg`/`contact_us`/`order` созданы, но без полей ❌;
+auth-провайдеров нет ❌;
+оплата `cash`+`stripe` ✅;
+storage `orders` не проверен (401).
+
 - [ ] **Этап 8 — проверка**: не проводилась (блокируется этапами 4 и 7).
 
 ---

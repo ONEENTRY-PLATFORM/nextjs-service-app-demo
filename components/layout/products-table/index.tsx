@@ -41,7 +41,7 @@ const ProductsTable = ({
   const color = 'fuchsia-500';
   /** Filter out service set products from the products list */
   const filteredProducts = products.filter(
-    (product) => product.attributeSetIdentifier !== 'service_set',
+    (product) => product.attributeSetIdentifier !== 'offer',
   );
 
   /** Active cart row index */

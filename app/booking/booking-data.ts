@@ -10,6 +10,7 @@ import type {
   BookingSalon,
   BookingService,
 } from '@/components/layout/booking-page/types';
+import { formatUaePhone } from '@/components/utils';
 
 import getLocalBookingData from './getLocalBookingData';
 
@@ -163,7 +164,6 @@ export const getBookingData = async (): Promise<BookingData> => {
   const salons: BookingSalon[] = (salonsResult.pages ?? []).map(
     (salonPage: IPagesEntity) => {
       const attrs = salonPage.attributeValues ?? {};
-      const phoneFormatted = attrs.salon_phone_formatted?.value;
       const phone = attrs.salon_phone?.value;
       return {
         id: String(salonPage.id),
@@ -172,12 +172,7 @@ export const getBookingData = async (): Promise<BookingData> => {
           typeof attrs.salon_address?.value === 'string'
             ? attrs.salon_address.value
             : '',
-        phone:
-          typeof phoneFormatted === 'string' && phoneFormatted
-            ? phoneFormatted
-            : typeof phone === 'string'
-              ? phone
-              : '',
+        phone: typeof phone === 'string' ? formatUaePhone(phone) : '',
       };
     },
   );
