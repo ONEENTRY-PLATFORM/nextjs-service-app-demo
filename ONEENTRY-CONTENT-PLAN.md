@@ -33,11 +33,11 @@
 ## 1. Подготовка проекта
 
 1. **Локаль**: только `en_US` — шаблон моноязычный (`app/api/api/api.ts`, `LANG_CODE = 'en_US'`). Другие локали не создавать.
-2. **Медиабиблиотека**: загрузить и структурировать фото:
-   - портреты мастеров (`Beauty content/Specialist/<Salon>/<Имя>.jpeg`);
-   - работы (`Beauty content/Gallery/<Salon>/<Имя>_<дисциплины>/<Услуга>.jpeg`) — имена файлов кодируют мастера, салон и услугу, эти связи переносим в атрибуты;
-   - фото салонов (`Beauty content/Contacts/`);
-   - баннеры героя/акций (`assets/Offer/banner_*.jpeg`), логотип `thalia_logo.svg`.
+2. **Медиабиблиотека**: исходники лежат в **`public/images/`** (рабочие копии, не в `static-html/`). Структура нормализована — что откуда брать при наполнении см. **п. 12 «Медиа-карта»**. Корневая раскладка `public/images/Beauty content/`:
+   - `Specialist/<Salon>/<Имя>.jpeg` — 32 портрета мастеров (→ `master_image`);
+   - `Gallery/<Salon>/<Имя>_<дисциплины>/<Услуга>.jpeg` — 228 работ; **имя папки кодирует мастера + салон + дисциплины** (`hair`, `face`, `body`, `nails`, `face-makeup`, `face-body-henna`, `face-body`), эти связи переносим в атрибуты галереи/портфолио;
+   - `Contacts/<Salon>/<Salon>_01..07.jpeg` — интерьеры салона + `<Salon>_group.jpg` — командное фото;
+   - баннеры офферов/героя — в `public/images/Offer/banner_*.jpeg`; фоны категорий услуг — в `public/images/baners/*.png`; логотип `thalia_logo.svg` в `public/icons/`.
 3. **Наборы атрибутов** (attribute sets) — создать до контента:
 
    | Маркер сета | attribute_marker | Тип | Примечание |
@@ -46,15 +46,16 @@
    | `page_simple` | `page_title` | string | заголовок hero категории |
    | `page_simple` | `page_hero_bg` | image | фон hero |
    | `page_simple` | `page_hero_description` | text | маркетинговое описание |
-   | `salon` | `salon_address` | string | |
-   | `salon` | `salon_phone` | string | |
-   | `salon` | `salon_phone_formatted` | string | |
-   | `salon` | `products` | list | услуги, доступные в салоне |
-   | `salon` | `services` | list | категории услуг салона |
+
+   | `salon` | `salon_address` | string | Адрес салона |
+   | `salon` | `salon_phone` | string | Телефон салона |
+   | `salon` | `salon_time` | timeIntgerval | Режим работы салона |
+
    | `gallery` | `gallery_cat_thumb` | image | превью категории работ |
    | `gallery` | `gallery_category` | list | ссылка на категорию услуг (п. 2.2) |
    | `gallery` | `master_id` | list | мастер-админ, автор работы |
    | `gallery` | `gallery_photos` | image (multiple) | сами фото |
+
    | `service` | `title` | string | заголоввок |
    | `service` | `description` | text | описание |
    | `service` | `price` | number | базовая цена |
@@ -63,10 +64,12 @@
    | `service` | `sku` | string | `hh01`, `hc02`… — участвует в поиске |
    | `service` | `stickers` | list | |
    | `service` | `color` | list | |
+
    | `offer` | `offer_type` | list | extended value = акцентный цвет |
-   | `offer` | `price` | number | базовая цена |
-   | `offer` | `sale` | number | цена распродажи |
-   | `offer` | `services` | list | состав оффера (ссылки на услуги) |
+   | `offer` | `offer_price` | number | базовая цена |
+   | `offer` | `offer_sale` | number | цена распродажи |
+   | `offer` | `offer_services` | list | состав оффера (ссылки на услуги) |
+
    | `master` | `master_name` | string | признак «это мастер» для кода |
    | `master` | `master_image` | image | портрет |
    | `master` | `master_rating` | number | 4–5 |
@@ -88,7 +91,7 @@
 
    Маркеры **`service_set`** и **`service_product`** зашиты в код шаблона (`attributeSetIdentifier === 'service_set'` отличает оффер от услуги в offers/booking, `=== 'service_product'` фильтрует услуги в поиске) — воспроизводить точно. Маркеры со звёздочкой (\*) в коде не проверяются — предложены планом, при заведении можно переименовать.
 
-> **Статус (2):** 🟡 медиа — баннеры hero загружены (слайды `home_hero` с `image_id1`/`image_id2`); портреты мастеров, работы и фото салонов через API нигде не фигурируют — судя по всему, не загружены/не привязаны.
+> **Статус (2):** 🟡 медиа — исходники в `public/images/` **структурированы 2026-07-10** (групповые фото салонов убраны из корня в `Contacts/<Salon>/`; разделители дисциплин в `Gallery/` приведены к дефису; опечатка `Camille Duboi`→`Dubois`); карта соответствий сущностям — п. 12. В OneEntry hero-баннеры загружены (слайды `home_hero` с `image_id1`/`image_id2`); портреты мастеров, работы и фото салонов в CMS пока не залиты/не привязаны.
 > **Статус (3):** 🟡 наборы атрибутов — для продуктов заведён свой набор (`title`, `description`, `sku`, `duration`, `specialist_grade`, `price`), он **отличается** от планового (нет `sale`/`type`/`stickers`/`color`, зато есть `duration` и `specialist_grade`). Наборы для страниц услуг (`service_hero_*`), салонов (`salon_*`), галереи, офферов (`service_set`) и мастеров (`master_*`) — ❌ не обнаружены (у всех страниц и админов `attributeValues` пустые).
 
 ---
@@ -285,3 +288,82 @@
 5. **Домен e-mail**: в верстке `@beautystudio.com` при бренде «Thalia» — уточнить перед заведением контактов.
 6. **Промо «First Visit 15%» / «10% off online»** — в шаблоне только контентный блок `home_discounts`, логика скидки на фронте не реализована.
 7. **Соцсети** (Instagram/Facebook/Twitter) — в верстке ссылки-заглушки; реальные URL завести в `system_content`.
+
+---
+
+## 12. Медиа-карта наполнения (что откуда брать)
+
+Все исходники — в **`public/images/`**. База для контентных фото — `public/images/Beauty content/` (ниже `BC/`). Структура нормализована 2026-07-10 (см. Статус 2). Соответствие салонов страницам (п. 2.3): `Downtown → downtown`, `Marina → marina`, `JBR → jbr`.
+
+### 12.1 Мастера (п. 7) + их работы для галереи (п. 2.4)
+
+- **`master_image`** (image): `BC/Specialist/<Salon>/<Мастер>.jpeg`
+- **`master_portfolio`** / фото галереи: все файлы из `BC/Gallery/<Salon>/<Мастер>_<дисциплины>/`
+- **`master_salon`** (list): страница салона из колонки «Салон»
+- **`services`** мастера (list): категории услуг выводятся из дисциплин папки работ (`hair`/`face`/`body`/`nails`/`makeup`/`henna`)
+
+| Мастер | Салон | Дисциплины работ (кол-во фото) |
+| --- | --- | --- |
+| Adriana Iliescu | Downtown | `nails` (8) |
+| Camille Dubois | Downtown | `face-makeup` (8) |
+| Elena Popescu | Downtown | `face` (4) |
+| Fatima Al Saadi | Downtown | `hair` (8) |
+| Kate Kinsly | Downtown | `face` (4) |
+| Layla Hadid | Downtown | `face-body-henna` (8) |
+| Mariam Al Zaabi | Downtown | `body` (4) |
+| Nicolas Costa | Downtown | `hair` (12) |
+| Sofia Marchetti | Downtown | `hair` (12) |
+| Veronika Novak | Downtown | `nails` (8) |
+| Aisha Al Mansoori | Marina | `hair` (8) |
+| Eva Lindholm | Marina | `hair` (8) |
+| Hana Choi | Marina | `nails` (8) |
+| Isabella Romano | Marina | `face-makeup` (8) |
+| Jamil Walid | Marina | `body` (4) |
+| Magdalena Kowalski | Marina | `face` (4) |
+| Noah Jhonson | Marina | `hair` (8) |
+| Noor Khalil | Marina | `face` (4) |
+| Sarah Bennett | Marina | `face-body-henna` (8) |
+| Stefania Vasiliou | Marina | `nails` (8) |
+| Amal Al Hashimi | JBR | `face-body-henna` (8) |
+| Beatriz Almeida | JBR | `hair` (12) |
+| Bianca Schneider | JBR | `face` (4) |
+| Klara Novotná | JBR | `hair` (8) |
+| Laila Mansour | JBR | `face-makeup` (8) |
+| Lucia Ferrari | JBR | `hair` (8) |
+| Mira Hassan | JBR | `nails` (8) |
+| Salma Othman | JBR | `body` (4) |
+| Samir Haddad | JBR | `hair` (8) |
+| Tom Lindqvist | JBR | `hair` (8) |
+| Yasmin Al Kaabi | JBR | `body` (4) |
+| Zaynab Al Marzooqi | JBR | `face-body` (4) |
+
+Приоритетная шестёрка с главной (п. 7): Sofia Marchetti, Noah Jhonson, Samir Haddad, Camille Dubois, Bianca Schneider, Adriana Iliescu.
+
+### 12.2 Галерея (п. 2.4)
+
+- **Страница-фото мастера** (`gallery_photos`): папка `BC/Gallery/<Salon>/<Мастер>_<дисц>/` целиком; `master_id` — тот же мастер, `gallery_category` — по дисциплине.
+- **`gallery_cat_thumb`** категории: любой репрезентативный файл из соответствующей папки работ (для 6 категорий главной — по одному превью).
+
+### 12.3 Салоны (п. 2.3)
+
+| Страница | Название | Интерьеры | Командное фото |
+| --- | --- | --- | --- |
+| `downtown` | Thalia Downtown | `BC/Contacts/Downtown/Downtown_01..07.jpeg` | `BC/Contacts/Downtown/Downtown_group.jpg` |
+| `marina` | Thalia Marina | `BC/Contacts/Marina/Marina_01..07.jpeg` | `BC/Contacts/Marina/Marina_group.jpg` |
+| `jbr` | Thalia JBR | `BC/Contacts/JBR/JBR_01..07.jpeg` | `BC/Contacts/JBR/JBR_group.jpg` |
+
+Фолбэк «любой специалист» в бронировании — `public/images/Any_specialist/<Salon>_group.jpg`.
+
+### 12.4 Офферы (п. 4) и баннеры
+
+Баннеры офферов — в `public/images/Offer/`:
+
+| Оффер | Категория | Баннер (image) |
+| --- | --- | --- |
+| Divine Hands Ritual | Nails | `Offer/banner_01.jpeg` |
+| Silk & Shine (featured) | Hair | `Offer/banner_main.jpeg` |
+| Enchanting Gaze | Face | `Offer/banner_02.jpeg` |
+| Sands of Serenity | Body | `Offer/banner_04.jpeg` |
+
+- **Hero главной** (`home_hero`, п. 5.1): баннеры `Offer/banner_main.jpeg` + `Offer/banner_03.jpeg` (сейчас в CMS 3 слайда).
+- **Фон hero страниц-категорий** (`service_hero_bg`, п. 2.2): арт-баннеры `public/images/baners/*.png` (`Hair.png`, `Lash&Brow.png`, `Massage.png`, `Hand.png`; мобильные варианты — `baners/Mobile/`).
