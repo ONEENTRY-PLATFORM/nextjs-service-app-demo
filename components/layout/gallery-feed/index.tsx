@@ -11,7 +11,7 @@ import { SUB_TO_MAIN } from '@/components/layout/gallery-page/taxonomy';
 import type { OneEntryImageFile } from '@/components/utils';
 import { getGalleryImageUrls, shuffleArray } from '@/components/utils';
 
-import GalleryCarousel from './components/GalleryCarousel';
+import GalleryGrid from './components/GalleryGrid';
 
 /**
  * Gallery Feed section
@@ -41,30 +41,28 @@ const GalleryFeed = async ({
    */
   const cards =
     galleryData.length > 0 ? galleryData : await getLocalGalleryFeed();
-  /** Shuffle gallery data and take first 10 items for feed */
-  const feedCards = shuffleArray(cards).slice(0, 10);
+  /** Shuffle gallery data and take the mock's six-tile strip */
+  const feedCards = shuffleArray(cards).slice(0, 6);
 
   /** Section heading; falls back to the mock's "Gallery" when the block is not filled */
   const title = block?.localizeInfos?.title || 'Gallery';
 
-  /** Render gallery feed section with title and carousel */
+  /** Render gallery feed section with title and photo grid */
   return (
     <section className="flex w-screen flex-col justify-center py-5">
       <div className="flex w-full flex-col">
         <TitleAnimations
           delay={0.5}
-          className="mx-auto mb-12 flex w-auto flex-col gap-4"
+          className="mx-auto mb-12 flex w-fit flex-col gap-4"
         >
           {/** Display gallery feed section title */}
-          <h2 className="title self-center text-4xl leading-8 font-light text-gray-600 uppercase">
+          <h2 className="title self-center text-4xl leading-8 font-light tracking-widest text-ink uppercase">
             {title}
           </h2>
-          <hr className="relative mb-2.5 h-px w-full max-w-37.5 self-center border-b border-solid border-b-gray-600" />
+          <hr className="relative mb-2.5 h-px w-full self-center border-b border-solid border-b-gray-600" />
         </TitleAnimations>
-        {/** Render gallery carousel with feed cards */}
-        <div className="flex flex-col gap-0">
-          <GalleryCarousel cards={feedCards} />
-        </div>
+        {/** Render the static six-tile gallery grid (static-html mock) */}
+        <GalleryGrid cards={feedCards} />
       </div>
     </section>
   );

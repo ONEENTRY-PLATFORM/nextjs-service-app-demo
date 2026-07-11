@@ -160,7 +160,7 @@
 
 ## 4. Спец-предложения (Offers)
 
-4 продукта с набором атрибутов **`service_set`** (именно так их различает `offers-table`/`offers-feed`):
+4 продукта с набором атрибутов **`offer`** (именно так их различает `offers-table`/`offers-feed`):
 
 | Название | Категория | Цена / старая | Состав (`services` list) |
 |---|---|---|---|
@@ -169,9 +169,12 @@
 | Enchanting Gaze | Face | 420 / 500 | Lash Lift & Tint, Brow Shaping, Brow Tint |
 | Sands of Serenity | Body | 700 / 830 | Moroccan Bath, Relax Massage (60 min) |
 
-Атрибуты: `sale` = акционная цена, `offer_type` (list; extended value = акцентный цвет из верстки: `#109AA9`, `#ed21f1`, `#9B4FB2`), `services` — ссылки на услуги-продукты, изображение — баннеры из `assets/Offer/`. Тексты tagline/description и условия (`OFFER_TERMS`) — из `offers.ts`.
+Атрибуты:
+`sale` = акционная цена,
+`offer_type` (list; extended value = акцентный цвет из верстки: `#109AA9`, `#ed21f1`, `#9B4FB2`),
+`services` — ссылки на услуги-продукты, изображение — баннеры из `assets/Offer/`. Тексты tagline/description и условия (`OFFER_TERMS`) — из `offers.ts`.
 
-> **Статус:** ❌ не сделано: продуктов с набором `service_set` в каталоге **0** (страницы offers шаблона работают на фолбэках). Есть 1 продукт вне каталожного набора (`attributeSetIdentifier: null`) — не оффер.
+> **Статус:** ❌ не сделано: продуктов с набором `offer` в каталоге **0** (страницы offers шаблона работают на фолбэках). Есть 1 продукт вне каталожного набора (`attributeSetIdentifier: null`) — не оффер.
 
 ---
 

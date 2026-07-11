@@ -62,33 +62,25 @@ const CardAnimations = ({
     (state) => state.animationsSlice.readyState,
   );
 
-  /** Initialize scroll-triggered animation timeline */
+  /**
+   * Draw the Service-icon contour on scroll: the tile draws in once more than
+   * a third of it is visible and undraws only after it has fully left the
+   * screen, so the effect replays every time the section scrolls in and out.
+   */
   useGSAP(() => {
-    if (!readyState || !circleRef.current) return;
+    if (!readyState || !circleRef.current || !ref.current) return;
 
-    /** Create timeline for scroll-triggered animations */
-    const triggerTl = gsap.timeline({
-      id: 'CatalogCardTriggerTl',
-      paused: true,
-      scrollTrigger: {
-        trigger: ref.current,
-        toggleActions: 'restart reverse restart reverse',
-        start: 'top bottom',
-        end: 'bottom top',
-        onToggle: (self) => setInView(self.isActive),
-      },
-      onComplete: () => addGroupClass(ref.current),
-      onReverseComplete: () => addGroupClass(ref.current),
+    const card = ref.current;
+    const circle = circleRef.current;
+    const paths = card.querySelectorAll('path');
+    const title = card.querySelectorAll('.title span');
+    const circleLength = Math.round(circle.getTotalLength());
+
+    /** Reset to the undrawn state (contour hidden, icons unfilled, label off) */
+    gsap.set(circle, {
+      strokeDasharray: circleLength,
+      strokeDashoffset: circleLength,
     });
-
-    /** Store timeline reference for later use */
-    setTriggerRef(triggerTl);
-
-    /** Get SVG path elements for animation */
-    const paths = ref.current?.querySelectorAll('path') || [];
-    const title = ref.current?.querySelectorAll('.title span') || [];
-
-    /** Set initial state for SVG paths */
     [...paths].forEach((path) => {
       const length = path.getTotalLength();
       gsap.set(path, {
@@ -98,28 +90,36 @@ const CardAnimations = ({
         strokeDashoffset: length,
       });
     });
+    gsap.set(title, { autoAlpha: 0, xPercent: 100 });
 
-    /** Calculate circle length for animation */
-    const circleLength = Math.round(circleRef.current.getTotalLength());
-    /** Configure entrance animation sequence */
+    /**
+     * Draw-in timeline driven by its own ScrollTrigger. The tile scales up from
+     * its centre, the circle + icon contour draw, the icons fill and the label
+     * slides in. `toggleActions` replays it on every scroll: it draws in once a
+     * third of the tile is visible (`start`) and reverses (undraws) only after
+     * the tile has fully left the screen (`end`). Removing the old
+     * `clearProps` keeps the tween reversible so the undraw actually plays.
+     * `timeScale` slows the whole sequence uniformly — tune to taste.
+     */
+    const triggerTl = gsap.timeline({
+      id: 'CatalogCardTriggerTl',
+      paused: true,
+      scrollTrigger: {
+        trigger: card,
+        start: '33% bottom',
+        end: 'bottom top',
+        toggleActions: 'restart reverse restart reverse',
+        onToggle: (self) => setInView(self.isActive),
+      },
+      onComplete: () => addGroupClass(card),
+    });
     triggerTl
-      .set(title, { autoAlpha: 0, xPercent: 100 })
-      .set(circleRef.current, {
-        strokeDashoffset: circleLength,
-        strokeDasharray: circleLength,
-      })
       .fromTo(
-        ref.current,
-        { autoAlpha: 0, scale: 0, yPercent: 50 },
-        {
-          autoAlpha: 1,
-          scale: 1,
-          yPercent: 0,
-          delay: index / 10,
-          duration: 0.85,
-        },
+        card,
+        { autoAlpha: 0, scale: 0, transformOrigin: 'center center' },
+        { autoAlpha: 1, scale: 1, duration: 0.85, delay: index / 10 },
       )
-      .to([circleRef.current, paths], {
+      .to([circle, ...paths], {
         strokeDashoffset: 0,
         duration: 1.25,
         delay: index / 10,
@@ -133,8 +133,9 @@ const CardAnimations = ({
         title,
         { autoAlpha: 1, xPercent: 0, delay: -0.5, duration: 1, stagger: 0.1 },
         '-=0.45',
-      )
-      .set(paths, { clearProps: 'fill, stroke' });
+      );
+    triggerTl.timeScale(0.5);
+    setTriggerRef(triggerTl);
 
     return () => triggerTl.kill();
   }, [readyState]);

@@ -35,11 +35,11 @@ const CatalogSection = ({
     <section className="relative flex shrink-0 flex-col">
       <div className="relative mx-auto flex w-full max-w-300 shrink-0 grow flex-col self-stretch">
         {/* title */}
-        <TitleAnimations className="mx-auto mb-10 flex w-auto flex-col gap-4">
-          <h2 className="title text-center text-4xl font-light tracking-fine text-gray-600 uppercase">
+        <TitleAnimations className="mx-auto mb-10 flex w-fit flex-col gap-4">
+          <h2 className="title text-center text-4xl font-light tracking-widest text-ink uppercase">
             {title}
           </h2>
-          <hr className="relative mb-2.5 h-px w-full max-w-37.5 self-center border-b border-solid border-b-gray-600" />
+          <hr className="relative mb-2.5 h-px w-full self-center border-b border-solid border-b-gray-600" />
         </TitleAnimations>
         {/* pages */}
         <div className="relative z-10 grid grid-cols-2 place-items-center gap-4 md:grid-cols-4 md:gap-y-10 lg:gap-x-8">
