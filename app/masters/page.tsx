@@ -69,9 +69,11 @@ const toMasterItem = ({
   const name = (attrs.master_name?.value as string | undefined) ?? '';
   if (!name) return null;
 
-  /** Service category links → main categories of the filter.
+  /**
+   * Service category links → main categories of the filter.
    * An `entity` attribute value is `[{ title, value: { id, parentId, … } }]`
-   * (OneEntry `IListTitleEntityValue`) — the linked id lives in `value.id`. */
+   * (OneEntry `IListTitleEntityValue`) — the linked id lives in `value.id`.
+   */
   const services = attrs.master_services?.value as
     Array<{ value?: { id?: number } }> | '' | undefined;
   const serviceIds = Array.isArray(services)

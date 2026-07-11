@@ -10,7 +10,8 @@ import {
   getPageByUrl,
 } from '@/app/api';
 import getLqipPreview from '@/components/hooks/getLqipPreview';
-import { shuffleArray } from '@/components/utils';
+import type { OneEntryImageFile } from '@/components/utils';
+import { getGalleryImageUrls, shuffleArray } from '@/components/utils';
 
 import GalleryGrid from './components/GalleryGrid';
 
@@ -58,49 +59,60 @@ const Gallery = async ({
       return {
         masterId: masterIdArr?.[0]?.value,
         photos: page?.attributeValues?.gallery_photos?.value as
-          Array<{ previewLink?: string; downloadLink: string }> | undefined,
+          OneEntryImageFile[] | undefined,
       };
     }) || [];
 
   /** Process gallery data to create card information with master details */
   const cardsData = await Promise.all(
     data.flatMap(async (gallery) => {
-      /** Find master information by ID */
-      const master = masters?.find((m) => m.id === Number(gallery.masterId));
-      if (!master || !gallery.photos) {
+      /** Photos are required; the master link is optional. */
+      if (!gallery.photos) {
         return [];
       }
+      /**
+       * Find master information by ID — may be absent while `master_id` is
+       * not linked yet; photos still render without a profile link.
+       */
+      const master = masters?.find((m) => m.id === Number(gallery.masterId));
 
-      /** Extract gallery category specification */
+      /**
+       * Extract gallery category specification. An `entity` attribute value is
+       * `[{ title, value: { id, parentId, … } }]` (OneEntry `IListTitleEntityValue`)
+       * — the linked service page id lives in `value.id`, same shape as
+       * `master_services` in `app/masters/page.tsx`.
+       */
       const specArr = page.attributeValues?.gallery_category?.value as
-        Array<{ id: number }> | undefined;
-      const spec = specArr?.[0];
-      /** Get master name with fallback to empty string */
+        Array<{ title?: string; value?: { id?: number } }> | undefined;
+      const specRaw = specArr?.[0];
+      const specId = specRaw?.value?.id;
+      const spec = specRaw ? { id: specId, title: specRaw.title } : undefined;
+      /** Master name + profile link only when a master is linked */
       const masterName =
-        (master.attributeValues?.master_name?.value as string | undefined) ||
+        (master?.attributeValues?.master_name?.value as string | undefined) ||
         '';
 
-      /** Initialize link with master ID path */
-      let link = `/masters/${master.id}`;
-      /** Append service parameter if category ID exists */
-      if (spec?.id) {
-        link += '?service=' + spec.id;
+      /** Link to the master profile only when a master is linked */
+      let link = master ? `/masters/${master.id}` : '';
+      /** Append service parameter if both a master and category id exist */
+      if (link && specId) {
+        link += '?service=' + specId;
       }
 
       /** Map through photos and create card data with LQIP previews */
       return await Promise.all(
-        gallery.photos.map(async (imgSrc) => {
-          /** Determine image URL from preview or download link */
-          const imageUrl = imgSrc.previewLink || imgSrc.downloadLink;
-          /** Generate low-quality image preview for lazy loading */
-          const preview = await getLqipPreview(imageUrl);
+        gallery.photos.map(async (photo) => {
+          /** Normalize inconsistent `previewLink` shapes into plain URL strings */
+          const { full, thumb, blur } = getGalleryImageUrls(photo);
+          /** Reuse the ready-made blur, else generate a low-quality preview */
+          const preview = blur ?? (await getLqipPreview(thumb));
 
           /** Return card data object with all required properties */
           return {
             name: masterName,
             link,
-            img: imgSrc.downloadLink,
-            thumb: imageUrl,
+            img: full,
+            thumb,
             preview, // This will be null if LQIP generation failed, which is handled gracefully
             spec,
           };

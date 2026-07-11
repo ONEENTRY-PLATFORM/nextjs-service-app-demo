@@ -1,6 +1,5 @@
 'use client';
 
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { CSSProperties, HTMLAttributes, JSX, Key } from 'react';
 import { useState } from 'react';
 import Carousel from 'react-simply-carousel';
@@ -30,15 +29,13 @@ export type GalleryFeedCard = {
  */
 const GalleryFeedCarousel = ({
   cards,
-  dict,
 }: {
   cards: GalleryFeedCard[];
-  dict: IAttributeValues;
 }): JSX.Element => {
   /** Track the current active slide index in the carousel */
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  /** Control autoplay state for the carousel */
-  const [state, setState] = useState<boolean>(false);
+  /** Kept for the card animation hover callback; autoplay stays disabled */
+  const [, setState] = useState<boolean>(false);
 
   /** Define container properties for the carousel */
   const containerProps = {
@@ -88,7 +85,7 @@ const GalleryFeedCarousel = ({
       itemsToShow={6}
       centerMode={true}
       speed={500}
-      autoplay={state}
+      autoplay={false}
       autoplayDelay={2500}
       easing="ease-in-out"
       // preventScrollOnSwipe={true}
@@ -106,7 +103,6 @@ const GalleryFeedCarousel = ({
         return (
           <CarouselCard
             key={index}
-            dict={dict}
             cardData={cardData}
             setState={setState}
             index={index as number}

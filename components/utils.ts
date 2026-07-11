@@ -99,7 +99,7 @@ export const UseDate = ({
  * (9 national digits, `5`-prefixed). Any unrecognized shape is returned
  * trimmed and unchanged, and empty input yields an empty string.
  * @param   {string | undefined | null} raw - Raw phone string from the `salon_phone` attribute
- * @returns {string}                         Human-readable phone, or `''` when input is empty
+ * @returns {string}                        Human-readable phone, or `''` when input is empty
  * @example
  * ```typescript
  * formatUaePhone('+97147012200');  // "+971 4 701 2200"
@@ -241,4 +241,45 @@ export const shuffleArray = <T>(array: T[]): T[] => {
     .map((a) => ({ sort: Math.random(), value: a }))
     .sort((a, b) => a.sort - b.sort)
     .map((a) => a.value);
+};
+
+/**
+ * A single image inside a `groupOfImages` / `image` attribute value.
+ *
+ * `previewLink` shape is inconsistent across uploads: older files have no
+ * `previewLink` at all, newer ones expose it as an object
+ * `{ [defaultPreview]: [blurDataUri, lqipUrl] }` (NOT a string). Reading it
+ * directly into an `<img src>` stringifies the object to `"[object Object]"`
+ * and 404s, so always normalize through {@link getGalleryImageUrls}.
+ *
+ * Note: the second entry (`lqipUrl`) is a ~16px LQIP placeholder (~1 KB), not a
+ * display-ready thumbnail — the full `downloadLink` is the only rendering URL.
+ */
+export type OneEntryImageFile = {
+  downloadLink: string;
+  previewLink?: string | Record<string, [string, string] | undefined>;
+  defaultPreview?: string;
+};
+
+/**
+ * Normalize a OneEntry image file into plain string URLs.
+ *
+ * `thumb` intentionally uses the full-resolution `downloadLink`: the only
+ * `previewLink` variant is a tiny LQIP blur, unusable as a visible thumbnail.
+ * `blur` returns the ready-made base64 data-URI when present, so callers can
+ * skip generating their own LQIP.
+ * @param   {OneEntryImageFile}                                    photo - Image file from an `attributeValues` group
+ * @returns {{ full: string; thumb: string; blur: string | null }}       Rendering URLs
+ */
+export const getGalleryImageUrls = (
+  photo: OneEntryImageFile,
+): { full: string; thumb: string; blur: string | null } => {
+  const preview = photo.previewLink;
+  const previewPair =
+    typeof preview === 'object' && preview
+      ? preview[photo.defaultPreview ?? 'default']
+      : undefined;
+  const blur = previewPair?.[0] ?? null;
+  const full = photo.downloadLink;
+  return { full, thumb: full, blur };
 };

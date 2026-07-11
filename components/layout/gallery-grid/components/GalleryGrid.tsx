@@ -19,8 +19,8 @@ type ICardData = {
   preview: string | null;
   spec?:
     | {
-        id?: number;
-        title?: string;
+        id?: number | undefined;
+        title?: string | undefined;
       }
     | undefined;
 };

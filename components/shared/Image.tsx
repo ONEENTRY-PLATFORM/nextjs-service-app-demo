@@ -73,7 +73,7 @@ const Image = ({
       style={{ width, height, ...style }}
       ref={ref}
     >
-      {placeholder && (
+      {placeholder && blurDataURL && (
         <img
           src={blurDataURL}
           alt={alt}

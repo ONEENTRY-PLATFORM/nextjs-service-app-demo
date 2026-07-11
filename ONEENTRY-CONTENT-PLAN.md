@@ -51,10 +51,10 @@
    | `salon` | `salon_phone` | string | Телефон салона |
    | `salon` | `salon_time` | timeIntgerval | Режим работы салона |
 
-   | `gallery` | `gallery_cat_thumb` | image | превью категории работ |
-   | `gallery` | `gallery_category` | list | ссылка на категорию услуг (п. 2.2) |
-   | `gallery` | `master_id` | list | мастер-админ, автор работы |
-   | `gallery` | `gallery_photos` | image (multiple) | сами фото |
+   | `gallery` | `gallery_cat_thumb` | groupOfImages | превью категории (только для страниц-категорий) |
+   | `gallery` | `gallery_category` | **entity** | связь на страницу-категорию услуг (п. 2.2); код читает `value[0].value.id` |
+   | `gallery_photo` | `gallery_photos` | groupOfImages | сами фото (только для страниц-фото) |
+   | `gallery_photo` | `master_id` | list | мастер-админ, автор работы; опция: `title`=имя, `value`=числовой id админа |
 
    | `service` | `sku` | string | `hh01`, `hc02`… — участвует в поиске |
    | `service` | `price` | number | базовая цена |
@@ -134,11 +134,10 @@
 
 ### 2.4 Галерея — родитель `gallery` → категории → страницы-фото
 
-- Дети `gallery` = категории работ (по подкатегориям услуг: Haircut, Coloring, Styling, Makeup, Manicure, Pedicure, Massage…): атрибуты `gallery_cat_thumb` (превью), `gallery_category` (ссылка на категорию услуг из п. 2.2).
-- Внутри каждой категории — страницы-фото: `gallery_photos` (сами изображения), `master_id` (id мастера-админа). Связи «фото → мастер/салон/услуга» берём из структуры папок `Beauty content/Gallery/`.
-- Для главной достаточно 6 категорий с превью (как в секции GALLERY на HomePage).
+- Дети `gallery` = **4 категории по дисциплинам: Hair, Face, Body, Nails** (как `MAIN_CATS` в верстке `GalleryPage`; подкатегории там — вторичный фильтр из имён файлов, не отдельные разделы). Набор `gallery`: `gallery_cat_thumb` (превью), `gallery_category` (entity → страница-категория услуг `hair`/`face`/`body`/`nails`).
+- Внутри каждой категории — страницы-фото (набор `gallery_photo`): `gallery_photos` (сами изображения), `master_id` (id мастера-админа списком). **1 страница-фото = 1 папка мастера целиком** (`BC/Gallery/<Salon>/<Master>_<disc>/`), категория — по дисциплине папки.
 
-> **Статус:** 🟡 частично: у `gallery` заведены **6 категорий-детей** (`gallery-haircut`, `gallery-styling`, `gallery-coloring`, `gallery-makeup`, `gallery-pedicure`, `gallery-massage`) с набором `gallery` и заполненным `gallery_cat_thumb` (тип `image`, приходит массивом — ок). ⚠️ `gallery_category` и `master_id` в наборе созданы как `entity` вместо `list` — код читает `value[0].id` / `value[0].value`+`.title`, нужен `list` (правится, атрибуты пустые). ❌ Страниц-фото (`gallery_photos`+`master_id`) внутри категорий пока нет (0) — зависят от мастеров-админов (этап 4/7).
+> **Статус:** 🟡 категории готовы. **4 категории по дисциплинам** заведены и проверены API+curl: `gallery-hair`/`gallery-face`/`gallery-body`/`gallery-nails` (title Hair/Face/Body/Nails), `/gallery` отдаёт 200 и рендерит 4 карточки с превью. `gallery_category` — `entity`, значение приходит как `[{title, value:{id}}]` (`value[0].value.id`, напр. Hair→id 19), код читает верно. `master_id` — `list` (`value`=id админа; добавлены первые мастера). Код галереи деградирует без мастера — фото рендерятся, ссылка на профиль только при заполненном `master_id`. ❌ Осталось: страницы-фото внутри категорий (0) — 1 страница = 1 папка мастера целиком, `master_id` дозаполняется по мере ввода мастеров.
 
 ---
 
@@ -289,7 +288,7 @@
 ни одного с `master_name`.
 
 - [ ] **Этап 5 — галерея** 🟡:
-6 категорий-детей с превью (`gallery_cat_thumb`) заведены; `gallery_category`/`master_id` создать `list` (сейчас `entity`); страниц-фото внутри категорий нет (после мастеров).
+реструктуризация категорий 6→4 по дисциплинам (Hair/Face/Body/Nails); наборы разделены на `gallery` (категории) и `gallery_photo` (фото); `gallery_category` — entity, `master_id` — list; код деградирует без мастера; страниц-фото нет.
 
 - [ ] **Этап 6 — блоки** 🟡:
 `home_hero` (3 слайда) / `home_catalog` / `home_gallery` ✅;

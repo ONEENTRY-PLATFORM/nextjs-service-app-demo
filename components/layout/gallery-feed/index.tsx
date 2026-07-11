@@ -1,4 +1,3 @@
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { ILocalizeInfo } from 'oneentry/dist/base/utils';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
@@ -6,9 +5,9 @@ import type { JSX } from 'react';
 
 import TitleAnimations from '@/app/animations/TitleAnimations';
 import { getChildPagesByParentUrl } from '@/app/api';
-import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import getLqipPreview from '@/components/hooks/getLqipPreview';
-import { shuffleArray } from '@/components/utils';
+import type { OneEntryImageFile } from '@/components/utils';
+import { getGalleryImageUrls, shuffleArray } from '@/components/utils';
 
 import GalleryCarousel from './components/GalleryCarousel';
 
@@ -23,8 +22,6 @@ const GalleryFeed = async ({
 }: {
   block: IBlockEntity;
 }): Promise<JSX.Element> => {
-  const [dict] = ServerProvider<IAttributeValues>('dict');
-
   /** Fetch child pages for the gallery and their respective child pages concurrently */
   const parentPagesResponse = await getChildPagesByParentUrl('gallery');
   /** Extract parent pages from response with fallback to empty array */
@@ -53,7 +50,7 @@ const GalleryFeed = async ({
         </TitleAnimations>
         {/** Render gallery carousel with feed cards */}
         <div className="flex flex-col gap-0">
-          <GalleryCarousel cards={feedCards} dict={dict} />
+          <GalleryCarousel cards={feedCards} />
         </div>
       </div>
     </section>
@@ -92,41 +89,37 @@ type PhotoExtractor = (page: IPagesEntity) => Promise<FeedCard | null>[];
  */
 function extractPhotosFromPage(parentPage: IPagesEntity): PhotoExtractor {
   return (page: IPagesEntity) => {
-    /** Extract master ID from page attribute values */
+    /** Extract master ID from page attribute values (used for the alt/name) */
     const masterIdArr = page.attributeValues?.master_id?.value as
       Array<{ value: number; title?: string }> | undefined;
-    const masterId = masterIdArr?.[0]?.value;
     /** Get photos array from page gallery photos attribute with fallback to empty array */
     const photos =
       (page?.attributeValues?.gallery_photos?.value as
-        Array<{ previewLink: string; downloadLink: string }> | undefined) || [];
-    /** Initialize link with master ID path */
-    let link = `/masters/${masterId}`;
-    /** Extract gallery category ID from parent page */
-    const galleryCatArr = parentPage.attributeValues.gallery_category?.value as
-      Array<{ id: number }> | undefined;
-    const idx = galleryCatArr?.[0]?.id;
-    /** Append service parameter to link if category ID exists */
-    if (idx) {
-      link += `?service=${idx}`;
-    }
+        OneEntryImageFile[] | undefined) || [];
+    /**
+     * Link to the matching service category, like the static-html home gallery.
+     * The gallery category pageUrl mirrors the service pageUrl with a `gallery-`
+     * prefix (`gallery-hair` → `/services/hair`).
+     */
+    const categoryUrl = parentPage.pageUrl.replace(/^gallery-/, '');
+    const link = categoryUrl ? `/services/${categoryUrl}` : '';
     /** Map through photos to create photo objects with preview data */
     return photos.map(async (photo) => {
-      /** Determine image source URL from preview or download link */
-      const imgSrc = photo.previewLink || photo.downloadLink;
+      /** Normalize inconsistent `previewLink` shapes into plain URL strings */
+      const { full, thumb, blur } = getGalleryImageUrls(photo);
 
       /** Return null if no image source is available */
-      if (!imgSrc) return null;
+      if (!thumb) return null;
 
-      /** Generate low-quality image preview for lazy loading */
-      const preview = await getLqipPreview(imgSrc);
+      /** Reuse the ready-made blur, else generate a low-quality preview */
+      const preview = blur ?? (await getLqipPreview(thumb));
 
       /** Return photo object with all required properties */
       return {
         name: masterIdArr?.[0]?.title || '',
         link,
-        img: photo.downloadLink,
-        thumb: photo.previewLink || photo.downloadLink,
+        img: full,
+        thumb,
         preview,
         spec: parentPage.localizeInfos,
       };

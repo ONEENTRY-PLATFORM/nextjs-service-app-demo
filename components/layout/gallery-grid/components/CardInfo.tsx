@@ -26,8 +26,8 @@ const CardInfo = ({
     link: string;
     spec?:
       | {
-          id?: number;
-          title?: string;
+          id?: number | undefined;
+          title?: string | undefined;
         }
       | undefined;
   };
@@ -47,13 +47,15 @@ const CardInfo = ({
       <div className="text-sm leading-4 font-bold max-sm:text-xs">
         {spec?.title}
       </div>
-      {/** Render link to master profile */}
-      <Link
-        href={link || '/'}
-        className="text-sm underline hover:text-fuchsia-500 focus:outline-none max-sm:text-xs"
-      >
-        {checkProfileText}
-      </Link>
+      {/** Render link to master profile only when a master is linked */}
+      {link && (
+        <Link
+          href={link}
+          className="text-sm underline hover:text-fuchsia-500 focus:outline-none max-sm:text-xs"
+        >
+          {checkProfileText}
+        </Link>
+      )}
     </div>
   );
 };

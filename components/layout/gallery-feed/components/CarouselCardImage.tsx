@@ -36,7 +36,7 @@ const CarouselCardImage = ({
       loading="lazy"
       placeholder={preview ? 'blur' : 'empty'}
       blurDataURL={preview || ''}
-      className="gallery-card-img relative h-80 w-full object-cover duration-500 group-hover:scale-125 group-hover:transition-transform"
+      className="gallery-card-img absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
       ref={null}
     />
   );
