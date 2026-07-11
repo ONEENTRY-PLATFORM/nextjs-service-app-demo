@@ -14,13 +14,9 @@ import getSearchParams from '@/app/api/utils/getSearchParams';
  * @param   {number}          props.limit                        - Maximum number of products to fetch per page
  * @param   {number}          props.offset                       - Number of products to skip (for pagination)
  * @param   {object}          props.params                       - Optional filtering and search parameters
- * @param   {string}          props.params.handle                - Category handle to filter products
  * @param   {object}          props.params.searchParams          - Additional search parameters
  * @param   {string}          props.params.searchParams.search   - Search term to filter products
  * @param   {string}          props.params.searchParams.in_stock - Filter products by stock status
- * @param   {string}          props.params.searchParams.color    - Filter products by color attribute
- * @param   {string}          props.params.searchParams.minPrice - Minimum price filter
- * @param   {string}          props.params.searchParams.maxPrice - Maximum price filter
  * @returns {Promise<object>}                                    Promise that resolves to an object containing products, error status, and total count
  * @see {@link https://oneentry.cloud/instructions/npm/|OneEntry docs}
  */
@@ -28,13 +24,9 @@ export const getProducts = async (props: {
   limit: number;
   offset: number;
   params?: {
-    handle?: string;
     searchParams?: {
       search?: string;
       in_stock?: string;
-      color?: string;
-      minPrice?: string;
-      maxPrice?: string;
     };
   };
 }): Promise<{
@@ -44,7 +36,7 @@ export const getProducts = async (props: {
   total: number;
 }> => {
   const { limit, offset, params } = props;
-  const expandedFilters = getSearchParams(params?.searchParams, params?.handle);
+  const expandedFilters = getSearchParams(params?.searchParams);
 
   try {
     const data = await getApi().Products.getProducts(

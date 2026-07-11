@@ -7,7 +7,7 @@ import dayOfYear from 'dayjs/plugin/dayOfYear';
 import utc from 'dayjs/plugin/utc';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Calendar from 'react-calendar';
 
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
@@ -25,6 +25,13 @@ import DropdownButton from './DropdownButton';
 
 dayjs.extend(utc);
 dayjs.extend(dayOfYear);
+
+/**
+ * Booking horizon in days. Schedules are stored a year ahead, but bookings are
+ * made a few weeks out — so both the calendar's selectable range and the slot
+ * list are capped to this window (and past days are excluded entirely).
+ */
+const BOOKING_HORIZON_DAYS = 30;
 
 /**
  * Filter time intervals by a specific date.
@@ -94,9 +101,35 @@ const CalendarLayout = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
     .filter((h) => h && dayjs(h.date).dayOfYear())
     .map((h) => dayjs(h.date).dayOfYear());
 
+  /**
+   * Booking horizon — keep only slots within the next {@link BOOKING_HORIZON_DAYS} days.
+   *
+   * Schedules are stored a full year ahead (~4380 hourly slots); a month is
+   * the practical booking window. Trimming here once (a) drops already-past
+   * days and (b) shrinks the per-date filtering below from thousands of
+   * intervals to a few hundred, so re-picking a date stays cheap.
+   */
+  const horizonIntervals = useMemo<[string, string][]>(() => {
+    const from = dayjs.utc().startOf('day');
+    const until = dayjs.utc().add(BOOKING_HORIZON_DAYS, 'day').endOf('day');
+    return (
+      schedule?.flatMap((interval) => interval.timeIntervals) ?? []
+    ).filter(([start]) => {
+      const s = dayjs(start).utc();
+      return !s.isBefore(from) && s.isBefore(until);
+    });
+  }, [schedule]);
+
+  /** Calendar selectable range: today … today + horizon (no past days) */
+  const minDate = dayjs().startOf('day').toDate();
+  const maxDate = dayjs()
+    .add(BOOKING_HORIZON_DAYS, 'day')
+    .endOf('day')
+    .toDate();
+
   /** Generate and format time intervals based on selected date */
   const timeIntervals: TimeSlotData[] | undefined = filterIntervalsByDate(
-    schedule?.flatMap((interval) => interval.timeIntervals) ?? [],
+    horizonIntervals,
     date,
   )?.map((interval) => {
     const d = dayjs(interval[0]).toDate();
@@ -160,6 +193,8 @@ const CalendarLayout = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
           <Calendar
             locale="en-US"
             view="month"
+            minDate={minDate}
+            maxDate={maxDate}
             onChange={(value) => setDate(value as Date)}
             value={date}
             tileDisabled={({ date }) =>

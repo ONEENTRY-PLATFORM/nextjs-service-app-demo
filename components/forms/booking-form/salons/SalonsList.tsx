@@ -59,19 +59,23 @@ const SalonsList = ({ salons }: TabLayoutProps): JSX.Element => {
     if (!salons) {
       return;
     }
+    // `master_salon` is an `entity` attribute: `[{ title, value: { id, … } }]`
+    // (OneEntry `IListTitleEntityValue`) — the linked salon id is in `value.id`.
     const masterSalons = currentMaster?.attributeValues?.master_salon?.value as
-      { id: number }[] | undefined;
+      { value?: { id?: number } }[] | undefined;
 
     const filtered = salons?.filter((salon) => {
       /** check if salons has master */
       const inMastersSalons = mastersData?.flatMap((master: IAdminEntity) => {
         const salonValues = master.attributeValues.master_salon?.value as
-          { id: number }[] | undefined;
-        return salonValues?.some((v) => v.id === salon.id);
+          { value?: { id?: number } }[] | undefined;
+        return salonValues?.some((v) => v.value?.id === salon.id);
       });
       /** check if currently selected master(in cartSlice) in salon */
       const inCurrentMaster = masterSalons?.some((masterSalon) => {
-        return masterSalon.id === salon.id || currentMaster?.id === undefined;
+        return (
+          masterSalon.value?.id === salon.id || currentMaster?.id === undefined
+        );
       });
       /** check if currently selected product(in cartSlice) in salon */
       const productSalons = currentProduct?.attributeValues?.salons?.value as

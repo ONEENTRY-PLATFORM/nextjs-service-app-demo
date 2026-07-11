@@ -42,14 +42,22 @@ const PortfolioGridLayout = async ({
 
   /** Extract master portfolio attribute values */
   const { master_portfolio } = master.attributeValues;
-  /** Get master portfolio items or empty array as fallback */
+  /**
+   * Get master portfolio items or empty array as fallback.
+   * `entity` value is `[{ title, value: { id, parentId, … } }]`
+   * (OneEntry `IListTitleEntityValue`) — ids live in `value`.
+   */
   const masterPortfolio =
     (master_portfolio?.value as
-      Array<{ id: number; parentId: number }> | undefined) || [];
+      Array<{ value?: { id?: number; parentId?: number } }> | undefined) || [];
   /** Extract IDs from portfolio items */
-  const ids = masterPortfolio.map((v) => v.id);
+  const ids = masterPortfolio
+    .map((v) => v.value?.id)
+    .filter((id): id is number => typeof id === 'number');
   /** Extract parent IDs from portfolio items */
-  const parentIds = masterPortfolio.map((v) => v.parentId);
+  const parentIds = masterPortfolio
+    .map((v) => v.value?.parentId)
+    .filter((id): id is number => typeof id === 'number');
 
   /** Fetch child pages by portfolio item IDs */
   const { pages: childPages } = await getPagesByIds(ids);

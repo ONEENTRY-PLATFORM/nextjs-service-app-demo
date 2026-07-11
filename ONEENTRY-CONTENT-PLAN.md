@@ -56,14 +56,11 @@
    | `gallery` | `master_id` | list | мастер-админ, автор работы |
    | `gallery` | `gallery_photos` | image (multiple) | сами фото |
 
-   | `service` | `service_title` | string | заголоввок |
-   | `service` | `service_description` | text | описание |
-   | `service` | `service_price` | number | базовая цена |
-   | `service` | `service_sale` | number | цена распродажи |
-   | `service` | `service_type` | list | бейдж-грейд (Top Stylist…) |
-   | `service` | `service_sku` | string | `hh01`, `hc02`… — участвует в поиске |
-   | `service` | `service_stickers` | list | |
-   | `service` | `service_color` | list | |
+   | `service` | `sku` | string | `hh01`, `hc02`… — участвует в поиске |
+   | `service` | `price` | number | базовая цена |
+   | `service` | `sale` | number | цена распродажи |
+   | `service` | `specialist_grade` | list | бейдж-грейд (Top Stylist…) |
+   | `service` | `description` | text | описание |
 
    | `offer` | `offer_type` | list | extended value = акцентный цвет |
    | `offer` | `offer_price` | number | базовая цена |
@@ -141,7 +138,7 @@
 - Внутри каждой категории — страницы-фото: `gallery_photos` (сами изображения), `master_id` (id мастера-админа). Связи «фото → мастер/салон/услуга» берём из структуры папок `Beauty content/Gallery/`.
 - Для главной достаточно 6 категорий с превью (как в секции GALLERY на HomePage).
 
-> **Статус:** ❌ не сделано: у страницы `gallery` нет детей вообще.
+> **Статус:** 🟡 частично: у `gallery` заведены **6 категорий-детей** (`gallery-haircut`, `gallery-styling`, `gallery-coloring`, `gallery-makeup`, `gallery-pedicure`, `gallery-massage`) с набором `gallery` и заполненным `gallery_cat_thumb` (тип `image`, приходит массивом — ок). ⚠️ `gallery_category` и `master_id` в наборе созданы как `entity` вместо `list` — код читает `value[0].id` / `value[0].value`+`.title`, нужен `list` (правится, атрибуты пустые). ❌ Страниц-фото (`gallery_photos`+`master_id`) внутри категорий пока нет (0) — зависят от мастеров-админов (этап 4/7).
 
 ---
 
@@ -154,11 +151,11 @@
 - название, описание (маркетинговое из `priceList.ts`);
 - `price` — базовая цена. ⚠️ **Решение по ценам**: в верстке цена = f(салон × тариф premium/mid/budget), у шаблона — одно поле `price` (+`sale`). Этап 1: заносим цену уровня Downtown/Premium. Этап 2 (опционально): расширить набор атрибутов ценами по салонам и доработать фронт;
 - `sku` из прайса (`hh01`, `hc02`…) — участвует в фильтре поиска (`exs`);
-- `type` (list) — бейдж (напр. грейд: Top Stylist / Senior Stylist…);
+- `specialist_grade` (list) — бейдж-грейд (напр. Top Stylist / Senior Stylist…);
 - длительность (мин) — есть в прайсе; шаблон её пока не выводит, но атрибут заложить стоит;
 - статус `in_stock` (участвует в фильтре по цене).
 
-> **Статус:** 🟡 в основном сделано: **77 продуктов** заведены (набор `a_sets_tpl_catalog_1_ImportProcessingType.catalog`), у всех есть `title`, `description` (маркетинговые тексты из прайса), `sku` (`hh01`…`np04`), `duration` (мин) и `specialist_grade` (грейд списком — закрывает плановый `type`), статус `in_stock`, привязка к своим подкатегориям. ⚠️ Отличия: `price` — **строковый** атрибут («450 AED»), корневое числовое поле `price` продукта пустое (сортировка/фильтр по цене и `ProductPrice` шаблона могут не работать); полей `sale`, `stickers`, `color` нет.
+> **Статус:** 🟡 в основном сделано: **77 продуктов** заведены (набор `a_sets_tpl_catalog_1_ImportProcessingType.catalog`), у всех есть `title`, `description` (маркетинговые тексты из прайса), `sku` (`hh01`…`np04`), `duration` (мин) и `specialist_grade` (грейд списком — плановый бейдж-грейд, читает `ProductBadge`), статус `in_stock`, привязка к своим подкатегориям. ⚠️ Отличия: `price` — **строковый** атрибут («450 AED»), корневое числовое поле `price` продукта пустое (сортировка/фильтр по цене и `ProductPrice` шаблона могут не работать); поля `sale` нет (плановые `stickers`/`color` убраны как рудименты v1).
 
 ---
 
@@ -237,7 +234,11 @@
 
 Приоритет: сначала 6 мастеров с главной (Sofia Marchetti, Noah Jhonson, Samir Haddad, Camille Dubois, Bianca Schneider, Adriana Iliescu), затем остальные 26.
 
-> **Статус:** ❌ не сделано: админов в проекте 2, ни у одного не заполнен `master_name` (все `master_*`-атрибуты пустые) — страницы specialists/booking шаблона работают на демо-ростере.
+> **Статус (2026-07-10):** 🟡 набор `master` создан (10 атрибутов: `master_name` string, `master_image` image, `master_rating` integer, `master_expirience` string, `master_short_description` string, `master_description` text, `master_services` entity, `master_salon` entity, `master_schedule` timeInterval, `master_portfolio` entity). Заведены **2 мастера**: Sofia Marchetti (id 4, Downtown, `master_services` пуст) и Noah Jhonson (id 3, `master_salon` пуст); у обоих `master_schedule` пуст. Страница `/masters` подтверждена — рендерит их из CMS (Sofia «Top Stylist · Thalia Downtown»).
+>
+> ⚠️ **Важно — структура `entity` в коде.** Реальное значение `entity`-атрибута = `[{ title, value: { id, parentId, depth, position, … } }]` (OneEntry `IListTitleEntityValue`) — id связанной сущности лежит в `value.id`, НЕ на верхнем уровне. Шаблон был написан под плоский `.id`/`.parentId` (баг, не проявлялся без мастеров). Исправлено чтение `master_services`/`master_salon`/`master_portfolio` в: `app/masters/page.tsx`, `app/booking/booking-data.ts` (`parseServiceLinks` + salon), `components/forms/booking-form/masters/MastersList.tsx` (+ маркер `services`→`master_services`), `components/forms/booking-form/salons/SalonsList.tsx`, `components/layout/portfolio-grid/index.tsx`. `master-single` читает `.title` — не затронут. То же исправление понадобится для `offer_services` у офферов (этап 4-offers) и `gallery_category` (этап 5).
+>
+> ⏳ Осталось: дозаполнить Sofia (`master_services`→hair, `master_schedule`), Noah (`master_salon`→marina, `master_schedule`); завести остальных мастеров (приоритет — 6 с главной), затем `master_portfolio` после галереи (этап 5).
 
 ---
 
@@ -287,8 +288,8 @@
 админов 2,
 ни одного с `master_name`.
 
-- [ ] **Этап 5 — галерея** ❌:
-у `gallery` нет детей.
+- [ ] **Этап 5 — галерея** 🟡:
+6 категорий-детей с превью (`gallery_cat_thumb`) заведены; `gallery_category`/`master_id` создать `list` (сейчас `entity`); страниц-фото внутри категорий нет (после мастеров).
 
 - [ ] **Этап 6 — блоки** 🟡:
 `home_hero` (3 слайда) / `home_catalog` / `home_gallery` ✅;
@@ -310,7 +311,7 @@ storage `orders` не проверен (401).
 1. **Цены по салонам и тарифам** (premium/mid/budget × 3 салона) — шаблон поддерживает одну цену + `sale`. Этап 1: цена Downtown/Premium; расширение — отдельной задачей.
 2. **Hero-карусель** (4 слайда в верстке) vs один блок `home_hero` — нужен либо один слайд, либо доработка фронта под несколько блоков.
 3. **Отзывы** — см. п. 9.
-4. **Тарифный переключатель Hair (Top/Senior/Stylist)** на странице цен — на фронте шаблона отсутствует; в админке можно отразить грейд бейджем `type`.
+4. **Тарифный переключатель Hair (Top/Senior/Stylist)** на странице цен — на фронте шаблона отсутствует; в админке можно отразить грейд бейджем `specialist_grade`.
 5. **Домен e-mail**: в верстке `@beautystudio.com` при бренде «Thalia» — уточнить перед заведением контактов.
 6. **Промо «First Visit 15%» / «10% off online»** — в шаблоне только контентный блок `home_discounts`, логика скидки на фронте не реализована.
 7. **Соцсети** (Instagram/Facebook/Twitter) — в верстке ссылки-заглушки; реальные URL завести в `system_content`.

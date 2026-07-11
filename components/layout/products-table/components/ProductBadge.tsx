@@ -2,7 +2,7 @@ import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces'
 import type { JSX } from 'react';
 
 /**
- * ProductBadge functional component displays a badge with product type information
+ * ProductBadge functional component displays a badge with the product's specialist-grade information
  * @param   {object}          props         - Component properties
  * @param   {IProductsEntity} props.product - Product entity containing attribute values
  * @param   {string}          props.color   - Background color class for the badge
@@ -15,10 +15,10 @@ const ProductBadge = ({
   product: IProductsEntity;
   color: string;
 }): JSX.Element => {
-  /** Safely extract the badge title from the product's attribute values */
-  const typeArr = attributeValues?.type?.value as
+  /** Safely extract the specialist-grade badge title from the product's attribute values */
+  const gradeArr = attributeValues?.specialist_grade?.value as
     Array<{ title: string }> | undefined;
-  const badgeTitle = typeArr?.[0]?.title ?? '';
+  const badgeTitle = gradeArr?.[0]?.title ?? '';
 
   /** Return empty div if no badge title is available */
   if (!badgeTitle) {

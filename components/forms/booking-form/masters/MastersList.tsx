@@ -48,11 +48,25 @@ const MastersList = ({
   /** filter masters */
   const filteredMasters = useMemo(() => {
     const filtered = masters?.filter((master: IAdminEntity) => {
-      // attributeValues schema is dynamic per OneEntry config — extract by marker
-      const masterServices = master.attributeValues?.services?.value as
-        { id: number | string; parentId: number }[] | '' | undefined;
-      const masterSalon = master.attributeValues?.master_salon?.value as
-        { id: number }[] | '' | undefined;
+      // attributeValues schema is dynamic per OneEntry config — extract by marker.
+      // `entity` values are `[{ title, value: { id, parentId, … } }]`
+      // (OneEntry `IListTitleEntityValue`) — flatten to `{ id, parentId }` so the
+      // filter logic below stays unchanged.
+      const rawServices = master.attributeValues?.master_services?.value as
+        | Array<{ value?: { id?: number | string; parentId?: number } }>
+        | ''
+        | undefined;
+      const masterServices = Array.isArray(rawServices)
+        ? rawServices.map((el) => ({
+            id: el?.value?.id ?? '',
+            parentId: el?.value?.parentId ?? -1,
+          }))
+        : rawServices;
+      const rawSalon = master.attributeValues?.master_salon?.value as
+        Array<{ value?: { id?: number } }> | '' | undefined;
+      const masterSalon = Array.isArray(rawSalon)
+        ? rawSalon.map((el) => ({ id: el?.value?.id ?? -1 }))
+        : rawSalon;
       /** chek if master in Salon */
       const inSalon =
         masterSalon !== '' &&

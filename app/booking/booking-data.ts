@@ -58,8 +58,10 @@ const parseServiceLinks = (
   if (!Array.isArray(value)) {
     return { categoryPageIds, productIds };
   }
-  for (const entry of value as Array<{ id?: number | string }>) {
-    const raw = entry?.id;
+  // An `entity` value is `[{ title, value: { id, parentId, … } }]`
+  // (OneEntry `IListTitleEntityValue`) — the linked id lives in `value.id`.
+  for (const entry of value as Array<{ value?: { id?: number | string } }>) {
+    const raw = entry?.value?.id;
     if (typeof raw === 'number') {
       categoryPageIds.push(raw);
     } else if (typeof raw === 'string' && raw.startsWith('p-')) {
@@ -92,7 +94,7 @@ const toBookingMaster = ({
   if (!name) return null;
 
   const { categoryPageIds, productIds } = parseServiceLinks(
-    attrs.services?.value,
+    attrs.master_services?.value,
   );
   const serviceIds = productIds
     .map((id) => String(id))
@@ -110,10 +112,10 @@ const toBookingMaster = ({
   );
 
   const salonArr = attrs.master_salon?.value as
-    Array<{ id?: number }> | '' | undefined;
+    Array<{ value?: { id?: number } }> | '' | undefined;
   const salonIds = Array.isArray(salonArr)
     ? salonArr
-        .map((s) => (s?.id !== undefined ? String(s.id) : ''))
+        .map((s) => (s?.value?.id !== undefined ? String(s.value.id) : ''))
         .filter(Boolean)
     : [];
 

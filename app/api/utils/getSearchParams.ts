@@ -3,30 +3,19 @@ import type { IFilterParams } from 'oneentry/dist/products/productsInterfaces';
 /**
  * Generate search parameters for product filtering
  *
- * This utility function creates an array of filter parameters based on the provided
- * search parameters and handle. It's used to construct complex queries for the
- * OneEntry API product search functionality.
+ * Builds the filter array for the OneEntry Products API. Only two filters are
+ * supported: the mandatory "is a service" filter (product has an `sku`, plus the
+ * optional search term) and the optional in-stock status filter.
  * @param   {object}        [searchParams]          - Optional search parameters for filtering products
  * @param   {string}        [searchParams.search]   - Text search term for product titles or descriptions
  * @param   {string}        [searchParams.in_stock] - Filter products by stock availability
- * @param   {string}        [searchParams.color]    - Filter products by color attribute
- * @param   {string}        [searchParams.minPrice] - Minimum price filter
- * @param   {string}        [searchParams.maxPrice] - Maximum price filter
- * @param   {string}        [handle]                - Optional category handle for additional filtering
  * @returns {Array<object>}                         Array of filter parameters for the OneEntry API
  */
-const getSearchParams = (
-  searchParams?: {
-    search?: string;
-    in_stock?: string;
-    color?: string;
-    minPrice?: string;
-    maxPrice?: string;
-  },
-  handle?: string,
-): Array<IFilterParams & { statusMarker?: string }> => {
-  const expandedFilters:
-    Array<IFilterParams & { statusMarker?: string }> | undefined = [];
+const getSearchParams = (searchParams?: {
+  search?: string;
+  in_stock?: string;
+}): Array<IFilterParams & { statusMarker?: string }> => {
+  const expandedFilters: Array<IFilterParams & { statusMarker?: string }> = [];
 
   /**
    * Keep only products that have an SKU set. The legacy `nin: null`
@@ -42,17 +31,6 @@ const getSearchParams = (
   };
   expandedFilters.push(servicesFilter);
 
-  if (handle) {
-    const stickersFilter: IFilterParams = {
-      attributeMarker: 'stickers',
-      conditionMarker: 'in',
-      conditionValue: handle,
-      title: searchParams?.search || '',
-      isNested: false,
-    };
-    expandedFilters.push(stickersFilter);
-  }
-
   if (searchParams?.in_stock) {
     expandedFilters.push({
       statusMarker: 'in_stock',
@@ -61,17 +39,6 @@ const getSearchParams = (
       title: searchParams.search || '',
       isNested: false,
     });
-  }
-
-  if (searchParams?.color) {
-    const newFilter: IFilterParams = {
-      attributeMarker: 'color',
-      conditionMarker: 'in',
-      conditionValue: searchParams.color,
-      title: searchParams.search || '',
-      isNested: false,
-    };
-    expandedFilters.push(newFilter);
   }
 
   return expandedFilters;

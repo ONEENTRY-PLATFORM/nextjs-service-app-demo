@@ -69,11 +69,15 @@ const toMasterItem = ({
   const name = (attrs.master_name?.value as string | undefined) ?? '';
   if (!name) return null;
 
-  /** Service category links → main categories of the filter */
-  const services = attrs.services?.value as
-    Array<{ id: number }> | '' | undefined;
+  /** Service category links → main categories of the filter.
+   * An `entity` attribute value is `[{ title, value: { id, parentId, … } }]`
+   * (OneEntry `IListTitleEntityValue`) — the linked id lives in `value.id`. */
+  const services = attrs.master_services?.value as
+    Array<{ value?: { id?: number } }> | '' | undefined;
   const serviceIds = Array.isArray(services)
-    ? services.map((service) => service.id)
+    ? services
+        .map((service) => service.value?.id)
+        .filter((id): id is number => typeof id === 'number')
     : [];
   const categories = Array.from(
     new Set(
@@ -85,9 +89,10 @@ const toMasterItem = ({
 
   /** Salon link → filter id + the salon suffix of the role line */
   const salonArr = attrs.master_salon?.value as
-    Array<{ id?: number }> | '' | undefined;
+    Array<{ value?: { id?: number } }> | '' | undefined;
   const firstSalon = Array.isArray(salonArr) ? salonArr[0] : undefined;
-  const salonId = firstSalon?.id !== undefined ? String(firstSalon.id) : '';
+  const salonId =
+    firstSalon?.value?.id !== undefined ? String(firstSalon.value.id) : '';
   const salonName = salonNameById.get(salonId);
 
   const shortDescription =

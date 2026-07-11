@@ -19,9 +19,6 @@ import getSearchParams from '@/app/api/utils/getSearchParams';
  * @param   {object}          props.params.searchParams          - Additional search parameters
  * @param   {string}          props.params.searchParams.search   - Search term to filter products
  * @param   {string}          props.params.searchParams.in_stock - Filter products by stock status
- * @param   {string}          props.params.searchParams.color    - Filter products by color attribute
- * @param   {string}          props.params.searchParams.minPrice - Minimum price filter
- * @param   {string}          props.params.searchParams.maxPrice - Maximum price filter
  * @returns {Promise<object>}                                    Promise that resolves to an object containing products, error status, and total count
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
  */
@@ -33,9 +30,6 @@ export const getProductsByPageUrl = async (props: {
     searchParams?: {
       search?: string;
       in_stock?: string;
-      color?: string;
-      minPrice?: string;
-      maxPrice?: string;
     };
   };
 }): Promise<{

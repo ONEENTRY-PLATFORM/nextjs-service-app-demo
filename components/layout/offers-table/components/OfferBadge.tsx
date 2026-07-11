@@ -5,11 +5,11 @@ import type { JSX } from 'react';
 import BadgeIcon from '@/components/icons/badge';
 
 /**
- * OfferBadge component displays a badge with product type information
+ * OfferBadge component displays a badge with the offer type information
  *
- * This component renders a visual badge that shows the product type, consisting of an icon
- * and a circular badge with text. The badge is conditionally rendered only when product
- * type information is available.
+ * This component renders a visual badge that shows the offer type, consisting of an icon
+ * and a circular badge with text. The badge is conditionally rendered only when the
+ * `offer_type` list value is available.
  * @param   {object}          props         - Component properties
  * @param   {IProductsEntity} props.product - Product entity object containing all product data,
  *                                          including attribute values where the badge information is stored
@@ -28,10 +28,10 @@ const OfferBadge = ({
   product: IProductsEntity;
   color: string;
 }): JSX.Element => {
-  /** Extract the badge title from the product's attribute values */
-  const typeArr = attributeValues?.type?.value as
+  /** Extract the badge title from the offer's `offer_type` list value */
+  const offerTypeArr = attributeValues?.offer_type?.value as
     Array<{ title: string }> | undefined;
-  const badge = typeArr?.[0]?.title;
+  const badge = offerTypeArr?.[0]?.title;
 
   /** Early return with empty fragment if no badge title is found */
   if (!badge) {
