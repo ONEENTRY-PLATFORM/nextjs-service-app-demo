@@ -1,78 +1,78 @@
 Title,Description,Category, SKU,Duration (min),Specialist Grade,Price,Salon 1 — (Premium),Salon 2 — (Premium),Salon 3 — (Mid),Salon 3 — (Budget)
-Haircut,"Professional haircut: consultation, wash with premium products, precision cut tailored to face shape and hair texture, finishing.",Hair/Haircut,hh01,60,Senior Stylist,260 AED,260 AED,260 AED,200 AED,140 AED
-Bang Trim,Quick fringe trim and shaping between full haircuts. Light styling included.,Hair/Haircut,hh02,20,Stylist,80 AED,80 AED,80 AED,60 AED,40 AED
-Haircut & Blow Dry,Full haircut combined with professional blow-dry styling for a complete polished look.,Hair/Haircut,hh03,90,Stylist,370 AED,370 AED,370 AED,280 AED,200 AED
-Root Touch-Up,"Color application on regrowth area only (up to 2 cm). Includes wash, treatment mask, blow-dry.",Hair/Coloring,hc01,90,Senior Stylist,340 AED,340 AED,340 AED,260 AED,190 AED
-Full Coloring,"Single-process color from roots to ends. Consultation, color application, treatment, wash, blow-dry.",Hair/Coloring,hc02,150,Senior Stylist,550 AED,550 AED,550 AED,410 AED,300 AED
-Highlights,Classic foil highlights for dimension and brightness. Price varies by length (half/full head).,Hair/Coloring, hc03,180,Top Stylist,750 AED,750 AED,750 AED,560 AED,410 AED
-Balayage,Hand-painted freehand lightening technique for a natural sun-kissed effect with soft regrowth.,Hair/Coloring, hc04,210,Top Stylist,980 AED,980 AED,980 AED,Not available,Not available
-Airtouch,"Modern coloring technique using a hairdryer to separate strands, creating a soft seamless blend.",Hair/Coloring,hc05,240,Top Stylist,1 100 AED,1 100 AED,1 100 AED,Not available,Not available
-Global Blonde,Full lightening service for uniform blonde shade. Olaplex bond protection included.,Hair/Coloring,hc06,240,Top Stylist,1 250 AED,1 250 AED,1 250 AED,Not available,Not available
-Toner / Gloss,"Demi-permanent toner to refresh color, neutralize unwanted tones, add shine.",Hair/Coloring, hc07,45,Senior Stylist,210 AED,210 AED,210 AED,160 AED,120 AED
-Blowout,"Professional blow-dry with round brush. Wash, heat protection, finishing products included.",Hair/Styling,hs01,45,Stylist,180 AED,180 AED,180 AED,140 AED,100 AED
-Curls / Waves,Heat styling with curling iron or wand to create defined curls or soft Hollywood waves.,Hair/Styling,hs02,60,Senior Stylist,260 AED,260 AED,260 AED,200 AED,140 AED
-Evening Hairstyle,"Elegant updo or styled look for special occasions, dinners or events. Accessories included.",Hair/Styling, hs03,75,Top Stylist,420 AED,420 AED,420 AED,320 AED,230 AED
-Bridal Hairstyle,"Personalized bridal hair design with trial session, accessories placement and all-day hold.",Hair/Styling, hs04,120,Top Stylist,950 AED,950 AED,950 AED,not available,520 AED
-Updo,Classic or modern updo for events. Consultation and finishing spray included.,Hair/Styling,hs05,60,Senior Stylist,320 AED,320 AED,320 AED,240 AED,180 AED
-Keratin Treatment,Smoothing treatment that reduces frizz and adds shine. Lasts up to 4 months. Wash and styling included.,Hair/Hair Care,hca01,180,Top Stylist,1 000 AED,1 000 AED,1 000 AED,not available,Not available
-Hair Filler (Deep Repair),Intensive restoration for damaged hair using protein and amino acid complex.,Hair/Hair Care,hca02,90,Senior Stylist,520 AED,520 AED,520 AED,390 AED,290 AED
-Scalp Treatment,"Targeted scalp therapy with massage, exfoliation and serum application.",Hair/Hair Care, hca03,45,Senior Stylist,260 AED,260 AED,260 AED,200 AED,140 AED
-Hair Spa Ritual,"Relaxing hair treatment with deep conditioning mask, scalp massage and aromatherapy.",Hair/Hair Care, hca04,60,Senior Stylist,330 AED,330 AED,330 AED,250 AED,180 AED
-Hair Loss Treatment,Course-based program targeting hair loss using mesotherapy-style serums and LED stimulation.,Hair/Hair Care, hca05,75,Senior Stylist,450 AED,450 AED,450 AED,340 AED,250 AED
-Brow Shaping (Wax/Threading),Precise brow design using wax or threading technique. Consultation and aftercare included.,Face/Brows & Lashes,fbl01,30,Master Therapist,110 AED,110 AED,110 AED,80 AED,60 AED
-Brow Tint / Henna Brows,Brow tinting with professional dye or henna for long-lasting natural-looking color.,Face/Brows & Lashes,fbl02,30,Master Therapist,130 AED,130 AED,130 AED,100 AED,70 AED
-Brow Lamination,"Brow lifting and setting treatment for full, brushed-up appearance lasting 6-8 weeks.",Face/Brows & Lashes,fbl03,45,Master Therapist,260 AED,260 AED,260 AED,200 AED,140 AED
-Lash Lift & Tint,Lash lifting with tinting for naturally curled and darker lashes lasting up to 8 weeks.,Face/Brows & Lashes,fbl04,60,Master Therapist,260 AED,260 AED,260 AED,200 AED,140 AED
-Lash Extensions — Classic,One-by-one application of synthetic lashes for natural lengthening effect.,Face/Brows & Lashes,fbl05,90,Master Therapist,380 AED,380 AED,380 AED,280 AED,210 AED
-Lash Extensions — Volume,"Hand-made fan technique for fuller, denser lash look (2D-5D fans).",Face/Brows & Lashes,fbl06,120,Master Therapist,520 AED,520 AED,520 AED,390 AED,290 AED
-Lash Extensions — Mega Volume,Ultra-dense lash design with 6D+ fans for dramatic effect.,Face/Brows & Lashes,fbl07,150,Master Therapist,700 AED,700 AED,700 AED,520 AED,390 AED
-Day Makeup,"Light natural makeup suitable for daytime events, business meetings or photo sessions.",Face/Makeup,fm01,45,Master Therapist,290 AED,290 AED,290 AED,220 AED,160 AED
-Evening Makeup,"Glamorous evening look with smoky eyes, contouring and long-lasting finish.",Face/Makeup,fm02,60,Makeup Specialist,450 AED,450 AED,450 AED,340 AED,250 AED
-Bridal Makeup,"Bridal makeup with skin prep, trial session and on-the-day application. Long-wear formula.",Face/Makeup,fm03,90,Makeup Specialist,1 000 AED,1 000 AED,1 000 AED,750 AED,550 AED
-Makeup Lesson,Personal makeup tutorial: client learns to apply makeup on themselves under expert guidance.,Face/Makeup,fm04,90,Makeup Specialist,520 AED,520 AED,520 AED,390 AED,290 AED
-Express Facial,"Quick refreshing facial: cleansing, light exfoliation, mask and moisturizer. Ideal during lunch break.",Face/Facials,ff01,30,Master Therapist,260 AED,260 AED,260 AED,200 AED,140 AED
-Deep Cleansing Facial,"Thorough cleansing with extractions, steam, exfoliation and purifying mask for oily/congested skin.",Face/Facials,ff02,60,Master Therapist,450 AED,450 AED,450 AED,340 AED,250 AED
-Hydrating Facial,Moisture-restoring facial with hyaluronic acid serums and nourishing mask for dehydrated skin.,Face/Facials,ff03,60,Master Therapist,490 AED,490 AED,490 AED,370 AED,270 AED
-Anti-Aging Facial,"Advanced facial with peptide complex, lifting massage and firming mask to reduce fine lines.",Face/Facials,ff04,75,Master Therapist,640 AED,640 AED,640 AED,480 AED,350 AED
-Brightening Facial,Targeted facial for hyperpigmentation and uneven tone using vitamin C and brightening agents.,Face/Facials,ff05,75,Master Therapist,600 AED,600 AED,600 AED,450 AED,330 AED
-Chemical Peel — Glycolic,"Superficial AHA peel to improve texture, brightness and minor pigmentation. Course recommended.",Face/Aesthetic Treatments,fat01,45,Master Therapist,550 AED,550 AED,550 AED,410 AED,300 AED
-Chemical Peel — Salicylic,BHA peel for oily and acne-prone skin. Reduces blackheads and inflammation.,Face/Aesthetic Treatments,fat02,45,Master Therapist,550 AED,550 AED,550 AED,410 AED,300 AED
-Chemical Peel — Mandelic,Gentle peel suitable for sensitive skin and darker skin tones. Brightens without irritation.,Face/Aesthetic Treatments,fat03,45,Master Therapist,600 AED,600 AED,600 AED,450 AED,330 AED
-Microneedling,"Collagen-induction therapy with sterile needles. Improves texture, scars and fine lines.",Face/Aesthetic Treatments,fat04,75,Master Therapist,980 AED,980 AED,980 AED,Not available,Not available
-RF Lifting,Radiofrequency treatment to tighten skin and stimulate collagen. Non-invasive.,Face/Aesthetic Treatments,fat05,60,Master Therapist,870 AED,870 AED,870 AED,650 AED,480 AED
-HIFU,High-intensity focused ultrasound for deep facial lifting effect. Results in 4-8 weeks.,Face/Aesthetic Treatments,fat06,90,Master Therapist,1 750 AED,1 750 AED,1 750 AED,Not available,Not available
-LED Therapy,"Light therapy with red/blue/near-infrared LEDs for anti-aging, acne and inflammation.",Face/Aesthetic Treatments,fat07,30,Master Therapist,320 AED,320 AED,320 AED,240 AED,180 AED
-Mesotherapy (No-Needle),Active ingredient delivery via electroporation. No needles. Hydration and brightening focus.,Face/Aesthetic Treatments,fat08,60,Master Therapist,790 AED,790 AED,790 AED,590 AED,430 AED
-Relax Massage,Gentle full-body massage with aromatic oils to relieve tension and stress.,Body/Massage,bm01,60,Master Therapist,380 AED,380 AED,380 AED,280 AED,210 AED
-Deep Tissue Massage,Firm-pressure massage targeting muscle knots and chronic tension.,Body/Massage,bm02,60,Master Therapist,450 AED,450 AED,450 AED,340 AED,250 AED
-Anti-Cellulite Massage,Vigorous massage with anti-cellulite oils to improve circulation and skin texture.,Body/Massage,bm03,60, Master Therapist,450 AED,450 AED,450 AED,340 AED,250 AED
-Hot Stone Massage,Relaxing massage with warmed basalt stones to release deep muscle tension.,Body/Massage,bm04,75,Master Therapist,560 AED,560 AED,560 AED,420 AED,310 AED
-Lymphatic Drainage,Gentle rhythmic technique to stimulate lymphatic flow and reduce water retention.,Body/Massage,bm05,60,Master Therapist,490 AED,490 AED,490 AED,370 AED,270 AED
-Moroccan Bath,Traditional black soap cleansing followed by Kessa glove exfoliation and rhassoul clay mask.,Body/Hammam & Rituals,bh01,60,Master Therapist,450 AED,450 AED,450 AED,340 AED,250 AED
-Turkish Hammam,"Classic Turkish bath ritual with steam, foam massage and exfoliation.",Body/Hammam & Rituals,bh02,75,Master Therapist,520 AED,520 AED,520 AED,390 AED,290 AED
-Body Scrub & Polish,Full-body exfoliation with sugar or salt scrub followed by nourishing oil application.,Body/Hammam & Rituals,bh03,45,Master Therapist,380 AED,380 AED,380 AED,280 AED,210 AED
-Full Legs,Hair removal of complete leg area using warm wax or sugar paste.,Body/Waxing & Sugaring,bws01,45,Master Therapist,260 AED,260 AED,260 AED,200 AED,140 AED
-Half Legs,Hair removal of lower or upper leg area.,Body/Waxing & Sugaring,bws02,30,Master Therapist,150 AED,150 AED,150 AED,110 AED,80 AED
-Full Arms,Hair removal of complete arm area.,Body/Waxing & Sugaring,bws03,30,Master Therapist,160 AED,160 AED,160 AED,120 AED,90 AED
-Underarm,Quick and precise hair removal of the underarm area.,Body/Waxing & Sugaring,bws04,15,Master Therapist,80 AED,80 AED,80 AED,60 AED,40 AED
-Bikini — Classic,Hair removal along the bikini line only.,Body/Waxing & Sugaring,bws05,20,Master Therapist,130 AED,130 AED,130 AED,100 AED,70 AED
-Bikini — Brazilian,Extended bikini removal leaving a small strip in front.,Body/Waxing & Sugaring,bws06,30,Master Therapist,210 AED,210 AED,210 AED,160 AED,120 AED
-Bikini — Hollywood,Complete hair removal of the intimate area.,Body/Waxing & Sugaring,bws07,35,Master Therapist,260 AED,260 AED,260 AED,200 AED,140 AED
-Face Waxing / Threading,"Removal of facial hair (upper lip, chin, sides) using wax or threading.",Body/Waxing & Sugaring,bws08,20,Master Therapist,110 AED,110 AED,110 AED,80 AED,60 AED
-Full Body,"Complete hair removal package: legs, arms, underarms, bikini and face.",Body/Waxing & Sugaring,bws09,120,Master Therapist,750 AED,750 AED,750 AED,560 AED,410 AED
-Detox Wrap,Body wrap with green clay and essential oils for detoxification and skin firming.,Body/Body Wraps,bbw01,75,Master Therapist,560 AED,560 AED,560 AED,420 AED,310 AED
-Chocolate Wrap,Indulgent wrap with cocoa-rich formula nourishing skin and lifting mood.,Body/Body Wraps,bbw02,75,Master Therapist,600 AED,600 AED,600 AED,450 AED,330 AED
-Seaweed Wrap,Mineral-rich wrap with marine algae to remineralize and tone the skin.,Body/Body Wraps,bbw03,75,Master Therapist,600 AED,600 AED,600 AED,450 AED,330 AED
-Slimming Wrap,Targeted wrap with caffeine and active ingredients for inch-loss effect.,Body/Body Wraps,bbw04,75,Master Therapist,640 AED,640 AED,640 AED,480 AED,350 AED
-Henna Hand Design,"Traditional henna design on hands. Small, medium or full design options.",Body/Henna Art,bha01,45,Master Therapist,180 AED,180 AED,180 AED,140 AED,100 AED
-Henna Feet Design,"Traditional henna design on feet, suitable for celebrations and pre-wedding rituals.",Body/Henna Art,bha02,45,Master Therapist,180 AED,180 AED,180 AED,140 AED,100 AED
-Bridal Henna,Elaborate bridal henna design covering hands and feet with intricate patterns.,Body/Henna Art,bha03,180,Master Therapist,1 000 AED,1 000 AED,1 000 AED,Not available,Not available
-Eid / Occasion Henna,Festive henna design for Eid celebrations and special occasions.,Body/Henna Art,bha04,60,Master Therapist,260 AED,260 AED,260 AED,200 AED,140 AED
-Classic Manicure,"Nail shaping, cuticle care, hand massage and regular polish application.",Nails/Manicure,nm01,45,Nail Specialist,120 AED,120 AED,120 AED,90 AED,70 AED
-Gel Manicure,Manicure with long-lasting gel polish. Up to 3 weeks chip-free wear.,Nails/Manicure,nm02,60,Nail Specialist,190 AED,190 AED,190 AED,140 AED,100 AED
-Combined Manicure,Dry e-file manicure technique with deep cuticle work and ultra-precise polish application.,Nails/Manicure,nm03,90,Nail Specialist,260 AED,260 AED,260 AED,200 AED,140 AED
-Nail Art,Custom nail art design added to manicure. Price varies by complexity (per nail or full set).,Nails/Manicure,nm04,45,Nail Specialist,150 AED,150 AED,150 AED,110 AED,80 AED
-Classic Pedicure,"Foot soak, nail shaping, cuticle care, light callus removal and polish.",Nails/Pedicure,np01,60,Nail Specialist,180 AED,180 AED,180 AED,140 AED,100 AED
-Spa Pedicure,"Extended pedicure with exfoliating scrub, mask, foot massage and polish.",Nails/Pedicure,np02,75,Nail Specialist,260 AED,260 AED,260 AED,200 AED,140 AED
-Gel Pedicure,Pedicure with long-lasting gel polish for up to 4 weeks of perfect shine.,Nails/Pedicure,np03,75,Nail Specialist,280 AED,280 AED,280 AED,210 AED,150 AED
-Medical Pedicure,"Specialized pedicure for problem feet: cracks, calluses, ingrown nails. Performed with medical tools.",Nails/Pedicure,np04,90,Nail Specialist,450 AED,450 AED,450 AED,340 AED,250 AED
+Haircut,"Professional haircut: consultation, wash with premium products, precision cut tailored to face shape and hair texture, finishing.",Hair/Haircut,hh01,60,Senior Stylist,260,260,260,200,140
+Bang Trim,Quick fringe trim and shaping between full haircuts. Light styling included.,Hair/Haircut,hh02,20,Stylist,80,80,80,60,40
+Haircut & Blow Dry,Full haircut combined with professional blow-dry styling for a complete polished look.,Hair/Haircut,hh03,90,Stylist,370,370,370,280,200
+Root Touch-Up,"Color application on regrowth area only (up to 2 cm). Includes wash, treatment mask, blow-dry.",Hair/Coloring,hc01,90,Senior Stylist,340,340,340,260,190
+Full Coloring,"Single-process color from roots to ends. Consultation, color application, treatment, wash, blow-dry.",Hair/Coloring,hc02,150,Senior Stylist,550,550,550,410,300
+Highlights,Classic foil highlights for dimension and brightness. Price varies by length (half/full head).,Hair/Coloring, hc03,180,Top Stylist,750,750,750,560,410
+Balayage,Hand-painted freehand lightening technique for a natural sun-kissed effect with soft regrowth.,Hair/Coloring, hc04,210,Top Stylist,980,980,980,Not available,Not available
+Airtouch,"Modern coloring technique using a hairdryer to separate strands, creating a soft seamless blend.",Hair/Coloring,hc05,240,Top Stylist,1 100,1 100,1 100,Not available,Not available
+Global Blonde,Full lightening service for uniform blonde shade. Olaplex bond protection included.,Hair/Coloring,hc06,240,Top Stylist,1 250,1 250,1 250,Not available,Not available
+Toner / Gloss,"Demi-permanent toner to refresh color, neutralize unwanted tones, add shine.",Hair/Coloring, hc07,45,Senior Stylist,210,210,210,160,120
+Blowout,"Professional blow-dry with round brush. Wash, heat protection, finishing products included.",Hair/Styling,hs01,45,Stylist,180,180,180,140,100
+Curls / Waves,Heat styling with curling iron or wand to create defined curls or soft Hollywood waves.,Hair/Styling,hs02,60,Senior Stylist,260,260,260,200,140
+Evening Hairstyle,"Elegant updo or styled look for special occasions, dinners or events. Accessories included.",Hair/Styling, hs03,75,Top Stylist,420,420,420,320,230
+Bridal Hairstyle,"Personalized bridal hair design with trial session, accessories placement and all-day hold.",Hair/Styling, hs04,120,Top Stylist,950,950,950,not available,520
+Updo,Classic or modern updo for events. Consultation and finishing spray included.,Hair/Styling,hs05,60,Senior Stylist,320,320,320,240,180
+Keratin Treatment,Smoothing treatment that reduces frizz and adds shine. Lasts up to 4 months. Wash and styling included.,Hair/Hair Care,hca01,180,Top Stylist,1 000,1 000,1 000,not available,Not available
+Hair Filler (Deep Repair),Intensive restoration for damaged hair using protein and amino acid complex.,Hair/Hair Care,hca02,90,Senior Stylist,520,520,520,390,290
+Scalp Treatment,"Targeted scalp therapy with massage, exfoliation and serum application.",Hair/Hair Care, hca03,45,Senior Stylist,260,260,260,200,140
+Hair Spa Ritual,"Relaxing hair treatment with deep conditioning mask, scalp massage and aromatherapy.",Hair/Hair Care, hca04,60,Senior Stylist,330,330,330,250,180
+Hair Loss Treatment,Course-based program targeting hair loss using mesotherapy-style serums and LED stimulation.,Hair/Hair Care, hca05,75,Senior Stylist,450,450,450,340,250
+Brow Shaping (Wax/Threading),Precise brow design using wax or threading technique. Consultation and aftercare included.,Face/Brows & Lashes,fbl01,30,Master Therapist,110,110,110,80,60
+Brow Tint / Henna Brows,Brow tinting with professional dye or henna for long-lasting natural-looking color.,Face/Brows & Lashes,fbl02,30,Master Therapist,130,130,130,100,70
+Brow Lamination,"Brow lifting and setting treatment for full, brushed-up appearance lasting 6-8 weeks.",Face/Brows & Lashes,fbl03,45,Master Therapist,260,260,260,200,140
+Lash Lift & Tint,Lash lifting with tinting for naturally curled and darker lashes lasting up to 8 weeks.,Face/Brows & Lashes,fbl04,60,Master Therapist,260,260,260,200,140
+Lash Extensions — Classic,One-by-one application of synthetic lashes for natural lengthening effect.,Face/Brows & Lashes,fbl05,90,Master Therapist,380,380,380,280,210
+Lash Extensions — Volume,"Hand-made fan technique for fuller, denser lash look (2D-5D fans).",Face/Brows & Lashes,fbl06,120,Master Therapist,520,520,520,390,290
+Lash Extensions — Mega Volume,Ultra-dense lash design with 6D+ fans for dramatic effect.,Face/Brows & Lashes,fbl07,150,Master Therapist,700,700,700,520,390
+Day Makeup,"Light natural makeup suitable for daytime events, business meetings or photo sessions.",Face/Makeup,fm01,45,Master Therapist,290,290,290,220,160
+Evening Makeup,"Glamorous evening look with smoky eyes, contouring and long-lasting finish.",Face/Makeup,fm02,60,Makeup Specialist,450,450,450,340,250
+Bridal Makeup,"Bridal makeup with skin prep, trial session and on-the-day application. Long-wear formula.",Face/Makeup,fm03,90,Makeup Specialist,1 000,1 000,1 000,750,550
+Makeup Lesson,Personal makeup tutorial: client learns to apply makeup on themselves under expert guidance.,Face/Makeup,fm04,90,Makeup Specialist,520,520,520,390,290
+Express Facial,"Quick refreshing facial: cleansing, light exfoliation, mask and moisturizer. Ideal during lunch break.",Face/Facials,ff01,30,Master Therapist,260,260,260,200,140
+Deep Cleansing Facial,"Thorough cleansing with extractions, steam, exfoliation and purifying mask for oily/congested skin.",Face/Facials,ff02,60,Master Therapist,450,450,450,340,250
+Hydrating Facial,Moisture-restoring facial with hyaluronic acid serums and nourishing mask for dehydrated skin.,Face/Facials,ff03,60,Master Therapist,490,490,490,370,270
+Anti-Aging Facial,"Advanced facial with peptide complex, lifting massage and firming mask to reduce fine lines.",Face/Facials,ff04,75,Master Therapist,640,640,640,480,350
+Brightening Facial,Targeted facial for hyperpigmentation and uneven tone using vitamin C and brightening agents.,Face/Facials,ff05,75,Master Therapist,600,600,600,450,330
+Chemical Peel — Glycolic,"Superficial AHA peel to improve texture, brightness and minor pigmentation. Course recommended.",Face/Aesthetic Treatments,fat01,45,Master Therapist,550,550,550,410,300
+Chemical Peel — Salicylic,BHA peel for oily and acne-prone skin. Reduces blackheads and inflammation.,Face/Aesthetic Treatments,fat02,45,Master Therapist,550,550,550,410,300
+Chemical Peel — Mandelic,Gentle peel suitable for sensitive skin and darker skin tones. Brightens without irritation.,Face/Aesthetic Treatments,fat03,45,Master Therapist,600,600,600,450,330
+Microneedling,"Collagen-induction therapy with sterile needles. Improves texture, scars and fine lines.",Face/Aesthetic Treatments,fat04,75,Master Therapist,980,980,980,Not available,Not available
+RF Lifting,Radiofrequency treatment to tighten skin and stimulate collagen. Non-invasive.,Face/Aesthetic Treatments,fat05,60,Master Therapist,870,870,870,650,480
+HIFU,High-intensity focused ultrasound for deep facial lifting effect. Results in 4-8 weeks.,Face/Aesthetic Treatments,fat06,90,Master Therapist,1 750,1 750,1 750,Not available,Not available
+LED Therapy,"Light therapy with red/blue/near-infrared LEDs for anti-aging, acne and inflammation.",Face/Aesthetic Treatments,fat07,30,Master Therapist,320,320,320,240,180
+Mesotherapy (No-Needle),Active ingredient delivery via electroporation. No needles. Hydration and brightening focus.,Face/Aesthetic Treatments,fat08,60,Master Therapist,790,790,790,590,430
+Relax Massage,Gentle full-body massage with aromatic oils to relieve tension and stress.,Body/Massage,bm01,60,Master Therapist,380,380,380,280,210
+Deep Tissue Massage,Firm-pressure massage targeting muscle knots and chronic tension.,Body/Massage,bm02,60,Master Therapist,450,450,450,340,250
+Anti-Cellulite Massage,Vigorous massage with anti-cellulite oils to improve circulation and skin texture.,Body/Massage,bm03,60,Master Therapist,450,450,450,340,250
+Hot Stone Massage,Relaxing massage with warmed basalt stones to release deep muscle tension.,Body/Massage,bm04,75,Master Therapist,560,560,560,420,310
+Lymphatic Drainage,Gentle rhythmic technique to stimulate lymphatic flow and reduce water retention.,Body/Massage,bm05,60,Master Therapist,490,490,490,370,270
+Moroccan Bath,Traditional black soap cleansing followed by Kessa glove exfoliation and rhassoul clay mask.,Body/Hammam & Rituals,bh01,60,Master Therapist,450,450,450,340,250
+Turkish Hammam,"Classic Turkish bath ritual with steam, foam massage and exfoliation.",Body/Hammam & Rituals,bh02,75,Master Therapist,520,520,520,390,290
+Body Scrub & Polish,Full-body exfoliation with sugar or salt scrub followed by nourishing oil application.,Body/Hammam & Rituals,bh03,45,Master Therapist,380,380,380,280,210
+Full Legs,Hair removal of complete leg area using warm wax or sugar paste.,Body/Waxing & Sugaring,bws01,45,Master Therapist,260,260,260,200,140
+Half Legs,Hair removal of lower or upper leg area.,Body/Waxing & Sugaring,bws02,30,Master Therapist,150,150,150,110,80
+Full Arms,Hair removal of complete arm area.,Body/Waxing & Sugaring,bws03,30,Master Therapist,160,160,160,120,90
+Underarm,Quick and precise hair removal of the underarm area.,Body/Waxing & Sugaring,bws04,15,Master Therapist,80,80,80,60,40
+Bikini — Classic,Hair removal along the bikini line only.,Body/Waxing & Sugaring,bws05,20,Master Therapist,130,130,130,100,70
+Bikini — Brazilian,Extended bikini removal leaving a small strip in front.,Body/Waxing & Sugaring,bws06,30,Master Therapist,210,210,210,160,120
+Bikini — Hollywood,Complete hair removal of the intimate area.,Body/Waxing & Sugaring,bws07,35,Master Therapist,260,260,260,200,140
+Face Waxing / Threading,"Removal of facial hair (upper lip, chin, sides) using wax or threading.",Body/Waxing & Sugaring,bws08,20,Master Therapist,110,110,110,80,60
+Full Body,"Complete hair removal package: legs, arms, underarms, bikini and face.",Body/Waxing & Sugaring,bws09,120,Master Therapist,750,750,750,560,410
+Detox Wrap,Body wrap with green clay and essential oils for detoxification and skin firming.,Body/Body Wraps,bbw01,75,Master Therapist,560,560,560,420,310
+Chocolate Wrap,Indulgent wrap with cocoa-rich formula nourishing skin and lifting mood.,Body/Body Wraps,bbw02,75,Master Therapist,600,600,600,450,330
+Seaweed Wrap,Mineral-rich wrap with marine algae to remineralize and tone the skin.,Body/Body Wraps,bbw03,75,Master Therapist,600,600,600,450,330
+Slimming Wrap,Targeted wrap with caffeine and active ingredients for inch-loss effect.,Body/Body Wraps,bbw04,75,Master Therapist,640,640,640,480,350
+Henna Hand Design,"Traditional henna design on hands. Small, medium or full design options.",Body/Henna Art,bha01,45,Master Therapist,180,180,180,140,100
+Henna Feet Design,"Traditional henna design on feet, suitable for celebrations and pre-wedding rituals.",Body/Henna Art,bha02,45,Master Therapist,180,180,180,140,100
+Bridal Henna,Elaborate bridal henna design covering hands and feet with intricate patterns.,Body/Henna Art,bha03,180,Master Therapist,1 000,1 000,1 000,Not available,Not available
+Eid / Occasion Henna,Festive henna design for Eid celebrations and special occasions.,Body/Henna Art,bha04,60,Master Therapist,260,260,260,200,140
+Classic Manicure,"Nail shaping, cuticle care, hand massage and regular polish application.",Nails/Manicure,nm01,45,Nail Specialist,120,120,120,90,70
+Gel Manicure,Manicure with long-lasting gel polish. Up to 3 weeks chip-free wear.,Nails/Manicure,nm02,60,Nail Specialist,190,190,190,140,100
+Combined Manicure,Dry e-file manicure technique with deep cuticle work and ultra-precise polish application.,Nails/Manicure,nm03,90,Nail Specialist,260,260,260,200,140
+Nail Art,Custom nail art design added to manicure. Price varies by complexity (per nail or full set).,Nails/Manicure,nm04,45,Nail Specialist,150,150,150,110,80
+Classic Pedicure,"Foot soak, nail shaping, cuticle care, light callus removal and polish.",Nails/Pedicure,np01,60,Nail Specialist,180,180,180,140,100
+Spa Pedicure,"Extended pedicure with exfoliating scrub, mask, foot massage and polish.",Nails/Pedicure,np02,75,Nail Specialist,260,260,260,200,140
+Gel Pedicure,Pedicure with long-lasting gel polish for up to 4 weeks of perfect shine.,Nails/Pedicure,np03,75,Nail Specialist,280,280,280,210,150
+Medical Pedicure,"Specialized pedicure for problem feet: cracks, calluses, ingrown nails. Performed with medical tools.",Nails/Pedicure,np04,90,Nail Specialist,450,450,450,340,250

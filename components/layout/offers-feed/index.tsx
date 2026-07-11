@@ -14,8 +14,11 @@ import OffersFeed from './components/OffersFeed';
 const OffersFeedBlock = async ({
   block,
 }: {
-  block: IBlockEntity;
+  block?: IBlockEntity | undefined;
 }): Promise<JSX.Element> => {
+  /** Section heading; falls back to the mock's "Best Offers" when the block is not filled */
+  const title = block?.localizeInfos?.title || 'Best Offers';
+
   return (
     <section className="flex w-full justify-center bg-white py-10 pb-4">
       <div className="mx-auto mb-6 w-full max-w-350 flex-col px-5 max-md:max-w-full">
@@ -25,7 +28,7 @@ const OffersFeedBlock = async ({
             className="mx-auto mb-12 flex w-auto flex-col gap-4"
           >
             <h2 className="title self-center text-4xl leading-8 font-light text-gray-600 uppercase">
-              {block?.localizeInfos?.title}
+              {title}
             </h2>
             <hr className="relative mb-2.5 h-px w-full max-w-37.5 self-center border-b border-solid border-b-gray-600" />
           </TitleAnimations>

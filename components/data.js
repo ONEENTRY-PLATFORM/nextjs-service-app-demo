@@ -67,6 +67,62 @@ export const offerTermsData = [
   'Full package must be redeemed in a single visit.',
 ];
 
+// Demo "BEST OFFERS" for the home page — ported from the static-html mock
+// (`src/app/data/offers.ts` → `OFFERS`). Used as a fallback while the CMS
+// holds no `offer` products (content plan, stage 3). Only the fields the home
+// offer card renders are kept (no detail-page image / duration / tag icon).
+export const homeOffersData = [
+  {
+    id: 'o1',
+    name: 'Divine Hands Ritual',
+    tagline:
+      'Perfect pre-event ritual — groomed nails and elegant henna in one visit.',
+    services: ['Classic Manicure', 'Henna Hand Design'],
+    original: 300,
+    price: 250,
+    discount: '-17%',
+    accentColor: '#109AA9',
+    accentGrad: 'linear-gradient(135deg,#26D2E6,#109AA9)',
+  },
+  {
+    id: 'o2',
+    name: 'Silk & Shine',
+    tagline:
+      'A complete hair makeover — cut, deep treatment, and finished styling.',
+    services: ["Women's Haircut", 'Hair Spa Ritual', 'Blowout'],
+    original: 770,
+    price: 590,
+    discount: '-23%',
+    featured: true,
+    accentColor: '#ed21f1',
+    accentGrad: 'linear-gradient(135deg,#f60efb,#ed21f1)',
+  },
+  {
+    id: 'o3',
+    name: 'Enchanting Gaze',
+    tagline:
+      'Full eye-area refresh — lifted lashes, defined brows, lasting color.',
+    services: ['Lash Lift & Tint', 'Brow Shaping', 'Brow Tint'],
+    original: 500,
+    price: 420,
+    discount: '-16%',
+    accentColor: '#9B4FB2',
+    accentGrad: 'linear-gradient(135deg,#7E63AE,#9B4FB2)',
+  },
+  {
+    id: 'o4',
+    name: 'Sands of Serenity',
+    tagline:
+      'Skin renewal followed by a soothing massage — full sensory escape.',
+    services: ['Moroccan Bath', 'Relax Massage (60 min)'],
+    original: 830,
+    price: 700,
+    discount: '-16%',
+    accentColor: '#109AA9',
+    accentGrad: 'linear-gradient(135deg,#26D2E6,#109AA9)',
+  },
+];
+
 // Salon filter options of the masters page demo roster — the three studios
 // from the static-html mock. Used while stage-4 masters are not in the CMS
 // (see app/masters/getLocalMasters.ts).

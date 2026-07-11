@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
-import type { JSX, Key } from 'react';
+import type { JSX } from 'react';
 import { cache } from 'react';
 
 import { getBlocksByPageUrl, getPageByUrl } from '@/app/api';
@@ -29,8 +29,8 @@ const GalleryFeed = dynamic(() => import('@/components/layout/gallery-feed'), {
   ssr: true,
 });
 
-const HomeDiscount = dynamic(
-  () => import('@/components/layout/home-discount'),
+const HomeCtaBanner = dynamic(
+  () => import('@/components/layout/home-cta-banner'),
   { ssr: true },
 );
 
@@ -125,13 +125,26 @@ const IndexPageLayout = async (): Promise<JSX.Element> => {
   /** Set dictionary for localization */
   ServerProvider('dict', dict);
 
-  /** Return error message if page data or blocks could not be fetched */
-  if (isError || !page || !blocks) {
+  /** The page marker is enough to render; blocks and lists are optional. */
+  if (isError || !page) {
     return <>isError</>;
   }
 
-  /** Sort blocks by their position */
-  const sortedBlocks = sortArrayByPosition(blocks);
+  /**
+   * Index the CMS blocks by their marker so the home page can render a fixed
+   * section layout in the design order (static-html `HomePage.tsx`), passing
+   * each section its block when present. Sections whose block is missing —
+   * or whose CMS data is empty — degrade to the mock's demo fallbacks, so the
+   * layout matches the design regardless of how much of the CMS is populated.
+   */
+  const sortedBlocks = sortArrayByPosition(blocks ?? []);
+  const blockByMarker = new Map<string, IBlockEntity>();
+  sortedBlocks?.forEach((block: IBlockEntity) => {
+    if (block.identifier) {
+      blockByMarker.set(block.identifier, block);
+    }
+  });
+  const heroBlock = blockByMarker.get('home_hero');
 
   return (
     <>
@@ -143,31 +156,22 @@ const IndexPageLayout = async (): Promise<JSX.Element> => {
           }}
         />
       )}
-      {sortedBlocks?.map((block: IBlockEntity, index: Key) => {
-        switch (block.identifier) {
-          case 'home_hero':
-            return <HomeHero key={index} block={block} />;
-          case 'home_catalog':
-            return (
-              <div className="px-5 py-8" key={index}>
-                <CatalogSection block={block} />
-              </div>
-            );
-          case 'home_gallery':
-            return <GalleryFeed key={index} block={block} />;
-          case 'home_offers_feed':
-            return <OffersFeed key={index} block={block} />;
-          case 'home_discounts':
-            return <HomeDiscount key={index} block={block} />;
-          case 'home_masters':
-            return <MastersFeed key={index} block={block} />;
-          case 'reviews_carousel':
-            return <ReviewsCarousel key={index} />;
-          default:
-            break;
-        }
-        return;
-      })}
+      {/* 1. Hero carousel banner */}
+      {heroBlock && <HomeHero block={heroBlock} />}
+      {/* 2. Service catalog */}
+      <div className="px-5 py-8">
+        <CatalogSection block={blockByMarker.get('home_catalog')} />
+      </div>
+      {/* 3. Gallery strip */}
+      <GalleryFeed block={blockByMarker.get('home_gallery')} />
+      {/* 4. Best offers */}
+      <OffersFeed block={blockByMarker.get('home_offers_feed')} />
+      {/* 5. Booking CTA banner */}
+      <HomeCtaBanner />
+      {/* 6. Our specialists */}
+      <MastersFeed block={blockByMarker.get('home_masters')} />
+      {/* 7. Reviews */}
+      <ReviewsCarousel />
     </>
   );
 };

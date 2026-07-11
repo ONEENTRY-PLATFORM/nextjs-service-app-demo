@@ -5,7 +5,9 @@ import type { JSX } from 'react';
 
 import TitleAnimations from '@/app/animations/TitleAnimations';
 import { getChildPagesByParentUrl } from '@/app/api';
+import getLocalGalleryItems from '@/app/gallery/getLocalGalleryItems';
 import getLqipPreview from '@/components/hooks/getLqipPreview';
+import { SUB_TO_MAIN } from '@/components/layout/gallery-page/taxonomy';
 import type { OneEntryImageFile } from '@/components/utils';
 import { getGalleryImageUrls, shuffleArray } from '@/components/utils';
 
@@ -20,7 +22,7 @@ import GalleryCarousel from './components/GalleryCarousel';
 const GalleryFeed = async ({
   block,
 }: {
-  block: IBlockEntity;
+  block?: IBlockEntity | undefined;
 }): Promise<JSX.Element> => {
   /** Fetch child pages for the gallery and their respective child pages concurrently */
   const parentPagesResponse = await getChildPagesByParentUrl('gallery');
@@ -31,8 +33,19 @@ const GalleryFeed = async ({
   const galleryDataPromises = parentPages.map(fetchGalleryData);
   /** Resolve all gallery data promises and flatten results */
   const galleryData = (await Promise.all(galleryDataPromises)).flat();
+
+  /**
+   * Fall back to the local photo library when the CMS gallery tree is not
+   * populated yet (content plan, stage 5), so the home strip matches the
+   * design instead of rendering empty.
+   */
+  const cards =
+    galleryData.length > 0 ? galleryData : await getLocalGalleryFeed();
   /** Shuffle gallery data and take first 10 items for feed */
-  const feedCards = shuffleArray(galleryData).slice(0, 10);
+  const feedCards = shuffleArray(cards).slice(0, 10);
+
+  /** Section heading; falls back to the mock's "Gallery" when the block is not filled */
+  const title = block?.localizeInfos?.title || 'Gallery';
 
   /** Render gallery feed section with title and carousel */
   return (
@@ -44,7 +57,7 @@ const GalleryFeed = async ({
         >
           {/** Display gallery feed section title */}
           <h2 className="title self-center text-4xl leading-8 font-light text-gray-600 uppercase">
-            {block?.localizeInfos?.title}
+            {title}
           </h2>
           <hr className="relative mb-2.5 h-px w-full max-w-37.5 self-center border-b border-solid border-b-gray-600" />
         </TitleAnimations>
@@ -56,6 +69,28 @@ const GalleryFeed = async ({
     </section>
   );
 };
+
+/**
+ * Build gallery feed cards from the local photo library
+ * (`public/images/Beauty content/Gallery/`) — the demo fallback used while the
+ * CMS gallery tree is empty. Each card links to the matching service category
+ * (`/services/hair`), mirroring the static-html home GALLERY strip.
+ * @returns {Promise<FeedCard[]>} Demo gallery cards
+ */
+async function getLocalGalleryFeed(): Promise<FeedCard[]> {
+  const items = await getLocalGalleryItems();
+  return items.map((item) => {
+    const main = SUB_TO_MAIN[item.category];
+    return {
+      name: item.master,
+      link: main ? `/services/${main.toLowerCase()}` : '/gallery',
+      img: item.url,
+      thumb: item.url,
+      preview: null,
+      spec: { title: item.title } as ILocalizeInfo,
+    };
+  });
+}
 
 type FeedCard = {
   name: string;
