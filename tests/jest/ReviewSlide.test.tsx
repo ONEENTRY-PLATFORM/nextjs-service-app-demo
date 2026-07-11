@@ -7,13 +7,10 @@ describe('ReviewSlide', () => {
     render(
       <ReviewSlide
         item={{ title: 'Great salon', text: 'Loved the haircut!', rating: 4 }}
-        setState={jest.fn()}
       />,
     );
 
-    expect(
-      screen.getByRole('heading', { name: 'Great salon' }),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Great salon')).toBeInTheDocument();
     expect(screen.getByText('Loved the haircut!')).toBeInTheDocument();
     expect(screen.getByLabelText('Rating of 4 out of 5')).toBeInTheDocument();
   });

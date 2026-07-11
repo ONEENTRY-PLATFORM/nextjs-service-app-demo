@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
-import { Lato } from 'next/font/google';
+import { Lato, Oswald } from 'next/font/google';
 import type { JSX, ReactNode } from 'react';
 import { ToastContainer } from 'react-toastify';
 
@@ -43,6 +43,18 @@ const lato = Lato({
   preload: true,
   adjustFontFallback: true,
   variable: '--font-lato',
+});
+
+/**
+ * Condensed display face for the hero banner titles — matches the narrow font
+ * baked into the promo artwork. Exposed as the `--font-oswald` CSS variable and
+ * applied to the hero overlay via `style={{ fontFamily: 'var(--font-oswald)' }}`.
+ */
+const oswald = Oswald({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  display: 'swap',
+  variable: '--font-oswald',
 });
 
 const oneentryUrl =
@@ -117,7 +129,9 @@ export default async function RootLayout({
 
     return (
       <html lang={HTML_LANG}>
-        <body className={`${lato.variable} flex min-h-screen flex-col`}>
+        <body
+          className={`${lato.variable} ${oswald.variable} flex min-h-screen flex-col`}
+        >
           <main className="flex grow flex-col items-center justify-center gap-3 p-8 text-center">
             <h1 className="text-2xl font-bold">{heading}</h1>
             <p className="text-base text-neutral-600">{details}</p>
@@ -137,7 +151,9 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={`${lato.variable} flex min-h-screen flex-col`}>
+      <body
+        className={`${lato.variable} ${oswald.variable} flex min-h-screen flex-col`}
+      >
         <RegisterGSAP />
         <StoreProvider>
           <AuthProvider>

@@ -2,13 +2,23 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import type { JSX } from 'react';
 import { useEffect, useState } from 'react';
 
-/** A single hero slide: desktop and mobile banner images. */
+/**
+ * A single hero slide: desktop/mobile banner images plus the optional CMS text
+ * overlay (title, subtitle, sale badge and CTA button). Empty text fields are
+ * simply not rendered.
+ */
 export type HeroSlide = {
   desktop: string;
   mobile: string;
+  title: string;
+  text: string;
+  sale: string;
+  buttonText: string;
+  buttonLink: string;
 };
 
 /**
@@ -79,6 +89,41 @@ const HeroSlider = ({
                 sizes="100vw"
                 className="object-cover md:hidden"
               />
+            )}
+
+            {/* CMS text overlay — text column on the left (sale badge, title,
+                subtitle); the CTA button sits bottom-right, as in the mock. */}
+            {(slide.sale || slide.title || slide.text) && (
+              <div
+                className="absolute inset-y-0 left-16 z-10 flex max-w-[68%] flex-col items-start justify-center gap-3 pr-5 md:left-[7%] md:gap-5"
+                style={{ fontFamily: 'var(--font-oswald)' }}
+              >
+                {slide.sale && (
+                  <div className="flex aspect-square w-20 items-center justify-center rounded-full border border-white/40 bg-fuchsia-500/35 backdrop-blur-md md:w-28 lg:w-32">
+                    <span className="px-2 text-center text-xl leading-none font-semibold text-white md:text-3xl">
+                      {slide.sale}
+                    </span>
+                  </div>
+                )}
+                {slide.title && (
+                  <h1 className="text-5xl leading-none font-medium text-white md:text-7xl lg:text-8xl">
+                    {slide.title}
+                  </h1>
+                )}
+                {slide.text && (
+                  <p className="text-lg font-light tracking-wide text-white/85 md:text-2xl">
+                    {slide.text}
+                  </p>
+                )}
+              </div>
+            )}
+            {slide.buttonText && (
+              <Link
+                href={slide.buttonLink || '#'}
+                className="absolute right-5 bottom-14 z-10 inline-flex items-center justify-center rounded-xl bg-white px-8 py-3.5 text-sm font-normal tracking-[0.2em] text-ink uppercase transition-colors hover:bg-gray-50 md:right-[6%] md:bottom-[14%] md:text-base"
+              >
+                {slide.buttonText}
+              </Link>
             )}
           </div>
         ))}

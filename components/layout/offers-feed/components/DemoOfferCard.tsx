@@ -35,10 +35,10 @@ export type DemoOffer = {
  *
  * The card and the button both lead to the booking page — demo offers have no
  * CMS product to add to the cart.
- * @param   {object}      props        - Component properties
- * @param   {DemoOffer}   props.offer  - Plain demo offer
- * @param   {number}      props.index  - Index of the card for animation purposes
- * @returns {JSX.Element}              React component representing a demo offer card
+ * @param   {object}      props       - Component properties
+ * @param   {DemoOffer}   props.offer - Plain demo offer
+ * @param   {number}      props.index - Index of the card for animation purposes
+ * @returns {JSX.Element}             React component representing a demo offer card
  */
 const DemoOfferCard = ({
   offer,

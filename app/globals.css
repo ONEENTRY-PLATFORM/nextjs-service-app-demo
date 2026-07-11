@@ -310,6 +310,21 @@ address {
   opacity: 0;
 }
 
+/* Reviews slider — fade + slight rise when the active review changes */
+@keyframes review-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.review-fade {
+  animation: review-fade 0.25s ease-out;
+}
+
 @media (width < 768px) {
   .login-btn {
     padding-right: 5vw;

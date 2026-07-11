@@ -358,7 +358,15 @@ const HeroAnimations = ({
 
   return (
     <div ref={ref} className={className}>
-      <svg id="hero_mask" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+      {/* Decorative loader-reveal mask. `pointer-events-none` is required: its
+          full-size <svg> box sits above the hero (z-50) and would otherwise
+          swallow every click on the slider arrows, dots and CTA button. */}
+      <svg
+        id="hero_mask"
+        viewBox="0 0 1000 1000"
+        preserveAspectRatio="none"
+        className="pointer-events-none"
+      >
         <path
           fill="#ffffff"
           className="mask_path"

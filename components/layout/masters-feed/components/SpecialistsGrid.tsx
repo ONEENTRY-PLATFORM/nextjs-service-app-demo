@@ -4,16 +4,17 @@ import type { JSX } from 'react';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 
 /**
- * SpecialistsDemoGrid — the "OUR SPECIALISTS" strip rendered from the demo
- * roster (`getLocalMasters`) while the CMS holds no masters (content plan,
- * stage 4). Full-width edge-to-edge tiles with a purple gradient overlay, name,
- * role and a "Check a profile" link, mirroring the static-html mock. Every tile
- * links to the specialists page — demo masters have no individual profile.
+ * SpecialistsGrid — the "OUR SPECIALISTS" strip ported from the static-html
+ * mock (`HomePage.tsx` → OUR SPECIALISTS): full-width edge-to-edge tiles with a
+ * purple gradient overlay, name, role and a "Check a profile" link. Renders the
+ * same normalized {@link MasterItem} shape whether it comes from CMS admins
+ * (each tile links to `/masters/{id}`) or the demo roster (linking to the
+ * specialists page).
  * @param   {object}       props         - Component properties
- * @param   {MasterItem[]} props.masters - Demo specialists to display (already trimmed to the strip length)
+ * @param   {MasterItem[]} props.masters - Specialists to display (already trimmed to the strip length)
  * @returns {JSX.Element}                Specialists grid
  */
-const SpecialistsDemoGrid = ({
+const SpecialistsGrid = ({
   masters,
 }: {
   masters: MasterItem[];
@@ -23,17 +24,19 @@ const SpecialistsDemoGrid = ({
       {masters.map((spec) => (
         <Link
           key={spec.id}
-          href="/masters"
-          className="group relative block overflow-hidden rounded-[15px] text-left shadow-[0_10px_30px_rgba(124,42,232,0.18)]"
+          href={spec.href ?? '/masters'}
+          className="group relative block overflow-hidden rounded-[15px] bg-slate-100 text-left shadow-[0_10px_30px_rgba(124,42,232,0.18)]"
           style={{ aspectRatio: '3/4' }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={spec.photo}
-            alt={spec.name}
-            loading="lazy"
-            className="absolute inset-0 size-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-          />
+          {spec.photo && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={spec.photo}
+              alt={spec.name}
+              loading="lazy"
+              className="absolute inset-0 size-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+            />
+          )}
           {/* Purple gradient overlay */}
           <div
             className="absolute inset-x-0 bottom-0 h-[62%]"
@@ -60,4 +63,4 @@ const SpecialistsDemoGrid = ({
   );
 };
 
-export default SpecialistsDemoGrid;
+export default SpecialistsGrid;

@@ -33,7 +33,7 @@ const OffersFeed = async ({
    */
   if (products.length < 1) {
     return (
-      <OffersAnimations className="grid w-full grid-cols-1 items-stretch gap-6 sm:max-xl:grid-cols-2 xl:grid-cols-4 lg:gap-8">
+      <OffersAnimations className="grid w-full grid-cols-1 items-stretch gap-6 xl:grid-cols-4 sm:max-xl:grid-cols-2 lg:gap-8">
         {(homeOffersData as DemoOffer[]).map((offer, index) => (
           <DemoOfferCard key={offer.id} offer={offer} index={index} />
         ))}
@@ -43,7 +43,7 @@ const OffersFeed = async ({
 
   /** Render offers grid with animation wrapper */
   return (
-    <OffersAnimations className="grid w-full grid-cols-1 items-stretch gap-6 sm:max-xl:grid-cols-2 xl:grid-cols-4 lg:gap-8">
+    <OffersAnimations className="grid w-full grid-cols-1 items-stretch gap-6 xl:grid-cols-4 sm:max-xl:grid-cols-2 lg:gap-8">
       {products.map((product, index) => (
         <OfferCard key={product.id} product={product} index={index} />
       ))}

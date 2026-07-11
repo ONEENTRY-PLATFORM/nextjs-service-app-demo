@@ -13,7 +13,7 @@ import type { JSX } from 'react';
  */
 const HomeCtaBanner = (): JSX.Element => {
   return (
-    <section className="bg-white py-4 md:py-6 xl:py-10">
+    <section className="bg-white py-4 xl:py-10 md:py-6">
       <div className="mx-auto w-full max-w-350 px-5">
         <div className="relative w-full overflow-hidden rounded-3xl">
           {/* Mobile banner */}

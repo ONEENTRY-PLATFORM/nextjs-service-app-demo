@@ -26,17 +26,40 @@ const HomeHero = async ({
   /** Fetch slides of the slider block (not part of block attributes) */
   const { slides } = await getBlockSlides(block.identifier);
 
-  /** Map visible slides to desktop/mobile image pairs */
+  /** Map visible slides to their image pair and CMS text overlay */
   const heroSlides: HeroSlide[] = (slides?.items ?? [])
     .filter((slide) => slide.visible)
     .map((slide) => {
-      /** Slide file attributes are raw arrays, unlike page/block attributes */
+      /**
+       * Slide attributes are raw values, unlike page/block attributes: file
+       * markers hold an array of files, string markers hold the string itself.
+       * Slide markers are the generic `image_id*` / `string_id*`; their admin
+       * names are image (`image_id1`), image mobile (`image_id2`), title
+       * (`string_id3`), text (`string_id4`), sale (`string_id5`), button text
+       * (`string_id6`) and button link (`string_id7`).
+       */
       const attrs = slide.attributeValues as unknown as
-        | Record<string, Array<{ downloadLink?: string }> | undefined>
-        | undefined;
-      const desktop = attrs?.image_id1?.[0]?.downloadLink ?? '';
-      const mobile = attrs?.image_id2?.[0]?.downloadLink || desktop;
-      return { desktop, mobile };
+        Record<string, unknown> | undefined;
+      const fileLink = (marker: string): string => {
+        const arr = attrs?.[marker] as
+          Array<{ downloadLink?: string }> | undefined;
+        return arr?.[0]?.downloadLink ?? '';
+      };
+      const str = (marker: string): string => {
+        const value = attrs?.[marker];
+        return typeof value === 'string' ? value.trim() : '';
+      };
+      const desktop = fileLink('image_id1');
+      const mobile = fileLink('image_id2') || desktop;
+      return {
+        desktop,
+        mobile,
+        title: str('string_id3'),
+        text: str('string_id4'),
+        sale: str('string_id5'),
+        buttonText: str('string_id6'),
+        buttonLink: str('string_id7'),
+      };
     })
     .filter((slide) => slide.desktop || slide.mobile);
 

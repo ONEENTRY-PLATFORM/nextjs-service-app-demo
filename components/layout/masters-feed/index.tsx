@@ -1,16 +1,14 @@
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
 import TitleAnimations from '@/app/animations/TitleAnimations';
 import { getAdminsInfo } from '@/app/api';
-import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import getLocalMasters from '@/app/masters/getLocalMasters';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
+import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
 
-import MastersFeedCarousel from './components/MastersCarousel';
-import SpecialistsDemoGrid from './components/SpecialistsDemoGrid';
+import SpecialistsGrid from './components/SpecialistsGrid';
 
 /** How many specialists the home strip shows */
 const STRIP_LENGTH = 6;
@@ -42,6 +40,64 @@ const pickStrip = (roster: MasterItem[]): MasterItem[] => {
 };
 
 /**
+ * Extract a usable URL from a CMS file attribute value — tolerates the admin
+ * `master_image` shape (`[{ downloadLink: string, … }]`) as well as the
+ * `{ default: string[] }` link shape used elsewhere.
+ * @param   {unknown} value - Raw `attributeValues.<marker>.value`
+ * @returns {string}        File URL or `''`
+ */
+const fileUrl = (value: unknown): string => {
+  if (!Array.isArray(value) || value.length === 0) return '';
+  const first = value[0] as {
+    previewLink?: string | { default?: string[] };
+    downloadLink?: string | { default?: string[] };
+  };
+  const link = first?.previewLink ?? first?.downloadLink;
+  if (!link) return '';
+  if (typeof link === 'string') return link;
+  return link.default?.[1] ?? link.default?.[0] ?? '';
+};
+
+/**
+ * Map a CMS admin onto the normalized specialist shape the home strip renders.
+ * A master is an admin with `master_name` set (content plan, stage 4); other
+ * admins map to `null` and are dropped. The role line is
+ * `<short description> · <salon>` (the salon's `Thalia ` prefix trimmed) as in
+ * the demo roster, and the tile links to the master's profile.
+ * @param   {IAdminEntity}      admin - CMS admin entity
+ * @returns {MasterItem | null}       Normalized specialist, or `null` when `master_name` is empty
+ */
+const toMasterItem = (admin: IAdminEntity): MasterItem | null => {
+  const attrs = admin.attributeValues ?? {};
+  const name = (attrs.master_name?.value as string | undefined) ?? '';
+  if (!name) return null;
+
+  const shortDescription =
+    (attrs.master_short_description?.value as string | undefined) ||
+    'Specialist';
+
+  /** `master_salon` is an entity attribute: `[{ title, value: { id } }]` */
+  const salonArr = attrs.master_salon?.value as
+    Array<{ title?: string; value?: { id?: number } }> | '' | undefined;
+  const firstSalon = Array.isArray(salonArr) ? salonArr[0] : undefined;
+  const salonName = (firstSalon?.title ?? '').replace(/^Thalia\s+/i, '');
+  const salonId =
+    firstSalon?.value?.id !== undefined ? String(firstSalon.value.id) : '';
+
+  return {
+    id: String(admin.id),
+    name,
+    role: salonName ? `${shortDescription} · ${salonName}` : shortDescription,
+    section: sectionOfRole(shortDescription),
+    categories: [],
+    salonId,
+    rating: Number(attrs.master_rating?.value) || 5,
+    photo: fileUrl(attrs.master_image?.value),
+    href: `/masters/${admin.id}`,
+  };
+};
+
+/**
  * MastersFeed section component that displays a carousel of masters
  * @param   {object}               props       - Component properties
  * @param   {IBlockEntity}         props.block - Block entity containing section title and other metadata
@@ -52,26 +108,19 @@ const MastersFeed = async ({
 }: {
   block?: IBlockEntity | undefined;
 }): Promise<JSX.Element> => {
-  /** Get dictionary for localization */
-  const [dict] = ServerProvider<IAttributeValues>('dict');
   /** Fetch admin information (masters) */
   const { admins } = await getAdminsInfo({ body: [], offset: 0, limit: 100 });
 
-  /** Filter admins to only include those with services attribute */
-  const masters = (admins || []).filter((master): master is IAdminEntity =>
-    Boolean(master.attributeValues?.services),
-  );
-  /** No CMS masters yet → render the mock's demo roster (content plan, stage 4) */
-  const usingDemo = masters.length === 0;
-
-  /**
-   * Section heading: the CMS block title once real masters exist, otherwise the
-   * mock's "Our Specialists" — the placeholder `home_masters` block title
-   * ("Home masters") is not design copy, so the demo strip ignores it.
-   */
-  const title = usingDemo
-    ? 'Our Specialists'
-    : block?.localizeInfos?.title || 'Our Specialists';
+  /** CMS masters = admins with `master_name` set (content plan, stage 4) */
+  const cmsMasters = (admins ?? [])
+    .map(toMasterItem)
+    .filter((master): master is MasterItem => master !== null);
+  /** No CMS masters yet → fall back to the mock's demo roster */
+  const usingDemo = cmsMasters.length === 0;
+  /** CMS masters (capped to the strip length) or the varied demo spread */
+  const specialists = usingDemo
+    ? pickStrip(getLocalMasters())
+    : cmsMasters.slice(0, STRIP_LENGTH);
 
   return (
     <section className="flex w-screen flex-col justify-center py-5">
@@ -81,19 +130,12 @@ const MastersFeed = async ({
           className="mx-auto mb-12 flex w-auto flex-col gap-4"
         >
           <h2 className="title self-center text-4xl leading-8 font-light text-gray-600 uppercase">
-            {title}
+            {block?.localizeInfos?.title || 'Our Specialists'}
           </h2>
           <hr className="relative mb-2.5 h-px w-full max-w-37.5 self-center border-b border-solid border-b-gray-600" />
         </TitleAnimations>
-        {/**
-         * Use CMS masters once stage-4 admins exist; until then fall back to the
-         * mock's demo roster so the home strip matches the design.
-         */}
-        {usingDemo ? (
-          <SpecialistsDemoGrid masters={pickStrip(getLocalMasters())} />
-        ) : (
-          <MastersFeedCarousel masters={masters} dict={dict} />
-        )}
+        {/** CMS masters once stage-4 admins exist; the mock's demo roster until then */}
+        <SpecialistsGrid masters={specialists} />
       </div>
     </section>
   );
