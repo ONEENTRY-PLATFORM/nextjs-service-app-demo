@@ -9,8 +9,6 @@ import {
   selectActiveItemId,
   setTabsState,
 } from '@/app/store/reducers/CartSlice';
-import ReviewsIcon from '@/components/icons/reviews';
-import StarOpenIconLg from '@/components/icons/star-o-lg';
 
 /**
  * Main functional component to handle repeating an order
@@ -72,20 +70,15 @@ const RepeatOrder = ({
     router.push('/booking');
   };
 
-  /** Render the button and icons for repeating an order */
+  /** Render the "book again" button for repeating an order */
   return (
-    <div className="my-auto flex w-full flex-col text-base font-bold tracking-wide text-fuchsia-500">
-      <button
-        className="mb-2 h-10 min-w-20 items-center justify-center rounded-3xl border border-solid border-fuchsia-500 bg-transparent p-1 text-base leading-6 font-bold tracking-wide text-fuchsia-500 transition-colors duration-300 hover:border-fuchsia-600 hover:text-fuchsia-600 focus-visible:text-fuchsia-600 focus-visible:outline-fuchsia-600 disabled:border-neutral-300 disabled:text-neutral-300"
-        onClick={repeatOrderHandle}
-      >
-        {(book_again_text?.value as string | undefined) || 'Book again'}
-      </button>
-      <div className="flex gap-2 self-center">
-        <StarOpenIconLg size={5} />
-        <ReviewsIcon size={5} />
-      </div>
-    </div>
+    <button
+      type="button"
+      className="w-full rounded-lg border-2 border-fuchsia-500 py-2 text-base font-bold text-fuchsia-500 transition-all hover:opacity-90"
+      onClick={repeatOrderHandle}
+    >
+      {(book_again_text?.value as string | undefined) || 'Book again'}
+    </button>
   );
 };
 

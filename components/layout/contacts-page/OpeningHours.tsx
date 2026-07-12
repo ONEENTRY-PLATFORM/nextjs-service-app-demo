@@ -81,11 +81,11 @@ const OpeningHours = (): JSX.Element => {
                   {row.day.slice(0, 3)}
                 </p>
                 <p
-                  className={`text-base leading-tight font-normal whitespace-nowrap ${
+                  className={`text-base leading-tight font-normal whitespace-pre-line ${
                     isToday ? 'text-white' : 'text-slate-400'
                   }`}
                 >
-                  {row.hours}
+                  {row.hours.replace(' – ', '\n–\n')}
                 </p>
                 {isToday && (
                   <span

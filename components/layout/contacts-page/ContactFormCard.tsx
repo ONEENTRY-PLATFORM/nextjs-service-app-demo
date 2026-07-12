@@ -202,7 +202,7 @@ const ContactFormCard = (): JSX.Element => {
           <button
             type="submit"
             disabled={loading}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-brand py-3.5 text-base font-bold tracking-wider text-white uppercase transition-transform duration-200 hover:scale-[1.02] active:scale-95 disabled:opacity-70 md:mt-auto"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-brand py-3.5 text-base font-bold tracking-wider text-white uppercase transition-transform duration-200 hover:scale-102 active:scale-95 disabled:opacity-70 md:mt-auto"
             style={{ boxShadow: '0 8px 24px #ed21f144' }}
           >
             <Send size={15} /> {loading ? 'Sending…' : 'Send Message'}

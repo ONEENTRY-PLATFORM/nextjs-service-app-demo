@@ -46,7 +46,7 @@ const SalonSelector = ({
             <button
               key={s.url}
               onClick={() => onSelect(active ? null : s.url)}
-              className="rounded-xl px-4 py-3 text-left transition-all active:scale-[0.97]"
+              className="rounded-xl px-4 py-3 text-left transition-all active:scale-97"
               style={{
                 background: active
                   ? `linear-gradient(135deg,${PINK2},${PINK})`

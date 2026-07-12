@@ -23,7 +23,7 @@ const MasterDescription = ({
 
   /** Render master description with parsed HTML content */
   return (
-    <div className="item mb-10 text-lg leading-6 tracking-wide text-neutral-600 max-md:max-w-full max-sm:text-base">
+    <div className="item mt-4 text-justify text-base leading-relaxed text-slate-400 max-md:max-w-full">
       {descriptionHtml ? parse(descriptionHtml) : null}
     </div>
   );

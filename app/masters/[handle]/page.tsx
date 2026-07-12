@@ -3,7 +3,6 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 import { Suspense } from 'react';
 
-import LineAnimations from '@/app/animations/LineAnimations';
 import { getAdminsInfo, getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
@@ -11,7 +10,6 @@ import MasterSingleLayout from '@/components/layout/master-single';
 import MasterLoader from '@/components/layout/master-single/components/MasterLoader';
 import PortfolioGridLayout from '@/components/layout/portfolio-grid';
 import PortfolioGridLoader from '@/components/layout/portfolio-grid/components/PortfolioGridLoader';
-import GradientLine from '@/components/shared/GradientLine';
 
 // export const revalidate = 10;
 // export const dynamicParams = true;
@@ -68,7 +66,6 @@ export default async function MasterPageLayout({
           }}
         />
       )}
-      <GradientLine />
       <Suspense fallback={<MasterLoader />}>
         <MasterSingleLayout
           handle={handle}
@@ -79,16 +76,10 @@ export default async function MasterPageLayout({
           }
         />
       </Suspense>
-      <div className="flex w-full flex-col justify-center">
-        <div className="mx-auto flex w-full flex-col">
-          <LineAnimations className="gradient-bg-line-20" delay={0.5} />
-          <Suspense fallback={<PortfolioGridLoader />}>
-            <PortfolioGridLayout handle={handle} searchData={searchData} />
-          </Suspense>
-        </div>
-      </div>
+      <Suspense fallback={<PortfolioGridLoader />}>
+        <PortfolioGridLayout handle={handle} searchData={searchData} />
+      </Suspense>
     </>
-    // <Loader />
   );
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
-import { Clock, MapPin, Navigation, Phone } from 'lucide-react';
+import { ArrowUpRight, Clock, MapPin, Navigation, Phone } from 'lucide-react';
+import Link from 'next/link';
 import type { JSX } from 'react';
 import { useState } from 'react';
 
@@ -10,8 +11,8 @@ import type { ContactSalon } from './types';
  * SalonCard component — a single location card as in the static-html mock
  * (`ContactsPage.tsx` → SalonCard): top accent line, salon name, address and
  * phone, number badge, hours pill, map iframe and the CTA row ("Call us" on
- * mobile, "Directions" on desktop). The mock's "View studio" button is
- * omitted until the salon detail page is ported.
+ * mobile, "Directions" on desktop) plus the outlined "View studio" link to the
+ * salon detail page (`/salons/{url}`).
  * @param   {object}       props       - Component properties
  * @param   {ContactSalon} props.salon - Salon to render
  * @param   {number}       props.idx   - Card index (number badge, animation order)
@@ -126,7 +127,7 @@ const SalonCard = ({
       <div className="flex gap-2 p-4">
         <a
           href={`tel:${salon.tel}`}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl py-3.5 text-sm font-bold tracking-wide text-white uppercase transition-transform duration-200 hover:scale-[1.03] active:scale-95 md:hidden"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl py-3.5 text-sm font-bold tracking-wide text-white uppercase transition-transform duration-200 hover:scale-103 active:scale-95 md:hidden"
           style={{
             background: `linear-gradient(135deg, ${salon.color}, ${salon.color}cc)`,
             boxShadow: `0 6px 16px ${salon.color}44`,
@@ -138,7 +139,7 @@ const SalonCard = ({
           href={salon.mapsLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden flex-1 items-center justify-center gap-1.5 rounded-xl py-3.5 text-sm font-bold tracking-wide text-white uppercase transition-transform duration-200 hover:scale-[1.03] active:scale-95 md:flex"
+          className="hidden flex-1 items-center justify-center gap-1.5 rounded-xl py-3.5 text-sm font-bold tracking-wide text-white uppercase transition-transform duration-200 hover:scale-103 active:scale-95 md:flex"
           style={{
             background: `linear-gradient(135deg, ${salon.color}, ${salon.color}cc)`,
             boxShadow: `0 6px 16px ${salon.color}44`,
@@ -146,6 +147,14 @@ const SalonCard = ({
         >
           <Navigation size={18} /> Directions
         </a>
+        {/* View studio — outlined, links to the salon detail page */}
+        <Link
+          href={`/salons/${salon.url}`}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl py-3.5 text-sm font-bold tracking-wide uppercase transition-colors duration-200"
+          style={{ border: `2px solid ${salon.color}`, color: salon.color }}
+        >
+          View studio <ArrowUpRight size={18} />
+        </Link>
       </div>
     </div>
   );

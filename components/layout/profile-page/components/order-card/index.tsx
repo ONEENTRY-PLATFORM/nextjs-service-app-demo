@@ -1,3 +1,4 @@
+import { MapPin } from 'lucide-react';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
@@ -6,9 +7,9 @@ import { useEffect, useState } from 'react';
 
 import { getPageById } from '@/app/api';
 import { isError } from '@/app/api';
-import AddressCard from '@/components/shared/AddressCard';
 
 import CardAnimations from '../../animations/CardAnimations';
+import StatusBadge from '../StatusBadge';
 import OrderButtonsGroup from './components/OrderButtonsGroup';
 import OrderDateTime from './components/OrderDateTime';
 import OrderProductTitle from './components/OrderProductTitle';
@@ -95,25 +96,44 @@ const OrderCard = ({
     loadSalonData();
   }, [salonId]);
 
+  /** Current order status, used to pick the status badge. */
+  const { statusIdentifier } = order;
+
   return (
-    /** Animated card wrapper with border styling */
+    /** Animated white panel matching the reference visit-row styling */
     <CardAnimations
-      className="flex gap-5 rounded-2xl border border-solid border-fuchsia-500 px-4 py-3"
+      className="relative flex flex-col gap-3 rounded-2xl border border-slate-150 bg-white p-4 shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
       index={index}
     >
+      {/* Status badge — top-right for completed / cancelled orders */}
+      {(statusIdentifier === 'completed' ||
+        statusIdentifier === 'canceled') && (
+        <span className="absolute top-3 right-3 z-10">
+          <StatusBadge status={statusIdentifier} />
+        </span>
+      )}
+
       {/* Main content area */}
-      <div className="flex w-[65%] grow flex-col text-base leading-8">
+      <div className="flex flex-col gap-2">
         {/* Salon information section */}
-        <div>
-          <h4 className="text-neutral-600">{salonTitle}</h4>
-          <AddressCard address={salonAddress} />
-        </div>
+        <h4 className="pr-24 text-xs font-bold tracking-wide text-slate-400 uppercase">
+          {salonTitle}
+        </h4>
+        {salonAddress && (
+          <div className="flex items-center gap-1">
+            <MapPin size={15} color="#ed21f1" className="shrink-0" />
+            <span className="text-sm text-neutral-300">{salonAddress}</span>
+          </div>
+        )}
+
+        {/* Gradient divider */}
+        <div
+          className="h-px w-full"
+          style={{ background: 'linear-gradient(90deg,#ed21f144,transparent)' }}
+        />
 
         {/* Product title section */}
         <OrderProductTitle order={order} />
-
-        {/* Divider line */}
-        <hr className="h-px w-full self-center border-none bg-fuchsia-500" />
 
         {/* Date and time section */}
         <OrderDateTime order={order} />

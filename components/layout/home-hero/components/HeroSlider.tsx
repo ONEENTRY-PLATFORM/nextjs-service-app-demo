@@ -43,6 +43,8 @@ const HeroSlider = ({
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = slides.length;
+  /** Current slide — drives the single CTA button (image-only hero otherwise) */
+  const current = slides[idx];
 
   /** Auto-advance the carousel, paused on hover */
   useEffect(() => {
@@ -59,7 +61,8 @@ const HeroSlider = ({
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Slides — crossfade (no zoom so the baked-in text edges stay visible) */}
+      {/* Slides — image-only crossfade (no marketing overlay: the banner artwork
+          carries its own baked-in text, as in the mock). */}
       <div className="hero-bg absolute inset-0">
         {slides.map((slide, i) => (
           <div
@@ -90,44 +93,24 @@ const HeroSlider = ({
                 className="object-cover md:hidden"
               />
             )}
-
-            {/* CMS text overlay — text column on the left (sale badge, title,
-                subtitle); the CTA button sits bottom-right, as in the mock. */}
-            {(slide.sale || slide.title || slide.text) && (
-              <div
-                className="absolute inset-y-0 left-16 z-10 flex max-w-[68%] flex-col items-start justify-center gap-3 pr-5 md:left-[7%] md:gap-5"
-                style={{ fontFamily: 'var(--font-oswald)' }}
-              >
-                {slide.sale && (
-                  <div className="flex aspect-square w-20 items-center justify-center rounded-full border border-white/40 bg-fuchsia-500/35 backdrop-blur-md md:w-28 lg:w-32">
-                    <span className="px-2 text-center text-xl leading-none font-semibold text-white md:text-3xl">
-                      {slide.sale}
-                    </span>
-                  </div>
-                )}
-                {slide.title && (
-                  <h1 className="text-5xl leading-none font-medium text-white md:text-7xl lg:text-8xl">
-                    {slide.title}
-                  </h1>
-                )}
-                {slide.text && (
-                  <p className="text-lg font-light tracking-wide text-white/85 md:text-2xl">
-                    {slide.text}
-                  </p>
-                )}
-              </div>
-            )}
-            {slide.buttonText && (
-              <Link
-                href={slide.buttonLink || '#'}
-                className="absolute right-5 bottom-14 z-10 inline-flex items-center justify-center rounded-xl bg-white px-8 py-3.5 text-sm font-normal tracking-[0.2em] text-ink uppercase transition-colors hover:bg-gray-50 md:right-[6%] md:bottom-[14%] md:text-base"
-              >
-                {slide.buttonText}
-              </Link>
-            )}
           </div>
         ))}
       </div>
+
+      {/* CTA — a single "Discover More" button on the site rails: bottom-left on
+          mobile (aligned under the banner's baked text), bottom-right on desktop. */}
+      {current && (
+        <div className="pointer-events-none absolute inset-0 z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-3 pt-6 pb-16 md:px-8 md:py-10">
+          <div className="flex items-end justify-start pl-2.75 md:justify-end md:pl-0">
+            <Link
+              href={current.buttonLink || '/offers'}
+              className="pointer-events-auto inline-flex min-w-50 items-center justify-center rounded-xl bg-white px-7 py-3.5 text-base font-normal tracking-[0.2em] text-ink uppercase transition-colors hover:bg-gray-50"
+            >
+              {current.buttonText || 'Discover More'}
+            </Link>
+          </div>
+        </div>
+      )}
 
       {count > 1 && (
         <>

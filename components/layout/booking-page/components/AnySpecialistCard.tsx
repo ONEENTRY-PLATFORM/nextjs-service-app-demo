@@ -8,10 +8,7 @@ import Price from './Price';
 import SalonChips from './SalonChips';
 
 /**
- * AnySpecialistCard — the "Any specialist" card of the specialist step: a
- * compact avatar row on mobile and a group-photo card on desktop, letting the
- * guest defer the master choice to the studio. Mirrors the rhythm of
- * {@link MasterCard} so the divider lands at the same Y across the grid.
+ * AnySpecialistCard — the "Any specialist" card of the specialist step.
  * @param   {object}         props             - Component properties
  * @param   {boolean}        props.active      - This card is the current selection
  * @param   {() => void}     props.onSelect    - Select the "Any specialist" option
@@ -43,7 +40,7 @@ const AnySpecialistCard = ({
     {/* MOBILE compact "Any specialist" card — circular avatar + info row */}
     <div
       onClick={onSelect}
-      className="cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 active:scale-[0.99] md:hidden"
+      className="cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 active:scale-99 md:hidden"
       style={{
         borderColor: active ? PINK : '#e8e8f0',
         boxShadow: active

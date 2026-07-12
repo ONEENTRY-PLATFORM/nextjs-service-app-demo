@@ -12,7 +12,7 @@ const BookCtaBanner = (): JSX.Element => {
   return (
     <section className="py-6 md:py-10">
       <div className="mx-auto max-w-7xl px-3 md:px-8">
-        <div className="relative flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-gradient-promo px-6 py-8 transition-transform duration-300 hover:scale-[1.005] md:flex-row md:px-8 md:py-10">
+        <div className="relative flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-gradient-promo px-6 py-8 transition-transform duration-300 hover:scale-101 md:flex-row md:px-8 md:py-10">
           <div
             className="absolute -top-10 -right-10 size-44 rounded-full opacity-20"
             style={{ background: 'rgba(255,255,255,0.5)' }}

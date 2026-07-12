@@ -35,18 +35,20 @@ const NavGroup = async (): Promise<JSX.Element> => {
   if (!menu || isError) {
     return <p>{menu_not_found_text?.value as string}</p>;
   }
-  /** Render navigation group with booking link, profile item and mobile menu button */
+  /**
+   * Render navigation group: the Book Online pill and profile icon stay visible
+   * at every width (compact on mobile, as in the mock's header), followed by the
+   * hamburger trigger on <lg.
+   */
   return (
-    <div className="my-auto flex items-center gap-4 fade-in max-md:max-w-full">
-      <div className="hidden gap-4 max-md:gap-4 max-sm:gap-2 md:flex">
-        <Link
-          href="/booking/"
-          className="h-auto justify-center self-center rounded-xl bg-gradient-brand px-6 py-3 text-base leading-6 font-bold tracking-wide text-white uppercase shadow-[0_4px_16px_rgba(237,33,241,0.27)] transition duration-300 ease-in-out outline-none hover:opacity-90 focus:opacity-90 focus:outline-none disabled:bg-neutral-300/50"
-        >
-          {(book_text?.value as string | undefined) || 'Book Online'}
-        </Link>
-        <NavItemProfile userMenu={menu as IMenusEntity} />
-      </div>
+    <div className="my-auto flex items-center gap-2 fade-in max-md:max-w-full sm:gap-4">
+      <Link
+        href="/booking/"
+        className="h-auto justify-center self-center rounded-xl bg-gradient-brand px-4 py-3 text-sm leading-6 font-bold tracking-wide whitespace-nowrap text-white uppercase shadow-[0_4px_16px_rgba(237,33,241,0.27)] transition duration-300 ease-in-out outline-none hover:opacity-90 focus:opacity-90 focus:outline-none disabled:bg-neutral-300/50 md:px-6 md:text-base"
+      >
+        {(book_text?.value as string | undefined) || 'Book Online'}
+      </Link>
+      <NavItemProfile userMenu={menu as IMenusEntity} />
       <MenuButton />
     </div>
   );

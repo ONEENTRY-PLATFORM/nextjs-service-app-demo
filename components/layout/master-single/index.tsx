@@ -1,25 +1,36 @@
 import { notFound } from 'next/navigation';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import { type JSX, memo } from 'react';
 
-import { getAdminsInfo, getPageById } from '@/app/api';
+import { getAdminsInfo, getPageById, getPagesByIds } from '@/app/api';
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 import MasterAnimations from './animations/MasterAnimations';
-import Master from './components/Master';
-import MasterImage from './components/MasterImage';
-import MasterSalons from './components/MasterSalons';
-import Title from './components/Title';
+import BackLink from './components/BackLink';
+import BookingButton from './components/BookingButton';
+import MasterDescription from './components/MasterDescription';
+import MasterExperience from './components/MasterExperience';
+import MasterName from './components/MasterName';
+import MasterPortrait from './components/MasterPortrait';
+import RatingCluster from './components/RatingCluster';
+import SalonChip from './components/SalonChip';
 
 /**
- * Master single page layout component
+ * Master single page layout component.
  *
- * This component displays detailed information about a specific master,
- * including their image, services, salons, and related portfolio items.
- * @param   {object}               props                    - Component properties
- * @param   {string}               props.handle             - Master identifier
- * @param   {object}               props.searchData         - Search parameters
- * @param   {string}               props.searchData.service - Service identifier
- * @returns {Promise<JSX.Element>}                          JSX.Element representing the master single page
+ * Renders the specialist profile per the reference design: a top gradient
+ * strip, a "Back to Specialists" link, then a two-column profile card
+ * (portrait + salon chips on the left, name/role/rating/experience/bio/booking
+ * on the right). All CMS attributes are optional — the section degrades
+ * gracefully when values are missing and only 404s when the admin itself is
+ * absent.
+ * @param   {object}               props                    - Component properties.
+ * @param   {string}               props.handle             - Master identifier (numeric admin id).
+ * @param   {object}               props.searchData         - Search parameters.
+ * @param   {string}               props.searchData.service - Service (subcategory) page id, when navigated with context.
+ * @returns {Promise<JSX.Element>}                          JSX.Element representing the master single page.
  */
 const MasterSingleLayout = async ({
   handle,
@@ -40,62 +51,121 @@ const MasterSingleLayout = async ({
     return notFound();
   }
 
+  /** Dictionary (booking button label) set upstream via ServerProvider. */
+  const [dict] = ServerProvider<IAttributeValues>('dict');
+
+  const attrs = master.attributeValues ?? {};
+
+  /** Basic display attributes (all optional — fall back gracefully). */
+  const name = (attrs.master_name?.value as string | undefined) ?? '';
+  const imgArr = attrs.master_image?.value as
+    Array<{ downloadLink?: string }> | undefined;
+  const imageSrc = imgArr?.[0]?.downloadLink ?? '';
+  const rating = Number(attrs.master_rating?.value) || 0;
+  const experience =
+    (attrs.master_expirience?.value as string | undefined) ?? '';
+  const shortDescription =
+    (attrs.master_short_description?.value as string | undefined) ?? '';
+
   /**
-   * `master_services` is an `entity` list of service PRODUCTS:
-   * `[{ value: { id: "p-<pageId>-<productId>", parentId: <subcategory page id> } }]`.
-   * The heading is shown in the context of the linked subcategory page, so we
-   * resolve it from `value.parentId` (a numeric page id) — falling back to a
-   * numeric `?service=` param when present. The product `value.id` is a string
-   * and is NOT a page id, so it must not be passed to `getPageById`.
+   * `master_services` links service PRODUCTS whose usable page id is
+   * `value.parentId` (the products' subcategory page). It provides the role
+   * fallback when the master has no short description; a numeric `?service=`
+   * param overrides it.
    */
-  const masterServices = master.attributeValues?.master_services?.value as
+  const masterServices = attrs.master_services?.value as
     Array<{ value?: { parentId?: number } }> | undefined;
   const searchService = Number(searchData?.service);
-  const sId = Number.isFinite(searchService)
-    ? searchService
-    : masterServices?.[0]?.value?.parentId;
+  const serviceId =
+    Number.isFinite(searchService) && searchService > 0
+      ? searchService
+      : masterServices?.[0]?.value?.parentId;
 
-  /** Fetch the service (subcategory) page for the heading — optional. */
-  const { page: service } =
-    typeof sId === 'number' && Number.isFinite(sId)
-      ? await getPageById(sId)
-      : { page: undefined };
-  /** Destructure master attributes for easier access */
-  const { master_name, master_image, master_salon } = master.attributeValues;
+  /**
+   * `master_salon` is an entity list `[{ title, value: { id } }]` pointing at
+   * salon pages. We resolve those pages to enrich each chip with its
+   * `salon_address` (falling back to title only when absent).
+   */
+  const salonArr = attrs.master_salon?.value as
+    Array<{ title?: string; value?: { id?: number } }> | '' | undefined;
+  const salonEntities = Array.isArray(salonArr) ? salonArr : [];
+  const salonIds = salonEntities
+    .map((entry) => entry.value?.id)
+    .filter((id): id is number => typeof id === 'number');
 
-  /** Extract master image source URL */
-  const imgArr = master_image?.value as
-    Array<{ downloadLink?: string }> | undefined;
-  const imageSrc = imgArr?.[0]?.downloadLink;
-  /** Extract master name with fallback to empty string */
-  const name = (master_name?.value as string | undefined) ?? '';
+  /** Service (role fallback) and salon pages (chip addresses) — independent. */
+  const [serviceRes, salonRes] = await Promise.all([
+    typeof serviceId === 'number' && Number.isFinite(serviceId) && serviceId > 0
+      ? getPageById(serviceId)
+      : Promise.resolve<{ page?: IPagesEntity | undefined }>({
+          page: undefined,
+        }),
+    salonIds.length
+      ? getPagesByIds(salonIds)
+      : Promise.resolve<{ pages?: IPagesEntity[] | undefined }>({
+          pages: undefined,
+        }),
+  ]);
 
-  /** Render master single page layout with master info and service */
+  const service = serviceRes.page;
+  const role = shortDescription || service?.localizeInfos?.title || '';
+
+  /** Map salon page id → address for chip enrichment. */
+  const addressById = new Map<number, string>();
+  salonRes.pages?.forEach((page: IPagesEntity) => {
+    const address =
+      (page.attributeValues?.salon_address?.value as string | undefined) ?? '';
+    addressById.set(page.id, address);
+  });
+  const salonChips = salonEntities
+    .map((entry) => {
+      const id = entry.value?.id;
+      const address = typeof id === 'number' ? addressById.get(id) : undefined;
+      return { title: entry.title ?? '', address: address || undefined };
+    })
+    .filter((chip) => chip.title);
+
   return (
-    <section className="relative mx-auto box-border flex w-full max-w-360 shrink-0 flex-col">
-      <div className="flex w-full flex-col justify-center bg-white px-5 py-20 max-md:max-w-full max-sm:py-10">
-        {/** Service (subcategory) heading, falling back to the master name */}
-        <Title title={service?.localizeInfos?.title || name} />
-        <MasterAnimations className="flex w-full gap-20 max-lg:gap-10 max-md:flex-col">
-          <div className="flex w-[30%] grow flex-col max-md:mt-10 max-md:w-full max-sm:mt-5">
-            {/** Display master image */}
-            <figure className="item mb-8 overflow-hidden rounded-3xl bg-slate-100 max-sm:h-64">
-              <MasterImage imageSrc={imageSrc ?? ''} alt={name} />
-            </figure>
-            {/** Display master salons information */}
-            <div className="item flex flex-wrap justify-between gap-2.5 px-4 text-xl leading-8 text-neutral-600">
-              <MasterSalons
-                salons={
-                  master_salon as {
-                    value: { title: string }[];
-                  }
-                }
-              />
-            </div>
+    <section className="bg-white">
+      {/* Top gradient strip (PINK2 → PINK → CYAN) */}
+      <div className="h-1.25 w-full bg-gradient-stats" />
+
+      {/* Back link on the site container rails */}
+      <div className="mx-auto max-w-7xl px-3 pt-6 md:px-8">
+        <BackLink />
+      </div>
+
+      {/* Profile card */}
+      <div className="mx-auto max-w-7xl px-3 pt-10 pb-4 md:px-8 md:pb-12">
+        <MasterAnimations className="grid grid-cols-1 items-start gap-8 md:grid-cols-[300px_1fr] md:gap-12">
+          {/* Portrait column */}
+          <div className="flex flex-col items-center md:items-start">
+            <MasterPortrait imageSrc={imageSrc} alt={name} />
+            {salonChips.length > 0 ? (
+              <div
+                className="item mt-5 flex w-full flex-col gap-2"
+                style={{ maxWidth: 290 }}
+              >
+                {salonChips.map((chip, index) => (
+                  <SalonChip
+                    key={index}
+                    title={chip.title}
+                    address={chip.address}
+                  />
+                ))}
+              </div>
+            ) : null}
           </div>
-          {/** Display master detailed information */}
-          <div className="flex w-[70%] flex-col max-md:w-full">
-            <Master master={master} service={service} />
+
+          {/* Info column */}
+          <div className="flex flex-col">
+            <div className="item mb-1 flex flex-wrap items-start justify-between gap-4">
+              <MasterName name={name} role={role} />
+              <RatingCluster rating={rating} />
+            </div>
+            <MasterExperience experience={experience} />
+            <MasterDescription master={master} />
+            <BookingButton service={service} master={master} dict={dict} />
           </div>
         </MasterAnimations>
       </div>

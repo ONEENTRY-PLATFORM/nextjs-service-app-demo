@@ -1,4 +1,5 @@
 import { Instagram } from 'lucide-react';
+import type { JSX } from 'react';
 
 /**
  * Instagram icon — lucide, same as the static-html mock footer.
@@ -7,7 +8,10 @@ import { Instagram } from 'lucide-react';
  * @param   {number}      [props.size]   - Icon size in pixels (default 22)
  * @returns {JSX.Element}                Instagram icon
  */
-const InstagramIcon = (props?: { active?: boolean; size?: number }) => {
+const InstagramIcon = (props?: {
+  active?: boolean;
+  size?: number;
+}): JSX.Element => {
   return (
     <Instagram
       size={props?.size ?? 22}

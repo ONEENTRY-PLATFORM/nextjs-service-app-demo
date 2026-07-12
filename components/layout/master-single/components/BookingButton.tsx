@@ -68,7 +68,7 @@ const BookingButton = ({
   return (
     <button
       onClick={onApplyHandle}
-      className="item h-12.5 items-center justify-center self-start rounded-3xl border border-solid border-fuchsia-500 bg-transparent px-8 py-1 text-md font-bold tracking-wide text-fuchsia-500 uppercase transition-colors duration-300 hover:border-fuchsia-600 hover:text-fuchsia-600 focus-visible:text-fuchsia-600 focus-visible:outline-fuchsia-600 disabled:border-neutral-300 disabled:text-neutral-300"
+      className="item mt-6 self-center rounded-full border-2 border-solid border-fuchsia-500 bg-transparent px-8 py-3 text-base font-bold tracking-widest text-fuchsia-500 uppercase transition-colors duration-300 hover:bg-fuchsia-500/10 md:self-start"
     >
       {(book_online_text?.value as string | undefined) || 'BOOK ONLINE'}
     </button>

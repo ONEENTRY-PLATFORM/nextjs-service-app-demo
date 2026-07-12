@@ -42,7 +42,7 @@ const MasterCard = ({
     {/* MOBILE compact card — circular avatar + info row */}
     <div
       onClick={onSelect}
-      className="cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 active:scale-[0.99] md:hidden"
+      className="cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 active:scale-99 md:hidden"
       style={{
         borderColor: active ? PINK : '#e8e8f0',
         boxShadow: active

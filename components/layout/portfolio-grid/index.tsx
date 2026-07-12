@@ -3,14 +3,20 @@ import type { JSX } from 'react';
 
 import { getAdminsInfo, getPagesByIds } from '@/app/api';
 
-import PortfolioGrid from './components/PortfolioGrid';
+import PortfolioGallery from './components/PortfolioGallery';
 
 /**
- * PortfolioGrid section
- * @param   {object}               props            - Props for the component
- * @param   {string}               props.handle     - Handle of the portfolio (master id)
- * @param   {any}                  props.searchData -
- * @returns {Promise<JSX.Element>}                  React component
+ * PortfolioGrid section — the specialist's portfolio heading, grid and lightbox.
+ *
+ * The data logic is unchanged: it resolves the master's `master_portfolio`
+ * photo pages and flattens their `gallery_photos` into `{ img, thumb, preview,
+ * alt }`. Presentation follows the reference design — a centered "Portfolio"
+ * heading above a responsive grid backed by a custom lightbox. Renders nothing
+ * when the master or their portfolio is unavailable.
+ * @param   {object}               props            - Props for the component.
+ * @param   {string}               props.handle     - Handle of the portfolio (master id).
+ * @param   {object}               props.searchData - Route search params (unused; kept for the call site).
+ * @returns {Promise<JSX.Element>}                  React component.
  */
 const PortfolioGridLayout = async ({
   handle,
@@ -77,11 +83,34 @@ const PortfolioGridLayout = async ({
       });
     }) || [];
 
-  /** Render portfolio grid with processed images */
+  /** Degrade cleanly: no photos → no portfolio section. */
+  if (portfolioImages.length === 0) {
+    return <></>;
+  }
+
+  /** Caption data for the lightbox. */
+  const attrs = master.attributeValues ?? {};
+  const masterName = (attrs.master_name?.value as string | undefined) ?? '';
+  const role =
+    (attrs.master_short_description?.value as string | undefined) ?? '';
+
+  /** Render portfolio heading + gallery with lightbox */
   return (
-    <div className="grid w-full grid-cols-6 gap-0 max-2xl:grid-cols-5 max-lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2">
-      <PortfolioGrid portfolioImages={portfolioImages} />
-    </div>
+    <section className="bg-white pb-4">
+      <div className="mx-auto flex max-w-7xl flex-col items-center p-3 md:px-8 md:py-6">
+        <h2
+          className="border-b border-ink pb-1.5 text-center font-light tracking-fine text-ink uppercase"
+          style={{ fontSize: 'clamp(1.1rem, 2.2vw, 1.65rem)' }}
+        >
+          Portfolio
+        </h2>
+      </div>
+      <PortfolioGallery
+        images={portfolioImages}
+        masterName={masterName}
+        role={role}
+      />
+    </section>
   );
 };
 

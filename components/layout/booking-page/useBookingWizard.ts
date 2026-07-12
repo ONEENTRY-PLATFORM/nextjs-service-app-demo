@@ -19,7 +19,7 @@ import type {
 } from './types';
 import { useBookingSubmit } from './useBookingSubmit';
 
-/** Everything the {@link BookingWizard} render needs from the controller hook. */
+/** Everything render needs from the controller hook. */
 export interface BookingWizardState {
   /** Chosen flow, `null` on the entry screen */
   flow: BookingFlow | null;
@@ -106,7 +106,7 @@ export interface BookingWizardState {
 }
 
 /**
- * useBookingWizard — the controller of {@link BookingWizard}: all wizard state,
+ * useBookingWizard — the controller of all wizard state,
  * the cross-filters between studio / service / specialist, the dynamic step
  * order, cart preselection (React's "adjust state on prop change" pattern) and
  * every handler. Kept as a hook so the component stays a thin render.

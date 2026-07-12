@@ -65,7 +65,7 @@ const CancelOrderButton = ({
     <button
       onClick={cancelOrderHandle}
       type="button"
-      className="h-10 min-w-20 items-center justify-center rounded-3xl border border-solid border-neutral-400 bg-transparent p-1 text-base leading-6 font-bold tracking-wide text-neutral-400 transition-colors duration-300 hover:border-neutral-400 hover:text-neutral-400 focus-visible:text-neutral-400 focus-visible:outline-neutral-400 disabled:border-neutral-300 disabled:text-neutral-300"
+      className="flex-1 rounded-lg border border-slate-150 py-2 text-base font-medium text-neutral-300 transition-all hover:bg-gray-50"
     >
       {(cancel_text?.value as string | undefined) || 'Cancel'}
     </button>

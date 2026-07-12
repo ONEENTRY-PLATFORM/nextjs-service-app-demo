@@ -43,6 +43,7 @@ const toContactSalon = (
 
   return {
     id: String(page.id),
+    url: page.pageUrl,
     name: page.localizeInfos?.title ?? 'Salon',
     address,
     phone: phoneFormatted,

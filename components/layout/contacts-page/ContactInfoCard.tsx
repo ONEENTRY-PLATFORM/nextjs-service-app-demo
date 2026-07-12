@@ -54,7 +54,7 @@ const ContactInfoCard = (): JSX.Element => {
               <a
                 key={label}
                 href={href}
-                className="flex items-center gap-4 rounded-2xl p-4 transition-all hover:scale-[1.01]"
+                className="flex items-center gap-4 rounded-2xl p-4 transition-all hover:scale-101"
                 style={{
                   background: `${color}08`,
                   border: `1.5px solid ${color}20`,

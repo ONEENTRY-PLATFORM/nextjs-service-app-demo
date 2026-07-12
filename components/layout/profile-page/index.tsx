@@ -5,27 +5,25 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
-import { Suspense, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 import { AuthContext } from '@/app/store/providers/AuthContext';
-import { UserForm } from '@/components/forms';
 import AuthError from '@/components/pages/AuthError';
 
 import FromAnimations from './animations/FromAnimations';
 import HistoryAnimations from './animations/HistoryAnimations';
+import MobileTabs, { type ProfileTab } from './components/MobileTabs';
+import ProfileCard from './components/ProfileCard';
 
 const ProfileHistory = dynamic(() => import('./components/ProfileHistory'), {
   ssr: true,
 });
 
-const OrderStateSelect = dynamic(
-  () => import('./components/OrderStateSelect'),
-  { ssr: true },
-);
-
 /**
- * ProfilePageLayout component renders the user profile page with user form and order history.
- * It conditionally renders either the profile content or an authentication error based on user state.
+ * ProfilePageLayout renders the account page: a Profile card and a visit-History
+ * column side by side on large screens, with a mobile pill switcher between them
+ * on small screens. Conditionally renders an auth error when the user or page is
+ * unavailable.
  * @param   {object}           props         - Component props
  * @param   {IAttributeValues} props.dict    - Dictionary containing localized strings
  * @param   {IPagesEntity}     props.page    - Page entity containing page data
@@ -43,9 +41,11 @@ const ProfilePageLayout = ({
 }): JSX.Element => {
   /** Get authentication state and user data from context */
   const { isAuth, user } = useContext(AuthContext);
-  /** Track order state for history filtering (upcoming/completed) */
-  const [orderState, setOrderState] = useState<string>('upcoming');
-  /** Get history of visits text from dictionary with fallback */
+  /** Active mobile tab (Profile / History); ignored from `lg` up */
+  const [mobileTab, setMobileTab] = useState<ProfileTab>('profile');
+
+  /** Section labels from dictionary with fallbacks */
+  const profileTitle = page?.localizeInfos?.title || 'Profile';
   const historyOfVisitsText =
     (dict.history_of_visits_text?.value as string | undefined) ||
     'History of visits';
@@ -55,36 +55,43 @@ const ProfilePageLayout = ({
     return <AuthError dict={dict} />;
   }
 
-  /** Render profile page with user form and order history sections */
   return (
-    <div className="my-10 flex justify-between gap-6 max-lg:flex-col max-lg:gap-20 max-md:gap-12">
-      {/* User form section */}
-      <FromAnimations className="flex w-4/12 flex-col max-lg:w-full">
-        <h1 className="mb-8 text-4xl font-light capitalize">
-          {page.localizeInfos?.title}
-        </h1>
-        <UserForm dict={dict} className={''} />
-      </FromAnimations>
+    <div className="my-10">
+      {/* Mobile-only Profile / History switcher */}
+      <MobileTabs
+        active={mobileTab}
+        onChange={setMobileTab}
+        profileLabel={profileTitle}
+        historyLabel="History"
+      />
 
-      {/* Order History Section */}
-      <HistoryAnimations className="flex w-6/12 flex-col max-lg:w-full">
-        <div className="relative box-border flex shrink-0 flex-col">
-          <h2 className="mb-8 text-4xl font-light text-fuchsia-500">
-            {historyOfVisitsText}
-          </h2>
-          <OrderStateSelect
-            orderState={orderState}
-            setOrderState={setOrderState}
-          />
-          <Suspense fallback={null}>
-            <ProfileHistory
-              dict={dict}
-              eventType={orderState}
-              masters={masters}
-            />
-          </Suspense>
-        </div>
-      </HistoryAnimations>
+      {/* 40 / 60 split on large screens; stacked / toggled on mobile */}
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-5">
+        {/* Profile card */}
+        <FromAnimations
+          className={`lg:col-span-2 lg:block ${mobileTab === 'profile' ? 'block' : 'hidden'}`}
+        >
+          <ProfileCard dict={dict} page={page} user={user} />
+        </FromAnimations>
+
+        {/* Visit history */}
+        <HistoryAnimations
+          className={`lg:col-span-3 lg:block ${mobileTab === 'history' ? 'block' : 'hidden'}`}
+        >
+          <div
+            className="relative box-border flex shrink-0 flex-col rounded-2xl bg-white p-6"
+            style={{ boxShadow: '0 4px 24px rgba(237,33,241,0.08)' }}
+          >
+            <h2
+              className="mb-5 font-light text-fuchsia-500"
+              style={{ fontSize: '1.25rem' }}
+            >
+              {historyOfVisitsText}
+            </h2>
+            <ProfileHistory dict={dict} masters={masters} />
+          </div>
+        </HistoryAnimations>
+      </div>
     </div>
   );
 };

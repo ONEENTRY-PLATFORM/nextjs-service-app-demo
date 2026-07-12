@@ -96,7 +96,7 @@ const MastersFeed = async ({
   }
 
   return (
-    <section className="flex w-screen flex-col justify-center py-5">
+    <section className="flex w-full flex-col justify-center py-5">
       <div className="flex w-full flex-col bg-white">
         <TitleAnimations
           delay={0.25}

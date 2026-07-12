@@ -32,8 +32,8 @@ const CatalogSection = ({
 
   /** Render catalog section with title, grid and background elements */
   return (
-    <section className="relative flex shrink-0 flex-col">
-      <div className="relative mx-auto flex w-full max-w-300 shrink-0 grow flex-col self-stretch">
+    <section className="relative flex min-h-0 shrink-0 flex-col justify-center overflow-hidden bg-white py-2 xl:min-h-112 xl:py-10 md:min-h-80 md:py-6">
+      <div className="relative mx-auto flex w-full max-w-7xl shrink-0 grow flex-col self-stretch px-3 md:px-8">
         {/* title */}
         <TitleAnimations className="mx-auto mb-10 flex w-fit flex-col gap-4">
           <h2 className="title text-center text-4xl font-light tracking-widest text-ink uppercase">
@@ -47,7 +47,7 @@ const CatalogSection = ({
         </div>
       </div>
       {/* section-bg */}
-      <BgAnimations className="section-bg text-center text-[24rem] leading-56 text-gray-50 uppercase">
+      <BgAnimations className="section-bg text-center text-[clamp(6rem,13vw,13rem)] leading-none text-[#e1e5ef]/30 uppercase xl:text-[clamp(6rem,13vw,13rem)] md:text-[clamp(7rem,17vw,13rem)]">
         <div id="beauty_bg" className="font-bold">
           {parse(title1)}
         </div>

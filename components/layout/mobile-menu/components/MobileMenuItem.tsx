@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 import { useContext, useState } from 'react';
@@ -24,6 +25,7 @@ function MobileMenuItem({
   parentUrl: string | undefined;
 }): JSX.Element {
   const { setOpen } = useContext(OpenDrawerContext);
+  const pathname = usePathname();
   /** Check if the menu item has child items (submenu) */
   const hasChild = Array.isArray(item.children) && item.children.length > 0;
   const [openSubmenu, setOpenSubmenu] = useState(false);
@@ -32,13 +34,16 @@ function MobileMenuItem({
     item.pageUrl === 'home'
       ? '/'
       : `${parentUrl ? `${parentUrl}/` : '/'}${item.pageUrl || ''}`;
+  /** Highlight the current page pink, as in the mock's mobile menu */
+  const active = url === '/' ? pathname === '/' : pathname === url;
 
   /* Render mobile menu item with optional submenu */
   return (
     <li
       key={item.localizeInfos.menuTitle}
       className={
-        'flex w-full flex-col py-2 text-lg text-slate-700 transition-colors hover:text-fuchsia-500'
+        'flex w-full flex-col py-2 text-lg transition-colors hover:text-fuchsia-500 ' +
+        (active ? 'text-fuchsia-500' : 'text-slate-700')
       }
     >
       <div className={'flex ' + (hasChild && '')}>

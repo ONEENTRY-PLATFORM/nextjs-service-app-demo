@@ -1,4 +1,5 @@
 import { Facebook } from 'lucide-react';
+import type { JSX } from 'react';
 
 /**
  * Facebook icon — lucide, same as the static-html mock footer.
@@ -7,7 +8,10 @@ import { Facebook } from 'lucide-react';
  * @param   {number}      [props.size]   - Icon size in pixels (default 22)
  * @returns {JSX.Element}                Facebook icon
  */
-const FacebookIcon = (props?: { active?: boolean; size?: number }) => {
+const FacebookIcon = (props?: {
+  active?: boolean;
+  size?: number;
+}): JSX.Element => {
   return (
     <Facebook
       size={props?.size ?? 22}

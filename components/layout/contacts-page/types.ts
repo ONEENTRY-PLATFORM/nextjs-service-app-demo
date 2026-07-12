@@ -2,6 +2,8 @@
 export type ContactSalon = {
   /** Stable key (CMS page id or the mock's `s1`…`s3`) */
   id: string;
+  /** CMS `pageUrl` — the salon detail route `/salons/{url}` */
+  url: string;
   name: string;
   address: string;
   /** Display phone (formatted) */

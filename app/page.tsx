@@ -159,9 +159,7 @@ const IndexPageLayout = async (): Promise<JSX.Element> => {
       {/* 1. Hero carousel banner */}
       {heroBlock && <HomeHero block={heroBlock} />}
       {/* 2. Service catalog */}
-      <div className="px-5 py-8">
-        <CatalogSection block={blockByMarker.get('home_catalog')} />
-      </div>
+      <CatalogSection block={blockByMarker.get('home_catalog')} />
       {/* 3. Gallery strip */}
       <GalleryFeed block={blockByMarker.get('home_gallery')} />
       {/* 4. Best offers */}

@@ -21,28 +21,46 @@ import type { ServiceItem, ServicesCategory, ServicesSalon } from './types';
  * degrades gracefully while the CMS is not filled yet — an empty salons list
  * hides the selector, no categories means the chips row is not rendered and
  * the grid shows everything the CMS has.
- * @param   {object}             props            - Component properties
- * @param   {ServicesCategory[]} props.categories - Service categories with their subcategories
- * @param   {ServicesSalon[]}    props.salons     - Salon locations for the selector
- * @param   {ServiceItem[]}      props.services   - Flat list of all services
- * @returns {JSX.Element}                         Interactive services catalog section
+ *
+ * When rendered on a category deep-link (`/services/hair`) the parent passes
+ * `initialCategory`/`initialSubcategory` to pre-select the matching tab, exactly
+ * like `PricesPage`'s `initialCategory` in the static-html mock.
+ * @param   {object}             props                      - Component properties
+ * @param   {ServicesCategory[]} props.categories           - Service categories with their subcategories
+ * @param   {ServicesSalon[]}    props.salons               - Salon locations for the selector
+ * @param   {ServiceItem[]}      props.services             - Flat list of all services
+ * @param   {string}             [props.initialCategory]    - `pageUrl` of the category to pre-select
+ * @param   {string}             [props.initialSubcategory] - `pageUrl` of the subcategory to pre-select
+ * @returns {JSX.Element}                                   Interactive services catalog section
  */
 const ServicesCatalog = ({
   categories,
   salons,
   services,
+  initialCategory,
+  initialSubcategory,
 }: {
   categories: ServicesCategory[];
   salons: ServicesSalon[];
   services: ServiceItem[];
+  initialCategory?: string | undefined;
+  initialSubcategory?: string | undefined;
 }): JSX.Element => {
   const firstCategory = categories[0];
-  const [mainCat, setMainCat] = useState<string | null>(
-    firstCategory?.url ?? null,
-  );
-  const [subCat, setSubCat] = useState<string | null>(
-    firstCategory?.subcategories[0]?.url ?? null,
-  );
+  /** Pre-selected category — the deep-linked one when valid, else the first */
+  const startCat =
+    initialCategory && categories.some((c) => c.url === initialCategory)
+      ? initialCategory
+      : (firstCategory?.url ?? null);
+  /** Pre-selected subcategory — the deep-linked one when valid, else the first */
+  const startCatEntry = categories.find((c) => c.url === startCat);
+  const startSub =
+    initialSubcategory &&
+    startCatEntry?.subcategories.some((s) => s.url === initialSubcategory)
+      ? initialSubcategory
+      : (startCatEntry?.subcategories[0]?.url ?? null);
+  const [mainCat, setMainCat] = useState<string | null>(startCat);
+  const [subCat, setSubCat] = useState<string | null>(startSub);
   /** Selected salon `pageUrl`; `null` = All studios */
   const [salon, setSalon] = useState<string | null>(salons[0]?.url ?? null);
   /** Free-text service search */

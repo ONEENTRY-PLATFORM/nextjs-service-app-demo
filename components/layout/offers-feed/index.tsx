@@ -35,7 +35,7 @@ const OffersFeedBlock = async ({
 
   return (
     <section className="flex w-full justify-center bg-white py-10 pb-4">
-      <div className="mx-auto mb-6 w-full max-w-350 flex-col px-5 max-md:max-w-full">
+      <div className="mx-auto mb-6 w-full max-w-7xl flex-col px-3 md:px-8">
         <div className="flex w-full flex-col items-center justify-center">
           <TitleAnimations
             delay={0.25}

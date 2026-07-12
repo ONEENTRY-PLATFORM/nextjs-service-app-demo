@@ -6,7 +6,6 @@ import { useState } from 'react';
 
 import CancelOrderButton from './CancelOrderButton';
 import EditOrderButton from './EditOrderButton';
-import OrderStatus from './OrderStatus';
 import RepeatOrder from './RepeatOrder';
 import SaveOrderButton from './SaveOrderButton';
 
@@ -36,13 +35,11 @@ const OrderButtonsGroup = ({
   const [editState, setEditState] = useState<IOrderByMarkerEntity>();
 
   return (
-    /** Container for the order action buttons (30% width of parent) */
-    <div
-      className={`flex w-[30%] flex-col gap-3 text-base font-bold tracking-wide`}
-    >
+    /** Full-width action row below the order details */
+    <div className="flex w-full gap-2 text-base font-bold tracking-wide">
       {/* Conditional rendering based on order status */}
       {statusIdentifier === 'upcoming' ? (
-        /** For upcoming orders, show edit/cancel options */
+        /** For upcoming orders, show edit/save + cancel options */
         <>
           {editState ? (
             /** If in edit mode, show save button */
@@ -67,11 +64,8 @@ const OrderButtonsGroup = ({
             setRefetch={setRefetch}
           />
         </>
-      ) : statusIdentifier === 'canceled' ? (
-        /** For canceled orders, show status indicator */
-        <OrderStatus statusIdentifier={statusIdentifier} />
       ) : (
-        /** For other statuses (completed, etc.), show repeat order button */
+        /** For completed / canceled orders, offer to book again */
         <RepeatOrder dict={dict} orderData={order} />
       )}
     </div>

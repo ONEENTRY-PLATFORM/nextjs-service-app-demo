@@ -17,7 +17,7 @@ const ModalBackdrop = (): JSX.Element => {
   return (
     <div
       id="modalBg"
-      className="fixed inset-0 size-full min-h-full min-w-full bg-white/30"
+      className="fixed inset-0 size-full min-h-full min-w-full bg-[rgba(20,0,30,0.55)] backdrop-blur-[6px]"
       onClick={() => {
         setTransition('close');
       }}

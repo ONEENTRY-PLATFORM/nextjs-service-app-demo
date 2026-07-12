@@ -71,7 +71,7 @@ const OfferDetailPanel = ({
     <div className="mt-auto">
       <button
         onClick={onBook}
-        className="flex items-center gap-1.5 rounded-xl px-8 py-3.5 text-base font-bold tracking-wider text-white uppercase transition-all hover:scale-[1.02] active:scale-[0.97]"
+        className="flex items-center gap-1.5 rounded-xl px-8 py-3.5 text-base font-bold tracking-wider text-white uppercase transition-all hover:scale-102 active:scale-97"
         style={{
           background: 'rgba(255,255,255,0.22)',
           border: '1.5px solid rgba(255,255,255,0.45)',

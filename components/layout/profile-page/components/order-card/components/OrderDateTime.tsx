@@ -37,15 +37,15 @@ const OrderDateTime = ({
 
   return (
     /** Container for displaying date and time information */
-    <div className="mt-2 flex gap-5 whitespace-nowrap">
-      {/* Display formatted date */}
-      <time dateTime={formattedDate} className="text-neutral-600 underline">
+    <div className="flex items-center gap-3 whitespace-nowrap">
+      {/* Display formatted date (plain, dark) */}
+      <time dateTime={formattedDate} className="text-base text-slate-400">
         {formattedDate}
       </time>
-      {/* Display formatted time */}
+      {/* Display formatted time (accent pink, bold) */}
       <time
         dateTime={formattedTime}
-        className="flex-auto font-medium text-fuchsia-500"
+        className="text-base font-bold text-fuchsia-500"
       >
         {formattedTime}
       </time>

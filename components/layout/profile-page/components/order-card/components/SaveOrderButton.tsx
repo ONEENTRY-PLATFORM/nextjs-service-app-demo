@@ -67,7 +67,7 @@ const SaveOrderButton = ({
     <button
       onClick={handleSaveOrder}
       type="button"
-      className="h-10 min-w-20 items-center justify-center rounded-3xl border border-solid border-fuchsia-500 bg-transparent p-1 text-base leading-6 font-bold tracking-wide text-fuchsia-500 transition-colors duration-300 hover:border-fuchsia-600 hover:text-fuchsia-600 focus-visible:text-fuchsia-600 focus-visible:outline-fuchsia-600 disabled:border-neutral-300 disabled:text-neutral-300"
+      className="flex-1 rounded-lg bg-gradient-brand py-2 text-base font-bold text-white transition-all hover:opacity-90"
     >
       {'Save'}
     </button>

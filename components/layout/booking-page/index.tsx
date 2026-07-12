@@ -82,7 +82,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
       className="flex-1 py-6 xl:pb-12 md:py-12 md:pb-20"
       style={{ background: 'linear-gradient(180deg,#f7f7fb 0%,#fff 60%)' }}
     >
-      <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
+      <div className="mx-auto w-full max-w-7xl px-3 md:px-8">
         {flow && (
           <div className="mb-6 md:mb-10">
             <StepBar steps={stepKeys} currentIdx={stepIdx} onGo={goStep} />
@@ -153,7 +153,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                     <button
                       onClick={handleNext}
                       disabled={!canNext}
-                      className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold tracking-wider uppercase transition-all enabled:hover:scale-[1.02] enabled:active:scale-[0.98] md:text-base"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold tracking-wider uppercase transition-all enabled:hover:scale-102 enabled:active:scale-98 md:text-base"
                       style={{
                         background: canNext ? BRAND_GRADIENT : '#f7f7fb',
                         color: canNext ? '#fff' : MUTED,
@@ -169,7 +169,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                     <button
                       onClick={() => setMobileSummary(true)}
                       disabled={!time}
-                      className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold tracking-wider uppercase transition-all enabled:hover:scale-[1.02] enabled:active:scale-[0.98] xl:hidden md:text-base"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold tracking-wider uppercase transition-all enabled:hover:scale-102 enabled:active:scale-98 xl:hidden md:text-base"
                       style={{
                         background: time ? BRAND_GRADIENT : '#f7f7fb',
                         color: time ? '#fff' : MUTED,

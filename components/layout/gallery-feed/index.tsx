@@ -49,7 +49,7 @@ const GalleryFeed = async ({
 
   /** Render gallery feed section with title and photo grid */
   return (
-    <section className="flex w-screen flex-col justify-center py-5">
+    <section className="flex w-full flex-col justify-center py-5">
       <div className="flex w-full flex-col">
         <TitleAnimations
           delay={0.5}

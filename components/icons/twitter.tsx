@@ -1,4 +1,5 @@
 import { Twitter } from 'lucide-react';
+import type { JSX } from 'react';
 
 /**
  * Twitter icon — lucide, same as the static-html mock footer.
@@ -7,7 +8,10 @@ import { Twitter } from 'lucide-react';
  * @param   {number}      [props.size]   - Icon size in pixels (default 22)
  * @returns {JSX.Element}                Twitter icon
  */
-const TwitterIcon = (props?: { active?: boolean; size?: number }) => {
+const TwitterIcon = (props?: {
+  active?: boolean;
+  size?: number;
+}): JSX.Element => {
   return (
     <Twitter
       size={props?.size ?? 22}

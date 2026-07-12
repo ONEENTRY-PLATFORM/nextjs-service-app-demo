@@ -14,7 +14,7 @@ import type { JSX } from 'react';
 const HomeCtaBanner = (): JSX.Element => {
   return (
     <section className="bg-white py-4 xl:py-10 md:py-6">
-      <div className="mx-auto w-full max-w-350 px-5">
+      <div className="mx-auto w-full max-w-7xl px-3 md:px-8">
         <div className="relative w-full overflow-hidden rounded-3xl">
           {/* Mobile banner */}
           <img

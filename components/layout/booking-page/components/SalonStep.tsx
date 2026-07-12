@@ -38,7 +38,7 @@ const SalonStep = ({
             <button
               key={s.id}
               onClick={() => onSelect(s.id)}
-              className="flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+              className="flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all duration-200 hover:scale-101 active:scale-99"
               style={{
                 borderColor: active ? PINK : '#e8e8f0',
                 background: active ? `${PINK}08` : '#fff',

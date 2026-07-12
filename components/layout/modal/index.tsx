@@ -34,7 +34,11 @@ const useTitleData = ({
     verification,
   } = dict;
 
-  /** Define array of title data mapping components to their display titles */
+  /**
+   * Map each form component to its modal title. Values come from the CMS
+   * dictionary with an English fallback, so the header is never blank while the
+   * dictionary is not fully filled.
+   */
   const titlesData: Array<{ component: string; value: string | undefined }> = [
     {
       component: 'CalendarForm',
@@ -42,23 +46,26 @@ const useTitleData = ({
     },
     {
       component: 'ForgotPasswordForm',
-      value: forgot_password_text?.value as string | undefined,
+      value:
+        (forgot_password_text?.value as string | undefined) ||
+        'Forgot Password',
     },
     {
       component: 'ResetPasswordForm',
-      value: reset_password_text?.value as string | undefined,
+      value:
+        (reset_password_text?.value as string | undefined) || 'Reset Password',
     },
     {
       component: 'SignInForm',
-      value: sign_in_text?.value as string | undefined,
+      value: (sign_in_text?.value as string | undefined) || 'Sign In',
     },
     {
       component: 'SignUpForm',
-      value: sign_up_text?.value as string | undefined,
+      value: (sign_up_text?.value as string | undefined) || 'Create an Account',
     },
     {
       component: 'VerificationForm',
-      value: verification?.value as string | undefined,
+      value: (verification?.value as string | undefined) || 'Verification',
     },
   ];
   const title = titlesData.find((t) => t.component === component);
@@ -95,15 +102,18 @@ const Modal = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
     <ModalAnimations component={component}>
       <div
         id="modalBody"
-        className="fixed top-1/2 left-1/2 z-500 flex size-full max-w-full -translate-1/2 flex-col overflow-auto bg-white p-6 px-16 pt-32 shadow-xl max-sm:px-8 xl:px-24 sm:px-16 md:overflow-hidden md:rounded-3xl lg:h-auto lg:w-137.5 lg:p-10 lg:px-24 lg:pt-32"
+        className="fixed top-1/2 left-1/2 z-500 flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-sm -translate-1/2 flex-col overflow-hidden rounded-3xl bg-white shadow-xl"
       >
-        <header className="absolute top-0 left-0 flex w-full items-start gap-5 bg-gradient-2 px-16 py-6 pr-6 text-4xl leading-8 text-white max-sm:px-8 lg:pl-24">
-          <div className="mt-8 flex-auto self-end text-[32px] leading-10 max-sm:mt-0 xl:text-[42px]">
-            {title}
-          </div>
+        <header
+          className="flex items-center justify-between gap-4 px-6 py-5 text-white"
+          style={{ background: 'linear-gradient(135deg,#9B4FB2,#ed21f1)' }}
+        >
+          <div className="text-xl font-semibold">{title}</div>
           <CloseModal />
         </header>
-        <Form className={''} dict={dict} isActive={true} />
+        <div className="overflow-auto px-6 pt-4 pb-2">
+          <Form className={''} dict={dict} isActive={true} />
+        </div>
       </div>
       <ModalBackdrop />
     </ModalAnimations>

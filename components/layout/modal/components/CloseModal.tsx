@@ -17,7 +17,7 @@ const CloseModal = (): JSX.Element => {
   return (
     <button
       onClick={() => setTransition('close')}
-      className="flex size-12.5 items-center justify-center rounded-full border border-solid border-white transition-transform hover:rotate-180"
+      className="flex size-9 shrink-0 items-center justify-center rounded-full border border-solid border-white/70 transition-transform hover:rotate-90"
       aria-label="Close"
     >
       <svg

@@ -4,44 +4,38 @@ import { useSearchParams } from 'next/navigation';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
-import type { JSX, Key } from 'react';
+import type { JSX } from 'react';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { getAllOrdersByMarker } from '@/app/api';
 import { AuthContext } from '@/app/store/providers/AuthContext';
-import OrderCard from '@/components/layout/profile-page/components/order-card';
 
-import MasterCard from './master-card';
-
-interface GroupedOrder {
-  master: number;
-  orders: IOrderByMarkerEntity[];
-}
+import VisitGroups from './VisitGroups';
+import VisitSection from './VisitSection';
 
 /**
- * ProfileHistory component displays user's order history grouped by master
+ * ProfileHistory displays the user's visit history split into three always-
+ * visible collapsible sections (Upcoming / Completed / Canceled). It fetches all
+ * orders once and buckets them by status; each bucket is grouped by master.
  * @param   {object}           props           - Component properties
- * @param   {IAttributeValues} props.dict      - Dictionary containing attribute values for localization
- * @param   {string}           props.eventType - Type of event to filter orders by status
- * @param   {IAdminEntity[]}   props.masters   - Array of admin entities (masters) associated with orders
- * @returns {JSX.Element}                      JSX element displaying order history grouped by masters
+ * @param   {IAttributeValues} props.dict      - Dictionary containing localized strings
+ * @param   {IAdminEntity[]}   [props.masters] - Array of master entities associated with orders
+ * @returns {JSX.Element}                      JSX element displaying the grouped visit history
  */
 const ProfileHistory = ({
   dict,
-  eventType,
   masters,
 }: {
   dict: IAttributeValues;
-  eventType: string;
   masters: IAdminEntity[] | undefined;
 }): JSX.Element => {
   /** Get search parameters from the URL */
   const searchParams = useSearchParams();
   /** Get authentication status from context */
   const { isAuth } = useContext(AuthContext);
-  /** State to hold orders */
+  /** State to hold all orders (across every status) */
   const [orders, setOrders] = useState<IOrderByMarkerEntity[]>([]);
-  /** State to trigger refetching of data */
+  /** State to trigger refetching of data (after cancel / save) */
   const [refetch, setRefetch] = useState(false);
 
   /** Determine current page from search parameters or default to 0 */
@@ -59,11 +53,9 @@ const ProfileHistory = ({
         limit: pageLimit,
       });
 
-      /** Filter and set orders based on event type if no error */
+      /** Store every order; bucketing by status happens below */
       if (orders && !isError) {
-        setOrders(
-          orders.filter((order) => order.statusIdentifier === eventType),
-        );
+        setOrders(orders);
       } else if (isError) {
         // eslint-disable-next-line no-console
         console.error(error);
@@ -74,73 +66,65 @@ const ProfileHistory = ({
     };
 
     fetchOrders();
-  }, [currentPage, eventType, isAuth, refetch]);
+  }, [currentPage, isAuth, refetch]);
 
-  /** Memoized grouped orders data sorted by master ID */
-  const ordersData = useMemo(() => {
-    /** Group orders by master ID extracted from order form data */
-    const groupedData = orders.reduce<Record<number, GroupedOrder>>(
-      (acc, order) => {
-        const masterField = order.formData.find(
-          (field) => field.marker === 'master',
-        );
-        const masterId = (masterField?.value as number[] | undefined)?.[0] || 0;
-        if (!acc[masterId]) {
-          acc[masterId] = { master: masterId, orders: [] };
-        }
-        acc[masterId].orders.push(order);
-        return acc;
-      },
-      {},
-    );
-    /** Sort grouped data by master ID */
-    return Object.values(groupedData).sort((a, b) => a.master - b.master);
-  }, [orders]);
+  /** Split orders into the three status buckets */
+  const buckets = useMemo(
+    () => ({
+      upcoming: orders.filter((o) => o.statusIdentifier === 'upcoming'),
+      completed: orders.filter((o) => o.statusIdentifier === 'completed'),
+      canceled: orders.filter((o) => o.statusIdentifier === 'canceled'),
+    }),
+    [orders],
+  );
 
-  /** Render message if no orders are found */
-  if (ordersData.length === 0) {
-    return <div className="w-full text-xl">History not found</div>;
-  }
-
-  /** render orders table */
   return (
-    <div className="w-full">
-      {ordersData.map(({ master, orders }, i) => {
-        if (!masters) {
-          return;
-        }
-        /** Find master data by matching master ID */
-        const masterData = masters.find(
-          (m: IAdminEntity) => m.id === Number(master),
-        );
+    <div className="w-full divide-y divide-slate-150">
+      <div className="pb-4">
+        <VisitSection
+          title="Upcoming"
+          status="upcoming"
+          count={buckets.upcoming.length}
+          defaultOpen
+        >
+          <VisitGroups
+            orders={buckets.upcoming}
+            masters={masters}
+            dict={dict}
+            setRefetch={setRefetch}
+          />
+        </VisitSection>
+      </div>
 
-        /** Extract attribute values from master data or use empty object as fallback */
-        const { attributeValues } = masterData || ({} as IAdminEntity);
+      <div className="py-4">
+        <VisitSection
+          title="Completed"
+          status="completed"
+          count={buckets.completed.length}
+        >
+          <VisitGroups
+            orders={buckets.completed}
+            masters={masters}
+            dict={dict}
+            setRefetch={setRefetch}
+          />
+        </VisitSection>
+      </div>
 
-        /** Render master card and associated orders */
-        return (
-          <div
-            key={i}
-            className="mb-5 flex justify-between gap-5 max-md:max-w-full max-md:flex-wrap"
-          >
-            <MasterCard attributeValues={attributeValues} />
-            <div className="mb-4 flex w-[calc(100%-160px)] flex-col gap-3">
-              {orders?.map((order: IOrderByMarkerEntity, i: Key | number) => {
-                return (
-                  <OrderCard
-                    key={i}
-                    index={i as number}
-                    dict={dict}
-                    order={order}
-                    master={masterData as IAdminEntity}
-                    setRefetch={setRefetch}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
+      <div className="pt-4">
+        <VisitSection
+          title="Canceled"
+          status="canceled"
+          count={buckets.canceled.length}
+        >
+          <VisitGroups
+            orders={buckets.canceled}
+            masters={masters}
+            dict={dict}
+            setRefetch={setRefetch}
+          />
+        </VisitSection>
+      </div>
     </div>
   );
 };

@@ -18,9 +18,7 @@ interface Order {
  */
 const OrderProductTitle = ({ order }: { order: Order }): JSX.Element => {
   return (
-    <p className="mt-1.5 mb-2.5 text-neutral-600">
-      {order.products[0]?.title || ''}
-    </p>
+    <p className="text-base text-slate-400">{order.products[0]?.title || ''}</p>
   );
 };
 

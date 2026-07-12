@@ -1,17 +1,36 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
-import LineAnimations from '@/app/animations/LineAnimations';
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
-import { getDictionary } from '@/app/api/utils/dictionaries';
-import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import Gallery from '@/components/layout/gallery-grid';
+import GalleryPageContent from '@/components/layout/gallery-page';
+import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
+import { GALLERY_MAIN_CATS } from '@/components/layout/gallery-page/taxonomy';
+
+import getLocalGalleryItems from '../getLocalGalleryItems';
 
 /**
- * GallerySingleLayout
+ * Map a gallery category page handle (`gallery-hair`, `gallery-face`, …) onto a
+ * main gallery filter (`HAIR`, `FACE`, …). Unknown handles open the default tab.
+ * @param   {string}                        handle - `pageUrl` of the gallery category page
+ * @returns {GalleryMainCategory|undefined}        Main category to pre-select, or `undefined`
+ */
+const handleToCategory = (handle: string): GalleryMainCategory | undefined => {
+  const key = handle.replace(/^gallery-/, '').toUpperCase();
+  return GALLERY_MAIN_CATS.some((cat) => cat.id === key)
+    ? (key as GalleryMainCategory)
+    : undefined;
+};
+
+/**
+ * Gallery category page (`/gallery/gallery-hair`, …).
+ *
+ * Mirrors the static-html mock, where the gallery is a single unified page: this
+ * route renders the very same ported {@link GalleryPageContent} as `/gallery`,
+ * only with the requested category pre-selected (like `/services/hair`).
  * @param   {object}                    props        - GallerySingleLayout props.
  * @param   {Promise<{handle: string}>} props.params - page params.
- * @returns {Promise<JSX.Element>}                   GalleryGrid layout.
+ * @returns {Promise<JSX.Element>}                   Gallery page pre-filtered by category.
  */
 export default async function GallerySingleLayout({
   params,
@@ -21,50 +40,52 @@ export default async function GallerySingleLayout({
   }>;
 }): Promise<JSX.Element> {
   const { handle } = await params;
-  /** Dict and page reads are independent — run in parallel. */
-  const [dictionary, pageResult] = await Promise.all([
-    getDictionary(),
+  /** The page read and the photo scan are independent — run in parallel. */
+  const [{ page, isError }, items] = await Promise.all([
     getPageByUrl(handle),
+    getLocalGalleryItems(),
   ]);
-  const [dict] = ServerProvider('dict', dictionary);
-  const { page, isError } = pageResult;
+
+  if (!page || isError) {
+    return notFound();
+  }
+
+  const initialCategory = handleToCategory(handle);
 
   /** Generate structured data for gallery */
-  const structuredData =
-    !isError && page
-      ? {
-          '@context': 'https://schema.org',
-          '@type': 'ImageGallery',
-          name: page.localizeInfos?.title,
-          description:
-            page.localizeInfos?.plainValue || page.localizeInfos?.title,
-          url: `${process.env.NEXT_PUBLIC_ONEENTRY_URL || 'https://oneentry.cloud'}/gallery/${handle}`,
-        }
-      : null;
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'ImageGallery',
+    name: page.localizeInfos?.title,
+    description: page.localizeInfos?.plainValue || page.localizeInfos?.title,
+    url: `${process.env.NEXT_PUBLIC_ONEENTRY_URL || 'https://oneentry.cloud'}/gallery/${handle}`,
+  };
 
   return (
-    <section className="flex min-h-[50vh] w-full flex-col justify-center">
-      {structuredData && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
-          }}
-        />
-      )}
-      <div className="mx-auto flex w-full flex-col">
-        <LineAnimations className="gradient-bg-line-20" delay={0} />
-        <Gallery dict={dict} handle={handle} />
-      </div>
-    </section>
+    <div className="flex w-full flex-col bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+      {/* Gradient accent strip */}
+      <div className="h-1.25 bg-gradient-stats" />
+      <GalleryPageContent
+        items={items}
+        {...(initialCategory ? { initialCategory } : {})}
+      />
+    </div>
   );
 }
 
 /**
- * Pre-generation of pages
+ * Pre-generation of pages — the gallery category pages under `gallery`.
  * @returns {Promise<Array<{handle: string}>>} Array of page parameters
  */
-export async function generateStaticParams() {
+export async function generateStaticParams(): Promise<
+  Array<{ handle: string }>
+> {
   const { pages, isError } = await getChildPagesByParentUrl('gallery');
 
   if (!isError && pages) {
