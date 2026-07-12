@@ -2,14 +2,9 @@ import { ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import type { JSX } from 'react';
 
-import {
-  getChildPagesByParentUrl,
-  getPageByUrl,
-  getProductsByPageUrl,
-} from '@/app/api';
+import { getPageByUrl, getProductsByPageUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { offerTermsData } from '@/components/data';
@@ -18,51 +13,6 @@ import OfferDetailCard from '@/components/layout/offers-page/OfferDetailCard';
 /** Brand text colors from the static-html mock (`OffersPage.tsx`) */
 const DARK = '#4c4d56';
 const PINK = '#ed21f1';
-
-/**
- * Collect special offers (`offer` products) from every service
- * category and subcategory, keeping the CMS category order. Fetch failures
- * degrade to an empty list — the page renders a fallback message instead of
- * a 404.
- * @returns {Promise<IProductsEntity[]>} Flat list of offer products
- */
-const getOffers = async (): Promise<IProductsEntity[]> => {
-  const { pages } = await getChildPagesByParentUrl('services');
-  const categories = pages ?? [];
-
-  const buckets = await Promise.all(
-    categories.map(async (category) => {
-      /** Products can live on the category page or on its subcategories */
-      const { pages: subPages } = await getChildPagesByParentUrl(
-        category.pageUrl,
-      );
-      const handles = [
-        category.pageUrl,
-        ...(subPages ?? []).map((sub) => sub.pageUrl),
-      ];
-      const lists = await Promise.all(
-        handles.map((handle) =>
-          getProductsByPageUrl({
-            limit: 100,
-            offset: 0,
-            params: { handle },
-          }).then((result) => result.products ?? []),
-        ),
-      );
-      const seen = new Set<number>();
-      return lists
-        .flat()
-        .filter(
-          (product) =>
-            product.attributeSetIdentifier === 'offer' &&
-            !seen.has(product.id) &&
-            (seen.add(product.id) || true),
-        );
-    }),
-  );
-
-  return buckets.flat();
-};
 
 /**
  * OffersPageLayout component renders the special offers page following the
@@ -78,10 +28,19 @@ const getOffers = async (): Promise<IProductsEntity[]> => {
  */
 const OffersPageLayout = async (): Promise<JSX.Element> => {
   /** All three fetches are independent — run in parallel. */
-  const [dict, { page, isError }, offers] = await Promise.all([
+  const [dict, { page, isError }, { products }] = await Promise.all([
     getDictionary(),
     getPageByUrl('offers'),
-    getOffers(),
+    /**
+     * Offer products live on the `offers` page. `servicesOnly: false` skips the
+     * catalog "has an `sku`" filter — offers carry `offer_sku`, not `sku`.
+     */
+    getProductsByPageUrl({
+      limit: 100,
+      offset: 0,
+      servicesOnly: false,
+      params: { handle: 'offers' },
+    }),
   ]);
   ServerProvider('dict', dict);
 
@@ -90,6 +49,11 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
   }
 
   const title = page.localizeInfos?.title ?? 'Special Offers';
+
+  /** Keep only genuine offer products, ignoring anything else on the page. */
+  const offers = (products ?? []).filter(
+    (product) => product.attributeSetIdentifier === 'offer',
+  );
 
   return (
     <div className="bg-white">

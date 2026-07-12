@@ -19,12 +19,14 @@ import getSearchParams from '@/app/api/utils/getSearchParams';
  * @param   {object}          props.params.searchParams          - Additional search parameters
  * @param   {string}          props.params.searchParams.search   - Search term to filter products
  * @param   {string}          props.params.searchParams.in_stock - Filter products by stock status
+ * @param   {boolean}         props.servicesOnly                 - Keep only catalog services (products with an `sku`); defaults to `true`. Set `false` for pages holding non-service products such as `offer`s (they carry `offer_sku`, not `sku`).
  * @returns {Promise<object>}                                    Promise that resolves to an object containing products, error status, and total count
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
  */
 export const getProductsByPageUrl = async (props: {
   limit: number;
   offset: number;
+  servicesOnly?: boolean;
   params: {
     handle: string;
     searchParams?: {
@@ -38,8 +40,10 @@ export const getProductsByPageUrl = async (props: {
   products?: IProductsEntity[];
   total: number;
 }> => {
-  const { limit, offset, params } = props;
-  const expandedFilters = getSearchParams(params.searchParams);
+  const { limit, offset, servicesOnly = true, params } = props;
+  const expandedFilters = servicesOnly
+    ? getSearchParams(params.searchParams)
+    : [];
 
   try {
     const data = await getApi().Products.getProductsByPageUrl(
