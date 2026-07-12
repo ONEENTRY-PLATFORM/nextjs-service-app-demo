@@ -16,8 +16,6 @@ import type {
 } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
 
-import getLocalMasters, { LOCAL_SALONS } from './getLocalMasters';
-
 /** Services child page `pageUrl` → main price-list category */
 const CATEGORY_BY_PAGEURL: Record<string, MastersMainCategory> = {
   hair: 'HAIR',
@@ -132,9 +130,8 @@ const toMasterItem = ({
  * profession card sections.
  *
  * Specialists come from CMS admins with `master_name` set (content plan,
- * stage 4). While none exist, the page falls back to the mock's demo roster
- * (`getLocalMasters`) so the design stays reviewable — the page never 404s
- * over missing masters.
+ * stage 4). When none exist the page degrades to empty filters and sections
+ * rather than 404-ing over missing masters.
  * @returns {Promise<JSX.Element>} Masters page
  */
 const MastersPageLayout = async (): Promise<JSX.Element> => {
@@ -197,9 +194,9 @@ const MastersPageLayout = async (): Promise<JSX.Element> => {
       )
       .filter((master): master is MasterItem => master !== null) ?? [];
 
-  /** CMS data once stage 4 is filled; the mock's demo roster until then */
-  const masters = cmsMasters.length > 0 ? cmsMasters : getLocalMasters();
-  const salons = cmsMasters.length > 0 ? cmsSalons : LOCAL_SALONS;
+  /** Masters and salon filter options come straight from the CMS. */
+  const masters = cmsMasters;
+  const salons = cmsSalons;
 
   return (
     <div className="flex w-full flex-col bg-white">

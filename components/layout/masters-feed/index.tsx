@@ -4,7 +4,6 @@ import type { JSX } from 'react';
 
 import TitleAnimations from '@/app/animations/TitleAnimations';
 import { getAdminsInfo } from '@/app/api';
-import getLocalMasters from '@/app/masters/getLocalMasters';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
 
@@ -12,32 +11,6 @@ import SpecialistsGrid from './components/SpecialistsGrid';
 
 /** How many specialists the home strip shows */
 const STRIP_LENGTH = 6;
-
-/**
- * Pick a cross-discipline spread from the demo roster — the first specialist of
- * each profession section, then fill up to {@link STRIP_LENGTH} — so the strip
- * shows variety like the static-html mock, not six hair stylists.
- * @param   {MasterItem[]} roster - Full demo roster
- * @returns {MasterItem[]}        Trimmed, varied selection
- */
-const pickStrip = (roster: MasterItem[]): MasterItem[] => {
-  const bySection = new Map<string, MasterItem>();
-  for (const master of roster) {
-    if (!bySection.has(master.section)) {
-      bySection.set(master.section, master);
-    }
-  }
-  const spread = [...bySection.values()];
-  const seen = new Set(spread.map((master) => master.id));
-  for (const master of roster) {
-    if (spread.length >= STRIP_LENGTH) break;
-    if (!seen.has(master.id)) {
-      spread.push(master);
-      seen.add(master.id);
-    }
-  }
-  return spread.slice(0, STRIP_LENGTH);
-};
 
 /**
  * Extract a usable URL from a CMS file attribute value — tolerates the admin
@@ -99,28 +72,28 @@ const toMasterItem = (admin: IAdminEntity): MasterItem | null => {
 
 /**
  * MastersFeed section component that displays a carousel of masters
- * @param   {object}               props       - Component properties
- * @param   {IBlockEntity}         props.block - Block entity containing section title and other metadata
- * @returns {Promise<JSX.Element>}             Promise resolving to a JSX element with masters carousel
+ * @param   {object}                      props       - Component properties
+ * @param   {IBlockEntity}                props.block - Block entity containing section title and other metadata
+ * @returns {Promise<JSX.Element | null>}             The masters carousel, or `null` when the CMS has no masters
  */
 const MastersFeed = async ({
   block,
 }: {
   block?: IBlockEntity | undefined;
-}): Promise<JSX.Element> => {
+}): Promise<JSX.Element | null> => {
   /** Fetch admin information (masters) */
   const { admins } = await getAdminsInfo({ body: [], offset: 0, limit: 100 });
 
   /** CMS masters = admins with `master_name` set (content plan, stage 4) */
-  const cmsMasters = (admins ?? [])
+  const specialists = (admins ?? [])
     .map(toMasterItem)
-    .filter((master): master is MasterItem => master !== null);
-  /** No CMS masters yet → fall back to the mock's demo roster */
-  const usingDemo = cmsMasters.length === 0;
-  /** CMS masters (capped to the strip length) or the varied demo spread */
-  const specialists = usingDemo
-    ? pickStrip(getLocalMasters())
-    : cmsMasters.slice(0, STRIP_LENGTH);
+    .filter((master): master is MasterItem => master !== null)
+    .slice(0, STRIP_LENGTH);
+
+  /** No masters in the CMS — hide the section instead of an empty carousel. */
+  if (specialists.length === 0) {
+    return null;
+  }
 
   return (
     <section className="flex w-screen flex-col justify-center py-5">
@@ -134,7 +107,6 @@ const MastersFeed = async ({
           </h2>
           <hr className="relative mb-2.5 h-px w-full self-center border-b border-solid border-b-gray-600" />
         </TitleAnimations>
-        {/** CMS masters once stage-4 admins exist; the mock's demo roster until then */}
         <SpecialistsGrid masters={specialists} />
       </div>
     </section>

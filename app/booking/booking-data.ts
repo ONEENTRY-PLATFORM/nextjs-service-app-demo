@@ -12,8 +12,6 @@ import type {
 } from '@/components/layout/booking-page/types';
 import { formatUaePhone } from '@/components/utils';
 
-import getLocalBookingData from './getLocalBookingData';
-
 /** Services child page `pageUrl` → display category of the wizard pills */
 const CATEGORY_BY_PAGEURL: Record<string, string> = {
   hair: 'Hair',
@@ -149,11 +147,9 @@ const toBookingMaster = ({
  * reusing the services page catalog collector) and the specialists (admins
  * with `master_name`).
  *
- * While the CMS is missing either the services or the specialists, the whole
- * payload degrades to the demo data of the static-html mock so the wizard
- * stays reviewable end to end — mixing CMS services with demo specialists
- * would break the cross-filters between the steps.
- * @returns {Promise<BookingData>} Wizard payload (CMS or demo)
+ * When the CMS is missing services, specialists or salons the wizard simply
+ * renders the empty steps rather than showing fabricated data.
+ * @returns {Promise<BookingData>} Wizard payload from the CMS
  */
 export const getBookingData = async (): Promise<BookingData> => {
   /** The three sources are independent — fetch in parallel */
@@ -205,10 +201,5 @@ export const getBookingData = async (): Promise<BookingData> => {
     )
     .filter((m): m is BookingMaster => m !== null);
 
-  /** CMS data only when both halves of the wizard exist; demo otherwise */
-  if (services.length === 0 || masters.length === 0 || salons.length === 0) {
-    return getLocalBookingData();
-  }
-
-  return { salons, services, masters, demo: false };
+  return { salons, services, masters };
 };

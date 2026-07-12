@@ -28,7 +28,7 @@ import { useBookingWizard } from './useBookingWizard';
  * "Book" button elsewhere in the app, or a "repeat" action in the profile)
  * preselects the matching entities and fast-forwards the wizard.
  * @param   {object}      props      - Component properties
- * @param   {BookingData} props.data - Salons, services and specialists (CMS or demo)
+ * @param   {BookingData} props.data - Salons, services and specialists from the CMS
  * @returns {JSX.Element}            Booking wizard
  */
 const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
@@ -39,7 +39,6 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
     currentStepKey,
     mobileSummary,
     setMobileSummary,
-    demo,
     categories,
     categoryFilter,
     salons,
@@ -137,7 +136,6 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                     selectedTime={time}
                     onDate={onDate}
                     onTime={onTime}
-                    demo={demo}
                   />
                 )}
               </div>

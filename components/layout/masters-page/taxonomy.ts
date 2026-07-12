@@ -3,9 +3,8 @@
  * the main price-list categories used as the top-level filter and the
  * normalized specialist / salon shapes the page renders from.
  *
- * The page accepts data from two sources: masters mapped from CMS admins
- * (content plan, stage 4) or — while the CMS is not populated — the local
- * demo roster from `app/masters/getLocalMasters.ts`.
+ * Masters are mapped from CMS admins with `master_name` set (content plan,
+ * stage 4).
  */
 
 /** Main service category of the price list (top-level filter) */

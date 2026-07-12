@@ -67,8 +67,6 @@ export interface BookingData {
   salons: BookingSalon[];
   services: BookingService[];
   masters: BookingMaster[];
-  /** True when the CMS is not filled yet and demo data is shown */
-  demo: boolean;
 }
 
 /** The two entry flows of the wizard (mock `BookingPage.tsx` → `Flow`). */

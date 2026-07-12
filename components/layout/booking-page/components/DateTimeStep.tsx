@@ -9,7 +9,6 @@ import {
   CYAN,
   DARK,
   DAYS,
-  DEMO_BUSY_TIMES,
   MONTHS,
   MUTED,
   PINK,
@@ -40,14 +39,12 @@ const getFirstDayOfMonth = (y: number, m: number): number => {
  * DateTimeStep — the date & time step of the booking wizard, ported from the
  * static-html mock (`BookingPage.tsx` → `DateTimeStep`): a month calendar
  * (past days disabled, today highlighted cyan, the pick filled with the
- * brand gradient) and a grid of time slots below. In demo mode a few slots
- * are struck through as busy, matching the mock.
+ * brand gradient) and a grid of time slots below.
  * @param   {object}              props              - Component properties
  * @param   {string}              props.selectedDate - Chosen date key `y-m-d` (`''` when none)
  * @param   {string}              props.selectedTime - Chosen time `HH:MM` (`''` when none)
  * @param   {(d: string) => void} props.onDate       - Pick a date
  * @param   {(t: string) => void} props.onTime       - Pick a time
- * @param   {boolean}             props.demo         - Demo mode (adds mock busy slots)
  * @returns {JSX.Element}                            Date & time step
  */
 const DateTimeStep = ({
@@ -55,13 +52,11 @@ const DateTimeStep = ({
   selectedTime,
   onDate,
   onTime,
-  demo,
 }: {
   selectedDate: string;
   selectedTime: string;
   onDate: (d: string) => void;
   onTime: (t: string) => void;
-  demo: boolean;
 }): JSX.Element => {
   const today = new Date();
   const [view, setView] = useState({
@@ -75,7 +70,7 @@ const DateTimeStep = ({
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysCount; d++) cells.push(d);
   const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
-  const busyTimes = demo ? DEMO_BUSY_TIMES : [];
+  const busyTimes: string[] = [];
 
   return (
     <div className="space-y-5">

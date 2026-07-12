@@ -23,8 +23,8 @@ export const dynamicParams = true;
  * "Your Appointment" summary and the success modal).
  *
  * The page renders with whatever the CMS currently has — a missing `booking`
- * page only drops the custom title, and an empty catalog/roster switches the
- * wizard to the demo data of the mock (see `booking-data.ts`).
+ * page only drops the custom title, and an empty catalog/roster leaves the
+ * corresponding wizard steps empty (see `booking-data.ts`).
  * @returns {Promise<JSX.Element>} JSX.Element representing the page
  */
 const BookingPageLayout = async (): Promise<JSX.Element> => {

@@ -6,7 +6,6 @@ import type { JSX } from 'react';
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { contactSalonsData } from '@/components/data';
 import BookCtaBanner from '@/components/layout/contacts-page/BookCtaBanner';
 import ContactFormCard from '@/components/layout/contacts-page/ContactFormCard';
 import ContactInfoCard from '@/components/layout/contacts-page/ContactInfoCard';
@@ -61,9 +60,9 @@ const toContactSalon = (
  * "Get in Touch" form + info sidebar, "Opening Hours" and the booking CTA
  * banner.
  *
- * Salons come from the CMS `salons` child pages; while their address
- * attributes are empty the page falls back to the mock's three demo studios
- * so the design stays reviewable — it never 404s over missing salons.
+ * Salons come from the CMS `salons` child pages (those with a `salon_address`);
+ * when none exist the "Our Locations" list is simply empty — the page never
+ * 404s over missing salons.
  * @returns {Promise<JSX.Element>} JSX.Element representing the contacts page
  * @see {@link https://nextjs.org/docs/app/api-reference/file-conventions/page Next.js docs}
  */
@@ -80,12 +79,10 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
     return notFound();
   }
 
-  const cmsSalons = (salonsResult.pages ?? [])
+  /** Salon location cards come from the CMS `salons` child pages. */
+  const salons: ContactSalon[] = (salonsResult.pages ?? [])
     .map(toContactSalon)
     .filter((salon): salon is ContactSalon => salon !== null);
-  /** Demo studios from the mock while the CMS salons have no attributes */
-  const salons: ContactSalon[] =
-    cmsSalons.length > 0 ? cmsSalons : contactSalonsData;
 
   const title = page.localizeInfos?.title ?? 'Contacts';
 

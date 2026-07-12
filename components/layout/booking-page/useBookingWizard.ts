@@ -33,8 +33,6 @@ export interface BookingWizardState {
   mobileSummary: boolean;
   /** Toggle the mobile summary screen */
   setMobileSummary: (v: boolean) => void;
-  /** CMS is empty and demo data is shown */
-  demo: boolean;
   /** Category pill labels (with "All") */
   categories: string[];
   /** Active category pill */
@@ -112,11 +110,11 @@ export interface BookingWizardState {
  * the cross-filters between studio / service / specialist, the dynamic step
  * order, cart preselection (React's "adjust state on prop change" pattern) and
  * every handler. Kept as a hook so the component stays a thin render.
- * @param   {BookingData}        data - Salons, services and specialists (CMS or demo)
+ * @param   {BookingData}        data - Salons, services and specialists from the CMS
  * @returns {BookingWizardState}      Wizard state and handlers
  */
 export const useBookingWizard = (data: BookingData): BookingWizardState => {
-  const { salons, services, masters, demo } = data;
+  const { salons, services, masters } = data;
 
   const [flow, setFlow] = useState<BookingFlow | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
@@ -445,7 +443,6 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     currentStepKey,
     mobileSummary,
     setMobileSummary,
-    demo,
     categories,
     categoryFilter,
     salons,

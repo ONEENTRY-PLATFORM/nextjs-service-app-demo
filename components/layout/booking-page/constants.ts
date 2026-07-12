@@ -34,12 +34,6 @@ export const TIMES = [
   '20:00',
 ];
 
-/**
- * Demo-only busy slots (mock `BUSY_TIMES`) — shown struck through while the
- * wizard runs on demo data; with real CMS data every slot stays bookable.
- */
-export const DEMO_BUSY_TIMES = ['09:00', '11:00', '13:00', '17:00', '18:00'];
-
 /** Weekday headers of the calendar, Monday first (mock `DAYS`) */
 export const DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
