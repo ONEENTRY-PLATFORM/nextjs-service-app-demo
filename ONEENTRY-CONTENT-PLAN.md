@@ -83,10 +83,10 @@
    Сеты по сущностям:
    `page_simple` — страницы-категории услуг (п. 2.2),
    `salon` — страницы салонов (п. 2.3),
-   `gallery` — галерея (п. 2.4),
+   `gallery` — галерея,
    `service` — услуги-продукты (п. 3),
    `offer` — офферы (п. 4),
-   `master` — мастера-админы (п. 7).
+   `master` — мастера-админы.
 
    Маркеры **`service_set`** и **`service_product`** зашиты в код шаблона (`attributeSetIdentifier === 'service_set'` отличает оффер от услуги в offers/booking, `=== 'service_product'` фильтрует услуги в поиске) — воспроизводить точно. Маркеры со звёздочкой (\*) в коде не проверяются — предложены планом, при заведении можно переименовать.
 
@@ -111,7 +111,7 @@
 | `404` | Not found | + атрибут `error_description` |
 | `payment_success`, `payment_canceled` | — | служебные страницы оплаты |
 
-> **Статус:** 🟡 страницы `home`, `services`, `offers`, `masters`, `gallery`, `contacts`, `booking`, `profile`, `404` — ✅ созданы, заголовки совпадают с планом; сверх плана есть `salons` (id 10) и `reviews` (id 38). ❌ `payment_success` и `payment_canceled` отсутствуют. ⚠️ у всех страниц `attributeValues` пустые — hero-тексты/`error_description` не заведены (шаблон живёт на фолбэках).
+> **Статус:** 🟡 страницы `home`, `services`, `offers`, `masters`, `gallery`, `contacts`, `booking`, `profile`, `404` — ✅ созданы, заголовки совпадают с планом; сверх плана есть `salons` (id 10) и `reviews` (id 38). ✅ `payment_success` (id 120) и `payment_canceled` (id 121) созданы (2026-07-12). ⚠️ у всех страниц `attributeValues` пустые — hero-тексты/`error_description` не заведены (шаблон живёт на фолбэках; платёжные страницы читают только `localizeInfos.title`).
 
 ### 2.2 Категории услуг — дети страницы `services`
 
@@ -132,14 +132,7 @@
 
 Списки `products`/`services` (какие услуги доступны в салоне — из матрицы цен `priceList.ts`: например, Balayage недоступен в JBR), фото салона из `Beauty content/Contacts/`. Тексты about/tagline/highlights — из `SALON_DETAILS` в `ContactsPage.tsx`. **Форматированный телефон в CMS не хранится** — `salon_phone_formatted` убран, фронт форматирует `salon_phone` через `formatUaePhone` (`components/utils.ts`).
 
-> **Статус (2026-07-10):** 🟡 в основном сделано: `beauty_one` удалён, заведены 3 ребёнка `downtown`/`marina`/`jbr` (набор `salon`: `salon_address`, `salon_phone` string + лишний `salon_time` timeInterval, кодом не читается). `salon_address` заполнен у всех трёх; `salon_phone` у `downtown` = `+97147012200` (виден). Телефоны `marina`/`jbr` **заполнены в админке руками**, но API стабильно отдаёт `""` при идентичном заполнении с `downtown` — похоже на баг распространения/кэша на стороне OneEntry (эскалировано команде OneEntry). Форматтер `formatUaePhone` проверен на contacts (`+971 4 701 2200`). ⏳ Ждём фикса от OneEntry, затем перепроверить `salon_phone` у `marina` (`+97147023300`) и `jbr` (`+97147034400`). Списки `products`/`services`, фото и тексты салонов — отдельной задачей (код их пока не читает).
-
-### 2.4 Галерея — родитель `gallery` → категории → страницы-фото
-
-- Дети `gallery` = **4 категории по дисциплинам: Hair, Face, Body, Nails** (как `MAIN_CATS` в верстке `GalleryPage`; подкатегории там — вторичный фильтр из имён файлов, не отдельные разделы). Набор `gallery`: `gallery_cat_thumb` (превью), `gallery_category` (entity → страница-категория услуг `hair`/`face`/`body`/`nails`).
-- Внутри каждой категории — страницы-фото (набор `gallery_photo`): `gallery_photos` (сами изображения), `master_id` (id мастера-админа списком). **1 страница-фото = 1 папка мастера целиком** (`BC/Gallery/<Salon>/<Master>_<disc>/`), категория — по дисциплине папки.
-
-> **Статус (2026-07-12):** ✅ **галерея наполнена** скриптом `.claude/temp/fill-gallery.mjs`. 4 категории `gallery-hair`/`gallery-face`/`gallery-body`/`gallery-nails` + **32 страницы-фото** (`gp-<slug>-<категория>`, набор 12: `gallery_photos` groupOfImages + `master_id` list = id админа). Залито **228 фото** (1 страница = 1 папка `BC/Gallery/<Salon>/<Master>_<disc>/`, категория = первый сегмент дисциплины). `/gallery` рендерит из CMS («Hair — 100 photos»). Создание страниц: `POST /api/admin/pages` (parentId=категория, attributeSetId=12, generalTypeId=17); фото: `POST /api/admin/files?type=page&entity=image&id=<pageId>` (поле `file`).
+> **Статус (2026-07-10):** 🟡 в основном сделано: заведены 3 ребёнка `downtown`/`marina`/`jbr` (набор `salon`: `salon_address`, `salon_phone` string + лишний `salon_time` timeInterval, кодом не читается). `salon_address` заполнен у всех трёх; `salon_phone` у `downtown` = `+97147012200` (виден). Телефоны `marina`/`jbr` **заполнены в админке руками**, но API стабильно отдаёт `""` при идентичном заполнении с `downtown` — похоже на баг распространения/кэша на стороне OneEntry (эскалировано команде OneEntry). Форматтер `formatUaePhone` проверен на contacts (`+971 4 701 2200`). ⏳ Ждём фикса от OneEntry, затем перепроверить `salon_phone` у `marina` (`+97147023300`) и `jbr` (`+97147034400`). Списки `products`/`services`, фото и тексты салонов — отдельной задачей (код их пока не читает).
 
 ---
 
@@ -182,7 +175,7 @@
 изображение — баннеры из `assets/Offer/`.
 Тексты tagline/description и условия (`OFFER_TERMS`) — из `offers.ts`.
 
-> **Статус (2026-07-12):** 🟡 заведены **4 продукта с набором `offer`** (310–313), заполнены `offer_sale`, `offer_price`, `offer_type`, `offer_sku` и **`offer_services` — состав по плану §4** (по-офферно, скрипт `.claude/temp/fill-offers-services.mjs`; правится `PUT /api/admin/products/{id}`, поле `entity_id4`). Список опций пикера `offer_services` расширен до **всех 77 услуг** (`fill-offer-picker.mjs` пересобирает `schema.attribute4.listTitles` набора 13; бэкап оригинала в `.claude/temp/`). ⚠️ Проверить: код различает оффер по `attributeSetIdentifier === 'service_set'` (CLAUDE.md) — если фактический набор называется `offer`, `offers-table`/`offers-feed` их не увидят (сверить маркер набора с кодом).
+> **Статус (2026-07-12):** 🟡 заведены **4 продукта с набором `offer`** (310–313), заполнены `offer_sale`, `offer_price`, `offer_type`, `offer_sku` и **`offer_services` — состав по плану §4** (по-офферно, скрипт `.claude/temp/fill-offers-services.mjs`; правится `PUT /api/admin/products/{id}`, поле `entity_id4`). Список опций пикера `offer_services` расширен до **всех 77 услуг** (`fill-offer-picker.mjs` пересобирает `schema.attribute4.listTitles` набора 13; бэкап оригинала в `.claude/temp/`). ✅ **Проверено 2026-07-12:** код различает оффер по `attributeSetIdentifier === 'offer'` во ВСЕХ местах (`app/services/catalog-data.ts`, `app/offers/page.tsx`, `offers-table`, `offers-feed`, `products-table` — 5 сайтов); `'service_set'` в коде нет нигде (grep = 0). Фактический набор CMS = `offer` → совпадает, офферы рендерятся. Устаревшая пометка про `service_set` (унаследована от старого маркера) снята.
 
 ---
 
@@ -192,7 +185,7 @@
 
 | identifier | Контент из верстки |
 |---|---|
-| `home_hero` | слайд героя: `title`, `text`, `bg_image` (из `assets/Offer/banner_main.jpeg` или Hero-слайдов), `button_text` = «DISCOVER MORE», `button_link` → offers. ⚠️ В верстке карусель из 4 слайдов, шаблон рендерит один блок — либо один слайд, либо доработка фронта |
+| `home_hero` | слайдер героя. ✅ **Проверено 2026-07-12:** фронт рендерит **все слайды блока каруселью** (стрелки/точки/автопрокрутка, интервал из `time`/`timeInterval`) через `getBlockSlides` — сейчас **4 слайда**. Слайд: `image_id1` (десктоп), `image_id2` (мобайл), `string_id3` (title), `string_id4` (text), `string_id5` (sale-бейдж), `string_id6/7` (текст/ссылка кнопки, фолбэк «Discover More» → `/offers`). Текст-оверлей (sale/title/text) **отображается** поверх слайда слева. ⚠️ баннеры должны быть **без впечённого текста** — иначе он задублируется с оверлеем (у дизайна `static-html` текст «впечён» в картинки; для CMS-слайдов нужны чистые изображения) |
 | `home_catalog` | заголовок «SERVICE» (сетка строится из детей `services`) |
 | `home_gallery` | заголовок «GALLERY» |
 | `home_offers_feed` | заголовок «BEST OFFERS» |
@@ -207,7 +200,7 @@
 - **`system_content`** — словарь UI-текстов: `site_name` = «Thalia Beauty Studio», `company_name`, `book_text`, `select_master_text`, `opening_time_text`, `follow_us_text` и остальные строки интерфейса (полный список маркеров — в `app/api/utils/dictionaries.ts`).
 - **`opening_time`** — список `opening_time`: Monday–Sunday, `10:00–22:00` (в верстке все дни одинаковые).
 
-> **Статус:** ❌ ни `system_content`, ни `opening_time` в админке нет (404) — все UI-тексты и часы работы шаблон берёт из английских фолбэков в коде.
+> **Статус (обновл. 2026-07-12):** ✅ **`system_content` заполнен** скриптом `.claude/temp/fill-system-content.mjs` (набор 2 `system_content` → 34 строковых атрибута под все маркеры `dict.<marker>` из кода; блок id=9 `attributeSetId=2`, значения в `attributesSets.en_US.string_id{N}`; проверено публичным SDK — 34/34). ⚠️ публичный API отдавал значения с задержкой ~30 сек (кэш/распространение OneEntry). ❌ `opening_time` ещё нет — часы работы на фолбэке кода.
 
 ---
 
@@ -222,38 +215,6 @@
 | `about_us` | колонка футера: Specialists, Prices, Reviews |
 
 > **Статус:** 🟡 ✅ `main` — 6 пунктов ровно по плану (home, services, offers, gallery, masters, contacts); ✅ `services` — 4 главные категории (hair, face, body, nails — соответствует двухуровневой структуре); ✅ `about_us` — masters, services, reviews. 🟡 `user_menu` — только profile (без Book Online). ❌ `bottom_web` — меню нет (мобильное нижнее меню шаблона останется пустым).
-
----
-
-## 7. Мастера (Admins)
-
-32 специалиста заводятся как **пользователи-админы OneEntry** (не страницы!). Код берёт всех админов с заполненным `master_name` (`getAdminsInfo`).
-
-Для каждого мастера заполнить:
-
-- `master_name` — имя (Sofia Marchetti, Noah Jhonson, …);
-- `master_image` — портрет из `Beauty content/Specialist/`;
-- `master_rating` — рейтинг (4–5 из верстки);
-- `master_expirience` — опыт («12 years»);
-- `master_short_description` — роль (Top Stylist / Color Specialist / Makeup Artist / Nail Specialist / Master Therapist);
-- `master_description` — bio из `MastersPage.tsx` DETAILS (дипломы, награды);
-- `services` — list со ссылками на страницы-категории услуг (п. 2.2), по специализации мастера;
-- `master_salon` — list со ссылками на страницы салонов;
-- `master_schedule` — интервальный атрибут: рабочие дни + тайм-слоты 09:00–20:00 (в верстке слоты `TIMES`/`BUSY_TIMES` захардкожены — здесь становятся реальным расписанием);
-- `master_portfolio` — list ссылок на страницы-фото галереи с работами этого мастера.
-
-Приоритет: сначала 6 мастеров с главной (Sofia Marchetti, Noah Jhonson, Samir Haddad, Camille Dubois, Bianca Schneider, Adriana Iliescu), затем остальные 26.
-
-> **Статус (2026-07-12):** ✅ **все 32 мастера заполнены** скриптами через внутренний admin API (`.claude/temp/fill-masters*.mjs` — НЕ удалять). У каждого проставлены: `master_name`, `master_image` (портрет из `BC/Specialist/<Салон>/`), `master_rating` (5), `master_expirience`, `master_short_description` (роль), `master_description` (англ. bio по шаблону), `master_services` (продукты-услуги, id вида `p-{pageId}-{productId}`), `master_salon`, `master_schedule` (Пн–Вс 10:00–22:00). `master_portfolio` — намеренно пуст (страниц-фото галереи ещё нет, этап 5). Проверено API: 32/32 полей заполнены; `/masters` рендерит из CMS (фото/роли/салоны).
->
-> ⚠️ **Публичный `getAdminsInfo` отдаёт только 10 из 32** — это ограничение прав токена (пользователь заменяет токен/права); после замены появятся все 32.
-> ⚠️ **Фронт-баг фильтра категорий:** `master_services` хранит id продуктов, а `app/masters/page.tsx` мапит категорию по id страницы услуги → все мастера попадают во все категории Hair/Face/Body/Nails. Правка фронта (мапить по `parentId`/`pageId` продукта), не данных.
-> ⚠️ Неоднозначные услуги в alias-map скрипта (выбран 1 из нескольких): «Chemical Peels»→Chemical Peel — Glycolic; «Body Wraps»→Detox Wrap.
->
-> ⚠️ **Важно — структура `entity` в коде.** Реальное значение `entity`-атрибута = `[{ title, value: { id, parentId, depth, position, … } }]` (OneEntry `IListTitleEntityValue`) — id связанной сущности лежит в `value.id`, НЕ на верхнем уровне. Шаблон был написан под плоский `.id`/`.parentId` (баг, не проявлялся без мастеров). Исправлено чтение `master_services`/`master_salon`/`master_portfolio` в: `app/masters/page.tsx`, `app/booking/booking-data.ts` (`parseServiceLinks` + salon), `components/forms/booking-form/masters/MastersList.tsx` (+ маркер `services`→`master_services`), `components/forms/booking-form/salons/SalonsList.tsx`, `components/layout/portfolio-grid/index.tsx`. `master-single` читает `.title` — не затронут. То же исправление понадобится для `offer_services` у офферов (этап 4-offers) и `gallery_category` (этап 5).
->
-> ✅ **`master_portfolio` заполнен** (2026-07-12, `fill-gallery.mjs`): у всех 32 мастеров entity_id10 = ссылки на их страницы-фото галереи (`[{title, value:{id:<pageId>, parentId:<категория>, …}}]`, проверено 32/32 публично). Токен-кап снят — публичный API отдаёт все 32.
-> ✅ **Фронт починен (2026-07-12):** профиль `/masters/{id}` больше не 404, портфолио рендерит работы, фильтр категорий корректен. Правки: `master-single/index.tsx` и `portfolio-grid/index.tsx` (маркер `services`→`master_services`, убран жёсткий `notFound()` при `!service`, `previewLink` как объект `{preset:[lqip,url]}`), `app/masters/page.tsx` (категория мастера по `value.parentId` продукта → подкатегория → главная категория). Проверено на localhost:3700.
 
 ---
 
@@ -290,7 +251,7 @@
 медиа — только hero-баннеры 🟡.
 
 - [x] **Этап 2 — структура** 🟡:
-системные страницы ✅ (кроме `payment_success`/`payment_canceled`);
+системные страницы ✅ (включая `payment_success`/`payment_canceled`, созданы 2026-07-12);
 категории услуг ✅ (двухуровнево: 4 категории + 15 подкатегорий, без hero-атрибутов);
 салоны 🟡 (3 салона Downtown/Marina/JBR с адресами; телефон только у Downtown — дозаполнить `salon_phone` у Marina/JBR; форматирование телефона перенесено на фронт `formatUaePhone`);
 меню ✅ (кроме `bottom_web`, `user_menu` без Book Online).
@@ -299,16 +260,9 @@
 услуги-продукты ✅ (sku/duration/грейд, но `price` строкой и без `sale`; по аудиту 2026-07-12 в каталоге ~196 продуктов: набор `catalog` 154 + `service` 42 — каталог расширен/детализирован относительно исходных 77);
 офферы `offer` ✅ (4 шт., атрибуты заполнены — сверить маркер набора с кодом, п. 4).
 
-- [x] **Этап 4 — мастера** ✅:
-все 32 мастера заполнены скриптами (`.claude/temp/fill-masters*.mjs`): имя, фото, rating, опыт, роль, bio, услуги, салон, расписание; `portfolio` ждёт галерею (этап 5).
-⚠️ публичный API отдаёт 10/32 (кап прав токена — заменяется); фронт-фильтр категорий требует правки (п. 7).
-
-- [x] **Этап 5 — галерея** ✅:
-4 категории (Hair/Face/Body/Nails) + **32 страницы-фото** (228 фото) со `gallery_photos`+`master_id`; `master_portfolio` у 32 мастеров слинкован (`fill-gallery.mjs`). `/gallery` рендерит из CMS. Профиль мастера, портфолио и фильтр категорий на фронте починены (см. п. 7).
-
 - [x] **Этап 6 — блоки** 🟡:
 `home_hero` (4 слайда) / `home_catalog` / `home_gallery` / `home_offers_feed` / `home_discounts` / `home_masters` / `reviews_carousel` — ✅ созданы и привязаны к `home`;
-`system_content`, `opening_time` ❌ (нет — UI-тексты и часы на фолбэках кода).
+`system_content` ✅ (34 UI-текста, `fill-system-content.mjs`); `opening_time` ❌ (часы на фолбэке кода).
 
 - [ ] **Этап 7 — формы и заказы** 🟡:
 формы `reg`/`contact_us`/`order` созданы, но **без полей** ❌;
@@ -335,63 +289,6 @@ storage `orders` не проверен (401).
 ## 12. Медиа-карта наполнения (что откуда брать)
 
 Все исходники — в **`public/images/`**. База для контентных фото — `public/images/Beauty content/` (ниже `BC/`). Структура нормализована 2026-07-10 (см. Статус 2). Соответствие салонов страницам (п. 2.3): `Downtown → downtown`, `Marina → marina`, `JBR → jbr`.
-
-### 12.1 Мастера (п. 7) + их работы для галереи (п. 2.4)
-
-Поля набора **`master`** (в порядке из админки; тип в скобках). Заголовки колонок таблицы = маркеры полей; правила заполнения ниже. Полей `master_rating` / `master_description` / `master_schedule` в таблице нет — они единые/по шаблону; колонка **Категория** — не поле CMS, а подсказка для поиска услуг.
-
-- **`master_name`** (string) — имя мастера.
-- **`master_image`** (image) — файл в `BC/Specialist/<Салон>/` (все 32 портрета уже есть в проекте).
-- **`master_rating`** (integer) — `5` для всех (при желании варьировать 4–5).
-- **`master_expirience`** (string; опечатка в маркере — так в наборе) — стаж в годах.
-- **`master_short_description`** (string) — роль (Top/Senior/Stylist, Master Therapist, Makeup/Nail Specialist).
-- **`master_services`** (entity) — конкретные услуги-продукты мастера (из имён файлов папки работ `BC/Gallery/<Салон>/<Мастер>_<дисц>/`). Колонка **Категория** (`Hair`/`Face`/`Body`/`Nails`) — в какой категории каталога их искать.
-- **`master_salon`** (entity) — страница салона (`downtown`/`marina`/`jbr`).
-- **`master_portfolio`** (entity) — все фото галереи мастера из `BC/Gallery/<Салон>/<Мастер>_<дисциплины>/` (в колонке — дисциплины и кол-во фото).
-- **`master_description`** (text) — короткое био; шаблон: «`<Роль>` в Thalia `<Салон>`. Специализация: `<услуги>`. Опыт `<N>` лет.»
-- **`master_schedule`** (timeInterval) — общий график: Пн–Вс, 10:00–22:00.
-
-| `master_name` | `master_image` | `master_short_description` | `master_salon` | Категория | `master_services` | `master_expirience` | `master_portfolio` |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Adriana Iliescu | `Adriana Iliescu.jpeg` | Nail Specialist | Downtown | Nails | Classic Pedicure, Gel Manicure, Medical Pedicure, Nail Art | 6 years | `nails` (8) |
-| Camille Dubois | `Camille Dubois.jpeg` | Makeup Specialist | Downtown | Face | Evening Makeup, Everyday Makeup, Mega Volume Lashes | 7 years | `face-makeup` (8) |
-| Elena Popescu | `Elena Popescu.jpeg` | Master Therapist | Downtown | Face | Chemical Peels, Mesotherapy, Microneedling | 9 years | `face` (4) |
-| Fatima Al Saadi | `Fatima Al Saadi.jpeg` | Senior Stylist | Downtown | Hair | Bridal Hairstyle, Evening Hairstyle, Haircut, Updo | 8 years | `hair` (8) |
-| Kate Kinsly | `Kate Kinsly.jpeg` | Master Therapist | Downtown | Face | Chemical Peels, HIFU, RF Lifting | 6 years | `face` (4) |
-| Layla Hadid | `Layla Hadid.jpeg` | Master Therapist | Downtown | Face, Body | Bridal Henna, Brow Lamination, Eid Henna | 11 years | `face-body-henna` (8) |
-| Mariam Al Zaabi | `Mariam Al Zaabi.jpeg` | Master Therapist | Downtown | Body | Body Scrub, Relax Massage | 5 years | `body` (4) |
-| Nicolas Costa | `Nicolas Costa.jpeg` | Top Stylist | Downtown | Hair | Haircut, Keratin, Toner, Treatment | 13 years | `hair` (12) |
-| Sofia Marchetti | `Sofia Marchetti.jpeg` | Top Stylist | Downtown | Hair | Airtouch, Balayage, Bridal Hairstyle, Full Coloring, Global Blonde, Haircut | 14 years | `hair` (12) |
-| Veronika Novak | `Veronika Novak.jpeg` | Nail Specialist | Downtown | Nails | Classic Pedicure, Combined Manicure, Gel Manicure, Nail Art | 5 years | `nails` (8) |
-| Aisha Al Mansoori | `Aisha Al Mansoori.jpeg` | Stylist | Marina | Hair | Blowout, Evening Hairstyle, Haircut | 4 years | `hair` (8) |
-| Eva Lindholm | `Eva Lindholm.jpeg` | Senior Stylist | Marina | Hair | Haircut, Highlights, Keratin Treatment, Toner | 7 years | `hair` (8) |
-| Hana Choi | `Hana Choi.jpeg` | Nail Specialist | Marina | Nails | Classic Manicure, Classic Pedicure, Gel Manicure | 6 years | `nails` (8) |
-| Isabella Romano | `Isabella Romano.jpeg` | Makeup Specialist | Marina | Face | Evening Makeup, Everyday Makeup, Mega Volume Lashes | 8 years | `face-makeup` (8) |
-| Jamil Walid | `Jamil Walid.jpeg` | Master Therapist | Marina | Body | Anti-Cellulite Massage, Hot Stone, Lymphatic Drainage | 10 years | `body` (4) |
-| Magdalena Kowalski | `Magdalena Kowalski.jpeg` | Master Therapist | Marina | Face | Chemical Peels, HIFU, Microneedling, RF Lifting | 7 years | `face` (4) |
-| Noah Jhonson | `Noah Jhonson.jpeg` | Top Stylist | Marina | Hair | Airtouch, Balayage, Full Coloring, Global Blonde, Haircut | 12 years | `hair` (8) |
-| Noor Khalil | `Noor Khalil.jpeg` | Master Therapist | Marina | Face | Deep Cleansing Facial, Express Facial, Hydrating Facial, LED Therapy | 5 years | `face` (4) |
-| Sarah Bennett | `Sarah Bennett.jpeg` | Master Therapist | Marina | Face, Body | Brow Lamination, Henna Hand Design, Lash Lift | 9 years | `face-body-henna` (8) |
-| Stefania Vasiliou | `Stefania Vasiliou.jpeg` | Nail Specialist | Marina | Nails | Gel Manicure, Gel Pedicure, Nail Art | 7 years | `nails` (8) |
-| Amal Al Hashimi | `Amal Al Hashimi.jpeg` | Master Therapist | JBR | Face, Body | Bridal Henna, Brow Shaping, Eid Henna | 8 years | `face-body-henna` (8) |
-| Beatriz Almeida | `Beatriz Almeida.jpeg` | Top Stylist | JBR | Hair | Airtouch, Full Coloring, Haircut, Highlights, Toner | 12 years | `hair` (12) |
-| Bianca Schneider | `Bianca Schneider.jpeg` | Master Therapist | JBR | Face | Chemical Peels, HIFU, Microneedling, RF Lifting | 10 years | `face` (4) |
-| Klara Novotná | `Klara Novotná.jpeg` | Senior Stylist | JBR | Hair | Bridal Hairstyle, Evening Hairstyle, Haircut | 6 years | `hair` (8) |
-| Laila Mansour | `Laila Mansour.jpeg` | Makeup Specialist | JBR | Face | Evening Makeup, Everyday Makeup, Volume Lashes | 6 years | `face-makeup` (8) |
-| Lucia Ferrari | `Lucia Ferrari.jpeg` | Stylist | JBR | Hair | Bang Trim, Blowout, Haircut | 5 years | `hair` (8) |
-| Mira Hassan | `Mira Hassan.jpeg` | Nail Specialist | JBR | Nails | Classic Manicure, Classic Pedicure, Nail Art | 8 years | `nails` (8) |
-| Salma Othman | `Salma Othman.jpeg` | Master Therapist | JBR | Body | Body Scrub, Body Wraps | 6 years | `body` (4) |
-| Samir Haddad | `Samir Haddad.jpeg` | Top Stylist | JBR | Hair | Airtouch, Balayage, Global Blonde, Haircut | 13 years | `hair` (8) |
-| Tom Lindqvist | `Tom Lindqvist.jpeg` | Stylist | JBR | Hair | Blowout, Curls & Waves, Haircut | 3 years | `hair` (8) |
-| Yasmin Al Kaabi | `Yasmin Al Kaabi.jpeg` | Master Therapist | JBR | Body | Body Scrub, Relax Massage, Waxing | 5 years | `body` (4) |
-| Zaynab Al Marzooqi | `Zaynab Al Marzooqi.jpeg` | Master Therapist | JBR | Face, Body | Express Facial, LED Therapy, Waxing | 7 years | `face-body` (4) |
-
-Приоритетная шестёрка с главной (п. 7): Sofia Marchetti, Noah Jhonson, Samir Haddad, Camille Dubois, Bianca Schneider, Adriana Iliescu.
-
-### 12.2 Галерея (п. 2.4)
-
-- **Страница-фото мастера** (`gallery_photos`): папка `BC/Gallery/<Salon>/<Мастер>_<дисц>/` целиком; `master_id` — тот же мастер, `gallery_category` — по дисциплине.
-- **`gallery_cat_thumb`** категории: любой репрезентативный файл из соответствующей папки работ (для 6 категорий главной — по одному превью).
 
 ### 12.3 Салоны (п. 2.3)
 

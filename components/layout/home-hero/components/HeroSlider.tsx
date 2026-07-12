@@ -43,7 +43,7 @@ const HeroSlider = ({
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = slides.length;
-  /** Current slide — drives the single CTA button (image-only hero otherwise) */
+  /** Current slide — drives the single CTA button */
   const current = slides[idx];
 
   /** Auto-advance the carousel, paused on hover */
@@ -61,8 +61,8 @@ const HeroSlider = ({
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Slides — image-only crossfade (no marketing overlay: the banner artwork
-          carries its own baked-in text, as in the mock). */}
+      {/* Slides — crossfade; each carries its optional CMS text overlay
+          (sale badge, title, subtitle) on the left. */}
       <div className="hero-bg absolute inset-0">
         {slides.map((slide, i) => (
           <div
@@ -92,6 +92,33 @@ const HeroSlider = ({
                 sizes="100vw"
                 className="object-cover md:hidden"
               />
+            )}
+
+            {/* CMS text overlay — sale badge, title and subtitle from the slide,
+                vertically centered on the left. Empty fields are not rendered. */}
+            {(slide.sale || slide.title || slide.text) && (
+              <div
+                className="absolute inset-y-0 left-16 z-10 flex max-w-[68%] flex-col items-start justify-center gap-3 pr-5 md:left-[7%] md:gap-5"
+                style={{ fontFamily: 'var(--font-oswald)' }}
+              >
+                {slide.sale && (
+                  <div className="flex aspect-square w-20 items-center justify-center rounded-full border border-white/40 bg-fuchsia-500/35 backdrop-blur-md md:w-28 lg:w-32">
+                    <span className="px-2 text-center text-xl leading-none font-semibold text-white md:text-3xl">
+                      {slide.sale}
+                    </span>
+                  </div>
+                )}
+                {slide.title && (
+                  <h1 className="text-5xl leading-none font-medium text-white md:text-7xl lg:text-8xl">
+                    {slide.title}
+                  </h1>
+                )}
+                {slide.text && (
+                  <p className="text-lg font-light tracking-wide text-white/85 md:text-2xl">
+                    {slide.text}
+                  </p>
+                )}
+              </div>
             )}
           </div>
         ))}
