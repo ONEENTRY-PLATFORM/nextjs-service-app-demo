@@ -9,9 +9,9 @@ import type { JSX } from 'react';
  * @returns {JSX.Element}             JSX element displaying parsed HTML title or empty fragment
  */
 const ServiceTitle = ({ page }: { page: IPagesEntity }): JSX.Element => {
-  /** Extract service title value from page attributes */
-  const { service_hero_title } = page.attributeValues;
-  const title = service_hero_title?.value as string | undefined;
+  /** Extract service title value from page attributes (`page_simple` set) */
+  const { page_title } = page.attributeValues;
+  const title = page_title?.value as string | undefined;
 
   /** If no title content, return empty fragment */
   if (!title) {

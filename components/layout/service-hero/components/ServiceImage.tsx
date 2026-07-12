@@ -10,8 +10,8 @@ import type { JSX } from 'react';
  */
 const ServiceImage = ({ page }: { page: IPagesEntity }): JSX.Element => {
   /** Extract background image and localized information from page attributes */
-  const { service_hero_bg } = page.attributeValues;
-  const bgArr = service_hero_bg?.value as
+  const { page_hero_bg } = page.attributeValues;
+  const bgArr = page_hero_bg?.value as
     Array<{ downloadLink?: string }> | undefined;
   const heroImage = bgArr?.[0]?.downloadLink;
   const alt = page.localizeInfos?.title || '...';

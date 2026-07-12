@@ -9,10 +9,10 @@ import type { JSX } from 'react';
  * @returns {JSX.Element}             JSX element containing the parsed HTML description or empty fragment if no description exists
  */
 const ServiceDescription = ({ page }: { page: IPagesEntity }): JSX.Element => {
-  /** Extract service description from page attributes */
-  const { service_hero_description } = page.attributeValues;
+  /** Extract service description from page attributes (`page_simple` set) */
+  const { page_hero_description } = page.attributeValues;
   /** Get HTML description value from the service hero description */
-  const descArr = service_hero_description?.value as
+  const descArr = page_hero_description?.value as
     Array<{ htmlValue?: string }> | undefined;
   const description = descArr?.[0]?.htmlValue;
 

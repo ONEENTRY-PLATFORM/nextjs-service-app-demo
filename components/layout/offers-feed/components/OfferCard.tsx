@@ -47,30 +47,67 @@ const OfferCard = ({
   /** Active cart row index */
   const activeId = useAppSelector(selectActiveItemId);
 
-  /** Offer data from CMS attributes */
-  const name = product.localizeInfos?.title ?? '';
+  /** Offer data from the CMS `offer` attribute set (prefixed markers) */
+  const rawTitle = product.localizeInfos?.title ?? '';
+  /** Featured card is flagged by "(featured)" in the title (no `party_star` value) */
+  const featured = /\(featured\)/i.test(rawTitle);
+  const name = rawTitle.replace(/\s*\(featured\)\s*/i, ' ').trim();
   const tagline =
     (product.localizeInfos?.plainValue as string | undefined) ?? '';
-  const servicesArr = product.attributeValues?.services?.value as
-    Array<{ title?: string; parentId?: number }> | undefined;
+
+  /** `offer_services` — entity list `[{ title, value: { id, parentId } }]` */
+  const servicesArr = product.attributeValues?.offer_services?.value as
+    | Array<{
+        title?: string;
+        value?: { id?: number | string; parentId?: number };
+      }>
+    | undefined;
   const services =
     servicesArr?.map((service) => service.title).filter(Boolean) ?? [];
-  const price = product.price ?? 0;
-  const original =
-    (product.attributeValues?.sale?.value as number | undefined) || 0;
+
+  /** `offer_sale` = current price, `offer_price` = crossed-out original (real → strings) */
+  const price =
+    Number(product.attributeValues?.offer_sale?.value) || product.price || 0;
+  const original = Number(product.attributeValues?.offer_price?.value) || 0;
   const discount =
     original > price && price > 0
       ? Math.round(((original - price) / original) * 100)
       : 0;
-  const offerTypeArr = product.attributeValues?.offer_type?.value as
-    Array<{ value?: string; extended?: { value?: string } }> | undefined;
-  const accentColor = offerTypeArr?.[0]?.extended?.value || '#ed21f1';
-  const featured = offerTypeArr?.[0]?.value === 'party_star';
+
+  /**
+   * `offer_type` list value is the accent-colour hex (`#109AA9`). Falls back to
+   * a per-category colour while it is still a category entity.
+   */
+  const CATEGORY_ACCENT: Record<string, string> = {
+    Hair: '#ed21f1',
+    Face: '#9b4fb2',
+    Body: '#109aa9',
+    Nails: '#109aa9',
+  };
+  const offerType = (
+    product.attributeValues?.offer_type?.value as
+      | Array<{
+          title?: string;
+          value?: unknown;
+          extended?: { value?: string };
+        }>
+      | undefined
+  )?.[0];
+  const accentColor =
+    [offerType?.value, offerType?.title, offerType?.extended?.value].find(
+      (candidate): candidate is string =>
+        typeof candidate === 'string' &&
+        /^#([0-9a-f]{3}){1,2}$/i.test(candidate),
+    ) ||
+    (typeof offerType?.title === 'string'
+      ? CATEGORY_ACCENT[offerType.title]
+      : '') ||
+    '#ed21f1';
   const accentGrad = `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)`;
 
   /** Category page of the first bundled service — needed for the booking cart */
   const { data: service } = useGetPageByIdQuery({
-    id: servicesArr?.[0]?.parentId ?? 0,
+    id: servicesArr?.[0]?.value?.parentId ?? 0,
   });
 
   /**

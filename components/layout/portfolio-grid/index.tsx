@@ -1,21 +1,18 @@
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 
-import { getAdminsInfo, getPageById, getPagesByIds } from '@/app/api';
-import getLqipPreview from '@/components/hooks/getLqipPreview';
+import { getAdminsInfo, getPagesByIds } from '@/app/api';
 
 import PortfolioGrid from './components/PortfolioGrid';
 
 /**
  * PortfolioGrid section
- * @param   {object}               props            - Props for the component
- * @param   {string}               props.handle     - Handle of the portfolio
- * @param   {object}               props.searchData - Resolved page searchParams (expects `service` id)
- * @returns {Promise<JSX.Element>}                  React component
+ * @param   {object}               props        - Props for the component
+ * @param   {string}               props.handle - Handle of the portfolio (master id)
+ * @returns {Promise<JSX.Element>}              React component
  */
 const PortfolioGridLayout = async ({
   handle,
-  searchData,
 }: {
   handle: string;
   searchData?: Record<string, string | string[] | undefined> | undefined;
@@ -27,75 +24,57 @@ const PortfolioGridLayout = async ({
     (admin: IAdminEntity) => admin.id === Number(handle),
   );
 
-  /** if no data in searchParams get first master service id */
-  const servicesArr = master?.attributeValues?.services?.value as
-    Array<{ id: number }> | undefined;
-  const sId = Number(searchData?.service) || servicesArr?.[0]?.id;
-
-  /** Fetch service page data by service ID */
-  const { page: service, isError } = await getPageById(sId as number);
-
-  /** Return empty fragment if master not found or error occurred */
-  if (!master || isError) {
+  /** Return empty fragment if the master is not found */
+  if (!master) {
     return <></>;
   }
 
-  /** Extract master portfolio attribute values */
-  const { master_portfolio } = master.attributeValues;
   /**
-   * Get master portfolio items or empty array as fallback.
-   * `entity` value is `[{ title, value: { id, parentId, … } }]`
-   * (OneEntry `IListTitleEntityValue`) — ids live in `value`.
+   * `master_portfolio` is an `entity` list of the master's gallery photo pages:
+   * `[{ value: { id: <photoPageId>, parentId: <category page id> } }]`.
+   * We render every image from those pages — the profile shows the master's
+   * whole portfolio (service-context filtering was removed: `master_services`
+   * now links products/subcategories that don't line up with the photo pages'
+   * `gallery_category`, so filtering here would hide everything).
    */
   const masterPortfolio =
-    (master_portfolio?.value as
-      Array<{ value?: { id?: number; parentId?: number } }> | undefined) || [];
-  /** Extract IDs from portfolio items */
+    (master.attributeValues.master_portfolio?.value as
+      Array<{ value?: { id?: number } }> | undefined) || [];
+  /** Extract photo-page IDs from portfolio items */
   const ids = masterPortfolio
     .map((v) => v.value?.id)
     .filter((id): id is number => typeof id === 'number');
-  /** Extract parent IDs from portfolio items */
-  const parentIds = masterPortfolio
-    .map((v) => v.value?.parentId)
-    .filter((id): id is number => typeof id === 'number');
 
-  /** Fetch child pages by portfolio item IDs */
+  /** Fetch the master's photo pages */
   const { pages: childPages } = await getPagesByIds(ids);
-  /** Fetch parent pages by portfolio item parent IDs */
-  const { pages: parentPages } = await getPagesByIds(parentIds);
 
-  /** Process portfolio images with low quality previews */
-  const portfolioImages = await Promise.all(
-    /** Process all child pages to extract portfolio images */
+  /**
+   * Flatten every gallery photo across the master's photo pages.
+   * `groupOfImages` items carry `downloadLink` (full URL) and `previewLink`
+   * — an object keyed by preset: `{ [preset]: [base64-LQIP, previewURL] }`.
+   * The base64 LQIP is inline, so no extra fetch is needed for the blur.
+   */
+  const portfolioImages =
     childPages?.flatMap((page) => {
-      /** Check if current page belongs to the selected service category */
-      const isInService = parentPages?.find((parent) => {
-        const catArr = parent.attributeValues.gallery_category?.value as
-          Array<{ id: number }> | undefined;
-        return Number(service?.id || 0) === Number(catArr?.[0]?.id || 0);
+      const photos = page.attributeValues.gallery_photos?.value as
+        | Array<{
+            downloadLink: string;
+            defaultPreview?: string;
+            previewLink?: Record<string, string[]>;
+          }>
+        | undefined;
+      return (photos ?? []).map((imgSrc) => {
+        const preset = imgSrc.defaultPreview || 'default';
+        const pv = imgSrc.previewLink?.[preset];
+        return {
+          img: imgSrc.downloadLink,
+          thumb: pv?.[1] || imgSrc.downloadLink,
+          preview: pv?.[0] || '',
+          /** TODO: Add proper alt text for accessibility */
+          alt: '...',
+        };
       });
-      /** If page belongs to the current service or no service is selected, process its images */
-      if (isInService?.id === page.parentId || service === undefined) {
-        const photos = page.attributeValues.gallery_photos?.value as
-          Array<{ previewLink: string; downloadLink: string }> | undefined;
-        /** Map through all gallery photos on this page */
-        return (photos ?? []).map(async (imgSrc) => {
-          return {
-            img: imgSrc.downloadLink,
-            thumb: imgSrc.previewLink || imgSrc.downloadLink,
-            preview:
-              (await getLqipPreview(
-                imgSrc.previewLink || imgSrc.downloadLink,
-              )) ?? '',
-            /** TODO: Add proper alt text for accessibility */
-            alt: '...',
-          };
-        });
-      }
-      /** Return empty array if page doesn't match current service filter */
-      return [];
-    }) || [],
-  );
+    }) || [];
 
   /** Render portfolio grid with processed images */
   return (

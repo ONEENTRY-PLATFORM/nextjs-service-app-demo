@@ -12,24 +12,32 @@ import OfferCard from './OfferCard';
 /**
  * OffersFeed component displays the special offers grid, as in the
  * static-html mock (BEST OFFERS): 1 column on mobile, 2 on tablet and 4 on
- * desktop, with equal-height cards.
- * @param   {object}               props       - Component properties
- * @param   {IBlockEntity}         props.block - Block entity containing offer data and metadata
- * @returns {Promise<JSX.Element>}             Promise resolving to a JSX element with animated offers feed
+ * desktop, with equal-height cards. Offers are the `offer` products curated on
+ * the `home_offers_feed` block (its similar products); while none are attached
+ * it falls back to the demo offers.
+ * @param   {object}               props         - Component properties
+ * @param   {IBlockEntity}         [props.block] - The `home_offers_feed` block
+ * @returns {Promise<JSX.Element>}               Promise resolving to the animated offers feed
  */
 const OffersFeed = async ({
   block,
 }: {
   block?: IBlockEntity | undefined;
 }): Promise<JSX.Element> => {
-  /** Special offers attached to the block (empty until stage-3 products exist) */
+  /**
+   * Special offers are the `offer` products attached to the `home_offers_feed`
+   * block as similar products (curated per the home page), read via
+   * `getBlockByMarker` which returns the block with its `similarProducts`.
+   */
   const data = block ? await getBlockByMarker(block.identifier) : null;
-  const products = data?.block?.similarProducts?.items ?? [];
+  const products = (data?.block?.similarProducts?.items ?? []).filter(
+    (product) => product.attributeSetIdentifier === 'offer',
+  );
 
   /**
    * Fall back to the mock's demo offers while the CMS holds no `offer`
    * products, so the home page matches the design instead of hiding the
-   * section (content plan, stage 3).
+   * section.
    */
   if (products.length < 1) {
     return (

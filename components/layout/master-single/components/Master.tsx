@@ -22,7 +22,7 @@ const Master = async ({
   service,
 }: {
   master: IAdminEntity;
-  service?: IPagesEntity;
+  service?: IPagesEntity | undefined;
 }): Promise<JSX.Element> => {
   /** Fetch dictionary data for localization */
   const [dict] = ServerProvider<IAttributeValues>('dict');

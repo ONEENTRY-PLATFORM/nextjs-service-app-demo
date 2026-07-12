@@ -75,15 +75,22 @@ const toMasterItem = ({
    * (OneEntry `IListTitleEntityValue`) — the linked id lives in `value.id`.
    */
   const services = attrs.master_services?.value as
-    Array<{ value?: { id?: number } }> | '' | undefined;
-  const serviceIds = Array.isArray(services)
+    | Array<{ value?: { id?: number | string; parentId?: number } }>
+    | ''
+    | undefined;
+  /**
+   * `master_services` links service PRODUCTS: `value.id` is a composite string
+   * (`"p-<pageId>-<productId>"`), so the usable numeric page id is `value.parentId`
+   * — the products' subcategory page, which maps to a main category.
+   */
+  const serviceParentIds = Array.isArray(services)
     ? services
-        .map((service) => service.value?.id)
+        .map((service) => service.value?.parentId)
         .filter((id): id is number => typeof id === 'number')
     : [];
   const categories = Array.from(
     new Set(
-      serviceIds
+      serviceParentIds
         .map((id) => categoryByServiceId.get(id))
         .filter((cat): cat is MastersMainCategory => Boolean(cat)),
     ),
@@ -100,7 +107,7 @@ const toMasterItem = ({
   const shortDescription =
     (attrs.master_short_description?.value as string | undefined) ||
     'Specialist';
-  const firstServiceId = serviceIds[0];
+  const firstServiceId = serviceParentIds[0];
 
   return {
     id: String(admin.id),
@@ -146,13 +153,29 @@ const MastersPageLayout = async (): Promise<JSX.Element> => {
     return notFound();
   }
 
-  /** Services child page id → main category (matched by the page `pageUrl`) */
+  /**
+   * Service page id → main category. Keyed by BOTH the 4 main category pages
+   * and their subcategory children, because `master_services` references
+   * products whose `value.parentId` is a subcategory page id.
+   */
   const categoryByServiceId = new Map<number, MastersMainCategory>();
-  servicesResult.pages?.forEach((servicePage: IPagesEntity) => {
-    const cat = CATEGORY_BY_PAGEURL[servicePage.pageUrl];
-    if (cat) {
-      categoryByServiceId.set(servicePage.id, cat);
-    }
+  const mainCats = (servicesResult.pages ?? []).filter(
+    (sp: IPagesEntity) => CATEGORY_BY_PAGEURL[sp.pageUrl],
+  );
+  mainCats.forEach((sp: IPagesEntity) => {
+    const cat = CATEGORY_BY_PAGEURL[sp.pageUrl];
+    if (cat) categoryByServiceId.set(sp.id, cat);
+  });
+  /** Map each subcategory (child of a main category) to that main category. */
+  const subcatGroups = await Promise.all(
+    mainCats.map(async (sp: IPagesEntity) => ({
+      cat: CATEGORY_BY_PAGEURL[sp.pageUrl],
+      children: (await getChildPagesByParentUrl(sp.pageUrl)).pages,
+    })),
+  );
+  subcatGroups.forEach(({ cat, children }) => {
+    if (!cat) return;
+    children?.forEach((c: IPagesEntity) => categoryByServiceId.set(c.id, cat));
   });
 
   /** Salon filter options from the CMS salon pages */

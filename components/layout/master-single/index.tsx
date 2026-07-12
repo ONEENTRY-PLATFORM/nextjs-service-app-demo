@@ -35,18 +35,32 @@ const MasterSingleLayout = async ({
     (admin: IAdminEntity) => admin.id === Number(handle),
   );
 
-  /** if no data in searchParams get first master service id */
-  const services = master?.attributeValues?.services?.value as
-    Array<{ id: number }> | undefined;
-  const sId = searchData?.service || services?.[0]?.id;
-
-  /** Fetch service page data by service ID */
-  const { page: service, isError } = await getPageById(sId as number);
-
-  /** Return 404 page if master or service not found or error occurred */
-  if (!master || !service || isError) {
+  /** Only a real master is required — 404 solely when the admin is missing. */
+  if (!master) {
     return notFound();
   }
+
+  /**
+   * `master_services` is an `entity` list of service PRODUCTS:
+   * `[{ value: { id: "p-<pageId>-<productId>", parentId: <subcategory page id> } }]`.
+   * The heading is shown in the context of the linked subcategory page, so we
+   * resolve it from `value.parentId` (a numeric page id) — falling back to a
+   * numeric `?service=` param when present. The product `value.id` is a string
+   * and is NOT a page id, so it must not be passed to `getPageById`.
+   */
+  const masterServices = master.attributeValues?.master_services?.value as
+    | Array<{ value?: { parentId?: number } }>
+    | undefined;
+  const searchService = Number(searchData?.service);
+  const sId = Number.isFinite(searchService)
+    ? searchService
+    : masterServices?.[0]?.value?.parentId;
+
+  /** Fetch the service (subcategory) page for the heading — optional. */
+  const { page: service } =
+    typeof sId === 'number' && Number.isFinite(sId)
+      ? await getPageById(sId)
+      : { page: undefined };
   /** Destructure master attributes for easier access */
   const { master_name, master_image, master_salon } = master.attributeValues;
 
@@ -61,8 +75,8 @@ const MasterSingleLayout = async ({
   return (
     <section className="relative mx-auto box-border flex w-full max-w-360 shrink-0 flex-col">
       <div className="flex w-full flex-col justify-center bg-white px-5 py-20 max-md:max-w-full max-sm:py-10">
-        {/** Display service title */}
-        <Title title={service?.localizeInfos.title || ''} />
+        {/** Service (subcategory) heading, falling back to the master name */}
+        <Title title={service?.localizeInfos?.title || name} />
         <MasterAnimations className="flex w-full gap-20 max-lg:gap-10 max-md:flex-col">
           <div className="flex w-[30%] grow flex-col max-md:mt-10 max-md:w-full max-sm:mt-5">
             {/** Display master image */}
