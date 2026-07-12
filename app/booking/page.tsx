@@ -4,8 +4,8 @@ import type { JSX } from 'react';
 import { getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import BookingAnimations from '@/components/forms/booking-form/animations/BookingAnimations';
 import BookingWizard from '@/components/layout/booking-page';
+import BookingAnimations from '@/components/layout/booking-page/animations/BookingAnimations';
 import BookingHero from '@/components/layout/booking-page/BookingHero';
 
 import { getBookingData } from './booking-data';

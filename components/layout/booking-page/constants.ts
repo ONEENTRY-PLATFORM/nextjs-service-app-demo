@@ -65,6 +65,9 @@ export const CATEGORY_ORDER = ['Hair', 'Face', 'Body', 'Nails'];
 /** Sentinel id of the "Any specialist" card (mock `__any__`) */
 export const ANY_MASTER = '__any__';
 
+/** Fixed 3-line description clamp height of specialist cards (mock `DESC_MIN_H`) */
+export const DESC_MIN_H = '4.4em';
+
 /**
  * "Any specialist" team photo for the chosen salon (mock `anySpecialistImg`).
  * CMS salons are matched by a keyword in the salon name; unknown names fall

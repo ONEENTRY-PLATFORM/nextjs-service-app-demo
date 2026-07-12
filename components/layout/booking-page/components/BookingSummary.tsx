@@ -1,8 +1,7 @@
 'use client';
 
 import { Calendar, MapPin, Scissors, User } from 'lucide-react';
-import Image from 'next/image';
-import type { JSX, ReactNode } from 'react';
+import type { JSX } from 'react';
 
 import { BRAND_GRADIENT, DARK, MONTHS, MUTED, PINK, PINK2 } from '../constants';
 import type {
@@ -11,51 +10,9 @@ import type {
   BookingSalon,
   BookingService,
 } from '../types';
+import MasterSummaryCard from './MasterSummaryCard';
 import Price from './Price';
-
-/**
- * SummaryRow — one line of the booking summary (mock `SummaryRow`): a pink
- * icon square, an uppercase label, the value and an optional sub-line.
- * @param   {object}      props       - Component properties
- * @param   {ReactNode}   props.icon  - Row icon
- * @param   {string}      props.label - Uppercase label
- * @param   {ReactNode}   props.value - Main value
- * @param   {ReactNode}   [props.sub] - Optional sub-line
- * @returns {JSX.Element}             Summary row
- */
-const SummaryRow = ({
-  icon,
-  label,
-  value,
-  sub,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: ReactNode;
-  sub?: ReactNode;
-}): JSX.Element => (
-  <div className="flex items-start gap-3">
-    <div
-      className="mt-0.5 flex size-7 flex-shrink-0 items-center justify-center rounded-lg"
-      style={{ background: `${PINK}15`, color: PINK }}
-    >
-      {icon}
-    </div>
-    <div>
-      <p className="text-xs tracking-wide uppercase" style={{ color: MUTED }}>
-        {label}
-      </p>
-      <p className="text-base font-semibold" style={{ color: DARK }}>
-        {value}
-      </p>
-      {sub && (
-        <p className="text-sm" style={{ color: MUTED }}>
-          {sub}
-        </p>
-      )}
-    </div>
-  </div>
-);
+import SummaryRow from './SummaryRow';
 
 /**
  * BookingSummary — the "Your Appointment" sidebar of the booking wizard,
@@ -191,43 +148,7 @@ const BookingSummary = ({
             }
           />
         )}
-        {master && (
-          <div
-            className="flex items-center gap-3 rounded-xl p-3"
-            style={{ background: `${PINK}08` }}
-          >
-            <div
-              className="relative size-10 shrink-0 overflow-hidden rounded-full border-2"
-              style={{ borderColor: PINK }}
-            >
-              {master.photo && (
-                <Image
-                  fill
-                  sizes="40px"
-                  src={master.photo}
-                  alt={master.name}
-                  className="object-cover object-top"
-                />
-              )}
-            </div>
-            <div className="min-w-0">
-              <p className="text-base font-semibold" style={{ color: DARK }}>
-                {master.name}
-              </p>
-              <div className="mt-1 flex flex-wrap gap-1">
-                {master.specialties.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full px-1.5 py-0.5 text-[10px] font-bold"
-                    style={{ background: `${PINK}18`, color: PINK }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+        {master && <MasterSummaryCard master={master} />}
         {masterAny && !master && (
           <SummaryRow
             icon={<User size={15} />}

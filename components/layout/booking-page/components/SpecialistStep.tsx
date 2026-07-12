@@ -1,24 +1,15 @@
 'use client';
 
-import { Check, MapPin, Scissors, Search, Star, User } from 'lucide-react';
-import Image from 'next/image';
+import { Scissors, Search } from 'lucide-react';
 import type { JSX } from 'react';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import {
-  ANY_MASTER,
-  anySpecialistImg,
-  CYAN,
-  DARK,
-  MUTED,
-  PINK,
-} from '../constants';
+import { ANY_MASTER, anySpecialistImg, DARK, MUTED, PINK } from '../constants';
 import type { BookingMaster, BookingSalon, BookingService } from '../types';
+import AnySpecialistCard from './AnySpecialistCard';
 import CategoryPills from './CategoryPills';
+import MasterCard from './MasterCard';
 import Price from './Price';
-
-/** Fixed 3-line description clamp height (mock `DESC_MIN_H`) */
-const DESC_MIN_H = '4.4em';
 
 /** Concise "Any specialist" subtitle per category (mock `ANY_LABEL`) */
 const ANY_LABEL: Record<string, string> = {
@@ -29,82 +20,13 @@ const ANY_LABEL: Record<string, string> = {
 };
 
 /**
- * Portrait — the specialist photo with a neutral placeholder while the CMS
- * admin has no `master_image` uploaded.
- * @param   {object}      props           - Component properties
- * @param   {string}      props.photo     - Photo URL (may be empty)
- * @param   {string}      props.alt       - Alt text
- * @param   {string}      props.sizes     - `next/image` sizes hint
- * @param   {string}      props.className - Extra classes of the image
- * @returns {JSX.Element}                 Portrait or placeholder
- */
-const Portrait = ({
-  photo,
-  alt,
-  sizes,
-  className,
-}: {
-  photo: string;
-  alt: string;
-  sizes: string;
-  className: string;
-}): JSX.Element => {
-  if (!photo) {
-    return (
-      <div
-        className="absolute inset-0 flex items-center justify-center"
-        style={{ background: '#f7f7fb' }}
-      >
-        <User size={32} color={MUTED} />
-      </div>
-    );
-  }
-  return (
-    <Image fill sizes={sizes} src={photo} alt={alt} className={className} />
-  );
-};
-
-/**
- * SalonChips — the full-width salon pill chips at the bottom of a specialist
- * card (mock salon chips block).
- * @param   {object}         props        - Component properties
- * @param   {BookingSalon[]} props.salons - Salons to list
- * @param   {number}         props.height - Chip height in px (38 mobile / 40 desktop)
- * @returns {JSX.Element}                 Chips column
- */
-const SalonChips = ({
-  salons,
-  height,
-}: {
-  salons: BookingSalon[];
-  height: number;
-}): JSX.Element => (
-  <>
-    {salons.map((s) => (
-      <div
-        key={s.id}
-        className="flex w-full items-center gap-2 rounded-full border px-4"
-        style={{ borderColor: '#e8e8f0', background: '#fff', height }}
-      >
-        <MapPin size={14} color={MUTED} />
-        <span
-          className="truncate text-base font-semibold"
-          style={{ color: DARK }}
-        >
-          {s.name}
-        </span>
-      </div>
-    ))}
-  </>
-);
-
-/**
  * SpecialistStep — the specialist selection step of the booking wizard,
  * ported from the static-html mock (`BookingPage.tsx` → `SpecialistStep`):
  * category pills, a desktop name search, a sticky chip of the already chosen
  * service, an "Any specialist" card and the roster cards (compact avatar
  * rows on mobile, photo cards on desktop). The desktop grid is capped at two
- * rows and scrolls beyond that.
+ * rows and scrolls beyond that. The card bodies live in {@link AnySpecialistCard}
+ * and {@link MasterCard}.
  * @param   {object}                     props                  - Component properties
  * @param   {BookingMaster[]}            props.masters          - Specialists after the wizard's cross-filters
  * @param   {string}                     props.selected         - Chosen specialist id (`''`, id or `__any__`)
@@ -218,14 +140,6 @@ const SpecialistStep = ({
     return linked.length > 0 ? linked : salons;
   };
 
-  /**
-   * Exact price at the chosen service, or the specialist's "from" price.
-   * @param   {BookingMaster} m - Specialist
-   * @returns {number | null}   Price of the card (`null` hides the line)
-   */
-  const priceOf = (m: BookingMaster): number | null =>
-    service?.price ?? m.price;
-
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-light" style={{ color: DARK }}>
@@ -301,380 +215,30 @@ const SpecialistStep = ({
         style={{ maxHeight: gridMaxH }}
         className="-mx-1 grid max-h-115 grid-cols-1 items-stretch gap-4 overflow-y-auto p-1 sm:grid-cols-2 md:max-h-none lg:grid-cols-3"
       >
-        {/* MOBILE compact "Any specialist" card — circular avatar + info row */}
         {showAnyCard && (
-          <div
-            onClick={() => onSelect(ANY_MASTER)}
-            className="cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 active:scale-[0.99] md:hidden"
-            style={{
-              borderColor: selected === ANY_MASTER ? PINK : '#e8e8f0',
-              boxShadow:
-                selected === ANY_MASTER
-                  ? `0 0 0 3px ${PINK}22, 0 8px 24px ${PINK}22`
-                  : '0 2px 12px rgba(0,0,0,0.06)',
-            }}
-          >
-            <div className="flex gap-3 p-3">
-              <div className="relative size-16 shrink-0 overflow-hidden rounded-full">
-                <Portrait
-                  photo={anySpecialistImg(selectedSalon)}
-                  alt="Our team"
-                  sizes="64px"
-                  className="object-cover"
-                />
-                {selected === ANY_MASTER && (
-                  <div
-                    className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full border-2 border-white"
-                    style={{ background: PINK }}
-                  >
-                    <Check size={17} color="#fff" />
-                  </div>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p
-                  className="truncate text-base leading-tight font-bold"
-                  style={{ color: DARK }}
-                >
-                  Any specialist
-                </p>
-                <p
-                  className="truncate text-base font-bold"
-                  style={{ color: PINK }}
-                >
-                  {anySpecialties}
-                </p>
-                <p
-                  className="mt-0.5 line-clamp-2 text-base leading-snug"
-                  style={{ color: MUTED }}
-                >
-                  We&apos;ll assign the first available master who can perform
-                  this service. Soonest available slot included.
-                </p>
-                {anyFromPrice !== null && (
-                  <p className="mt-1.5 flex items-baseline gap-1.5">
-                    <span
-                      className="text-xs font-medium tracking-wider uppercase"
-                      style={{ color: MUTED }}
-                    >
-                      from
-                    </span>
-                    <span
-                      className="text-xl leading-none font-semibold"
-                      style={{ color: DARK }}
-                    >
-                      <Price big amount={anyFromPrice} />
-                    </span>
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="border-t" style={{ borderColor: '#e8e8f0' }} />
-            <div className="flex flex-col gap-2 p-3">
-              <SalonChips salons={salons} height={38} />
-            </div>
-          </div>
+          <AnySpecialistCard
+            active={selected === ANY_MASTER}
+            onSelect={() => onSelect(ANY_MASTER)}
+            photo={anySpecialistImg(selectedSalon)}
+            specialties={anySpecialties}
+            fromPrice={anyFromPrice}
+            salons={salons}
+            chipsMinH={chipsMinH}
+          />
         )}
 
-        {/* DESKTOP "Any specialist" card — group photo + card body */}
-        {showAnyCard && (
-          <div
-            onClick={() => onSelect(ANY_MASTER)}
-            className="hidden h-full cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 hover:-translate-y-0.5 md:flex md:flex-col"
-            style={{
-              borderColor: selected === ANY_MASTER ? PINK : '#e8e8f0',
-              boxShadow:
-                selected === ANY_MASTER
-                  ? `0 0 0 3px ${PINK}22, 0 8px 24px ${PINK}22`
-                  : '0 2px 12px rgba(0,0,0,0.06)',
-            }}
-          >
-            <div className="relative h-56 overflow-hidden">
-              <Portrait
-                photo={anySpecialistImg(selectedSalon)}
-                alt="Our team"
-                sizes="(min-width: 768px) 33vw, 100vw"
-                className="object-cover"
-              />
-              {selected === ANY_MASTER && (
-                <div
-                  className="absolute top-3 right-3 flex size-9 items-center justify-center rounded-full"
-                  style={{ background: PINK, boxShadow: `0 0 12px ${PINK}` }}
-                >
-                  <Check size={16} color="#fff" />
-                </div>
-              )}
-            </div>
-
-            {/* Body — identical structure & rhythm to master card */}
-            <div className="flex flex-1 flex-col bg-white">
-              <div className="flex flex-col gap-2 p-4">
-                <p
-                  className="truncate text-lg leading-tight font-bold"
-                  style={{ color: DARK }}
-                >
-                  Any specialist
-                </p>
-                <p
-                  className="truncate text-base font-bold"
-                  style={{ color: PINK }}
-                >
-                  {anySpecialties}
-                </p>
-                <p
-                  className="line-clamp-3 text-base leading-snug"
-                  style={{ color: MUTED, minHeight: DESC_MIN_H }}
-                >
-                  We&apos;ll assign the first available master who can perform
-                  this service. Soonest available slot included.
-                </p>
-                {anyFromPrice !== null && (
-                  <p className="mt-1 flex items-baseline gap-1.5">
-                    <span
-                      className="text-xs font-medium tracking-wider uppercase"
-                      style={{ color: MUTED }}
-                    >
-                      from
-                    </span>
-                    <span
-                      className="text-2xl leading-none font-semibold"
-                      style={{ color: DARK }}
-                    >
-                      <Price big amount={anyFromPrice} />
-                    </span>
-                  </p>
-                )}
-              </div>
-
-              {/* Spacer pushes divider to a consistent Y across all cards */}
-              <div className="flex-1" />
-              <div className="border-t" style={{ borderColor: '#e8e8f0' }} />
-              <div
-                className="flex flex-col gap-2 p-4"
-                style={{ minHeight: chipsMinH }}
-              >
-                <SalonChips salons={salons} height={40} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {shownMasters.map((m) => {
-          const active = selected === m.id;
-          const mSalons = salonsOf(m);
-          const exactPrice = priceOf(m);
-          return (
-            <Fragment key={m.id}>
-              {/* MOBILE compact card — circular avatar + info row */}
-              <div
-                onClick={() => onSelect(m.id)}
-                className="cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 active:scale-[0.99] md:hidden"
-                style={{
-                  borderColor: active ? PINK : '#e8e8f0',
-                  boxShadow: active
-                    ? `0 0 0 3px ${PINK}22, 0 8px 24px ${PINK}22`
-                    : '0 2px 12px rgba(0,0,0,0.06)',
-                }}
-              >
-                <div className="flex gap-3 p-3">
-                  <div className="relative size-16 shrink-0 overflow-hidden rounded-full">
-                    <Portrait
-                      photo={m.photo}
-                      alt={m.name}
-                      sizes="64px"
-                      className="object-cover object-top"
-                    />
-                    {active && (
-                      <div
-                        className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full border-2 border-white"
-                        style={{ background: PINK }}
-                      >
-                        <Check size={17} color="#fff" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-2">
-                      <p
-                        className="truncate text-base leading-tight font-bold"
-                        style={{ color: DARK }}
-                      >
-                        {m.name}
-                      </p>
-                      <span className="mt-0.5 flex shrink-0 items-center gap-1">
-                        <Star size={16} fill={CYAN} color={CYAN} />
-                        <span
-                          className="text-sm font-bold"
-                          style={{ color: DARK }}
-                        >
-                          {m.rating.toFixed(1)}
-                        </span>
-                        {m.reviews !== null && (
-                          <span className="text-sm" style={{ color: MUTED }}>
-                            ({m.reviews})
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <p
-                        className="truncate text-base font-bold"
-                        style={{ color: PINK }}
-                      >
-                        {m.specialties.join(' · ')}
-                      </p>
-                      {m.grade && (
-                        <span
-                          className="inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                          style={{ background: '#ece3d4', color: '#8a7a5c' }}
-                        >
-                          {m.grade}
-                        </span>
-                      )}
-                    </div>
-                    <p
-                      className="mt-3 line-clamp-2 text-base leading-snug"
-                      style={{ color: MUTED }}
-                    >
-                      {m.bio}
-                    </p>
-                    {exactPrice !== null && (
-                      <p className="mt-1.5 flex items-baseline gap-1.5">
-                        {!service && (
-                          <span
-                            className="text-xs font-medium tracking-wider uppercase"
-                            style={{ color: MUTED }}
-                          >
-                            from
-                          </span>
-                        )}
-                        <span
-                          className="text-xl leading-none font-semibold"
-                          style={{ color: DARK }}
-                        >
-                          <Price big amount={exactPrice} />
-                        </span>
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="border-t" style={{ borderColor: '#e8e8f0' }} />
-                <div className="flex flex-col gap-2 p-3">
-                  <SalonChips salons={mSalons} height={38} />
-                </div>
-              </div>
-
-              {/* DESKTOP card — photo, rating pill, body, salon chips */}
-              <div
-                onClick={() => onSelect(m.id)}
-                className="hidden h-full cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 hover:-translate-y-0.5 md:flex md:flex-col"
-                style={{
-                  borderColor: active ? PINK : '#e8e8f0',
-                  boxShadow: active
-                    ? `0 0 0 3px ${PINK}22, 0 8px 24px ${PINK}22`
-                    : '0 2px 12px rgba(0,0,0,0.06)',
-                }}
-              >
-                <div className="relative h-56 overflow-hidden">
-                  <Portrait
-                    photo={m.photo}
-                    alt={m.name}
-                    sizes="(min-width: 768px) 33vw, 100vw"
-                    className="object-cover object-top"
-                  />
-
-                  {active && (
-                    <div
-                      className="absolute top-3 right-3 flex size-9 items-center justify-center rounded-full"
-                      style={{
-                        background: PINK,
-                        boxShadow: `0 0 12px ${PINK}`,
-                      }}
-                    >
-                      <Check size={16} color="#fff" />
-                    </div>
-                  )}
-
-                  {/* Rating pill — bottom-right of photo */}
-                  <div
-                    className="absolute right-3 bottom-3 flex items-center gap-1.5 rounded-full px-3 py-1.5"
-                    style={{
-                      background: 'rgba(20,20,30,0.85)',
-                      backdropFilter: 'blur(4px)',
-                    }}
-                  >
-                    <Star size={16} fill={CYAN} color={CYAN} />
-                    <span className="text-xs font-bold text-white">
-                      {m.rating.toFixed(1)}
-                      {m.reviews !== null && <> ({m.reviews})</>}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-1 flex-col bg-white">
-                  <div className="flex flex-col gap-2 p-4">
-                    <p
-                      className="truncate text-lg leading-tight font-bold"
-                      style={{ color: DARK }}
-                    >
-                      {m.name}
-                    </p>
-                    <p
-                      className="truncate text-base font-bold"
-                      style={{ color: PINK }}
-                    >
-                      {m.specialties.join(' · ')}
-                    </p>
-                    {m.grade && (
-                      <span
-                        className="inline-flex w-fit items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
-                        style={{ background: '#ece3d4', color: '#8a7a5c' }}
-                      >
-                        {m.grade}
-                      </span>
-                    )}
-                    <p
-                      className="line-clamp-3 text-base leading-snug"
-                      style={{ color: MUTED, minHeight: DESC_MIN_H }}
-                    >
-                      {m.bio}
-                    </p>
-                    {exactPrice !== null && (
-                      <p className="mt-1 flex items-baseline gap-1.5">
-                        {!service && (
-                          <span
-                            className="text-xs font-medium tracking-wider uppercase"
-                            style={{ color: MUTED }}
-                          >
-                            from
-                          </span>
-                        )}
-                        <span
-                          className="text-2xl leading-none font-semibold"
-                          style={{ color: DARK }}
-                        >
-                          <Price big amount={exactPrice} />
-                        </span>
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="flex-1" />
-                  <div
-                    className="border-t"
-                    style={{ borderColor: '#e8e8f0' }}
-                  />
-                  <div
-                    className="flex flex-col gap-2 p-4"
-                    style={{ minHeight: chipsMinH }}
-                  >
-                    <SalonChips salons={mSalons} height={40} />
-                  </div>
-                </div>
-              </div>
-            </Fragment>
-          );
-        })}
+        {shownMasters.map((m) => (
+          <MasterCard
+            key={m.id}
+            master={m}
+            active={selected === m.id}
+            onSelect={() => onSelect(m.id)}
+            salons={salonsOf(m)}
+            price={service?.price ?? m.price}
+            showFrom={!service}
+            chipsMinH={chipsMinH}
+          />
+        ))}
         {q && shownMasters.length === 0 && (
           <p
             className="col-span-full py-6 text-center text-base"

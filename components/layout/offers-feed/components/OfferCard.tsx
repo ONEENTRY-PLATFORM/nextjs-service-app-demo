@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, ChevronRight } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useTransitionRouter } from 'next-transition-router';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import type { JSX } from 'react';
@@ -13,7 +13,9 @@ import {
   selectActiveItemId,
   setTabsState,
 } from '@/app/store/reducers/CartSlice';
-import Dirham from '@/components/shared/Dirham';
+
+import OfferCardFooter from './OfferCardFooter';
+import { parseOffer } from './parseOffer';
 
 /** Brand text colors from the static-html mock */
 const DARK = '#4c4d56';
@@ -23,8 +25,9 @@ const MUTED = '#a8a9b5';
  * OfferCard component — a special-offer card as in the static-html mock:
  * discount ribbon, name and tagline, the bundled services with check marks,
  * price with the dirham symbol, crossed-out old price and a "Book Offer"
- * button. A featured offer (`offer_type` = `party_star`) gets the full
- * accent-gradient background with white text.
+ * button ({@link OfferCardFooter}). A featured offer gets the full
+ * accent-gradient background with white text. Offer data is parsed by
+ * {@link parseOffer}.
  *
  * Clicking the card opens the offers page; the button adds the offer to the
  * booking cart and navigates to booking.
@@ -40,75 +43,26 @@ const OfferCard = ({
   product: IProductsEntity;
   index: number;
 }): JSX.Element => {
-  /** Get router instance for navigation */
   const router = useTransitionRouter();
-  /** Get dispatch function for Redux actions */
   const dispatch = useAppDispatch();
   /** Active cart row index */
   const activeId = useAppSelector(selectActiveItemId);
 
-  /** Offer data from the CMS `offer` attribute set (prefixed markers) */
-  const rawTitle = product.localizeInfos?.title ?? '';
-  /** Featured card is flagged by "(featured)" in the title (no `party_star` value) */
-  const featured = /\(featured\)/i.test(rawTitle);
-  const name = rawTitle.replace(/\s*\(featured\)\s*/i, ' ').trim();
-  const tagline =
-    (product.localizeInfos?.plainValue as string | undefined) ?? '';
-
-  /** `offer_services` — entity list `[{ title, value: { id, parentId } }]` */
-  const servicesArr = product.attributeValues?.offer_services?.value as
-    | Array<{
-        title?: string;
-        value?: { id?: number | string; parentId?: number };
-      }>
-    | undefined;
-  const services =
-    servicesArr?.map((service) => service.title).filter(Boolean) ?? [];
-
-  /** `offer_sale` = current price, `offer_price` = crossed-out original (real → strings) */
-  const price =
-    Number(product.attributeValues?.offer_sale?.value) || product.price || 0;
-  const original = Number(product.attributeValues?.offer_price?.value) || 0;
-  const discount =
-    original > price && price > 0
-      ? Math.round(((original - price) / original) * 100)
-      : 0;
-
-  /**
-   * `offer_type` list value is the accent-colour hex (`#109AA9`). Falls back to
-   * a per-category colour while it is still a category entity.
-   */
-  const CATEGORY_ACCENT: Record<string, string> = {
-    Hair: '#ed21f1',
-    Face: '#9b4fb2',
-    Body: '#109aa9',
-    Nails: '#109aa9',
-  };
-  const offerType = (
-    product.attributeValues?.offer_type?.value as
-      | Array<{
-          title?: string;
-          value?: unknown;
-          extended?: { value?: string };
-        }>
-      | undefined
-  )?.[0];
-  const accentColor =
-    [offerType?.value, offerType?.title, offerType?.extended?.value].find(
-      (candidate): candidate is string =>
-        typeof candidate === 'string' &&
-        /^#([0-9a-f]{3}){1,2}$/i.test(candidate),
-    ) ||
-    (typeof offerType?.title === 'string'
-      ? CATEGORY_ACCENT[offerType.title]
-      : '') ||
-    '#ed21f1';
-  const accentGrad = `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)`;
+  const {
+    name,
+    tagline,
+    featured,
+    services,
+    price,
+    original,
+    discount,
+    accentColor,
+    accentGrad,
+    firstServiceParentId,
+  } = parseOffer(product);
 
   /** Category page of the first bundled service — needed for the booking cart */
-  const { data: service } = useGetPageByIdQuery({
-    id: servicesArr?.[0]?.value?.parentId ?? 0,
-  });
+  const { data: service } = useGetPageByIdQuery({ id: firstServiceParentId });
 
   /**
    * Add the offer to the booking cart and navigate to the booking page
@@ -134,10 +88,6 @@ const OfferCard = ({
     router.push('/booking');
   };
 
-  /**
-   * Render offer card following the static-html mock
-   * @param e -
-   */
   return (
     <CardAnimations
       index={index}
@@ -223,54 +173,14 @@ const OfferCard = ({
         </div>
 
         {/* Footer */}
-        <div
-          className="px-6 pt-4 pb-7"
-          style={{
-            borderTop: `1px solid ${featured ? 'rgba(255,255,255,0.18)' : '#e8e8f0'}`,
-          }}
-        >
-          <div className="mb-4 flex flex-wrap items-end gap-x-3 gap-y-1">
-            {/* Price */}
-            <span
-              className="flex items-baseline text-[1.85rem] leading-none font-black whitespace-nowrap"
-              style={{ color: featured ? '#fff' : DARK }}
-            >
-              <Dirham big /> {price}
-            </span>
-            {/* Old price */}
-            {original > 0 && (
-              <span
-                className="mb-1 text-sm whitespace-nowrap line-through"
-                style={{
-                  color: featured ? 'rgba(255,255,255,0.55)' : MUTED,
-                }}
-              >
-                <Dirham />
-                {original}
-              </span>
-            )}
-          </div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleBook();
-            }}
-            className="flex w-full items-center justify-center gap-1 rounded-xl py-3.5 text-base font-bold tracking-wider text-white uppercase transition-all hover:opacity-90 focus:outline-none"
-            style={
-              featured
-                ? {
-                    background: 'rgba(255,255,255,0.22)',
-                    border: '1.5px solid rgba(255,255,255,0.4)',
-                  }
-                : {
-                    background: accentGrad,
-                    boxShadow: `0 8px 20px ${accentColor}44`,
-                  }
-            }
-          >
-            Book Offer <ChevronRight size={14} />
-          </button>
-        </div>
+        <OfferCardFooter
+          featured={featured}
+          accentColor={accentColor}
+          accentGrad={accentGrad}
+          price={price}
+          original={original}
+          onBook={handleBook}
+        />
       </div>
     </CardAnimations>
   );

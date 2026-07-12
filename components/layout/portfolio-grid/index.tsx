@@ -7,9 +7,10 @@ import PortfolioGrid from './components/PortfolioGrid';
 
 /**
  * PortfolioGrid section
- * @param   {object}               props        - Props for the component
- * @param   {string}               props.handle - Handle of the portfolio (master id)
- * @returns {Promise<JSX.Element>}              React component
+ * @param   {object}               props            - Props for the component
+ * @param   {string}               props.handle     - Handle of the portfolio (master id)
+ * @param                          props.searchData
+ * @returns {Promise<JSX.Element>}                  React component
  */
 const PortfolioGridLayout = async ({
   handle,
