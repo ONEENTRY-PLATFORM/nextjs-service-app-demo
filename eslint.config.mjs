@@ -31,6 +31,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Figma-экспорт верстки — референс дизайна, не рабочий код
     "static-html/**",
+    // Служебные скрипты Claude (инспекция/наполнение CMS) — не рабочий код проекта
+    ".claude/**",
   ]),
 
   // Main ruleset for JS/TS/JSX/TSX
@@ -44,7 +46,8 @@ const eslintConfig = defineConfig([
     ignores: [
       'node_modules/**',
       '.next/**',
-      'out/**'
+      'out/**',
+      '.claude/**'
     ],
     languageOptions: {
       ...reactPlugin.configs.flat.languageOptions,

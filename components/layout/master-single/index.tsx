@@ -49,8 +49,7 @@ const MasterSingleLayout = async ({
    * and is NOT a page id, so it must not be passed to `getPageById`.
    */
   const masterServices = master.attributeValues?.master_services?.value as
-    | Array<{ value?: { parentId?: number } }>
-    | undefined;
+    Array<{ value?: { parentId?: number } }> | undefined;
   const searchService = Number(searchData?.service);
   const sId = Number.isFinite(searchService)
     ? searchService

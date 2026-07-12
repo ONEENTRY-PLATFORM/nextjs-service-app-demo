@@ -182,7 +182,7 @@
 изображение — баннеры из `assets/Offer/`.
 Тексты tagline/description и условия (`OFFER_TERMS`) — из `offers.ts`.
 
-> **Статус (2026-07-12):** 🟡 заведены **4 продукта с набором `offer`** (напр. «Sands of Serenity»), у них заполнены `offer_sale`, `offer_price`, `offer_type`, `offer_services`, `offer_sku`. ⚠️ Проверить: код различает оффер по `attributeSetIdentifier === 'service_set'` (CLAUDE.md) — если фактический набор называется `offer`, а не `service_set`, `offers-table`/`offers-feed` их не увидят (нужно сверить маркер набора с кодом).
+> **Статус (2026-07-12):** 🟡 заведены **4 продукта с набором `offer`** (310–313), заполнены `offer_sale`, `offer_price`, `offer_type`, `offer_sku` и **`offer_services` — состав по плану §4** (по-офферно, скрипт `.claude/temp/fill-offers-services.mjs`; правится `PUT /api/admin/products/{id}`, поле `entity_id4`). Список опций пикера `offer_services` расширен до **всех 77 услуг** (`fill-offer-picker.mjs` пересобирает `schema.attribute4.listTitles` набора 13; бэкап оригинала в `.claude/temp/`). ⚠️ Проверить: код различает оффер по `attributeSetIdentifier === 'service_set'` (CLAUDE.md) — если фактический набор называется `offer`, `offers-table`/`offers-feed` их не увидят (сверить маркер набора с кодом).
 
 ---
 
