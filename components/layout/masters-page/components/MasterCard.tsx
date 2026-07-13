@@ -21,7 +21,7 @@ import type { MasterItem } from '../taxonomy';
  */
 const MasterCard = ({ item }: { item: MasterItem }): JSX.Element => {
   const className =
-    'group relative block h-80 w-59.5 shrink-0 overflow-hidden rounded-[15px] text-left transition-transform duration-300 hover:-translate-y-1';
+    'group relative block h-80 w-59.5 shrink-0 overflow-hidden rounded-[15px] bg-accent-purple text-left transition-transform duration-300 hover:-translate-y-1';
   const style = { boxShadow: '0 10px 30px rgba(124,42,232,0.18)' };
 
   const inner = (

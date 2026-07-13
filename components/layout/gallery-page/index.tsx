@@ -63,7 +63,21 @@ const GalleryPageContent = ({
   const activeSpecialist =
     specialist && specialistsInMain.includes(specialist) ? specialist : '';
 
-  const subCats = GALLERY_SUBCATEGORIES[mainCat];
+  /**
+   * Subcategory chips of the current main category, narrowed to those that
+   * actually have photos. The CMS gallery tags photos at the main-category
+   * level only, so its items carry no price-list subcategory — the chip row is
+   * then empty and the Service tab simply shows every photo in the category
+   * (with the local scanner's richer data the present subcategories still show).
+   */
+  const subCats = useMemo(() => {
+    const present = new Set(
+      items
+        .filter((item) => SUB_TO_MAIN[item.category] === mainCat)
+        .map((item) => item.category),
+    );
+    return GALLERY_SUBCATEGORIES[mainCat].filter((sub) => present.has(sub));
+  }, [items, mainCat]);
 
   /**
    * Apply filters: main category always; subcategory & specialist when set;

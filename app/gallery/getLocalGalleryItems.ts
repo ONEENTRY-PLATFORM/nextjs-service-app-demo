@@ -104,6 +104,8 @@ const getLocalGalleryItems = async (): Promise<GalleryItem[]> => {
           url: encodeURI(
             `/images/Beauty content/Gallery/${salon}/${folder}/${file}`,
           ),
+          /** Local files are served straight from `public/` — no LQIP blur */
+          preview: null,
           category: classifySubcategory(disciplines, title),
           title,
           master,

@@ -16,6 +16,8 @@ export type GalleryItem = {
   id: string;
   /** Public URL of the photo */
   url: string;
+  /** Base64 LQIP blur placeholder shown while the photo loads, or `null` */
+  preview: string | null;
   /** Price-list subcategory, e.g. `Coloring` */
   category: string;
   /** Service name decoded from the photo file name */
@@ -64,6 +66,15 @@ export const SUB_TO_MAIN: Record<string, GalleryMainCategory> = {};
   subs.forEach((sub) => {
     SUB_TO_MAIN[sub] = main;
   });
+});
+/**
+ * The CMS gallery tags photos at the main-category level only (no price-list
+ * subcategory), so CMS items carry the main category as their `category`.
+ * Register each main category as its own key so main-category filtering works
+ * for them just like it does for the local scanner's subcategories.
+ */
+GALLERY_MAIN_CATS.forEach(({ id }) => {
+  SUB_TO_MAIN[id] = id;
 });
 
 /** Specialist role by primary discipline (folder-name suffix) */

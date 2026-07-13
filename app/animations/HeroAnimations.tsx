@@ -30,6 +30,13 @@ const HeroAnimations = ({
   const [backTl, setBackTl] = useState<gsap.core.Timeline>();
   const [triggerTl, setTriggerTl] = useState<gsap.core.Timeline>();
   const [prevStage, setPrevStage] = useState<string>('');
+  /**
+   * Once this hero enters the `leaving` stage it is on its way out (the route
+   * is unmounting it). While it lingers in the DOM the transition can flip to
+   * `entering`, which would re-run the reveal and snap the covering overlay
+   * back open. This latch keeps the overlay covering until unmount.
+   */
+  const hasLeftRef = useRef(false);
 
   /** triggerTl animations */
   useGSAP(() => {
@@ -148,6 +155,19 @@ const HeroAnimations = ({
   /** heroStageTl */
   useGSAP(() => {
     if (!ref.current || !readyState) {
+      return;
+    }
+
+    /**
+     * Already leaving — this hero only unmounts from here. `useGSAP` reverts
+     * the previous (covering) context on every re-run, which snaps the mask
+     * back open; re-apply the fully-covering path so the overlay stays closed
+     * until unmount instead of flashing the header.
+     */
+    if (hasLeftRef.current) {
+      gsap.set(ref.current.querySelectorAll('#hero_mask path'), {
+        attr: { d: 'M0 1005S175 995 500 995s500 5 500 5V0H0Z' },
+      });
       return;
     }
 
@@ -321,6 +341,8 @@ const HeroAnimations = ({
     }
     // leaving stage
     else if (leaving) {
+      /** Latch: from here on this hero only unmounts — never reveal again */
+      hasLeftRef.current = true;
       stageTl.play();
       backTl?.kill();
       triggerTl?.kill();
@@ -331,9 +353,14 @@ const HeroAnimations = ({
           duration: 0.65,
         });
       }
+      /**
+       * Cover the header and hold it closed. Play the wave forward from the
+       * open state to fully covering and stop there — the overlay must stay
+       * closed as the page leaves, not reveal the header again.
+       */
       loaderTl
         .set(heroMask, {
-          attr: { d: 'M0 1005S175 995 500 995s500 5 500 5V0H0Z' },
+          attr: { d: 'M0 2S175 1 500 1s500 1 500 1V0H0Z' },
         })
         .to(heroMask, {
           attr: { d: 'M0 502S175 272 500 272s500 230 500 230V0H0Z' },
@@ -341,11 +368,11 @@ const HeroAnimations = ({
           ease: 'power2.in',
         })
         .to(heroMask, {
-          attr: { d: 'M0 2S175 1 500 1s500 1 500 1V0H0Z' },
+          attr: { d: 'M0 1005S175 995 500 995s500 5 500 5V0H0Z' },
           duration: 0.5,
           ease: 'power2.out',
         })
-        .reverse(1);
+        .play();
     }
 
     setPrevStage(stage);

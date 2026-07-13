@@ -6,6 +6,7 @@ import GalleryPageContent from '@/components/layout/gallery-page';
 import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
 import { GALLERY_MAIN_CATS } from '@/components/layout/gallery-page/taxonomy';
 
+import getCmsGalleryItems from './getCmsGalleryItems';
 import getLocalGalleryItems from './getLocalGalleryItems';
 
 /**
@@ -13,11 +14,10 @@ import getLocalGalleryItems from './getLocalGalleryItems';
  * accent strip, Service/Specialist filter block, full-bleed photo grid and a
  * lightbox.
  *
- * Photos are currently read from the local library in
- * `public/images/Beauty content/Gallery/` (see `getLocalGalleryItems`) —
- * the CMS gallery tree is not populated yet (content plan, stage 5). The
- * page never 404s over missing photos: the grid degrades to an empty-state
- * message.
+ * Photos come from the OneEntry gallery tree (`getCmsGalleryItems`); while the
+ * CMS gallery is empty the page falls back to the local library in
+ * `public/images/Beauty content/Gallery/` (`getLocalGalleryItems`) so it never
+ * 404s over missing photos — the grid degrades to an empty-state message.
  * @param   {object}                       props              - Page properties
  * @param   {Promise<{category?: string}>} props.searchParams - Optional `?category=HAIR|FACE|BODY|NAILS` to open a main category
  * @returns {Promise<JSX.Element>}                            JSX.Element representing the gallery page
@@ -27,11 +27,14 @@ const GalleryPageLayout = async ({
 }: {
   searchParams: Promise<{ category?: string }>;
 }): Promise<JSX.Element> => {
-  /** Query params and the photo scan are independent — run in parallel. */
-  const [{ category }, items] = await Promise.all([
+  /** Query params and the CMS gallery fetch are independent — run in parallel. */
+  const [{ category }, cmsItems] = await Promise.all([
     searchParams,
-    getLocalGalleryItems(),
+    getCmsGalleryItems(),
   ]);
+
+  /** Prefer the CMS gallery; fall back to the local scan when it is empty. */
+  const items = cmsItems.length > 0 ? cmsItems : await getLocalGalleryItems();
 
   /** Accept only a known main category from the query string */
   const initialCategory = GALLERY_MAIN_CATS.some((cat) => cat.id === category)

@@ -39,11 +39,14 @@ const GalleryGridCell = ({
       className="group relative aspect-4/5 cursor-pointer overflow-hidden rounded-2xl"
       onClick={onOpen}
     >
-      {/* Photo */}
+      {/* Photo — LQIP blur placeholder (CMS `previewLink` or generated) fades
+          out on load */}
       <Image
         src={item.url}
         alt={item.title}
         loading="lazy"
+        placeholder={item.preview ? 'blur' : 'empty'}
+        {...(item.preview ? { blurDataURL: item.preview } : {})}
         className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"
       />
 
