@@ -33,15 +33,22 @@ import SubmitButton from './inputs/FormSubmitButton';
 type FormField = IAttributes & {
   isLogin?: boolean | null;
   isSignUp?: boolean | null;
+  isPassword?: boolean | null;
   isNotificationEmail?: boolean | null;
   isNotificationPhoneSMS?: boolean | null;
   isNotificationPhonePush?: boolean | null;
 };
-const isPasswordField = (f: FormField): boolean =>
-  (f.additionalFields as Record<string, { value?: string }> | undefined)?.type
-    ?.value === 'password';
+const isPasswordField = (f: FormField): boolean => f.isPassword === true;
 const isLoginCredential = (f: FormField): boolean =>
   f.isLogin === true || isPasswordField(f);
+/**
+ * UI-only "repeat password" confirmation field: rendered masked by FormInput
+ * (marker contains "password") but not flagged `isPassword` in the CMS. There
+ * is no dedicated CMS flag for confirm fields, so the marker heuristic is the
+ * only signal. Must never be submitted — it only guards against typos.
+ */
+const isConfirmPasswordField = (f: FormField): boolean =>
+  !isPasswordField(f) && f.marker.toLowerCase().includes('password');
 
 /**
  * SignUp form component for user registration
@@ -111,9 +118,21 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
       const value = (marker: string): string =>
         fields[marker]?.value?.toString().trim() || '';
 
+      const passwordField = attributes.find(isPasswordField);
+      const confirmField = attributes.find(isConfirmPasswordField);
+      if (
+        passwordField &&
+        confirmField &&
+        value(passwordField.marker) !== value(confirmField.marker)
+      ) {
+        setError('Passwords do not match');
+        return;
+      }
+
       /**
        * Route each field into the correct bucket by its flag from the CMS:
        * - login/password  → authData (ONLY)
+       * - repeat password → nowhere (client-side match check above)
        * - everything else → formData (profile data; notification fields are included here as well)
        * - notification fields → notificationData (additionally)
        */
@@ -123,7 +142,7 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
         .map((f) => ({ marker: f.marker, value: value(f.marker) }));
 
       const formData = attributes
-        .filter((f) => !isLoginCredential(f))
+        .filter((f) => !isLoginCredential(f) && !isConfirmPasswordField(f))
         .filter((f) => value(f.marker))
         .map((f) => ({
           marker: f.marker,
@@ -186,7 +205,6 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
            * auth() directly (fingerprint stays real) and routing the tokens
            * through the AuthContext login() helper (uses syncTokens).
            */
-          const passwordField = attributes.find(isPasswordField);
           const passwordValue = passwordField
             ? value(passwordField.marker)
             : '';

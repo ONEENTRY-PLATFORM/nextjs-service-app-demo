@@ -1,8 +1,8 @@
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
-import TitleAnimations from '@/app/animations/TitleAnimations';
 import { getBlockByMarker } from '@/app/api';
+import SectionTitle from '@/components/shared/SectionTitle';
 
 import OffersFeed from './components/OffersFeed';
 
@@ -37,15 +37,7 @@ const OffersFeedBlock = async ({
     <section className="flex w-full justify-center bg-white py-10 pb-4">
       <div className="mx-auto mb-6 w-full max-w-7xl flex-col px-3 md:px-8">
         <div className="flex w-full flex-col items-center justify-center">
-          <TitleAnimations
-            delay={0.25}
-            className="mx-auto mb-12 flex w-fit flex-col gap-4"
-          >
-            <h2 className="title self-center text-4xl leading-8 font-light tracking-widest text-ink uppercase">
-              {title}
-            </h2>
-            <hr className="relative mb-2.5 h-px w-full self-center border-b border-solid border-b-gray-600" />
-          </TitleAnimations>
+          <SectionTitle title={title} delay={0.25} className="mb-6 md:mb-10" />
           <OffersFeed products={products} />
         </div>
       </div>

@@ -19,19 +19,21 @@ const SectionTitle = ({
   return (
     <TitleAnimations
       className={
-        'mx-auto mb-6 box-border flex shrink-0 flex-col max-lg:mb-6 max-sm:mb-5'
+        'mx-auto mb-6 box-border flex w-fit shrink-0 flex-col max-lg:mb-6 max-sm:mb-5'
       }
     >
       {/** Title */}
       <h2
-        className={'title self-center text-4xl font-light uppercase'}
+        className={
+          'title self-center px-3 text-center text-[clamp(1.2rem,2.4vw,1.65rem)] font-light tracking-fine uppercase'
+        }
         style={{ color: color }}
       >
         {title}
       </h2>
       {/* Underline with the same color as the title */}
       <hr
-        className="mx-auto mt-5 h-px w-full max-w-37.5 shrink-0 self-center border-solid border-slate-500"
+        className="mt-2 h-px w-full shrink-0 self-center border-b border-solid"
         style={{ borderColor: color }}
       />
     </TitleAnimations>

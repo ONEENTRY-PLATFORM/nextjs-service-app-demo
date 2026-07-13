@@ -102,16 +102,16 @@ const Modal = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
     <ModalAnimations component={component}>
       <div
         id="modalBody"
-        className="fixed top-1/2 left-1/2 z-500 flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-sm -translate-1/2 flex-col overflow-hidden rounded-3xl bg-white shadow-xl"
+        className="fixed top-1/2 left-1/2 z-500 flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-sm -translate-1/2 flex-col overflow-hidden rounded-3xl bg-white shadow-[0_32px_80px_rgba(180,40,220,0.30)]"
       >
         <header
-          className="flex items-center justify-between gap-4 px-6 py-5 text-white"
+          className="flex items-center justify-between gap-4 rounded-t-3xl px-8 pt-8 pb-7 text-white"
           style={{ background: 'linear-gradient(135deg,#9B4FB2,#ed21f1)' }}
         >
-          <div className="text-xl font-semibold">{title}</div>
+          <div className="text-[2rem] font-light">{title}</div>
           <CloseModal />
         </header>
-        <div className="overflow-auto px-6 pt-4 pb-2">
+        <div className="overflow-auto px-8 pt-6 pb-4">
           <Form className={''} dict={dict} isActive={true} />
         </div>
       </div>

@@ -2,8 +2,8 @@ import parse from 'html-react-parser';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
-import TitleAnimations from '@/app/animations/TitleAnimations';
 import wrapCharactersInSpan from '@/components/hooks/wrapCharactersInSpan';
+import SectionTitle from '@/components/shared/SectionTitle';
 
 import BgAnimations from './animations/BgAnimations';
 import CatalogGrid from './components/CatalogGrid';
@@ -35,12 +35,7 @@ const CatalogSection = ({
     <section className="relative flex min-h-0 shrink-0 flex-col justify-center overflow-hidden bg-white py-2 xl:min-h-112 xl:py-10 md:min-h-80 md:py-6">
       <div className="relative mx-auto flex w-full max-w-7xl shrink-0 grow flex-col self-stretch px-3 md:px-8">
         {/* title */}
-        <TitleAnimations className="mx-auto mb-10 flex w-fit flex-col gap-4">
-          <h2 className="title text-center text-4xl font-light tracking-widest text-ink uppercase">
-            {title}
-          </h2>
-          <hr className="relative mb-2.5 h-px w-full self-center border-b border-solid border-b-gray-600" />
-        </TitleAnimations>
+        <SectionTitle title={title} className="mb-6 md:mb-10" />
         {/* pages */}
         <div className="relative z-10 grid grid-cols-2 place-items-center gap-4 md:grid-cols-4 md:gap-y-10 lg:gap-x-8">
           <CatalogGrid />

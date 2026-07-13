@@ -3,11 +3,12 @@ import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
-import TitleAnimations from '@/app/animations/TitleAnimations';
-import { getChildPagesByParentUrl } from '@/app/api';
+import { getAdminsInfo, getChildPagesByParentUrl } from '@/app/api';
 import getLocalGalleryItems from '@/app/gallery/getLocalGalleryItems';
+import masterNamesById from '@/app/gallery/masterNamesById';
 import getLqipPreview from '@/components/hooks/getLqipPreview';
 import { SUB_TO_MAIN } from '@/components/layout/gallery-page/taxonomy';
+import SectionTitle from '@/components/shared/SectionTitle';
 import type { OneEntryImageFile } from '@/components/utils';
 import { getGalleryImageUrls, shuffleArray } from '@/components/utils';
 
@@ -24,13 +25,21 @@ const GalleryFeed = async ({
 }: {
   block?: IBlockEntity | undefined;
 }): Promise<JSX.Element> => {
-  /** Fetch child pages for the gallery and their respective child pages concurrently */
-  const parentPagesResponse = await getChildPagesByParentUrl('gallery');
+  /** The gallery tree and the master admins are independent — fetch in parallel. */
+  const [parentPagesResponse, { admins }] = await Promise.all([
+    getChildPagesByParentUrl('gallery'),
+    getAdminsInfo({ body: [], offset: 0, limit: 100 }),
+  ]);
   /** Extract parent pages from response with fallback to empty array */
   const parentPages = parentPagesResponse?.pages || [];
 
+  /** Admin id → `master_name`, empty when the admins request failed */
+  const mastersById = masterNamesById(admins);
+
   /** Create promises to fetch gallery data for each parent page */
-  const galleryDataPromises = parentPages.map(fetchGalleryData);
+  const galleryDataPromises = parentPages.map((parentPage) =>
+    fetchGalleryData(parentPage, mastersById),
+  );
   /** Resolve all gallery data promises and flatten results */
   const galleryData = (await Promise.all(galleryDataPromises)).flat();
 
@@ -51,16 +60,7 @@ const GalleryFeed = async ({
   return (
     <section className="flex w-full flex-col justify-center py-5">
       <div className="flex w-full flex-col">
-        <TitleAnimations
-          delay={0.5}
-          className="mx-auto mb-12 flex w-fit flex-col gap-4"
-        >
-          {/** Display gallery feed section title */}
-          <h2 className="title self-center text-4xl leading-8 font-light tracking-widest text-ink uppercase">
-            {title}
-          </h2>
-          <hr className="relative mb-2.5 h-px w-full self-center border-b border-solid border-b-gray-600" />
-        </TitleAnimations>
+        <SectionTitle title={title} delay={0.5} className="mb-6 md:mb-10" />
         {/** Render the static six-tile gallery grid (static-html mock) */}
         <GalleryGrid cards={feedCards} />
       </div>
@@ -101,14 +101,19 @@ type FeedCard = {
 
 /**
  * Fetch gallery data for a specific parent page
- * @param   {IPagesEntity}        parentPage - Parent page entity
- * @returns {Promise<FeedCard[]>}            Promise that resolves to array of gallery card data
+ * @param   {IPagesEntity}        parentPage  - Parent page entity
+ * @param   {Map<number, string>} mastersById - Admin id → master name lookup
+ * @returns {Promise<FeedCard[]>}             Promise that resolves to array of gallery card data
  */
-async function fetchGalleryData(parentPage: IPagesEntity): Promise<FeedCard[]> {
+async function fetchGalleryData(
+  parentPage: IPagesEntity,
+  mastersById: Map<number, string>,
+): Promise<FeedCard[]> {
   const { pages: childPages } = await getChildPagesByParentUrl(
     parentPage.pageUrl,
   );
-  const promises = childPages?.flatMap(extractPhotosFromPage(parentPage)) || [];
+  const promises =
+    childPages?.flatMap(extractPhotosFromPage(parentPage, mastersById)) || [];
   const resolved = await Promise.all(promises);
   return resolved.filter((c): c is FeedCard => c !== null);
 }
@@ -117,14 +122,29 @@ type PhotoExtractor = (page: IPagesEntity) => Promise<FeedCard | null>[];
 
 /**
  * Helper function to extract photos from a page entity.
- * @param   {IPagesEntity}   parentPage - Parent page entity
- * @returns {PhotoExtractor}            Per-page photo mapper
+ * @param   {IPagesEntity}        parentPage  - Parent page entity
+ * @param   {Map<number, string>} mastersById - Admin id → master name lookup
+ * @returns {PhotoExtractor}                  Per-page photo mapper
  */
-function extractPhotosFromPage(parentPage: IPagesEntity): PhotoExtractor {
+function extractPhotosFromPage(
+  parentPage: IPagesEntity,
+  mastersById: Map<number, string>,
+): PhotoExtractor {
   return (page: IPagesEntity) => {
     /** Extract master ID from page attribute values (used for the alt/name) */
     const masterIdArr = page.attributeValues?.master_id?.value as
-      Array<{ value: number; title?: string }> | undefined;
+      Array<{ value: number | string; title?: string }> | undefined;
+    /**
+     * Card name: the linked master's `master_name` (source of truth),
+     * degrading to the link `title` snapshot when the admin is missing.
+     */
+    const masterLink = masterIdArr?.[0];
+    const masterName =
+      (masterLink?.value === undefined
+        ? undefined
+        : mastersById.get(Number(masterLink.value))) ||
+      masterLink?.title ||
+      '';
     /** Get photos array from page gallery photos attribute with fallback to empty array */
     const photos =
       (page?.attributeValues?.gallery_photos?.value as
@@ -149,7 +169,7 @@ function extractPhotosFromPage(parentPage: IPagesEntity): PhotoExtractor {
 
       /** Return photo object with all required properties */
       return {
-        name: masterIdArr?.[0]?.title || '',
+        name: masterName,
         link,
         img: full,
         thumb,

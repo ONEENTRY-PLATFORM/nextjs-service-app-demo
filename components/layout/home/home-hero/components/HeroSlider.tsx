@@ -102,8 +102,8 @@ const HeroSlider = ({
                 style={{ fontFamily: 'var(--font-oswald)' }}
               >
                 {slide.sale && (
-                  <div className="flex aspect-square w-20 items-center justify-center rounded-full border border-white/40 bg-fuchsia-500/35 backdrop-blur-md md:w-28 lg:w-32">
-                    <span className="px-2 text-center text-xl leading-none font-semibold text-white md:text-3xl">
+                  <div className="flex aspect-square w-24 items-center justify-center rounded-full border border-white/40 bg-fuchsia-500/35 backdrop-blur-md md:w-[12vw] md:max-w-44">
+                    <span className="px-2 text-center text-2xl leading-none font-semibold text-white md:text-[clamp(1.5rem,3vw,2.5rem)]">
                       {slide.sale}
                     </span>
                   </div>

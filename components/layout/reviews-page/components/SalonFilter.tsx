@@ -36,7 +36,7 @@ const SalonFilter = ({
       <div className="relative lg:hidden">
         <button
           onClick={() => setOpen((o) => !o)}
-          className="flex w-full items-center justify-between rounded-xl border border-slate-150 bg-white px-4 py-3 shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
+          className="flex w-full items-center justify-between rounded-xl border-[1.5px] border-slate-150 bg-white px-4 py-3 shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
         >
           <span
             className="flex min-w-0 items-center gap-2 text-base font-semibold"
@@ -62,7 +62,7 @@ const SalonFilter = ({
               className="fixed inset-0 z-10"
               onClick={() => setOpen(false)}
             />
-            <div className="absolute inset-x-0 z-20 mt-1 overflow-hidden rounded-xl border border-slate-150 bg-white shadow-[0_12px_32px_rgba(0,0,0,0.18)]">
+            <div className="absolute inset-x-0 z-20 mt-1 overflow-hidden rounded-xl border-[1.5px] border-slate-150 bg-white shadow-[0_12px_32px_rgba(0,0,0,0.18)]">
               <button
                 onClick={() => {
                   onSelect(null);
@@ -116,7 +116,7 @@ const SalonFilter = ({
               className={`rounded-xl px-4 py-3 text-left transition-transform active:scale-97 ${
                 active
                   ? 'bg-gradient-brand text-white'
-                  : 'border border-slate-150 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.05)]'
+                  : 'border-[1.5px] border-slate-150 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.05)]'
               }`}
               style={
                 active ? { boxShadow: `0 8px 24px ${PINK}33` } : { color: DARK }

@@ -37,7 +37,7 @@ const ReviewSlide = ({
         <StarsGroup rating={rating} size={14} />
       </div>
       {/** Review text */}
-      <p className="text-base leading-relaxed whitespace-pre-line text-ink">
+      <p className="text-[clamp(0.875rem,1.2vw,1rem)] leading-relaxed whitespace-pre-line text-ink">
         {text}
       </p>
     </div>

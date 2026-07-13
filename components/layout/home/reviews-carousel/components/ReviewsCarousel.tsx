@@ -67,14 +67,21 @@ const ReviewsCarousel = (): JSX.Element => {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        {/** Left arrow — desktop only */}
+        {/** Left arrow — desktop only (thin chevron, matches static-html) */}
         <button
           type="button"
           onClick={prev}
           aria-label="Previous review"
           className="arrow absolute top-1/2 left-0 hidden -translate-y-1/2 text-accent-pink transition-opacity hover:opacity-70 md:block"
         >
-          <ChevronLeft size={40} strokeWidth={2.5} />
+          <svg width="22" height="42" viewBox="0 0 25.6872 44.5" fill="none">
+            <path
+              d="M24.1871 1.50002L2.18714 21L24.1871 43"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth="3"
+            />
+          </svg>
         </button>
 
         {/** Active review */}
@@ -115,14 +122,21 @@ const ReviewsCarousel = (): JSX.Element => {
           </button>
         </div>
 
-        {/** Right arrow — desktop only */}
+        {/** Right arrow — desktop only (thin chevron, matches static-html) */}
         <button
           type="button"
           onClick={next}
           aria-label="Next review"
-          className="arrow absolute top-1/2 right-0 hidden -translate-y-1/2 text-accent-pink transition-opacity hover:opacity-70 md:block"
+          className="arrow absolute top-1/2 right-0 hidden -translate-y-1/2 rotate-180 text-accent-pink transition-opacity hover:opacity-70 md:block"
         >
-          <ChevronRight size={40} strokeWidth={2.5} />
+          <svg width="22" height="42" viewBox="0 0 25.6872 44.5" fill="none">
+            <path
+              d="M24.1871 1.50002L2.18714 21L24.1871 43"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth="3"
+            />
+          </svg>
         </button>
       </div>
 
@@ -130,7 +144,7 @@ const ReviewsCarousel = (): JSX.Element => {
       <div className="mt-6 flex justify-center md:mt-10">
         <Link
           href="/reviews"
-          className="inline-flex items-center gap-1.5 text-base font-bold text-accent-pink uppercase underline decoration-accent-pink underline-offset-4 transition-opacity hover:opacity-70"
+          className="inline-flex items-center gap-1.5 text-base font-bold tracking-wider text-accent-pink uppercase underline decoration-accent-pink underline-offset-4 transition-opacity hover:opacity-70"
         >
           View all reviews
         </Link>

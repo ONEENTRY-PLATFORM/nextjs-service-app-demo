@@ -1,6 +1,7 @@
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
-import { getChildPagesByParentUrl } from '@/app/api';
+import { getAdminsInfo, getChildPagesByParentUrl } from '@/app/api';
+import masterNamesById from '@/app/gallery/masterNamesById';
 import getLqipPreview from '@/components/hooks/getLqipPreview';
 import type {
   GalleryItem,
@@ -25,16 +26,29 @@ const MAIN_BY_PAGEURL: Record<string, GalleryMainCategory> = {
 };
 
 /**
- * Specialist name of a photo page: the linked `master_id` (list attribute),
- * falling back to the `pageUrl` (`gp-sofia-marchetti-hair` → `Sofia Marchetti`)
- * when the link is missing.
- * @param   {IPagesEntity} page - Photo page entity
- * @returns {string}            Specialist display name
+ * Specialist name of a photo page: the master admin linked via `master_id`
+ * (list attribute, `value` — admin id) resolved against the admin list, so the
+ * name always matches the master profile. Degrades to the link `title` (name
+ * snapshot stored on the page) and finally to the `pageUrl`
+ * (`gp-sofia-marchetti-hair` → `Sofia Marchetti`) when the link or the admin
+ * is missing.
+ * @param   {IPagesEntity}        page        - Photo page entity
+ * @param   {Map<number, string>} mastersById - Admin id → master name lookup
+ * @returns {string}                          Specialist display name
  */
-const masterName = (page: IPagesEntity): string => {
+const masterName = (
+  page: IPagesEntity,
+  mastersById: Map<number, string>,
+): string => {
   const linked = page.attributeValues?.master_id?.value as
-    Array<{ title?: string }> | undefined;
-  const fromLink = linked?.[0]?.title?.trim();
+    Array<{ title?: string; value?: number | string }> | undefined;
+  const link = linked?.[0];
+  const fromMaster =
+    link?.value === undefined ? undefined : mastersById.get(Number(link.value));
+  if (fromMaster) {
+    return fromMaster;
+  }
+  const fromLink = link?.title?.trim();
   if (fromLink) {
     return fromLink;
   }
@@ -61,10 +75,17 @@ const masterName = (page: IPagesEntity): string => {
  * @returns {Promise<GalleryItem[]>} Flat, deterministically ordered photo list
  */
 const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
-  const { pages: categories } = await getChildPagesByParentUrl('gallery');
+  /** The gallery tree and the master admins are independent — fetch in parallel. */
+  const [{ pages: categories }, { admins }] = await Promise.all([
+    getChildPagesByParentUrl('gallery'),
+    getAdminsInfo({ body: [], offset: 0, limit: 100 }),
+  ]);
   if (!categories || categories.length === 0) {
     return [];
   }
+
+  /** Admin id → `master_name`, empty when the admins request failed */
+  const mastersById = masterNamesById(admins);
 
   /** Photo pages of every category, fetched concurrently, order preserved */
   const groups = await Promise.all(
@@ -97,7 +118,7 @@ const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
     const categoryLabel = category.localizeInfos?.title || main;
 
     for (const photoPage of photoPages) {
-      const master = masterName(photoPage);
+      const master = masterName(photoPage, mastersById);
       const images =
         (photoPage.attributeValues?.gallery_photos?.value as
           OneEntryImageFile[] | undefined) ?? [];

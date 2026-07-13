@@ -53,7 +53,8 @@ const MasterCard = ({
       <p className="mt-0.5 text-sm text-neutral-300">{masterRole}</p>
       {/* Display master's rating using star icons */}
       <div className="mt-1 mb-2">
-        <StarsGroup rating={masterRating} size={16} />
+        {/* Profile visit card uses PINK stars (static-html AccountPage) */}
+        <StarsGroup rating={masterRating} size={16} color="#ed21f1" />
       </div>
     </CardAnimations>
   );

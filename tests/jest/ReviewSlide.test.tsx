@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import ReviewSlide from '@/components/layout/reviews-carousel/components/ReviewSlide';
+import ReviewSlide from '@/components/layout/home/reviews-carousel/components/ReviewSlide';
 
 describe('ReviewSlide', () => {
   it('renders the review title, text and star rating', () => {

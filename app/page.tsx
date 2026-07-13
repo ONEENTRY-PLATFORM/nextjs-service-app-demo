@@ -16,36 +16,45 @@ import { sortArrayByPosition } from '@/components/utils';
  */
 const getHomePage = cache(() => getPageByUrl('home'));
 
-const HomeHero = dynamic(() => import('@/components/layout/home-hero'), {
+const HomeHero = dynamic(() => import('@/components/layout/home/home-hero'), {
   ssr: true,
 });
 
 const CatalogSection = dynamic(
-  () => import('@/components/layout/catalog-grid'),
+  () => import('@/components/layout/home/catalog-grid'),
   { ssr: true },
 );
 
-const GalleryFeed = dynamic(() => import('@/components/layout/gallery-feed'), {
-  ssr: true,
-});
+const GalleryFeed = dynamic(
+  () => import('@/components/layout/home/gallery-feed'),
+  {
+    ssr: true,
+  },
+);
 
 const HomeCtaBanner = dynamic(
-  () => import('@/components/layout/home-cta-banner'),
+  () => import('@/components/layout/home/home-cta-banner'),
   { ssr: true },
 );
 
 const ReviewsCarousel = dynamic(
-  () => import('@/components/layout/reviews-carousel'),
+  () => import('@/components/layout/home/reviews-carousel'),
   { ssr: true },
 );
 
-const MastersFeed = dynamic(() => import('@/components/layout/masters-feed'), {
-  ssr: true,
-});
+const MastersFeed = dynamic(
+  () => import('@/components/layout/home/masters-feed'),
+  {
+    ssr: true,
+  },
+);
 
-const OffersFeed = dynamic(() => import('@/components/layout/offers-feed'), {
-  ssr: true,
-});
+const OffersFeed = dynamic(
+  () => import('@/components/layout/home/offers-feed'),
+  {
+    ssr: true,
+  },
+);
 
 // export const revalidate = 10;
 // export const dynamicParams = true;

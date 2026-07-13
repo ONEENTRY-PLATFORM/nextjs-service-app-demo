@@ -1,6 +1,8 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import type { JSX } from 'react';
 
+import Dirham from '@/components/shared/Dirham';
+
 /**
  * PriceDisplay component shows the price information for a product with sale price
  * @param   {object}          props         - Component properties
@@ -22,10 +24,14 @@ const PriceDisplay = ({
   return (
     <div className="float-right flex w-auto flex-row gap-3 self-stretch text-right text-lg">
       {/* Display sale price in gray */}
-      <div className="whitespace-nowrap text-gray-400">{sale} $</div>
+      <div className="whitespace-nowrap text-gray-400">
+        <Dirham />
+        {sale}
+      </div>
       {/* Display current price in specified color */}
       <div className={'font-bold whitespace-nowrap'} style={{ color: color }}>
-        {price} $
+        <Dirham />
+        {price}
       </div>
     </div>
   );

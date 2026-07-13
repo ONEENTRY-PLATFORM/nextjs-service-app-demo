@@ -203,6 +203,19 @@
 
 > **Статус (2026-07-12):** ✅ почти всё: `home_hero` (slider_block, **4 слайда** с `image_id1`/`image_id2`), `home_catalog`, `home_gallery`, `home_offers_feed` (similar_products_block — теперь **привязан к home**), `home_discounts`, `home_masters`, `reviews_carousel` — все созданы и **привязаны к `home`** (7 блоков в порядке секций). ⚠️ у `common_block`-блоков собственных атрибутов-заголовков нет (заголовки на фолбэках кода).
 
+#### Тексты слайдов hero (впечены в баннеры `static-html`, снято с картинок 2026-07-13)
+
+Фронт рисует эти тексты CMS-оверлеем поверх слайда (маркеры `string_id5`=sale, `string_id3`=title, `string_id4`=text). Соответственно **баннеры в CMS должны быть без впечённого текста** (чистые фото), а текст заполняется атрибутами слайда:
+
+| # | баннер (`static-html/src/assets/`) | `string_id5` (sale) | `string_id3` (title) | `string_id4` (text) |
+|---|---|---|---|---|
+| 1 | `Hair.png` | -15 % | Silk & Shine | Haircut + Hair Spa Ritual + Blowout |
+| 2 | `Hand.png` | -15 % | Divine Hands Ritual | Classic Manicure + Henna Hand Design |
+| 3 | `Lash&Brow.png` | -15 % | Enchanting Gaze | Lash Lift & Tint + Brow Shaping + Brow Tint |
+| 4 | `Massage.png` | -15 % | Sands of Serenity | Moroccan Bath + Relax Massage |
+
+> Все `string_id5/3/4` — тип **string**. Кнопка: `string_id6` (text, фолбэк «Discover More») / `string_id7` (link, фолбэк `/offers`).
+
 ### 5.2 Служебные блоки
 
 - **`system_content`** — словарь UI-текстов: `site_name` = «Thalia Beauty Studio», `company_name`, `book_text`, `select_master_text`, `opening_time_text`, `follow_us_text` и остальные строки интерфейса (полный список маркеров — в `app/api/utils/dictionaries.ts`).
@@ -234,7 +247,7 @@
 4. **Хранилище заказов** с маркером **`orders`**; статусы: `upcoming`, `completed`, `canceled` (identifiers — точно такие, их сверяет `ProfileHistory`).
 5. **Платёжные аккаунты**: `cash` (обязателен — редирект в профиль) и Stripe (опционально).
 
-> **Статус (2026-07-12):** 🟡 ✅ **auth-провайдеры `google` + `email` включены** (active=true) — вход/регистрация теперь возможны. ❌ формы `reg`, `contact_us`, `order` всё ещё **без полей** (`attributes = {}`) — их надо наполнить. ✅ платёжные аккаунты `cash` и `stripe` заведены оба. Хранилище `orders` app-токеном не проверяется (401 Unauthorized).
+> **Статус (обновл. 2026-07-14):** 🟡 ✅ **auth-провайдеры `google` + `email` включены** (active=true). ✅ **форма `reg` полностью заполнена** (6 полей, проверено `inspect-reg-form.mjs` 2026-07-14: `email_reg` — isLogin + isSignUpRequired, required + email-валидатор; `name_reg` — isSignUpRequired; `phone_reg`; `password_reg` — isPassword + isSignUpRequired, required; `repeat_password`; `email_notification_reg` — isNotificationEmail). Фронт `SignUpForm` починен под флаговую маршрутизацию (2026-07-14): пароль определяется по `isPassword` (устаревшая проверка `additionalFields.type` удалена), `repeat_password` не отправляется — только клиентская проверка совпадения. ❌ формы `contact_us`, `order` всё ещё **без полей** (`attributes = {}`). ✅ платёжные аккаунты `cash` и `stripe` заведены оба. Хранилище `orders` app-токеном не проверяется (401 Unauthorized).
 
 ---
 
@@ -273,7 +286,8 @@
 `system_content` ✅ (34 UI-текста, `fill-system-content.mjs`); `opening_time` ❌ (часы на фолбэке кода).
 
 - [ ] **Этап 7 — формы и заказы** 🟡:
-формы `reg`/`contact_us`/`order` созданы, но **без полей** ❌;
+форма `reg` заполнена (6 полей, флаги isLogin/isPassword/isNotificationEmail/isSignUpRequired) ✅;
+формы `contact_us`/`order` — **без полей** ❌;
 auth-провайдеры `google`+`email` включены ✅;
 оплата `cash`+`stripe` ✅;
 storage `orders` не проверен (401).

@@ -35,6 +35,8 @@ const GalleryGrid = ({ cards }: { cards: GalleryGridCard[] }): JSX.Element => {
               className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           )}
+          {/* Magenta hover tint (static-html GALLERY strip) */}
+          <span className="pointer-events-none absolute inset-0 bg-[#c800d7]/25 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
         </Link>
       ))}
     </div>

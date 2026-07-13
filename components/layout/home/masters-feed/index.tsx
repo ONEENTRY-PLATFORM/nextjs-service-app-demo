@@ -2,10 +2,10 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
-import TitleAnimations from '@/app/animations/TitleAnimations';
 import { getAdminsInfo } from '@/app/api';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
+import SectionTitle from '@/components/shared/SectionTitle';
 
 import SpecialistsGrid from './components/SpecialistsGrid';
 
@@ -98,15 +98,11 @@ const MastersFeed = async ({
   return (
     <section className="flex w-full flex-col justify-center py-5">
       <div className="flex w-full flex-col bg-white">
-        <TitleAnimations
+        <SectionTitle
+          title={block?.localizeInfos?.title || 'Our Specialists'}
           delay={0.25}
-          className="mx-auto mb-12 flex w-fit flex-col gap-4"
-        >
-          <h2 className="title self-center text-4xl leading-8 font-light tracking-widest text-ink uppercase">
-            {block?.localizeInfos?.title || 'Our Specialists'}
-          </h2>
-          <hr className="relative mb-2.5 h-px w-full self-center border-b border-solid border-b-gray-600" />
-        </TitleAnimations>
+          className="mb-6 md:mb-10"
+        />
         <SpecialistsGrid masters={specialists} />
       </div>
     </section>

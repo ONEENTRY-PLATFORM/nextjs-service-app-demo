@@ -1,4 +1,10 @@
-const StarIcon = ({ size }: { size: number }) => {
+const StarIcon = ({
+  size,
+  color = '#109AA9',
+}: {
+  size: number;
+  color?: string;
+}) => {
   return (
     <svg
       width="15"
@@ -14,7 +20,7 @@ const StarIcon = ({ size }: { size: number }) => {
     >
       <path
         d="M6.89437 0.623047L8.92057 4.72858L13.4513 5.38694L10.1728 8.58265L10.9468 13.0951L6.89437 10.9646L2.84196 13.0951L3.6159 8.58265L0.337434 5.38694L4.86816 4.72858L6.89437 0.623047Z"
-        fill="#109AA9"
+        fill={color}
       />
     </svg>
   );

@@ -37,7 +37,7 @@ const CategoryChips = ({
             className={`shrink-0 rounded-full px-6 py-2.5 text-base font-semibold whitespace-nowrap transition-all duration-200 ${
               active
                 ? 'bg-gradient-brand text-white'
-                : 'border border-slate-150 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
+                : 'border-[1.5px] border-slate-150 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
             }`}
             style={
               active ? { boxShadow: `0 6px 20px ${PINK}44` } : { color: DARK }
