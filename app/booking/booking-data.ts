@@ -10,7 +10,7 @@ import type {
   BookingSalon,
   BookingService,
 } from '@/components/layout/booking-page/types';
-import { formatUaePhone } from '@/components/utils';
+import { formatUaePhone, plainTextFromTextAttr } from '@/components/utils';
 
 /** Services child page `pageUrl` → display category of the wizard pills */
 const CATEGORY_BY_PAGEURL: Record<string, string> = {
@@ -122,7 +122,6 @@ const toBookingMaster = ({
     .map((id) => serviceById.get(id)?.price)
     .filter((v): v is number => typeof v === 'number');
 
-  const description = attrs.master_description?.value;
   const shortDescription = attrs.master_short_description?.value;
 
   return {
@@ -135,7 +134,7 @@ const toBookingMaster = ({
     rating: Number(attrs.master_rating?.value) || 5,
     reviews: null,
     price: prices.length ? Math.min(...prices) : null,
-    bio: typeof description === 'string' ? description : '',
+    bio: plainTextFromTextAttr(attrs.master_description?.value),
     salonIds,
     serviceIds,
   };

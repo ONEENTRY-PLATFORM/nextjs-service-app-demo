@@ -4,7 +4,11 @@ import { Send } from 'lucide-react';
 import type { FormEvent, JSX } from 'react';
 import { useState } from 'react';
 
-import { getApi, useGetFormByMarkerQuery } from '@/app/api';
+import {
+  getApi,
+  isError as isSdkError,
+  useGetFormByMarkerQuery,
+} from '@/app/api';
 import { getFormAttributes } from '@/components/utils';
 
 import ErrorMessage from '../../forms/inputs/ErrorMessage';
@@ -116,7 +120,12 @@ const ContactFormCard = (): JSX.Element => {
             return { marker: field.marker, type: 'string', value };
           },
         );
-        await getApi().FormData.postFormsData({
+        /**
+         * `postFormsData` returns `IPostFormResponse | IError` — an API failure
+         * is a value, not a thrown error. Check it so a failed submit does not
+         * show the "Message sent!" success state.
+         */
+        const result = await getApi().FormData.postFormsData({
           formIdentifier: 'contact_us',
           formData,
           formModuleConfigId: 0,
@@ -124,6 +133,12 @@ const ContactFormCard = (): JSX.Element => {
           replayTo: null,
           status: '',
         });
+        if (isSdkError(result)) {
+          setError(
+            `Error ${result.statusCode}: ${result.message ?? ''}`.trim(),
+          );
+          return;
+        }
       }
       setSent(true);
       setFields(EMPTY_FIELDS);

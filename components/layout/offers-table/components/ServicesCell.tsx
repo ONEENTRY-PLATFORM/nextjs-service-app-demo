@@ -15,8 +15,8 @@ const ServicesCell = ({
   product: IProductsEntity;
   color: string;
 }): JSX.Element => {
-  /** Extract services from product attributes */
-  const services = product.attributeValues?.services?.value as
+  /** Extract services from product attributes (`offer_services` entity list) */
+  const services = product.attributeValues?.offer_services?.value as
     Array<{ title: string }> | undefined;
 
   return (

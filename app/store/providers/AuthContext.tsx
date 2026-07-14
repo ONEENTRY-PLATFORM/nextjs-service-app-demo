@@ -115,16 +115,24 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const checkToken = useCallback(async () => {
     trigger()
       .then(async (res) => {
-        if ((res.isError && !res.isLoading) || !res.data?.id) {
-          localStorage.removeItem('refresh-token');
-          setIsAuth(false);
-        } else {
+        if (res.data?.id) {
           setUser(res.data);
           setIsAuth(true);
+          return;
+        }
+        /**
+         * No user data. Per `rules/tokens.md` ("logout only on confirmed
+         * 401/403"), drop the refresh token ONLY on a genuine auth failure —
+         * a transient network error must keep it so polling can retry.
+         */
+        setIsAuth(false);
+        const statusCode = (res.error as IError | undefined)?.statusCode;
+        if (statusCode === 401 || statusCode === 403) {
+          localStorage.removeItem('refresh-token');
         }
       })
       .catch(async () => {
-        localStorage.removeItem('refresh-token');
+        /** Unexpected/network rejection — keep the token, just mark not-authed */
         setIsAuth(false);
       });
   }, [trigger]);

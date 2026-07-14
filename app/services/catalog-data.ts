@@ -7,6 +7,7 @@ import type {
   ServicesCategory,
   ServicesSalon,
 } from '@/components/layout/services-page/types';
+import { plainTextFromTextAttr } from '@/components/utils';
 
 /**
  * Map a CMS product entity to a plain serializable service item.
@@ -49,14 +50,16 @@ const toServiceItem = (
         ? Number(rawDuration)
         : null;
 
-  /** Short description: `description` attribute or the localized plain value */
-  const attrDescription = attrs.description?.value;
+  /**
+   * Short description: the `description` text attribute (its `value` is a
+   * `[{ htmlValue, plainValue }]` array, not a string), with the localized
+   * plain value as a last-resort fallback.
+   */
   const description =
-    typeof attrDescription === 'string'
-      ? attrDescription
-      : typeof product.localizeInfos?.plainValue === 'string'
-        ? product.localizeInfos.plainValue
-        : '';
+    plainTextFromTextAttr(attrs.description?.value) ||
+    (typeof product.localizeInfos?.plainValue === 'string'
+      ? product.localizeInfos.plainValue
+      : '');
 
   return {
     id: product.id,

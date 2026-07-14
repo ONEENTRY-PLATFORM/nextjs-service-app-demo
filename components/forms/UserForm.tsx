@@ -7,7 +7,11 @@ import type { FormEvent, JSX } from 'react';
 import { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import { getApi, useGetFormByMarkerQuery } from '@/app/api';
+import {
+  getApi,
+  isError as isSdkError,
+  useGetFormByMarkerQuery,
+} from '@/app/api';
 import { useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import type { FormProps } from '@/app/types/global';
@@ -79,7 +83,7 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
 
       /** Update user information via API if form identifier exists */
       if (user?.formIdentifier) {
-        await getApi().Users.updateUser({
+        const result = await getApi().Users.updateUser({
           formIdentifier: user.formIdentifier,
           formData,
           authData: [
@@ -93,8 +97,19 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
             phonePush: [],
             phoneSMS: fields.phone_reg.value,
           },
-          state: {},
+          /**
+           * Preserve the user's server state (cart, favorites) — sending `{}`
+           * would wipe it. `updateUser` returns `boolean | IError`, so an API
+           * failure is a value, not a thrown error: check it explicitly.
+           */
+          state: user.state,
         });
+        if (isSdkError(result)) {
+          setError(
+            `Error ${result.statusCode}: ${result.message ?? ''}`.trim(),
+          );
+          return;
+        }
       }
 
       /** Refresh user data after successful update */

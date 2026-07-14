@@ -39,11 +39,11 @@ const OfferInfo = ({
   /** Active cart row index */
   const activeId = useAppSelector(selectActiveItemId);
 
-  /** Fetch service data based on product's service parent ID */
-  const servicesArr = item.product.attributeValues.services?.value as
-    Array<{ parentId: number }> | undefined;
+  /** Fetch service data based on product's service parent ID (`offer_services`) */
+  const servicesArr = item.product.attributeValues.offer_services?.value as
+    Array<{ value?: { parentId?: number } }> | undefined;
   const { data: service } = useGetPageByIdQuery({
-    id: servicesArr?.[0]?.parentId ?? 0,
+    id: servicesArr?.[0]?.value?.parentId ?? 0,
   });
 
   /**

@@ -17,17 +17,24 @@ const PriceDisplay = ({
   product: IProductsEntity;
   color: string;
 }): JSX.Element => {
-  /** Extract current price and sale price from product */
-  const price = product.price;
-  const sale = product.attributeValues?.sale?.value as number | undefined;
+  /**
+   * `offer_sale` = current price, `offer_price` = crossed-out original
+   * (both are `real` attributes whose value comes back as a string).
+   */
+  const price =
+    Number(product.attributeValues?.offer_sale?.value) || product.price;
+  const original =
+    Number(product.attributeValues?.offer_price?.value) || undefined;
 
   return (
     <div className="float-right flex w-auto flex-row gap-3 self-stretch text-right text-lg">
-      {/* Display sale price in gray */}
-      <div className="whitespace-nowrap text-gray-400">
-        <Dirham />
-        {sale}
-      </div>
+      {/* Display crossed-out original price in gray */}
+      {original ? (
+        <div className="whitespace-nowrap text-gray-400 line-through">
+          <Dirham />
+          {original}
+        </div>
+      ) : null}
       {/* Display current price in specified color */}
       <div className={'font-bold whitespace-nowrap'} style={{ color: color }}>
         <Dirham />

@@ -12,7 +12,7 @@ const CATEGORY_ACCENT: Record<string, string> = {
 export interface OfferView {
   /** Offer name without the "(featured)" flag */
   name: string;
-  /** Tagline under the name (`plainValue`) */
+  /** Tagline under the name (`offer_description`, falls back to `plainValue`) */
   tagline: string;
   /** Featured card (full accent-gradient background) */
   featured: boolean;
@@ -44,8 +44,12 @@ export const parseOffer = (product: IProductsEntity): OfferView => {
   /** Featured card is flagged by "(featured)" in the title (no `party_star` value) */
   const featured = /\(featured\)/i.test(rawTitle);
   const name = rawTitle.replace(/\s*\(featured\)\s*/i, ' ').trim();
+  /** `offer_description` is a plain `string` attribute; `plainValue` is a fallback */
+  const attrDescription = product.attributeValues?.offer_description?.value;
   const tagline =
-    (product.localizeInfos?.plainValue as string | undefined) ?? '';
+    typeof attrDescription === 'string' && attrDescription
+      ? attrDescription
+      : ((product.localizeInfos?.plainValue as string | undefined) ?? '');
 
   /** `offer_services` — entity list `[{ title, value: { id, parentId } }]` */
   const servicesArr = product.attributeValues?.offer_services?.value as
