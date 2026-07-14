@@ -12,7 +12,7 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
  * @returns {JSX.Element} JSX.Element representing a logout menu item button.
  */
 const LogoutMenuItem = (): JSX.Element => {
-  const { authenticate } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
   const router = useTransitionRouter();
 
   /**
@@ -21,7 +21,7 @@ const LogoutMenuItem = (): JSX.Element => {
   const handleLogout = async () => {
     try {
       await logOutUser({ marker: 'email' });
-      authenticate();
+      logout();
       router.push('/');
     } catch (error) {
       // eslint-disable-next-line no-console

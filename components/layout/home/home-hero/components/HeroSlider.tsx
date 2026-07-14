@@ -6,6 +6,8 @@ import Link from 'next/link';
 import type { JSX } from 'react';
 import { useEffect, useState } from 'react';
 
+import SaleText from './SaleText';
+
 /**
  * A single hero slide: desktop/mobile banner images plus the optional CMS text
  * overlay (title, subtitle, sale badge and CTA button). Empty text fields are
@@ -102,9 +104,9 @@ const HeroSlider = ({
                 style={{ fontFamily: 'var(--font-oswald)' }}
               >
                 {slide.sale && (
-                  <div className="flex aspect-square w-24 items-center justify-center rounded-full border border-white/40 bg-fuchsia-500/35 backdrop-blur-md md:w-[12vw] md:max-w-44">
-                    <span className="px-2 text-center text-2xl leading-none font-semibold text-white md:text-[clamp(1.5rem,3vw,2.5rem)]">
-                      {slide.sale}
+                  <div className="flex aspect-square w-64 items-center justify-center rounded-full border border-white/40 bg-fuchsia-500/35 backdrop-blur-md md:w-[12vw] md:max-w-44">
+                    <span className="px-2 text-center text-[clamp(8rem,3vw,8rem)] leading-none font-semibold text-nowrap text-white">
+                      <SaleText text={slide.sale} />
                     </span>
                   </div>
                 )}

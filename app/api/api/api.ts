@@ -76,6 +76,25 @@ export function syncTokens(accessToken: string, refreshToken: string): void {
 }
 
 /**
+ * Drops the user session from the SDK by recreating a clean app-token instance.
+ *
+ * Call after `AuthProvider.logout()`: the SDK instance otherwise keeps the
+ * revoked refresh token in state and proactively retries `POST /users/refresh`
+ * with it before every subsequent request, spamming 400/401 to the console
+ * (see rules/tokens.md — clearing a dead token is the application's job).
+ * @returns {void}
+ */
+export function clearSession(): void {
+  apiInstance = defineOneEntry(PROJECT_URL, {
+    token: APP_TOKEN,
+    langCode: LANG_CODE,
+    auth: {
+      saveFunction,
+    },
+  });
+}
+
+/**
  * Redefine API configuration with refresh token.
  *
  * This function is used to update API config with a refresh token.

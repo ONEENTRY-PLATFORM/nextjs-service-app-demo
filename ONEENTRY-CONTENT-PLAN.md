@@ -11,7 +11,7 @@
 >
 > **Инвентаризация моков (перепроверено инспекцией 2026-07-13, скрипты `inspect-gallery.mjs`/`inspect-reviews.mjs`/`inspect-salons.mjs`/`inspect-contacts.mjs`):**
 >
-> - ✅ **из CMS:** галерея, каталог (~77 услуг + офферы), мастера (32 админа), адрес/телефон салонов (телефон заполнен только у `downtown`).
+> - ✅ **из CMS:** галерея, каталог (~77 услуг + офферы), мастера (32 админа), адрес/телефон салонов (заполнены у всех трёх).
 > - ❌ **всё ещё мок:** отзывы главной + `/reviews` (в CMS `reviews` стр. и блок `reviews_carousel` **пустые, без атрибутов/детей/слайдов** — фронт на `components/data.js` `reviewsData` и `components/layout/reviews-page/data.ts`); карточки контактов + часы работы (`contactInfoData`/`openingHoursData` в `data.js` — структурных контактов/часов в CMS нет, блок `opening_time` отсутствует); описания салонов About/highlights/цвет (`components/layout/salon-page/salonContent.ts`); соцсети/копирайт/промо-тексты/условия и баннеры офферов/фото «любой мастер»/сетка времени букинга.
 >
 >
@@ -140,7 +140,7 @@
 
 Списки `products`/`services` (какие услуги доступны в салоне — из матрицы цен `priceList.ts`: например, Balayage недоступен в JBR), фото салона из `Beauty content/Contacts/`. Тексты about/tagline/highlights — из `SALON_DETAILS` в `ContactsPage.tsx`. **Форматированный телефон в CMS не хранится** — `salon_phone_formatted` убран, фронт форматирует `salon_phone` через `formatUaePhone` (`components/utils.ts`).
 
-> **Статус (2026-07-10):** 🟡 в основном сделано: заведены 3 ребёнка `downtown`/`marina`/`jbr` (набор `salon`: `salon_address`, `salon_phone` string + лишний `salon_time` timeInterval, кодом не читается). `salon_address` заполнен у всех трёх; `salon_phone` у `downtown` = `+97147012200` (виден). Телефоны `marina`/`jbr` **заполнены в админке руками**, но API стабильно отдаёт `""` при идентичном заполнении с `downtown` — похоже на баг распространения/кэша на стороне OneEntry (эскалировано команде OneEntry). Форматтер `formatUaePhone` проверен на contacts (`+971 4 701 2200`). ⏳ Ждём фикса от OneEntry, затем перепроверить `salon_phone` у `marina` (`+97147023300`) и `jbr` (`+97147034400`). Списки `products`/`services`, фото и тексты салонов — отдельной задачей (код их пока не читает).
+> **Статус (обновл. 2026-07-14):** ✅ страницы и контакты готовы: 3 ребёнка `downtown`/`marina`/`jbr` (набор `salon`), `salon_address` и `salon_phone` заполнены и отдаются API у всех трёх (`downtown` +97147012200, `marina` +97147023300, `jbr` +97147034400 — перепроверено `inspect-salons.mjs`; баг распространения значений на стороне OneEntry устранён). `salon_time` (timeInterval) заведён, кодом пока не читается (пригодится для §11.8). Форматтер `formatUaePhone` проверен на contacts. Списки `products`/`services`, фото и тексты салонов — отдельной задачей (код их пока не читает).
 
 ---
 
@@ -235,7 +235,7 @@
 | `services` | колонка футера: категории услуг (дети `services`) |
 | `about_us` | колонка футера: Specialists, Prices, Reviews |
 
-> **Статус:** 🟡 ✅ `main` — 6 пунктов ровно по плану (home, services, offers, gallery, masters, contacts); ✅ `services` — 4 главные категории (hair, face, body, nails — соответствует двухуровневой структуре); ✅ `about_us` — masters, services, reviews. 🟡 `user_menu` — только profile (без Book Online). ❌ `bottom_web` — меню нет (мобильное нижнее меню шаблона останется пустым).
+> **Статус (обновл. 2026-07-14):** ✅ `main` — 6 пунктов ровно по плану (home, services, offers, gallery, masters, contacts); ✅ `services` — 4 главные категории (hair, face, body, nails); ✅ `about_us` — masters, services, reviews. ✅ `user_menu` — только profile, и этого достаточно: кнопка Book Online в шапке захардкожена в `NavGroup` (`/booking/` + `book_text` из словаря), пункт меню ей не нужен. ❌ `bottom_web` — меню в админке нет; в дизайне Figma (`static-html/`) нижнего мобильного меню тоже нет — рекомендация: не заводить (смонтированный `BottomMenu` корректно рендерит null), пункт из плана снять после подтверждения пользователем.
 
 ---
 
@@ -247,7 +247,7 @@
 4. **Хранилище заказов** с маркером **`orders`**; статусы: `upcoming`, `completed`, `canceled` (identifiers — точно такие, их сверяет `ProfileHistory`).
 5. **Платёжные аккаунты**: `cash` (обязателен — редирект в профиль) и Stripe (опционально).
 
-> **Статус (обновл. 2026-07-14):** 🟡 ✅ **auth-провайдеры `google` + `email` включены** (active=true). ✅ **форма `reg` полностью заполнена** (6 полей, проверено `inspect-reg-form.mjs` 2026-07-14: `email_reg` — isLogin + isSignUpRequired, required + email-валидатор; `name_reg` — isSignUpRequired; `phone_reg`; `password_reg` — isPassword + isSignUpRequired, required; `repeat_password`; `email_notification_reg` — isNotificationEmail). Фронт `SignUpForm` починен под флаговую маршрутизацию (2026-07-14): пароль определяется по `isPassword` (устаревшая проверка `additionalFields.type` удалена), `repeat_password` не отправляется — только клиентская проверка совпадения. ❌ формы `contact_us`, `order` всё ещё **без полей** (`attributes = {}`). ✅ платёжные аккаунты `cash` и `stripe` заведены оба. Хранилище `orders` app-токеном не проверяется (401 Unauthorized).
+> **Статус (обновл. 2026-07-14):** 🟡 ✅ **auth-провайдеры `google` + `email` включены** (active=true). ✅ **форма `reg` полностью заполнена** (6 полей, проверено `inspect-reg-form.mjs` 2026-07-14: `email_reg` — isLogin + isSignUpRequired, required + email-валидатор; `name_reg` — isSignUpRequired; `phone_reg`; `password_reg` — isPassword + isSignUpRequired, required; `repeat_password`; `email_notification_reg` — isNotificationEmail). Фронт `SignUpForm` починен под флаговую маршрутизацию (2026-07-14): пароль определяется по `isPassword` (устаревшая проверка `additionalFields.type` удалена), `repeat_password` не отправляется — только клиентская проверка совпадения. ❌ формы `contact_us`, `order` всё ещё **без полей** (`attributes = {}`); `contact_us` отложена по решению пользователя (2026-07-14) — нужен site key reCAPTCHA для поля `spam`. `order` тоже отложена (2026-07-14): значения `interval` должны браться из атрибутов сущностей в зависимости от flow бронирования — график мастера (`master_schedule`) либо режим работы салона (`salon_time`), статичная настройка поля в форме не годится; см. открытый вопрос §11.8. ✅ платёжные аккаунты `cash` и `stripe` заведены оба. Хранилище `orders` app-токеном не проверяется (401 Unauthorized).
 
 ---
 
@@ -274,25 +274,30 @@
 - [x] **Этап 2 — структура** 🟡:
 системные страницы ✅ (включая `payment_success`/`payment_canceled`, созданы 2026-07-12);
 категории услуг ✅ (двухуровнево: 4 категории + 15 подкатегорий, без hero-атрибутов);
-салоны 🟡 (3 салона Downtown/Marina/JBR с адресами; телефон только у Downtown — дозаполнить `salon_phone` у Marina/JBR; форматирование телефона перенесено на фронт `formatUaePhone`);
+салоны ✅ (адреса и телефоны у всех трёх; форматирование телефона на фронте `formatUaePhone`);
 меню ✅ (кроме `bottom_web`, `user_menu` без Book Online).
 
 - [x] **Этап 3 — каталог** 🟡:
-услуги-продукты ✅ (sku/duration/грейд, но `price` строкой и без `sale`; по аудиту 2026-07-12 в каталоге ~196 продуктов: набор `catalog` 154 + `service` 42 — каталог расширен/детализирован относительно исходных 77);
+услуги-продукты ✅ (sku/duration/грейд, но `price` строкой и без `sale`; по аудиту 2026-07-14 каталог консолидирован: 81 продукт = 77 услуг в наборе `service` (все со sku) + 4 оффера `offer` — прежние ~196 с набором `catalog` удалены/слиты);
 офферы `offer` ✅ (4 шт., атрибуты заполнены — сверить маркер набора с кодом, п. 4).
 
 - [x] **Этап 6 — блоки** 🟡:
 `home_hero` (4 слайда) / `home_catalog` / `home_gallery` / `home_offers_feed` / `home_discounts` / `home_masters` / `reviews_carousel` — ✅ созданы и привязаны к `home`;
-`system_content` ✅ (34 UI-текста, `fill-system-content.mjs`); `opening_time` ❌ (часы на фолбэке кода).
+`system_content` ✅ (34 UI-текста, `fill-system-content.mjs`); `opening_time` ❌ — отложен пользователем (2026-07-14; часы на фолбэке кода, контакты на моке `data.js`).
 
 - [ ] **Этап 7 — формы и заказы** 🟡:
 форма `reg` заполнена (6 полей, флаги isLogin/isPassword/isNotificationEmail/isSignUpRequired) ✅;
-формы `contact_us`/`order` — **без полей** ❌;
+форма `order` — без полей, отложена: источник слотов `interval` зависит от flow (§11.8) ❌;
+форма `contact_us` — без полей, отложена (2026-07-14) ❌;
 auth-провайдеры `google`+`email` включены ✅;
 оплата `cash`+`stripe` ✅;
 storage `orders` не проверен (401).
 
-- [ ] **Этап 8 — проверка**: не проводилась (блокируется этапом 7 — формы без полей; мастера этапа 4 готовы).
+- [x] **Этап 8 — проверка** 🟡 (2026-07-14, Playwright на dev :3700, desktop 1280):
+auth-флоу целиком ✅ — регистрация по CMS-форме `reg` через UI (несовпадение паролей блокируется на клиенте) → signUp → автологин → профиль (name/phone из formData; password/repeat_password в formData НЕ попадают) → выход → повторный вход; тестовый юзер `claude.test1@example.com`;
+страницы home / services/hair / masters/13 / contacts / gallery / offers / booking / reviews — рендер из CMS, 0 ошибок консоли ✅; телефоны всех салонов форматируются ✅;
+❌ не проверено: отправка `contact_us` и создание заказа из бронирования — блокировано отложенными формами (§8).
+Замечания: (1) ✅ ИСПРАВЛЕНО 2026-07-14 — шумные 400/401 при logout: `logOutUser` теперь чистит `refresh-token`/`authProviderMarker` и сбрасывает SDK-инстанс (`clearSession`), а `SignOutButton`/`LogoutMenuItem` гасят состояние синхронно через новый `AuthContext.logout()` вместо `authenticate()` (по `rules/tokens.md`: мёртвый токен чистит приложение; перепроверено — консоль чистая за весь цикл вход/выход); (2) ✅ ИСПРАВЛЕНО 2026-07-14 — metadata: `generateMetadata` в `app/layout.tsx` берёт title/og:siteName из `site_name` `system_content` (сейчас «Thalia Beauty Studio», фолбэк захардкожен), туда же — имя Organization в JSON-LD; (3) в профиле поле E-mail пустое (login-credential не хранится в formData — поведение шаблона); (4) hero-слайд 4 — заглушки Sale/Title/Text в CMS.
 
 ---
 
@@ -305,6 +310,7 @@ storage `orders` не проверен (401).
 5. **Домен e-mail**: в верстке `@beautystudio.com` при бренде «Thalia» — уточнить перед заведением контактов.
 6. **Промо «First Visit 15%» / «10% off online»** — в шаблоне только контентный блок `home_discounts`, логика скидки на фронте не реализована.
 7. **Соцсети** (Instagram/Facebook/Twitter) — в верстке ссылки-заглушки; реальные URL завести в `system_content`.
+8. **Поле `interval` формы `order`** — слоты должны зависеть от выбранного flow бронирования: при выборе мастера — из `master_schedule` (timeInterval админа), при выборе «любой специалист»/от салона — из режима работы салона (`salon_time`). В форму значение попадает из атрибутов сущностей на фронте; статичные опции timeInterval в самой форме не подходят. Требуется спроектировать до заведения поля (отложено 2026-07-14).
 
 ---
 

@@ -60,36 +60,56 @@ const oswald = Oswald({
 const oneentryUrl =
   process.env.NEXT_PUBLIC_ONEENTRY_URL || 'https://oneentry.cloud';
 
+/** Site name fallback when the `system_content` dictionary is unavailable. */
+const SITE_NAME_FALLBACK = 'Thalia Beauty Studio';
+
 /**
- * Homepage static metadata
- * @see {@link https://nextjs.org/docs/app/building-your-application/optimizing/metadata Next.js docs}
- * @param params page params
+ * Resolve the public site name from the `system_content` dictionary
+ * (`site_name`), falling back to the hardcoded brand name.
+ * @returns {Promise<string>} Site name for metadata and structured data
  */
-export const metadata: Metadata = {
-  title: {
-    default: 'OneEntry Beauty',
-    template: '%s | OneEntry Beauty',
-  },
-  description: 'OneEntry next-js Beauty description',
-  openGraph: {
-    type: 'website',
-    locale: LANG_CODE,
-    url: oneentryUrl,
-  },
+const getSiteName = async (): Promise<string> => {
+  const dict = await getDictionary();
+  return (dict?.site_name?.value as string | undefined) || SITE_NAME_FALLBACK;
 };
+
+/**
+ * Site metadata driven by the CMS: the title (and og:siteName) come from the
+ * `site_name` UI-text of the `system_content` block. `getDictionary()` is
+ * cached, so the extra call is free.
+ * @returns {Promise<Metadata>} Root metadata object
+ * @see {@link https://nextjs.org/docs/app/building-your-application/optimizing/metadata Next.js docs}
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const siteName = await getSiteName();
+  return {
+    title: {
+      default: siteName,
+      template: `%s | ${siteName}`,
+    },
+    description: 'Beauty salon in Dubai — hair, face, body and nail services',
+    openGraph: {
+      type: 'website',
+      locale: LANG_CODE,
+      url: oneentryUrl,
+      siteName,
+    },
+  };
+}
 
 /** BCP-47 language tag for `<html lang>` — derived from the SDK's `lang_TERRITORY` `LANG_CODE`. */
 const HTML_LANG = LANG_CODE.replace('_', '-');
 
 /**
  * Generate structured data for the website
- * @returns {object} Structured data in JSON-LD format
+ * @param   {string} siteName - Public site name (from `system_content`)
+ * @returns {object}          Structured data in JSON-LD format
  */
-const generateStructuredData = (): object => {
+const generateStructuredData = (siteName: string): object => {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'OneEntry Beauty',
+    name: siteName,
     url: oneentryUrl,
     logo: `${oneentryUrl}/logo.png`,
     sameAs: [
@@ -147,7 +167,12 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateStructuredData()),
+            __html: JSON.stringify(
+              generateStructuredData(
+                (dict?.site_name?.value as string | undefined) ||
+                  SITE_NAME_FALLBACK,
+              ),
+            ),
           }}
         />
       </head>

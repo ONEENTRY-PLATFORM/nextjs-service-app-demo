@@ -1,4 +1,5 @@
 export {
+  clearSession,
   getApi,
   hasActiveSession,
   isError,

@@ -20,8 +20,8 @@ const SignOutButton = ({
 }: {
   label?: string | undefined;
 }): JSX.Element => {
-  /** Auth context provides the re-check trigger after logout. */
-  const { authenticate } = useContext(AuthContext);
+  /** Auth context drops the local session state after logout. */
+  const { logout } = useContext(AuthContext);
   /** Transition-aware router for the post-logout redirect. */
   const router = useTransitionRouter();
 
@@ -29,7 +29,7 @@ const SignOutButton = ({
   const handleLogout = async () => {
     try {
       await logOutUser({ marker: 'email' });
-      authenticate();
+      logout();
       router.push('/');
     } catch (error) {
       // eslint-disable-next-line no-console

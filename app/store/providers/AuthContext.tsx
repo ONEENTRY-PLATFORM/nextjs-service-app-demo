@@ -39,6 +39,14 @@ type ContextProps = {
     refreshToken: string;
     authProviderMarker: string;
   }) => void;
+  /**
+   * Drop the local auth state after `logOutUser()`.
+   *
+   * Purely synchronous — unlike `authenticate()` it must NOT re-fetch the
+   * user: the tokens are already revoked, so any `getMe` would produce a
+   * guaranteed 401 (+ 400 on the retried refresh) in the console.
+   */
+  logout: () => void;
 };
 
 /**
@@ -61,6 +69,7 @@ export const AuthContext = createContext<ContextProps>({
   authenticate: () => {},
   refreshUser: () => {},
   login: () => {},
+  logout: () => {},
 });
 
 /**
@@ -224,6 +233,18 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch, refetchUser, checkToken]);
 
+  /**
+   * Drop the local auth state right after `logOutUser()`. Synchronous by
+   * design: the tokens are already revoked, so re-fetching the user (as
+   * `authenticate()` does) would only produce a guaranteed 401/400 pair in
+   * the console. Flipping `isAuth` also stops the getMe polling immediately.
+   */
+  const logout = (): void => {
+    initRef.current = false;
+    setUser(undefined);
+    setIsAuth(false);
+  };
+
   const value = {
     isAuth,
     isLoading,
@@ -234,6 +255,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     },
     refreshUser: () => setRefetchUser(!refetchUser),
     login,
+    logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
