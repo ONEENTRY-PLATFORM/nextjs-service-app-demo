@@ -6,8 +6,7 @@ import type { FormEvent, JSX } from 'react';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import OtpInput from 'react-otp-input';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
+import { getApi, isError, useGetAuthProvidersQuery } from '@/app/api';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
@@ -39,12 +38,32 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
   const [isLoading, setLoading] = useState(false);
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
+  /** Seconds left before the OTP can be resent (from the provider config) */
+  const [cooldown, setCooldown] = useState(0);
+
+  /**
+   * OTP length and resend cooldown come from the `email` provider config
+   * (`systemCodeLength` / `systemCodeTlsSec`) — do not hardcode them.
+   * Fall back to the CMS defaults while the providers query is loading.
+   */
+  const { data: authProviders } = useGetAuthProvidersQuery('en_US');
+  const emailProvider = authProviders?.find((p) => p.identifier === 'email');
+  const codeLength = Number(emailProvider?.config?.systemCodeLength) || 8;
+  const resendCooldownSec =
+    Number(emailProvider?.config?.systemCodeTlsSec) || 120;
 
   /** Extract localized strings from dictionary */
   const { enter_otp_code, resend_text, receive_otp_text, verify_now_text } =
     dict;
   /** Get form fields from Redux store */
   const fields = useAppSelector((state) => state.formFieldsReducer.fields);
+
+  /** Tick the resend cooldown down to zero */
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [cooldown]);
 
   /** Update Redux store when OTP value changes */
   useEffect(() => {
@@ -66,64 +85,71 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
     try {
       /** Handle password reset verification flow */
       if (action !== 'activateUser') {
-        /** Verify the OTP code sent to user's email for password reset */
-        /** This checks if the provided OTP code matches the one sent to the user */
+        /**
+         * Verify the OTP for password reset. `checkCode` returns
+         * `boolean | IError` — an API failure is a value, not a throw, and a
+         * wrong code is `false`. Check both, or the truthy IError would be
+         * treated as success.
+         */
         const result = await getApi().AuthProvider.checkCode(
           'email',
           fields.email_reg.value,
           'otp',
           otp,
         );
-        /**
-         * If verification is successful, switch to reset password form
-         * This allows the user to enter a new password
-         */
-        if (result) setComponent('ResetPasswordForm');
+        if (isError(result)) {
+          throw new Error(result.message || 'Verification failed');
+        }
+        if (!result) {
+          throw new Error('Invalid verification code');
+        }
+        /** Switch to reset password form so the user can set a new password */
+        setComponent('ResetPasswordForm');
       }
       // Handle user activation flow (when a new user is registering)
       else {
         /**
-         * Activate the user account with the provided OTP code
-         * This confirms the user's email address and activates their account
+         * Activate the user account with the provided OTP. Same `boolean |
+         * IError` contract as `checkCode`.
          */
         const result = await getApi().AuthProvider.activateUser(
           'email',
           fields.email_reg.value,
           otp,
         );
-
-        if (result) {
-          /**
-           * Log in the user after successful activation.
-           * `getApi().AuthProvider.auth` is called directly (Client Component)
-           * so the SDK captures the real browser fingerprint; tokens are
-           * then routed through AuthContext.login() which uses syncTokens.
-           */
-          const authResult = await getApi().AuthProvider.auth('email', {
-            authData: [
-              { marker: 'email_reg', value: fields.email_reg.value },
-              { marker: 'password_reg', value: fields.password_reg.value },
-            ],
-          });
-          if (isError(authResult)) {
-            throw new Error(authResult.message || 'Sign-in failed');
-          }
-          login({
-            accessToken: authResult.accessToken,
-            refreshToken: authResult.refreshToken,
-            authProviderMarker: 'email',
-          });
-
-          /** Navigate to profile page after successful activation. */
-          router.push('/profile');
-
-          /** Close the drawer/modal after successful registration. */
-          setOpen(false);
-        } else {
-          /** Throw an error if activation was not successful */
-          /** This will be caught by the catch block below */
-          throw new Error('Activation failed');
+        if (isError(result)) {
+          throw new Error(result.message || 'Activation failed');
         }
+        if (!result) {
+          throw new Error('Invalid verification code');
+        }
+
+        /**
+         * Log in the user after successful activation.
+         * `getApi().AuthProvider.auth` is called directly (Client Component)
+         * so the SDK captures the real browser fingerprint; tokens are
+         * then routed through AuthContext.login() which uses syncTokens.
+         */
+        const authResult = await getApi().AuthProvider.auth('email', {
+          authData: [
+            { marker: 'email_reg', value: fields.email_reg.value },
+            { marker: 'password_reg', value: fields.password_reg.value },
+          ],
+        });
+        if (isError(authResult)) {
+          throw new Error(authResult.message || 'Sign-in failed');
+        }
+        login({
+          accessToken: authResult.accessToken,
+          refreshToken: authResult.refreshToken,
+          authProviderMarker: 'email',
+        });
+
+        /** Navigate to profile page after successful activation. */
+        router.push('/profile');
+
+        /** Close the drawer/modal after successful registration. */
+        setOpen(false);
       }
     } catch (e) {
       /** Handle any errors during verification */
@@ -135,8 +161,16 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
        */
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fields.email_reg, fields.password_reg]);
+  }, [
+    fields.email_reg,
+    fields.password_reg,
+    otp,
+    action,
+    login,
+    router,
+    setComponent,
+    setOpen,
+  ]);
 
   /**
    * Handle form submission
@@ -145,14 +179,14 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
   const onSubmitHandle = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      /** Only proceed if OTP is complete (6 digits) */
-      if (otp.length === 6) {
+      /** Only proceed once the OTP is complete (length from provider config) */
+      if (otp.length === codeLength) {
         setLoading(true);
         setError('');
         await handleVerification();
       }
     },
-    [otp, handleVerification],
+    [otp, codeLength, handleVerification],
   );
 
   /**
@@ -160,19 +194,28 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
    * Generates and sends a new OTP to the user's email
    */
   const onResendHandle = useCallback(async () => {
-    /** Ensure email field is present */
-    if (!fields.email_reg) {
+    /** Ensure email field is present and the cooldown has elapsed */
+    if (!fields.email_reg || cooldown > 0) {
       return;
     }
     try {
       setLoading(true);
       setError('');
-      /** Generate and send new OTP code */
-      await getApi().AuthProvider.generateCode(
+      /**
+       * Generate and send a new OTP. `generateCode` returns `boolean | IError`
+       * — check it so a failed resend surfaces instead of silently starting
+       * the cooldown.
+       */
+      const result = await getApi().AuthProvider.generateCode(
         'email',
         fields.email_reg.value,
         'generate_code',
       );
+      if (isError(result)) {
+        throw new Error(result.message || 'Could not resend the code');
+      }
+      /** Block repeat resends for the provider's code TTL */
+      setCooldown(resendCooldownSec);
     } catch (e) {
       /** Handle any errors during resend */
       setError(e instanceof Error ? e.message : 'An error occurred');
@@ -180,7 +223,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
       /** Always stop loading state */
       setLoading(false);
     }
-  }, [fields.email_reg]);
+  }, [fields.email_reg, cooldown, resendCooldownSec]);
 
   return (
     <FormAnimations className={''} isLoading={isLoading} isActive={true}>
@@ -200,20 +243,27 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
           <OtpInput
             value={otp}
             onChange={setOtp}
-            numInputs={6}
+            numInputs={codeLength}
             renderInput={(props) => <input {...props} />}
-            containerStyle="grid max-w-full grid-cols-6 justify-between gap-2 max-md:gap-2"
+            containerStyle={{
+              display: 'grid',
+              gridTemplateColumns: `repeat(${codeLength}, minmax(0, 1fr))`,
+              gap: '0.5rem',
+              maxWidth: '100%',
+            }}
             inputStyle="relative box-border flex h-[70px] min-w-[14%] flex-col rounded border border-solid border-neutral-100 bg-neutral-100 p-2.5 text-center text-2xl font-medium text-neutral-600"
           />
           {/* Resend OTP section */}
           <div className="self-end text-xs text-fuchsia-500 max-md:mr-2.5">
             <span className="text-gray-400">{receive_otp_text?.value} </span>
             <button
-              className="font-bold text-fuchsia-500"
+              className="font-bold text-fuchsia-500 disabled:opacity-50"
               type="button"
               onClick={onResendHandle}
+              disabled={cooldown > 0}
             >
               {resend_text?.value}
+              {cooldown > 0 ? ` (${cooldown}s)` : ''}
             </button>
           </div>
         </div>

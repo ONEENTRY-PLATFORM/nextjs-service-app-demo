@@ -6,8 +6,12 @@ import type { FormEvent, JSX } from 'react';
 import { useContext, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import { getApi, useGetFormByMarkerQuery } from '@/app/api';
-import { isError } from '@/app/api';
+import {
+  getApi,
+  isError,
+  useGetAuthProvidersQuery,
+  useGetFormByMarkerQuery,
+} from '@/app/api';
 import { useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
@@ -79,6 +83,20 @@ const SignInForm = ({
       ),
     [data],
   );
+
+  /**
+   * Sign-in tabs are the credential (non-OAuth) providers configured in the
+   * CMS — do not hardcode them. Hardcoding `'phone'` broke the tab: no such
+   * provider exists, so `auth('phone', …)` failed. OAuth providers (Google)
+   * are handled by a separate button. Fall back to `email` while loading.
+   */
+  const { data: authProviders } = useGetAuthProvidersQuery('en_US');
+  const tabs = useMemo(() => {
+    const credential = (authProviders ?? [])
+      .filter((provider) => provider.type !== 'oauth')
+      .map((provider) => provider.identifier);
+    return credential.length > 0 ? credential : ['email'];
+  }, [authProviders]);
 
   /**
    * Handle sign in form submission
@@ -154,13 +172,14 @@ const SignInForm = ({
             index={1}
             className="max-w-full text-xs text-gray-400"
           >
-            {['email', 'phone'].map((type) => (
+            {tabs.map((type) => (
               <button
                 key={type}
+                type="button"
                 onClick={() => setTab(type)}
                 className={tab === type ? 'font-bold' : ''}
               >
-                {dict[`${type}_text`]?.value as string | undefined}
+                {(dict[`${type}_text`]?.value as string | undefined) ?? type}
               </button>
             ))}
           </FormFieldAnimations>

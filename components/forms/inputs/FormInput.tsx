@@ -34,11 +34,32 @@ const FormInput = (
   const dispatch = useAppDispatch();
   const valid = true;
 
-  /** Determine field type based on field markers or type with fallback to text */
+  /**
+   * Field-shaping flags come from the CMS field, not from the marker string:
+   * `isPassword` marks a password field, the email validator marks an email
+   * field, `isSignUpRequired` marks a required field. (These runtime flags are
+   * not in the SDK's `IAttributes` type, hence the cast.)
+   */
+  const flags = field as IAttributes & {
+    isPassword?: boolean;
+    isSignUpRequired?: boolean;
+  };
+  const validators = (field.validators ?? {}) as {
+    requiredValidator?: { strict?: boolean };
+    emailInspectionValidator?: boolean;
+    stringInspectionValidator?: { stringMin?: number; stringMax?: number };
+  };
+
+  /**
+   * Determine the input type from the flags. The marker is only a fallback for
+   * the confirm-password field, which carries `isPassword: false` in the CMS
+   * yet must stay masked.
+   */
   const fieldType = (FormFieldsEnum as unknown as Record<string, string>)[
-    field.marker.indexOf('password') !== -1
+    flags.isPassword || field.marker.indexOf('password') !== -1
       ? 'password'
-      : field.marker.indexOf('email') !== -1
+      : validators.emailInspectionValidator ||
+          field.marker.indexOf('email') !== -1
         ? 'email'
         : field.type
   ];
@@ -46,12 +67,8 @@ const FormInput = (
   /** State for toggling password visibility (text/password), defaults to determined field type */
   const [type, setType] = useState<string>(fieldType || 'text');
 
-  const validators = field.validators as {
-    requiredValidator?: { strict?: boolean };
-    stringInspectionValidator?: { stringMin?: number; stringMax?: number };
-  };
-  /** Extract required validation rule from field validators */
-  const required = validators['requiredValidator']?.strict || false;
+  /** Required-ness comes from the CMS `isSignUpRequired` flag, not a validator */
+  const required = flags.isSignUpRequired ?? false;
   /** Extract minimum length validation rule from field validators */
   const minLength = validators['stringInspectionValidator']?.stringMin;
   /** Extract maximum length validation rule from field validators */

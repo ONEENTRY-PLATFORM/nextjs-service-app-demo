@@ -46,6 +46,8 @@ const isLoginCredential = (f: FormField): boolean =>
  * (marker contains "password") but not flagged `isPassword` in the CMS. There
  * is no dedicated CMS flag for confirm fields, so the marker heuristic is the
  * only signal. Must never be submitted — it only guards against typos.
+ * @param   {FormField} f - The form field to check
+ * @returns {boolean}     - Whether the field is a confirmation password field
  */
 const isConfirmPasswordField = (f: FormField): boolean =>
   !isPasswordField(f) && f.marker.toLowerCase().includes('password');
