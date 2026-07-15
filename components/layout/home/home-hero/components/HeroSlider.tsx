@@ -74,11 +74,17 @@ const HeroSlider = ({
               (i === idx ? 'opacity-100' : 'pointer-events-none opacity-0')
             }
           >
+            {/*
+              Only ONE variant of the first slide may be `priority`: two
+              priority images preload on every viewport and compete as LCP
+              candidates, even though CSS shows just one of them. The mobile
+              variant keeps the preload (mobile-first traffic); the desktop
+              variant still loads eagerly, just without its own preload link.
+            */}
             {slide.desktop && (
               <Image
                 fill
-                priority={i === 0}
-                fetchPriority={i === 0 ? 'high' : 'auto'}
+                loading={i === 0 ? 'eager' : 'lazy'}
                 src={slide.desktop}
                 alt={alt}
                 sizes="100vw"

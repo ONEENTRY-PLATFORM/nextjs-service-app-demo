@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import type { JSX } from 'react';
 import { useState } from 'react';
 
@@ -46,12 +47,16 @@ const PortfolioGallery = ({
             aria-label={`Open portfolio image ${index + 1}`}
             className="group relative aspect-4/5 cursor-pointer overflow-hidden rounded-2xl"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={item.img}
+            {/* Grid cells use the thumbnail; the full-size `img` is the lightbox's. */}
+            <Image
+              src={item.thumb || item.img}
               alt={item.alt}
-              loading="lazy"
-              className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-105"
+              fill
+              sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              {...(item.preview
+                ? { placeholder: 'blur' as const, blurDataURL: item.preview }
+                : {})}
             />
           </button>
         ))}

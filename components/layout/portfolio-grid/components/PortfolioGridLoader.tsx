@@ -1,28 +1,34 @@
 import type { JSX } from 'react';
 
-import CardAnimations from '@/app/animations/CardAnimations';
-
 /**
- * PortfolioGridLoader
- * @returns {Promise<JSX.Element>} PortfolioGridLoader
+ * PortfolioGridLoader — Suspense skeleton for the master's portfolio section.
+ *
+ * Mirrors PortfolioGridLayout/PortfolioGallery exactly (heading block, then the
+ * `grid-cols-2 / sm:3 / lg:5` grid of `aspect-4/5` rounded cells with the same
+ * gaps and padding), so replacing the skeleton with the real grid does not shift
+ * the layout.
+ * @returns {JSX.Element} Portfolio skeleton
  */
-const PortfolioGridLoader = async (): Promise<JSX.Element> => {
+const PortfolioGridLoader = (): JSX.Element => {
   return (
-    <div className="grid w-full grid-cols-6 gap-0 max-2xl:grid-cols-5 max-lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2">
-      {Array.from({ length: 12 }).map((_card, index) => (
-        <CardAnimations
-          className="group relative flex min-h-80 flex-col overflow-hidden max-xs:min-h-60 max-xs:min-w-[50vw] max-md:min-h-65"
-          index={index}
-          key={index}
-        >
-          <div className="group relative flex w-full flex-col justify-center">
-            <figure className="relative flex min-h-80 w-full flex-col overflow-hidden bg-slate-100">
-              <div className="gallery-card-img relative h-80 w-full object-cover duration-500 group-hover:scale-125 group-hover:transition-transform"></div>
-            </figure>
-          </div>
-        </CardAnimations>
-      ))}
-    </div>
+    <section className="bg-white pb-4">
+      {/* Heading placeholder — same box as the real "Portfolio" title */}
+      <div className="mx-auto flex max-w-7xl flex-col items-center p-3 md:px-8 md:py-6">
+        <div
+          className="h-6 w-32 animate-pulse rounded bg-slate-200"
+          style={{ fontSize: 'clamp(1.1rem, 2.2vw, 1.65rem)' }}
+        />
+      </div>
+      {/* Grid placeholder — identical classes to PortfolioGallery */}
+      <div className="grid grid-cols-2 gap-3 px-3 pb-4 sm:grid-cols-3 md:gap-4 md:px-6 lg:grid-cols-5">
+        {Array.from({ length: 10 }).map((_card, index) => (
+          <div
+            key={index}
+            className="aspect-4/5 animate-pulse rounded-2xl bg-slate-200"
+          />
+        ))}
+      </div>
+    </section>
   );
 };
 

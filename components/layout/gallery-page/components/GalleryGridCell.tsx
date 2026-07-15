@@ -45,6 +45,7 @@ const GalleryGridCell = ({
         src={item.url}
         alt={item.title}
         loading="lazy"
+        sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
         placeholder={item.preview ? 'blur' : 'empty'}
         {...(item.preview ? { blurDataURL: item.preview } : {})}
         className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"

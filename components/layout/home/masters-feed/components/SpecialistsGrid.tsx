@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { JSX } from 'react';
 
@@ -29,12 +30,12 @@ const SpecialistsGrid = ({
           style={{ aspectRatio: '3/4' }}
         >
           {spec.photo && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={spec.photo}
               alt={spec.name}
-              loading="lazy"
-              className="absolute inset-0 size-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+              fill
+              sizes="(min-width: 1024px) 16vw, (min-width: 640px) 33vw, 50vw"
+              className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
             />
           )}
           {/* Purple gradient overlay */}

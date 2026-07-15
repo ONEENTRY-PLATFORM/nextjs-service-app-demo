@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { JSX } from 'react';
 
@@ -27,12 +28,12 @@ const GalleryGrid = ({ cards }: { cards: GalleryGridCard[] }): JSX.Element => {
           className="group relative block aspect-4/5 overflow-hidden rounded-2xl bg-slate-100"
         >
           {card.thumb && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={card.thumb}
               alt={card.name}
-              loading="lazy"
-              className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
+              fill
+              sizes="(min-width: 1024px) 16vw, (min-width: 640px) 33vw, 50vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
           )}
           {/* Magenta hover tint (static-html GALLERY strip) */}
