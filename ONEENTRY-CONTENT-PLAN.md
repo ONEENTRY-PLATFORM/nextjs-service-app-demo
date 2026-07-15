@@ -197,11 +197,13 @@
 | `home_catalog` | заголовок «SERVICE» (сетка строится из детей `services`) |
 | `home_gallery` | заголовок «GALLERY» |
 | `home_offers_feed` | заголовок «BEST OFFERS» |
-| `home_discounts` | баннер «Get 10% off for booking online» / «Lash Lift Monday — Special Price»: `title`, `description`, `phone` `+971 4 784 0098`, `button_text` = «Book Now», `bg_image` |
+| `home_discounts` | баннер «Get 10% off for booking online» / «Lash Lift Monday — Special Price»: `title` (string), `description` (string), `phone` (string) `+971 4 784 0098`, `button_text` (string) = «Book Now», `bg_image` (image, десктоп), `bg_image_mobile` (image, мобильный портретный кроп — добавлен 2026-07-15 по аналогии с `image_id1`/`image_id2` слайдов hero). ⚠️ баннеры — **чистые фото без впечённого текста**, текст рисуется CMS-оверлеем. **Атрибутов у блока пока нет → фронт секцию не рендерит** (картинки строго из CMS, локальных фолбэков нет) |
 | `home_masters` | заголовок «OUR SPECIALISTS» |
 | `reviews_carousel` | заголовок «REVIEWS» (сами отзывы пока захардкожены — см. п. 9) |
 
 > **Статус (2026-07-12):** ✅ почти всё: `home_hero` (slider_block, **4 слайда** с `image_id1`/`image_id2`), `home_catalog`, `home_gallery`, `home_offers_feed` (similar_products_block — теперь **привязан к home**), `home_discounts`, `home_masters`, `reviews_carousel` — все созданы и **привязаны к `home`** (7 блоков в порядке секций). ⚠️ у `common_block`-блоков собственных атрибутов-заголовков нет (заголовки на фолбэках кода).
+>
+> **Обновление (2026-07-15):** 🟡 `home_discounts` — блок есть, но `attributeValues` **пуст**. Фронт (`components/layout/home/home-cta-banner/`) переписан на CMS: картинки берутся только из `bg_image`/`bg_image_mobile`, тексты — из `title`/`description`/`phone`/`button_text`, пустые поля не рендерятся, без картинки секция скрыта. Прежние локальные баннеры `public/images/baners/Off_10.png`/`Off_10_mobile.png` удалены в коммите 0.1.31 (замена без впечённого текста — `lash-lift.png`/`Mobile/lash-lift-m.png`), из-за чего секция давала 2×404 — **исправлено**. Осталось: завести набор атрибутов и залить значения (шаг ниже).
 
 #### Тексты слайдов hero (впечены в баннеры `static-html`, снято с картинок 2026-07-13)
 

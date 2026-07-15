@@ -50,7 +50,7 @@ const EntryScreen = ({
   const picked = OPTIONS.find((o) => o.flow === pick) ?? OPTIONS[0];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-testid="booking-entry">
       <div>
         <p
           className="mb-2 text-xs tracking-widest uppercase"
@@ -112,6 +112,7 @@ const EntryScreen = ({
         {OPTIONS.map(({ flow, title, subtitle, Icon, gradient }) => (
           <button
             key={flow}
+            data-testid={`booking-flow-${flow}`}
             onClick={() => onChoose(flow)}
             className="group relative flex h-full overflow-hidden rounded-2xl text-left transition-transform duration-200 hover:-translate-y-1 active:scale-95"
             style={{

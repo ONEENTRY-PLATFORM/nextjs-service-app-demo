@@ -102,10 +102,13 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const initRef = useRef(false);
 
   /**
-   * Check user data loop
+   * Session keepalive poll. 60s per the RTK rule — a few-second interval is
+   * dozens of `getMe` round-trips per minute per tab for no real benefit; a
+   * minute is plenty to notice a revoked/expired session. Disabled when signed
+   * out (`0`).
    */
   const [trigger, { isError, error }] = useLazyGetMeQuery({
-    pollingInterval: isAuth ? 3000 : 0,
+    pollingInterval: isAuth ? 60000 : 0,
   });
 
   /**

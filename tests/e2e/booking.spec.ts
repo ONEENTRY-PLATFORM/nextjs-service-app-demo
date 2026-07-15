@@ -13,15 +13,18 @@ test.describe('Booking wizard', () => {
     await expect(page.getByText('How would you like to start?')).toBeVisible({
       timeout: 15_000,
     });
-    await expect(page.getByText('Browse the studio')).toBeVisible();
-    await expect(page.getByText('Choose a specialist').first()).toBeVisible();
+    const entry = page.getByTestId('booking-entry');
+    await expect(entry.getByTestId('booking-flow-salon-first')).toBeVisible();
+    await expect(
+      entry.getByTestId('booking-flow-specialist-first'),
+    ).toBeVisible();
   });
 
   test('studio-first flow walks to the studio step', async ({ page }) => {
     await page.goto('/booking');
 
     // Desktop entry card of the salon-first flow
-    await page.getByText('Browse the studio').click();
+    await page.getByTestId('booking-flow-salon-first').click();
     await expect(page.getByText('Choose your studio')).toBeVisible();
 
     // The summary sidebar reflects the started flow
@@ -42,7 +45,7 @@ test.describe('Booking wizard', () => {
   }) => {
     await page.goto('/booking');
 
-    await page.getByText('Choose a specialist').first().click();
+    await page.getByTestId('booking-flow-specialist-first').click();
     await expect(page.getByText('Choose your specialist')).toBeVisible();
 
     await page.getByRole('button', { name: /change start/i }).click();

@@ -2,7 +2,6 @@ import '@/app/globals.css';
 import '@/app/styles/nav-menu.scss';
 
 import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
 import { Lato, Oswald } from 'next/font/google';
 import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX, ReactNode } from 'react';
@@ -13,27 +12,26 @@ import { AuthProvider } from '@/app/store/providers/AuthContext';
 import { OpenDrawerProvider } from '@/app/store/providers/OpenDrawerContext';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import StoreProvider from '@/app/store/providers/StoreProvider';
+import BottomMenu from '@/components/layout/bottom-menu';
+import Footer from '@/components/layout/footer';
+import Header from '@/components/layout/header';
 import PopupRoot from '@/components/layout/PopupRoot';
 import ResponsiveToastContainer from '@/components/shared/ResponsiveToastContainer';
 
+import IntroAnimations from './animations/IntroAnimations';
 import RegisterGSAP from './animations/RegisterGSAP';
 import TransitionProvider from './animations/TransitionProvider';
 
-const BottomMenu = dynamic(() => import('@/components/layout/bottom-menu'), {
-  ssr: true,
-});
-const Header = dynamic(() => import('@/components/layout/header'), {
-  ssr: true,
-});
-const Footer = dynamic(() => import('@/components/layout/footer'), {
-  ssr: true,
-});
-const IntroAnimations = dynamic(() => import('./animations/IntroAnimations'), {
-  ssr: true,
-});
-
 // export const revalidate = 10;
 // export const dynamicParams = true;
+
+/*
+ * Header / Footer / BottomMenu are server components and IntroAnimations SSRs
+ * (`ssr: true`); all four render unconditionally on every page. `dynamic()`
+ * bought nothing here — no code-splitting for server components, no deferral
+ * for an always-rendered SSR'd client component — just extra chunk boundaries,
+ * so they are imported statically.
+ */
 
 const lato = Lato({
   subsets: ['latin'],

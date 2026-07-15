@@ -46,38 +46,32 @@ export default async function PageLayout({
     return notFound();
   }
 
-  const { pageUrl, templateIdentifier } = page;
+  const { pageUrl } = page;
 
   /**
-   * Array of page components with routing settings
-   * Used to display specific pages such as payment success or payment cancellation
+   * Markers this catch-all route knows how to render. Every other page marker
+   * either has its own route in `app/` or is not meant to be reachable here.
    */
-  const pages = [
-    {
-      templateType: templateIdentifier,
-      name: 'payment_success',
-      component: <PaymentSuccess page={page} dict={dict} />,
-    },
-    {
-      templateType: templateIdentifier,
-      name: 'payment_canceled',
-      component: <PaymentCanceled page={page} dict={dict} />,
-    },
-  ];
+  const templates: Record<string, JSX.Element | undefined> = {
+    payment_success: <PaymentSuccess page={page} dict={dict} />,
+    payment_canceled: <PaymentCanceled page={page} dict={dict} />,
+  };
 
-  /** Render component based on page URL */
+  const content = templates[pageUrl];
+
+  /**
+   * The page exists in the CMS but this route has no template for it (e.g.
+   * `home`, whose canonical route is `/`). Rendering the empty container would
+   * answer 200 with a blank page, so treat it as not found instead.
+   */
+  if (!content) {
+    return notFound();
+  }
+
   return (
     /** Container with width limitation and minimum height */
     <div className="mx-auto flex min-h-80 w-full max-w-(--breakpoint-2xl) flex-col overflow-hidden">
-      {pages.map((p, i) => {
-        /** Compare page URL with component names */
-        if (pageUrl === p.name) {
-          /** Return corresponding component */
-          return <div key={i}>{p.component}</div>;
-        }
-        /** If no matches, return null */
-        return null;
-      })}
+      {content}
     </div>
   );
 }

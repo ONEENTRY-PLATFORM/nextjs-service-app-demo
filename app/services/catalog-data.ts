@@ -9,6 +9,44 @@ import type {
 } from '@/components/layout/services-page/types';
 import { plainTextFromTextAttr } from '@/components/utils';
 
+/** Page size of a single catalog products request. */
+const PAGE_LIMIT = 100;
+
+/**
+ * Fetch every product of a catalog page, following the pagination.
+ *
+ * One request is capped at {@link PAGE_LIMIT} items while the API reports the
+ * real `total`, so keep paging until the whole page is collected — stopping at
+ * the first response would silently drop services once a category outgrows the
+ * limit. A failed request yields no products and ends the loop, leaving the
+ * category to render with whatever was already fetched.
+ * @param   {string}                     handle - Catalog page marker (`pageUrl` from the CMS)
+ * @returns {Promise<IProductsEntity[]>}        Every product linked to the page
+ */
+const fetchAllProducts = async (handle: string): Promise<IProductsEntity[]> => {
+  const all: IProductsEntity[] = [];
+  let offset = 0;
+
+  for (;;) {
+    const { products, total } = await getProductsByPageUrl({
+      limit: PAGE_LIMIT,
+      offset,
+      params: { handle },
+    });
+
+    const page = products ?? [];
+    all.push(...page);
+    offset += PAGE_LIMIT;
+
+    /** Done once the reported total is covered (or the API ran dry). */
+    if (page.length < 1 || all.length >= total) {
+      break;
+    }
+  }
+
+  return all;
+};
+
 /**
  * Map a CMS product entity to a plain serializable service item.
  *
@@ -116,22 +154,14 @@ export const getServicesCatalogData = async (): Promise<{
       /** Products of every subcategory plus the category page itself */
       const lists = await Promise.all([
         ...subcategories.map((sub) =>
-          getProductsByPageUrl({
-            limit: 100,
-            offset: 0,
-            params: { handle: sub.pageUrl },
-          }).then((result) => ({
+          fetchAllProducts(sub.pageUrl).then((products) => ({
             subcategoryUrl: sub.pageUrl,
-            products: result.products ?? [],
+            products,
           })),
         ),
-        getProductsByPageUrl({
-          limit: 100,
-          offset: 0,
-          params: { handle: categoryPage.pageUrl },
-        }).then((result) => ({
+        fetchAllProducts(categoryPage.pageUrl).then((products) => ({
           subcategoryUrl: null as string | null,
-          products: result.products ?? [],
+          products,
         })),
       ]);
 

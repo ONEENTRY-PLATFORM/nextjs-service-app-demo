@@ -1,7 +1,6 @@
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
-import { getBlockByMarker } from '@/app/api';
 import SectionTitle from '@/components/shared/SectionTitle';
 
 import OffersFeed from './components/OffersFeed';
@@ -9,19 +8,23 @@ import OffersFeed from './components/OffersFeed';
 /**
  * OffersFeedBlock component displays the complete offers section with title and
  * feed. Special offers are the `offer` products curated on the
- * `home_offers_feed` block as similar products, read via `getBlockByMarker`.
+ * `home_offers_feed` block as similar products, which the page's block list
+ * already carries — so they are read straight off the prop rather than refetched.
  * The whole section is hidden while the CMS holds no `offer` products.
- * @param   {object}                      props         - Component properties
- * @param   {IBlockEntity}                [props.block] - The `home_offers_feed` block
- * @returns {Promise<JSX.Element | null>}               The offers section, or `null` when empty
+ * @param   {object}             props         - Component properties
+ * @param   {IBlockEntity}       [props.block] - The `home_offers_feed` block
+ * @returns {JSX.Element | null}               The offers section, or `null` when empty
  */
-const OffersFeedBlock = async ({
+const OffersFeedBlock = ({
   block,
 }: {
   block?: IBlockEntity | undefined;
-}): Promise<JSX.Element | null> => {
-  const data = block ? await getBlockByMarker(block.identifier) : null;
-  const products = (data?.block?.similarProducts?.items ?? []).filter(
+}): JSX.Element | null => {
+  /**
+   * `similarProducts` is optional on the block entity (the API omits it once a
+   * traffic limit kicks in), hence the optional chaining and the empty fallback.
+   */
+  const products = (block?.similarProducts?.items ?? []).filter(
     (product) => product.attributeSetIdentifier === 'offer',
   );
 

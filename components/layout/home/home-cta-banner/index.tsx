@@ -1,47 +1,95 @@
 /* eslint-disable @next/next/no-img-element */
-import Link from 'next/link';
+import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
+import type { OneEntryImageFile } from '@/components/utils';
+import { getGalleryImageUrls, plainTextFromTextAttr } from '@/components/utils';
+
+import CtaBannerOverlay from './components/CtaBannerOverlay';
+
 /**
- * HomeCtaBanner — the "Get 10% off for booking online" banner between the
- * BEST OFFERS and OUR SPECIALISTS sections, ported from the static-html mock
- * (`HomePage.tsx` → BOOKING CTA BANNER). The banner artwork carries its own
- * text, so the section renders the promo image (a portrait crop on mobile, the
- * wide banner on desktop) with a glassmorphic "Book Now" button overlaid — the
- * button leads to the booking page.
- * @returns {JSX.Element} Booking CTA banner section
+ * First image URL of an `image` block attribute.
+ * @param   {unknown} value - Raw `attributeValues.<marker>.value`
+ * @returns {string}        Image URL, or `''` when the attribute is empty
  */
-const HomeCtaBanner = (): JSX.Element => {
+const imageUrl = (value: unknown): string => {
+  if (!Array.isArray(value) || value.length === 0) {
+    return '';
+  }
+  const file = value[0] as OneEntryImageFile | undefined;
+  return file?.downloadLink ? getGalleryImageUrls(file).full : '';
+};
+
+/**
+ * Plain text of a block attribute, tolerating both `string` and `text` markers.
+ * @param   {unknown} value - Raw `attributeValues.<marker>.value`
+ * @returns {string}        Trimmed text, or `''`
+ */
+const attrText = (value: unknown): string =>
+  typeof value === 'string' ? value.trim() : plainTextFromTextAttr(value);
+
+/**
+ * HomeCtaBanner — the booking CTA banner between the BEST OFFERS and OUR
+ * SPECIALISTS sections, driven entirely by the `home_discounts` block.
+ *
+ * Both the artwork and the copy come from the CMS: the banner images are clean
+ * photos (`bg_image` wide, `bg_image_mobile` portrait) and the promo text is
+ * overlaid from the block attributes, so nothing is baked into the artwork and
+ * a banner swap needs no code change. Without a CMS image there is no banner —
+ * the section is skipped rather than falling back to a bundled asset.
+ * @param   {object}             props         - Component properties
+ * @param   {IBlockEntity}       [props.block] - The `home_discounts` block
+ * @returns {JSX.Element | null}               CTA banner section, or `null` while the CMS holds no artwork
+ */
+const HomeCtaBanner = ({
+  block,
+}: {
+  block?: IBlockEntity | undefined;
+}): JSX.Element | null => {
+  const attrs = (block?.attributeValues ?? {}) as Record<
+    string,
+    { value?: unknown } | undefined
+  >;
+
+  /** Mobile keeps its own portrait crop; the wide banner stands in when absent. */
+  const desktop = imageUrl(attrs.bg_image?.value);
+  const mobile = imageUrl(attrs.bg_image_mobile?.value) || desktop;
+
+  if (!desktop && !mobile) {
+    return null;
+  }
+
+  const title = attrText(attrs.title?.value);
+  /** The headline doubles as the alt text; an empty one leaves the art decorative. */
+  const alt = title || block?.localizeInfos?.title || '';
+
   return (
     <section className="bg-white py-4 xl:py-10 md:py-6">
       <div className="mx-auto w-full max-w-7xl px-3 md:px-8">
         <div className="relative w-full overflow-hidden rounded-3xl">
+          {/*
+            Plain <img> with intrinsic sizing on purpose: the banner is whatever
+            the CMS holds, so its aspect ratio is not known up-front and cannot
+            be pinned down for next/image's fill layout.
+          */}
           {/* Mobile banner */}
           <img
-            src="/images/baners/Mobile/Off_10_mobile.png"
-            alt="Get 10% off for booking online"
+            src={mobile}
+            alt={alt}
             className="h-auto w-full object-cover md:hidden"
           />
           {/* Desktop banner */}
           <img
-            src="/images/baners/Off_10.png"
-            alt="Get 10% off for booking online"
+            src={desktop || mobile}
+            alt={alt}
             className="hidden h-auto w-full object-cover md:block"
           />
-          {/* Booking button — glassmorphic, centered on mobile, bottom-right on desktop */}
-          <div className="absolute inset-0 flex items-end justify-center pr-0 pb-[15%] md:justify-end md:pr-[5%] md:pb-[5%]">
-            <Link
-              href="/booking"
-              className="relative shrink-0 rounded-xl px-8 py-3.5 text-base font-black tracking-wider text-white uppercase transition-transform duration-200 hover:scale-105 active:scale-95"
-              style={{
-                background: 'rgba(255,255,255,0.22)',
-                border: '2px solid rgba(255,255,255,0.5)',
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              Book Now
-            </Link>
-          </div>
+          <CtaBannerOverlay
+            title={title}
+            description={attrText(attrs.description?.value)}
+            phone={attrText(attrs.phone?.value)}
+            buttonText={attrText(attrs.button_text?.value)}
+          />
         </div>
       </div>
     </section>

@@ -1,7 +1,6 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IAuthProvidersEntity } from 'oneentry/dist/auth-provider/authProvidersInterfaces';
-import type { IError } from 'oneentry/dist/base/utils';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { IFormsEntity } from 'oneentry/dist/forms/formsInterfaces';
 import type {
@@ -129,35 +128,25 @@ export const RTKApi = createApi({
     }),
     /**
      * Get products by IDs.
-     * Fetches multiple products by their IDs.
+     *
+     * Uses the SDK's batch endpoint (one request for the whole set) instead of
+     * fanning out a request per id; the ids go over as a comma-separated list.
      * @param items - Array of product IDs to fetch
      * @returns     Array of product entities
      */
     getProductsByIds: build.query<IProductsEntity[], { items: number[] }>({
       queryFn: async ({ items }) => {
-        const getProductsByIds = async (ids: number[]) => {
-          return await Promise.all(
-            ids.map(async (id: number) => {
-              const product = await getApi().Products.getProductById(id);
-              if (!product || (product as IError).statusCode >= 400) {
-                return undefined;
-              } else {
-                return product as IProductsEntity;
-              }
-            }),
-          ).then((results) => {
-            return results.filter(
-              (product): product is IProductsEntity => product !== undefined,
-            );
-          });
-        };
+        /** No ids — nothing to ask the API for. */
+        if (items.length < 1) {
+          return { data: [] };
+        }
 
-        const result = await getProductsByIds(items.map((item) => item)).then(
-          (res) => res,
+        const result = await getApi().Products.getProductsByIds(
+          items.join(','),
         );
 
         if (isError(result)) {
-          return { error: 'Data error' };
+          return { error: result };
         }
         return { data: result };
       },

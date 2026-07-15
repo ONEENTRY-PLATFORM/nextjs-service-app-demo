@@ -183,7 +183,7 @@ const IndexPageLayout = async (): Promise<JSX.Element> => {
       {/* 4. Best offers */}
       <OffersFeed block={blockByMarker.get('home_offers_feed')} />
       {/* 5. Booking CTA banner */}
-      <HomeCtaBanner />
+      <HomeCtaBanner block={blockByMarker.get('home_discounts')} />
       {/* 6. Our specialists */}
       <MastersFeed block={blockByMarker.get('home_masters')} />
       {/* 7. Reviews */}
