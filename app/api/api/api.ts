@@ -20,7 +20,7 @@ export const LANG_CODE = 'en_US';
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
  */
 const saveFunction = async (refreshToken: string): Promise<void> => {
-  if (!refreshToken) {
+  if (!refreshToken || typeof window === 'undefined') {
     return;
   }
   localStorage.setItem('refresh-token', refreshToken);

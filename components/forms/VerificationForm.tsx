@@ -13,6 +13,10 @@ import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { addField } from '@/app/store/reducers/FormFieldsSlice';
 import type { FormProps } from '@/app/types/global';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
+import {
+  EVENT_RESET_GENERATE,
+  EVENT_RESET_VERIFY,
+} from '@/components/forms/authEventMarkers';
 
 import ErrorMessage from './inputs/ErrorMessage';
 import FormSubmitButton from './inputs/FormSubmitButton';
@@ -94,7 +98,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
         const result = await getApi().AuthProvider.checkCode(
           'email',
           fields.email_reg.value,
-          'otp',
+          EVENT_RESET_VERIFY,
           otp,
         );
         if (isError(result)) {
@@ -209,7 +213,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
       const result = await getApi().AuthProvider.generateCode(
         'email',
         fields.email_reg.value,
-        'generate_code',
+        EVENT_RESET_GENERATE,
       );
       if (isError(result)) {
         throw new Error(result.message || 'Could not resend the code');

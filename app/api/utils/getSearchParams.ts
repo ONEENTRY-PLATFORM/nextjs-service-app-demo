@@ -14,8 +14,8 @@ import type { IFilterParams } from 'oneentry/dist/products/productsInterfaces';
 const getSearchParams = (searchParams?: {
   search?: string;
   in_stock?: string;
-}): Array<IFilterParams & { statusMarker?: string }> => {
-  const expandedFilters: Array<IFilterParams & { statusMarker?: string }> = [];
+}): IFilterParams[] => {
+  const expandedFilters: IFilterParams[] = [];
 
   /**
    * Keep only products that have an SKU set. The legacy `nin: null`

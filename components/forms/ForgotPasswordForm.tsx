@@ -4,10 +4,15 @@ import type { IAttributes, IAttributeValues } from 'oneentry/dist/base/utils';
 import type { FormEvent, JSX } from 'react';
 import { useContext, useState } from 'react';
 
-import { getApi, useGetFormByMarkerQuery } from '@/app/api';
+import {
+  getApi,
+  isError as isSdkError,
+  useGetFormByMarkerQuery,
+} from '@/app/api';
 import { useAppSelector } from '@/app/store/hooks';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
+import { EVENT_RESET_GENERATE } from '@/components/forms/authEventMarkers';
 import { getFormAttributes } from '@/components/utils';
 
 import SpinnerLoader from '../shared/SpinnerLoader';
@@ -50,23 +55,32 @@ export const ForgotPasswordForm = ({
     if (!fields.email_reg) {
       return;
     }
+    setError('');
     try {
-      /** Generate verification code with API */
-      await getApi().AuthProvider.generateCode(
+      /**
+       * Generate the reset code. `generateCode` returns `boolean | IError` — an
+       * API failure is a value, not a throw, so check it explicitly instead of
+       * relying on the (dead) catch branch.
+       */
+      const result = await getApi().AuthProvider.generateCode(
         'email',
         fields.email_reg.value,
-        'generate_otp',
+        EVENT_RESET_GENERATE,
       );
+      if (isSdkError(result)) {
+        setError(result.message || 'Could not send the verification code');
+        /** A 400 means a code is already active — let the user enter it. */
+        if (result.statusCode === 400) {
+          setComponent('VerificationForm');
+          setAction('checkCode');
+        }
+        return;
+      }
       /** Open Verification form */
       setComponent('VerificationForm');
       setAction('checkCode');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
-      if ((error as { statusCode?: number })?.statusCode === 400) {
-        setTimeout(() => {
-          setComponent('VerificationForm');
-        }, 800);
-      }
     }
   };
 

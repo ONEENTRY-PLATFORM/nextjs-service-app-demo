@@ -32,7 +32,7 @@ const SignInButton = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
       type="button"
       className="mx-auto w-auto items-center justify-center rounded-card border border-solid border-fuchsia-500 bg-transparent px-3.5 py-1 text-base font-bold tracking-wide text-fuchsia-500 uppercase transition-colors duration-300 hover:border-fuchsia-600 hover:text-fuchsia-600 focus-visible:text-fuchsia-600 focus-visible:outline-fuchsia-600 disabled:border-neutral-300 disabled:bg-neutral-300/50 disabled:text-neutral-300"
     >
-      {log_in_text?.value as string | undefined}
+      {(log_in_text?.value as string | undefined) || 'Log in'}
     </button>
   );
 };

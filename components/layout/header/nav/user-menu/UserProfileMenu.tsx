@@ -28,8 +28,15 @@ const UserProfileMenu = ({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  /** Ensure pages are defined and of correct type */
-  const pages = (userMenu.pages || []) as IMenusPages[];
+  /**
+   * The menu API may return `pages` as an array OR a single object (or nothing).
+   * Normalize to an array so `.map` never crashes and a lone page is not lost.
+   */
+  const pages: IMenusPages[] = Array.isArray(userMenu.pages)
+    ? (userMenu.pages as IMenusPages[])
+    : userMenu.pages
+      ? [userMenu.pages as IMenusPages]
+      : [];
 
   useEffect(() => {
     if (!isOpen) return;

@@ -49,11 +49,17 @@ const CancelOrderButton = ({
     } as IOrderData;
 
     /** Update the order using the API function */
-    await updateOrderByMarkerAndId({
+    const { isError, error } = await updateOrderByMarkerAndId({
       marker: 'orders',
       id,
       data: formData,
     });
+
+    /** Surface a failed cancellation instead of falsely reporting success */
+    if (isError) {
+      toast.error(error?.message || 'Could not cancel the order');
+      return;
+    }
 
     /** Trigger refetching of data and show a toast notification */
     setRefetch(true);

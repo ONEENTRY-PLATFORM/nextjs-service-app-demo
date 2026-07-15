@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
+import { notFound } from 'next/navigation';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 import { cache } from 'react';
@@ -136,7 +137,7 @@ const IndexPageLayout = async (): Promise<JSX.Element> => {
 
   /** The page marker is enough to render; blocks and lists are optional. */
   if (isError || !page) {
-    return <>isError</>;
+    notFound();
   }
 
   /**

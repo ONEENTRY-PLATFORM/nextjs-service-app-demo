@@ -16,7 +16,7 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { FormProps } from '@/app/types/global';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
-import { getFormAttributes } from '@/components/utils';
+import { getFormAttributes, sortArrayByPosition } from '@/components/utils';
 
 import ErrorMessage from './inputs/ErrorMessage';
 import FormInput from './inputs/FormInput';
@@ -33,12 +33,24 @@ import SubmitButton from './inputs/FormSubmitButton';
 type FormField = IAttributes & {
   isLogin?: boolean | null;
   isSignUp?: boolean | null;
+  isSignUpRequired?: boolean | null;
   isPassword?: boolean | null;
   isNotificationEmail?: boolean | null;
   isNotificationPhoneSMS?: boolean | null;
   isNotificationPhonePush?: boolean | null;
 };
+/**
+ * isPasswordField — whether the CMS flagged the field as a password input.
+ * @param   {FormField} f - The form field to check
+ * @returns {boolean}     - True when `isPassword` is set on the field
+ */
 const isPasswordField = (f: FormField): boolean => f.isPassword === true;
+/**
+ * isLoginCredential — whether the field is a login or password credential and
+ * therefore belongs in `authData` rather than `formData`.
+ * @param   {FormField} f - The form field to check
+ * @returns {boolean}     - True for login or password fields
+ */
 const isLoginCredential = (f: FormField): boolean =>
   f.isLogin === true || isPasswordField(f);
 /**
@@ -82,8 +94,11 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
   /** Get current form field states from Redux store */
   const fields = useAppSelector((state) => state.formFieldsReducer.fields);
 
-  /** All form attributes (unfiltered) from CMS. */
-  const attributes = useMemo(() => getFormAttributes<FormField>(data), [data]);
+  /** All form attributes (unfiltered) from CMS, ordered by field position. */
+  const attributes = useMemo(
+    () => sortArrayByPosition(getFormAttributes<FormField>(data)),
+    [data],
+  );
 
   /**
    * Visible fields for the sign-up form: everything except pure-notification
@@ -98,7 +113,10 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
           f.isNotificationPhoneSMS === true ||
           f.isNotificationPhonePush === true;
         const isPureNotification =
-          isNotif && !isLoginCredential(f) && f.isSignUp !== true;
+          isNotif &&
+          !isLoginCredential(f) &&
+          f.isSignUp !== true &&
+          f.isSignUpRequired !== true;
         return !isPureNotification;
       }),
     [attributes],

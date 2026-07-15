@@ -3,7 +3,7 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import { useEffect, useState } from 'react';
 
-import { getApi } from '@/app/api';
+import { getApi, isError } from '@/app/api';
 
 /**
  * Custom hook for searching products by name using the OneEntry API.
@@ -42,20 +42,44 @@ export const useSearchProducts = ({
 
   /** search products on data change */
   useEffect(() => {
+    /** Empty query: do not hit the API (results are cleared via the return). */
     if (!name) {
       return;
     }
+    /** Guard against stale writes from an out-of-order/late response. */
+    let cancelled = false;
     (async () => {
       setLoading(true);
-      const result = await getApi().Products.searchProduct(name);
-      setProducts(result as IProductsEntity[]);
-      setLoading(false);
+      try {
+        const result = await getApi().Products.searchProduct(name);
+        if (cancelled) {
+          return;
+        }
+        /**
+         * `searchProduct` returns `IProductsEntity[] | IError` — on an API
+         * error the IError object must NOT be cast to an array. Degrade to an
+         * empty list instead.
+         */
+        setProducts(isError(result) || !Array.isArray(result) ? [] : result);
+      } catch {
+        if (!cancelled) {
+          setProducts([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [refetch, name]);
 
   return {
-    loading,
-    products,
+    /** With no query there is nothing to load and no results to show. */
+    loading: name ? loading : false,
+    products: name ? products : [],
     refetch() {
       setRefetch(!refetch);
     },

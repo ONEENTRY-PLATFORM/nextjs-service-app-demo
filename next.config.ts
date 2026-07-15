@@ -8,7 +8,12 @@ const nextConfig: NextConfig = {
       static: 180,
     },
     optimizeCss: true,
-    optimizePackageImports: ['gsap', 'react-toastify'],
+    optimizePackageImports: [
+      'gsap',
+      '@gsap/react',
+      'lucide-react',
+      'react-toastify',
+    ],
     serverActions: {
       bodySizeLimit: '2mb',
     },
@@ -22,8 +27,10 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 60,
-    deviceSizes: [640, 1920],
+    // OneEntry file URLs are content-addressable, so a long TTL is safe (30 days).
+    minimumCacheTTL: 60 * 60 * 24 * 30,
+    deviceSizes: [640, 768, 1024, 1280, 1920],
+    imageSizes: [16, 32, 64, 128, 256, 384],
     unoptimized: false,
     remotePatterns: [
       {

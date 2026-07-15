@@ -15,7 +15,7 @@ import {
 import { useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import type { FormProps } from '@/app/types/global';
-import { getFormAttributes } from '@/components/utils';
+import { getFormAttributes, sortArrayByPosition } from '@/components/utils';
 
 import AuthError from '../pages/AuthError';
 import SpinnerLoader from '../shared/SpinnerLoader';
@@ -52,19 +52,25 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
   /** get fields from formFieldsReducer */
   const fields = useAppSelector((state) => state.formFieldsReducer.fields);
 
-  /** Prepare form data for user update */
-  const formData = getFormAttributes(data)
-    .map((field: IAttributes) => {
-      if (field.marker !== 'email_notification_reg') {
-        return {
-          marker: field.marker,
-          value: fields[field.marker as keyof typeof fields]?.value || '',
-          type: 'string',
-        };
-      }
-      return;
-    })
-    .filter(Boolean) as IAuthFormData[];
+  /** Form fields sorted by position for a deterministic order. */
+  const sortedFields = sortArrayByPosition(getFormAttributes(data));
+
+  /**
+   * Prepare profile form data for update. Password fields are excluded here —
+   * they belong in `authData` — and the value type comes from the CMS field
+   * (`field.type`) rather than a hardcoded 'string'.
+   */
+  const formData = sortedFields
+    .filter(
+      (field: IAttributes) =>
+        field.marker !== 'email_notification_reg' &&
+        !field.marker.includes('password'),
+    )
+    .map((field: IAttributes) => ({
+      marker: field.marker,
+      value: fields[field.marker as keyof typeof fields]?.value || '',
+      type: field.type || 'string',
+    })) as IAuthFormData[];
 
   /**
    * Update user data
@@ -72,8 +78,12 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
    */
   const onUpdateUserData = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    /** Validate required fields before submission */
-    if (!fields.password_reg || !fields.phone_reg || !fields.email_reg) {
+    /**
+     * Email is required for the notification payload; the password is optional
+     * — an empty password means "keep the current one", so it must NOT block
+     * the save.
+     */
+    if (!fields.email_reg) {
       return;
     }
     /** Attempt to update user data */
@@ -81,21 +91,30 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
       /** Set loading state during update process */
       setLoading(true);
 
+      /**
+       * Only send a password when the user actually typed a new one, so an
+       * empty field does not overwrite the existing password.
+       */
+      const authData: IAuthFormData[] = fields.password_reg?.value
+        ? [
+            {
+              marker: 'password_reg',
+              value: fields.password_reg.value,
+              type: 'string',
+            },
+          ]
+        : [];
+
       /** Update user information via API if form identifier exists */
       if (user?.formIdentifier) {
         const result = await getApi().Users.updateUser({
           formIdentifier: user.formIdentifier,
           formData,
-          authData: [
-            {
-              marker: 'password_reg',
-              value: fields.password_reg.value,
-            },
-          ],
+          authData,
           notificationData: {
             email: fields.email_reg.value,
             phonePush: [],
-            phoneSMS: fields.phone_reg.value,
+            phoneSMS: fields.phone_reg?.value ?? '',
           },
           /**
            * Preserve the user's server state (cart, favorites) — sending `{}`
@@ -145,7 +164,7 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
     >
       {/** Render form fields excluding email notification field */}
       <div className="relative mb-4 box-border flex shrink-0 flex-col gap-4">
-        {getFormAttributes(data)
+        {sortedFields
           .filter(
             (field: { marker: string }) =>
               field.marker !== 'email_notification_reg',
@@ -162,7 +181,7 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
       </div>
       {/** Render submit button for form submission */}
       <SubmitButton
-        title={dict?.save_button_text?.value}
+        title={(dict?.save_button_text?.value as string | undefined) || 'Save'}
         isLoading={loading}
         index={10}
       />

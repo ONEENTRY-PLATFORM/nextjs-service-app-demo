@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { Lato, Oswald } from 'next/font/google';
+import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX, ReactNode } from 'react';
 import { ToastContainer } from 'react-toastify';
 
@@ -134,32 +135,39 @@ export default async function RootLayout({
   const [dict] = ServerProvider('dict', await getDictionary());
   const { error, isError, menu } = await getMenuByMarker('main');
 
-  if (isError || !menu) {
+  /**
+   * Only a confirmed "resource is closed" (403) is fatal enough to replace the
+   * whole site with a notice. Any other menu error (transient/network/5xx)
+   * degrades to a normal layout with an empty menu — MainMenu and the mobile
+   * drawer already handle a menu without pages gracefully.
+   */
+  const isClosed =
+    isError &&
+    error?.statusCode === 403 &&
+    /resource is closed/i.test(error?.message ?? '');
+
+  if (isClosed) {
     // Root layout MUST always render <html>/<body> — otherwise Next.js
     // throws "Missing <html> and <body> tags in the root layout".
-    const isClosed =
-      error?.statusCode === 403 &&
-      /resource is closed/i.test(error?.message ?? '');
-    const heading = isClosed
-      ? 'Site temporarily unavailable'
-      : 'Something went wrong';
-    const details = isClosed
-      ? 'The content service is currently unavailable. Please try again later.'
-      : (error?.message ?? 'Unable to load site navigation.');
-
     return (
       <html lang={HTML_LANG}>
         <body
           className={`${lato.variable} ${oswald.variable} flex min-h-screen flex-col`}
         >
           <main className="flex grow flex-col items-center justify-center gap-3 p-8 text-center">
-            <h1 className="text-2xl font-bold">{heading}</h1>
-            <p className="text-base text-neutral-600">{details}</p>
+            <h1 className="text-2xl font-bold">Site temporarily unavailable</h1>
+            <p className="text-base text-neutral-600">
+              The content service is currently unavailable. Please try again
+              later.
+            </p>
           </main>
         </body>
       </html>
     );
   }
+
+  /** Fall back to an empty menu when it failed to load for a non-fatal reason. */
+  const safeMenu = (menu ?? { pages: [] }) as IMenusEntity;
 
   return (
     <html lang={HTML_LANG}>
@@ -183,7 +191,7 @@ export default async function RootLayout({
         <StoreProvider>
           <AuthProvider>
             <OpenDrawerProvider>
-              <Header menu={menu} />
+              <Header menu={safeMenu} />
               <TransitionProvider>
                 {/* Spacer matching the fixed header height (h-20) */}
                 <div className="h-20"></div>
@@ -194,7 +202,7 @@ export default async function RootLayout({
               </TransitionProvider>
               <BottomMenu />
               <Modal dict={dict} />
-              <OffscreenModal menu={menu} />
+              <OffscreenModal menu={safeMenu} />
             </OpenDrawerProvider>
           </AuthProvider>
           <IntroAnimations />

@@ -29,12 +29,14 @@ const NavGroup = async (): Promise<JSX.Element> => {
   /** Fetch user menu data by marker */
   const { menu, isError } = await getMenuByMarker('user_menu');
   /** Extract specific text values from dictionary */
-  const { book_text, menu_not_found_text } = dict;
+  const { book_text } = dict;
 
-  /** Display error message if menu data is not available */
-  if (!menu || isError) {
-    return <p>{menu_not_found_text?.value as string}</p>;
-  }
+  /**
+   * The user menu is optional decoration on the profile icon — if it fails to
+   * load, the core actions (Book Online, profile, hamburger) must stay visible
+   * rather than collapsing the whole group into an error message.
+   */
+  const userMenu = !isError && menu ? (menu as IMenusEntity) : undefined;
   /**
    * Render navigation group: the Book Online pill and profile icon stay visible
    * at every width (compact on mobile, as in the mock's header), followed by the
@@ -48,7 +50,7 @@ const NavGroup = async (): Promise<JSX.Element> => {
       >
         {(book_text?.value as string | undefined) || 'Book Online'}
       </Link>
-      <NavItemProfile userMenu={menu as IMenusEntity} />
+      <NavItemProfile {...(userMenu ? { userMenu } : {})} />
       <MenuButton />
     </div>
   );

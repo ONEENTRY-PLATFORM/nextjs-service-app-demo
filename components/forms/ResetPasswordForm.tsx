@@ -4,11 +4,12 @@
 import type { FormEvent, JSX } from 'react';
 import { useContext, useState } from 'react';
 
-import { getApi } from '@/app/api';
+import { getApi, isError as isSdkError } from '@/app/api';
 import { useAppSelector } from '@/app/store/hooks';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { FormProps } from '@/app/types/global';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
+import { EVENT_RESET_VERIFY } from '@/components/forms/authEventMarkers';
 
 import ErrorMessage from './inputs/ErrorMessage';
 import FormInput from './inputs/FormInput';
@@ -67,21 +68,31 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
 
     /** Attempt to reset password via API */
     try {
-      /** Call API to change user password */
+      /**
+       * Call API to change user password. `changePassword` returns
+       * `boolean | IError` — a truthy IError must not be treated as success,
+       * so check the error envelope and require an explicit `true`.
+       */
       const result = await getApi().AuthProvider.changePassword(
         'email',
         email_reg.value,
-        'otp',
+        EVENT_RESET_VERIFY,
         1,
         otp_code.value.toString(),
         password_reg.value,
         password_confirm.value,
       );
 
-      /** Redirect to sign in form if password change is successful */
-      if (result) {
+      if (isSdkError(result)) {
+        setError(result.message || 'Could not change the password');
+        return;
+      }
+      /** Redirect to sign in form only on a confirmed success */
+      if (result === true) {
         setComponent('SignInForm');
         setAction('');
+      } else {
+        setError('Could not change the password. Please try again.');
       }
     } catch (error) {
       /** Set error message if password change fails */

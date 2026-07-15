@@ -93,16 +93,16 @@ const SearchResults = ({
     >
       <CloseSearch setState={setState} />
       {products.length > 0 ? (
-        products.map((product: IProductsEntity, i: number) => {
+        products.map((product: IProductsEntity) => {
           const { id, attributeSetIdentifier } = product;
 
-          /** Skip rendering for 'service_product' type */
-          if (attributeSetIdentifier === 'service_product' || !pages[id]) {
+          /** Skip special-offer products — they are not services. */
+          if (attributeSetIdentifier === 'offer' || !pages[id]) {
             return null;
           }
 
           return (
-            <div key={id + i} className="flex w-full">
+            <div key={id} className="flex w-full">
               <ProductRow
                 pageData={pages[id].page as IPagesEntity}
                 product={product}

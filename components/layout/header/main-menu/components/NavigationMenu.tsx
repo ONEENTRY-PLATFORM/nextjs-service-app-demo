@@ -30,23 +30,31 @@ const NavigationMenu = ({ menu }: { menu: IMenusPages[] }): JSX.Element => {
           return (
             <li key={index} className={hasChildren ? 'group' : ''}>
               <NavigationMenuItem
-                label={item.localizeInfos.menuTitle ?? ''}
-                href={`/${item.pageUrl !== 'home' ? item.pageUrl : ''}`}
+                label={
+                  item.localizeInfos?.menuTitle ||
+                  item.localizeInfos?.title ||
+                  ''
+                }
+                href={`/${item.pageUrl && item.pageUrl !== 'home' ? item.pageUrl : ''}`}
                 hasDropdown={hasChildren}
               />
               {Array.isArray(item.children) && item.children.length > 0 && (
                 <ul className="fixed z-50 hidden flex-col overflow-hidden rounded-b-2xl bg-white p-6 leading-8 shadow-lg group-hover:flex">
-                  {item.children.map((child, childIndex) => (
-                    <li key={childIndex} className="menu-item px-4">
-                      <Link
-                        prefetch={false}
-                        href={`/${item.pageUrl}/${child.pageUrl}`}
-                        className="flex w-full py-2 text-neutral-500 uppercase transition-colors duration-300 ease-in-out hover:text-fuchsia-500 focus:text-fuchsia-500 focus:outline-none"
-                      >
-                        {child.localizeInfos.menuTitle}
-                      </Link>
-                    </li>
-                  ))}
+                  {item.children
+                    .filter((child) => child.pageUrl)
+                    .map((child, childIndex) => (
+                      <li key={childIndex} className="menu-item px-4">
+                        <Link
+                          prefetch={false}
+                          href={`/${item.pageUrl}/${child.pageUrl}`}
+                          className="flex w-full py-2 text-neutral-500 uppercase transition-colors duration-300 ease-in-out hover:text-fuchsia-500 focus:text-fuchsia-500 focus:outline-none"
+                        >
+                          {child.localizeInfos?.menuTitle ||
+                            child.localizeInfos?.title ||
+                            ''}
+                        </Link>
+                      </li>
+                    ))}
                 </ul>
               )}
             </li>

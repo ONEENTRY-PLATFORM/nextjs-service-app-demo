@@ -12,16 +12,14 @@ import getCachedData from './getCachedData';
  * This function fetches dictionary data (localized content) from the OneEntry API
  * using a cached data approach. It retrieves a block by the marker 'system_content'
  * and extracts its attribute values to be used as dictionary entries.
- * @returns {Promise<IAttributeValues | undefined>} Promise that resolves to dictionary data or undefined if an error occurs
+ * @returns {Promise<IAttributeValues>} Promise that resolves to dictionary data (empty object on error)
  * @example
  * ```typescript
  * const dictionary = await getDictionary();
  * console.log(dictionary?.welcome_message?.value);
  * ```
  */
-export const getDictionary = async (): Promise<
-  IAttributeValues | undefined
-> => {
+export const getDictionary = async (): Promise<IAttributeValues> => {
   try {
     /** get block by marker from api */
     const { block } = await getCachedData(
@@ -33,9 +31,8 @@ export const getDictionary = async (): Promise<
     const blockValues = block?.attributeValues;
 
     return { ...(blockValues as IAttributeValues) };
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
+  } catch {
+    /** Silent degradation: an unavailable dictionary must not break rendering. */
+    return {} as IAttributeValues;
   }
-  return;
 };

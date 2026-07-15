@@ -5,6 +5,7 @@ import type {
   IOrderData,
 } from 'oneentry/dist/orders/ordersInterfaces';
 import type { Dispatch, JSX, SetStateAction } from 'react';
+import { toast } from 'react-toastify';
 
 import { updateOrderByMarkerAndId } from '@/app/api';
 
@@ -51,11 +52,17 @@ const SaveOrderButton = ({
     } as IOrderData;
 
     /** Update order with the prepared data */
-    await updateOrderByMarkerAndId({
+    const { isError, error } = await updateOrderByMarkerAndId({
       marker: 'orders',
       id: orderData.id,
       data: formData,
     });
+
+    /** On failure keep the edit form open and surface the error */
+    if (isError) {
+      toast.error(error?.message || 'Could not save the order');
+      return;
+    }
 
     /** Trigger refetch and clear edit state after successful update */
     setRefetch(true);

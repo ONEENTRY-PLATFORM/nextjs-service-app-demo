@@ -90,17 +90,23 @@ const SearchResultsList = ({
     );
   }
 
-  /** Services rows exclude the auxiliary `service_product` entities */
+  /** Services rows exclude special-offer products (rendered separately). */
   const services = products.filter(
-    (product) => product.attributeSetIdentifier !== 'service_product',
+    (product) => product.attributeSetIdentifier !== 'offer',
   );
   const hasResults = specialists.length > 0 || services.length > 0;
 
+  /**
+   * Only show the empty state once there is an actual query — otherwise
+   * "Nothing found" flashes before/without a search term.
+   */
   if (!hasResults) {
-    return (
+    return searchValue ? (
       <p className="px-5 py-8 text-center text-sm text-neutral-300">
         Nothing found for “{searchValue}”.
       </p>
+    ) : (
+      <></>
     );
   }
 
@@ -122,14 +128,14 @@ const SearchResultsList = ({
           <p className="px-5 py-1.5 text-sm font-black tracking-widest text-neutral-300 uppercase">
             Services
           </p>
-          {services.map((product, i) => {
+          {services.map((product) => {
             const pageEntry = pages[product.id];
             if (!pageEntry) {
               return null;
             }
             return (
               <ProductRow
-                key={product.id + i}
+                key={product.id}
                 pageData={pageEntry.page as IPagesEntity}
                 product={product}
                 setState={setOpen}
