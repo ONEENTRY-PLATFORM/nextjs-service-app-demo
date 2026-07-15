@@ -1,6 +1,7 @@
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
-import { getAdminsInfo, getChildPagesByParentUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api';
+import { getMastersList } from '@/app/api/utils/getMastersList';
 import masterNamesById from '@/app/gallery/masterNamesById';
 import getLqipPreview from '@/components/hooks/getLqipPreview';
 import type {
@@ -78,7 +79,7 @@ const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
   /** The gallery tree and the master admins are independent — fetch in parallel. */
   const [{ pages: categories }, { admins }] = await Promise.all([
     getChildPagesByParentUrl('gallery'),
-    getAdminsInfo({ body: [], offset: 0, limit: 100 }),
+    getMastersList(),
   ]);
   if (!categories || categories.length === 0) {
     return [];

@@ -61,8 +61,14 @@ const OfferCard = ({
     firstServiceParentId,
   } = parseOffer(product);
 
-  /** Category page of the first bundled service — needed for the booking cart */
-  const { data: service } = useGetPageByIdQuery({ id: firstServiceParentId });
+  /**
+   * Category page of the first bundled service — needed for the booking cart.
+   * Skip the request when there is no parent id (0 is not a valid page).
+   */
+  const { data: service } = useGetPageByIdQuery(
+    { id: firstServiceParentId },
+    { skip: !firstServiceParentId },
+  );
 
   /**
    * Add the offer to the booking cart and navigate to the booking page

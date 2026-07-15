@@ -5,7 +5,7 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
-import { useContext, useState } from 'react';
+import { Suspense, useContext, useState } from 'react';
 
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import AuthError from '@/components/pages/AuthError';
@@ -88,7 +88,11 @@ const ProfilePageLayout = ({
             >
               {historyOfVisitsText}
             </h2>
-            <ProfileHistory dict={dict} masters={masters} />
+            {/* ProfileHistory reads useSearchParams — it must sit under a
+                Suspense boundary or the whole route bails out to CSR. */}
+            <Suspense fallback={null}>
+              <ProfileHistory dict={dict} masters={masters} />
+            </Suspense>
           </div>
         </HistoryAnimations>
       </div>

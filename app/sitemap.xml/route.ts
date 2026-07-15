@@ -1,4 +1,5 @@
-import { getAdminsInfo, getChildPagesByParentUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api';
+import { getMastersList } from '@/app/api/utils/getMastersList';
 
 /**
  * Generate sitemap.xml for the website
@@ -26,7 +27,7 @@ export async function GET(): Promise<Response> {
     ) || [];
 
   /** Get master pages */
-  const { admins } = await getAdminsInfo({ body: [], offset: 0, limit: 100 });
+  const { admins } = await getMastersList();
   const masters =
     admins?.map((admin: { id: number }) => `masters/${admin.id}`) || [];
 

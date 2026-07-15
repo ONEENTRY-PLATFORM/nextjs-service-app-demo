@@ -4,7 +4,8 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import { type JSX, memo } from 'react';
 
-import { getAdminsInfo, getPageById, getPagesByIds } from '@/app/api';
+import { getPageById, getPagesByIds } from '@/app/api';
+import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 import MasterAnimations from './animations/MasterAnimations';
@@ -40,7 +41,7 @@ const MasterSingleLayout = async ({
   searchData: { service: string };
 }): Promise<JSX.Element> => {
   /** Fetch admin information including masters data */
-  const { admins } = await getAdminsInfo({ body: [], offset: 0, limit: 100 });
+  const { admins } = await getMastersList();
   /** Find the specific master by handle (ID) */
   const master = admins?.find(
     (admin: IAdminEntity) => admin.id === Number(handle),

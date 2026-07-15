@@ -3,8 +3,9 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 import { Suspense } from 'react';
 
-import { getAdminsInfo, getPageByUrl } from '@/app/api';
+import { getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
+import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import MasterSingleLayout from '@/components/layout/master-single';
 import MasterLoader from '@/components/layout/master-single/components/MasterLoader';
@@ -33,11 +34,7 @@ export default async function MasterPageLayout({
     params,
     searchParams ?? Promise.resolve(undefined),
     getDictionary(),
-    getAdminsInfo({
-      body: [],
-      offset: 0,
-      limit: 100,
-    }),
+    getMastersList(),
   ]);
   ServerProvider('dict', dict);
 
@@ -92,11 +89,7 @@ export async function generateStaticParams(): Promise<
 > {
   const params: Array<{ handle: string }> = [];
 
-  const { admins, isError } = await getAdminsInfo({
-    body: [],
-    offset: 0,
-    limit: 100,
-  });
+  const { admins, isError } = await getMastersList();
 
   if (!isError && admins) {
     admins.forEach((admin: IAdminEntity) => {
@@ -123,11 +116,7 @@ export async function generateMetadata({
   const [{ handle }, { page, isError }, { admins }] = await Promise.all([
     params,
     getPageByUrl('masters'),
-    getAdminsInfo({
-      body: [],
-      offset: 0,
-      limit: 100,
-    }),
+    getMastersList(),
   ]);
 
   if (isError || !page) {

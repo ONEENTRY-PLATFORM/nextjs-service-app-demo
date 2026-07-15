@@ -4,11 +4,8 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
-import {
-  getAdminsInfo,
-  getChildPagesByParentUrl,
-  getPageByUrl,
-} from '@/app/api';
+import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
+import { getMastersList } from '@/app/api/utils/getMastersList';
 import getLqipPreview from '@/components/hooks/getLqipPreview';
 import type { OneEntryImageFile } from '@/components/utils';
 import { getGalleryImageUrls, shuffleArray } from '@/components/utils';
@@ -39,7 +36,7 @@ const Gallery = async ({
   /** Fetch child pages for the gallery */
   const { pages: childPages } = await getChildPagesByParentUrl(handle);
   /** Fetch admin information for masters */
-  const { admins } = await getAdminsInfo({ body: [], offset: 0, limit: 100 });
+  const { admins } = await getMastersList();
 
   /** Filter admins to get only masters with names */
   const masters = admins?.filter(

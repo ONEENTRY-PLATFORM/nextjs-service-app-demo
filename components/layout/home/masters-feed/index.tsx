@@ -2,7 +2,7 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
-import { getAdminsInfo } from '@/app/api';
+import { getMastersList } from '@/app/api/utils/getMastersList';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
 import SectionTitle from '@/components/shared/SectionTitle';
@@ -82,7 +82,7 @@ const MastersFeed = async ({
   block?: IBlockEntity | undefined;
 }): Promise<JSX.Element | null> => {
   /** Fetch admin information (masters) */
-  const { admins } = await getAdminsInfo({ body: [], offset: 0, limit: 100 });
+  const { admins } = await getMastersList();
 
   /** CMS masters = admins with `master_name` set (content plan, stage 4) */
   const specialists = (admins ?? [])

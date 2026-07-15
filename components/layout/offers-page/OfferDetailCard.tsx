@@ -60,7 +60,10 @@ const OfferDetailCard = ({
   } = parseOfferDetail(product, index);
 
   /** Category page of the first bundled service — needed for the booking cart */
-  const { data: service } = useGetPageByIdQuery({ id: firstServiceParentId });
+  const { data: service } = useGetPageByIdQuery(
+    { id: firstServiceParentId },
+    { skip: !firstServiceParentId },
+  );
 
   /**
    * Add the offer to the booking cart and navigate to the booking page

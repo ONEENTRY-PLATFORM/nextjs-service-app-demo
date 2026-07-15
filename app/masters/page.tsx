@@ -5,8 +5,8 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
-import { getAdminsInfo } from '@/app/api/server/admins/getAdminsInfo';
 import { getDictionary } from '@/app/api/utils/dictionaries';
+import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import MastersPageContent from '@/components/layout/masters-page';
 import type {
@@ -140,7 +140,7 @@ const MastersPageLayout = async (): Promise<JSX.Element> => {
     await Promise.all([
       getDictionary(),
       getPageByUrl('masters'),
-      getAdminsInfo({ body: [], offset: 0, limit: 100 }),
+      getMastersList(),
       getChildPagesByParentUrl('services'),
       getChildPagesByParentUrl('salons'),
     ]);

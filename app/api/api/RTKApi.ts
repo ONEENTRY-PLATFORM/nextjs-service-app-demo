@@ -295,7 +295,7 @@ export const RTKApi = createApi({
     }),
     /**
      * Get all payment accounts.
-     * Fetches all payment accounts available to the user.
+     * Fetches the payment accounts that are actually usable (visible and in use).
      * @returns Array of account entities
      */
     getAccounts: build.query<IAccountsEntity[], object>({
@@ -304,7 +304,12 @@ export const RTKApi = createApi({
         if (isError(result)) {
           return { error: result };
         }
-        return { data: result as IAccountsEntity[] };
+        /** Only accounts enabled in the admin panel may be offered at checkout. */
+        return {
+          data: (result as IAccountsEntity[]).filter(
+            (account) => account.isVisible && account.isUsed,
+          ),
+        };
       },
       providesTags: ['Accounts'],
       keepUnusedDataFor: 300, // 5 minutes for accounts

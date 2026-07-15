@@ -42,9 +42,11 @@ const OfferInfo = ({
   /** Fetch service data based on product's service parent ID (`offer_services`) */
   const servicesArr = item.product.attributeValues.offer_services?.value as
     Array<{ value?: { parentId?: number } }> | undefined;
-  const { data: service } = useGetPageByIdQuery({
-    id: servicesArr?.[0]?.value?.parentId ?? 0,
-  });
+  const serviceParentId = servicesArr?.[0]?.value?.parentId ?? 0;
+  const { data: service } = useGetPageByIdQuery(
+    { id: serviceParentId },
+    { skip: !serviceParentId },
+  );
 
   /**
    * Function to add service to cart and navigate to booking page
@@ -82,7 +84,7 @@ const OfferInfo = ({
         onClick={() => handleSelect(item.product)}
         className="w-full rounded-md bg-white px-3.5 py-1.5 text-center text-base leading-5 tracking-[3px] text-zinc-800 uppercase transition-colors duration-300 hover:text-zinc-900 hover:shadow-md focus:outline-none"
       >
-        {dict.select_txt?.value as string | undefined}
+        {(dict.select_txt?.value as string | undefined) || 'Select'}
       </button>
     </div>
   );

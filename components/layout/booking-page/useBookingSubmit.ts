@@ -34,7 +34,13 @@ export interface BookingSelection {
 const toInterval = (sel: BookingSelection): [Date, Date] => {
   const [y = 0, m = 0, d = 1] = sel.date.split('-').map(Number);
   const [hh = 0, mm = 0] = sel.time.split(':').map(Number);
-  const start = new Date(y, m, d, hh, mm);
+  /**
+   * Build the interval in UTC: the appointment is rendered back with `getUTC*`
+   * (see OrderDateTime), so a picked "14:00" slot must be stored as 14:00Z.
+   * Using the browser's local timezone here would shift the stored visit time
+   * by the client's offset.
+   */
+  const start = new Date(Date.UTC(y, m, d, hh, mm));
   const minutes = Number.parseInt(sel.service?.duration ?? '', 10) || 60;
   const end = new Date(start.getTime() + minutes * 60_000);
   return [start, end];
@@ -103,7 +109,7 @@ export const useBookingSubmit = (): {
 
     setIsLoading(true);
     try {
-      const interval = toInterval(sel);
+      const [start, end] = toInterval(sel);
       const formData: { marker: string; type: string; value: unknown }[] = [];
       if (sel.master?.adminId) {
         formData.push({
@@ -123,7 +129,8 @@ export const useBookingSubmit = (): {
       formData.push({
         marker: 'interval',
         type: 'timeInterval',
-        value: [interval],
+        /** Send the interval as explicit ISO strings rather than Date objects. */
+        value: [[start.toISOString(), end.toISOString()]],
       });
 
       const createdOrder = await getApi().Orders.createOrder('orders', {

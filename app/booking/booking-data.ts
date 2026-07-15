@@ -2,7 +2,7 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
 import { getChildPagesByParentUrl } from '@/app/api';
-import { getAdminsInfo } from '@/app/api/server/admins/getAdminsInfo';
+import { getMastersList } from '@/app/api/utils/getMastersList';
 import { getServicesCatalogData } from '@/app/services/catalog-data';
 import type {
   BookingData,
@@ -155,7 +155,7 @@ export const getBookingData = async (): Promise<BookingData> => {
   const [catalog, salonsResult, adminsResult] = await Promise.all([
     getServicesCatalogData(),
     getChildPagesByParentUrl('salons'),
-    getAdminsInfo({ body: [], offset: 0, limit: 100 }),
+    getMastersList(),
   ]);
 
   const salons: BookingSalon[] = (salonsResult.pages ?? []).map(

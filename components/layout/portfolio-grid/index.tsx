@@ -1,7 +1,8 @@
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 
-import { getAdminsInfo, getPagesByIds } from '@/app/api';
+import { getPagesByIds } from '@/app/api';
+import { getMastersList } from '@/app/api/utils/getMastersList';
 
 import PortfolioGallery from './components/PortfolioGallery';
 
@@ -25,7 +26,7 @@ const PortfolioGridLayout = async ({
   searchData?: Record<string, string | string[] | undefined> | undefined;
 }): Promise<JSX.Element> => {
   /** Fetch admin information including masters data */
-  const { admins } = await getAdminsInfo({ body: [], offset: 0, limit: 100 });
+  const { admins } = await getMastersList();
   /** Find the specific master by handle (ID) */
   const master = admins?.find(
     (admin: IAdminEntity) => admin.id === Number(handle),

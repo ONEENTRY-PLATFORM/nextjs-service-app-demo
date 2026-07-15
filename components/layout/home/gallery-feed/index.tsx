@@ -3,7 +3,8 @@ import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
-import { getAdminsInfo, getChildPagesByParentUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api';
+import { getMastersList } from '@/app/api/utils/getMastersList';
 import getLocalGalleryItems from '@/app/gallery/getLocalGalleryItems';
 import masterNamesById from '@/app/gallery/masterNamesById';
 import getLqipPreview from '@/components/hooks/getLqipPreview';
@@ -28,7 +29,7 @@ const GalleryFeed = async ({
   /** The gallery tree and the master admins are independent — fetch in parallel. */
   const [parentPagesResponse, { admins }] = await Promise.all([
     getChildPagesByParentUrl('gallery'),
-    getAdminsInfo({ body: [], offset: 0, limit: 100 }),
+    getMastersList(),
   ]);
   /** Extract parent pages from response with fallback to empty array */
   const parentPages = parentPagesResponse?.pages || [];
