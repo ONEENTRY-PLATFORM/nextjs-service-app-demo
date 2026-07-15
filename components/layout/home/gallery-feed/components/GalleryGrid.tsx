@@ -24,6 +24,7 @@ const GalleryGrid = ({ cards }: { cards: GalleryGridCard[] }): JSX.Element => {
       {cards.map((card, index) => (
         <Link
           key={index}
+          prefetch={false}
           href={card.link || '/gallery'}
           className="group relative block aspect-4/5 overflow-hidden rounded-2xl bg-slate-100"
         >

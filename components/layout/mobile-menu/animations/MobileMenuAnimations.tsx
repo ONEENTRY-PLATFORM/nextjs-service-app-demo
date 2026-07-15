@@ -26,20 +26,29 @@ const MobileMenuAnimations = ({
 }): JSX.Element => {
   const { open, transition, setOpen, setTransition } =
     useContext(OpenDrawerContext);
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   /** Handle open/close animations based on transition state */
   useGSAP(() => {
-    if (!open) {
+    if (!open || !ref.current) {
       return;
     }
+    /**
+     * Animate this drawer's own nodes instead of the global
+     * '#modalBg, #modalBody' selector: the forms modal renders the same ids,
+     * so a document-wide selector could target the wrong element.
+     * `#modalBody` is this wrapper itself; `#modalBg` is the backdrop inside.
+     */
+    const body = ref.current;
+    const bg = body.querySelector('#modalBg');
+
     const tl = gsap.timeline({
       paused: true,
     });
 
     /** Animate closing transition */
     if (transition === 'close') {
-      tl.to('#modalBg, #modalBody', {
+      tl.to([bg, body], {
         xPercent: -150,
         autoAlpha: 0,
         onComplete: () => {
@@ -49,19 +58,19 @@ const MobileMenuAnimations = ({
       }).play();
       /** Animate opening transition */
     } else if (open) {
-      tl.set('#modalBg, #modalBody', {
+      tl.set([bg, body], {
         xPercent: -150,
         autoAlpha: 0,
       })
-        .to('#modalBg', {
+        .to(bg, {
           xPercent: 0,
           autoAlpha: 1,
         })
-        .to('#modalBody', {
+        .to(body, {
           xPercent: 0,
           autoAlpha: 1,
         })
-        .to('#modalBg', {
+        .to(bg, {
           backdropFilter: 'blur(10px)',
         })
         .play();

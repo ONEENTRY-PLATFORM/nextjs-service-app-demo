@@ -2,7 +2,6 @@
 
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import { ScrollToPlugin } from 'gsap/dist/ScrollToPlugin';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import type { JSX } from 'react';
 
@@ -18,8 +17,11 @@ import { useIsomorphicLayoutEffect } from './utils/useIsomorphicLayoutEffect';
  */
 const RegisterGSAP = (): JSX.Element => {
   useIsomorphicLayoutEffect(() => {
+    /**
+     * ScrollToPlugin is deliberately NOT registered here — it is only needed
+     * for route transitions and is loaded on demand by `scrollToTop`.
+     */
     gsap.registerPlugin(useGSAP, ScrollTrigger);
-    gsap.registerPlugin(ScrollToPlugin);
 
     gsap.config({
       autoSleep: 120,

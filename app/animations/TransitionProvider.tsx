@@ -5,6 +5,8 @@ import { TransitionRouter } from 'next-transition-router';
 import type { JSX, ReactNode } from 'react';
 import { useRef } from 'react';
 
+import { scrollToTop } from './utils/scrollToTop';
+
 /**
  * Transition provider - main 'stage' transition provider.
  * @param   {object}      props          - Component properties.
@@ -25,14 +27,12 @@ export default function TransitionProvider({
         if (!ref.current) {
           return;
         }
-        const tl = gsap
-          .timeline({
-            duration: 0.85,
-          })
-          .set(window, {
-            scrollTo: 0,
-          })
-          .call(next, undefined, 0.85);
+        const tl = gsap.timeline({
+          duration: 0.85,
+        });
+        /** Uses the lazily-registered ScrollToPlugin, or a native fallback. */
+        scrollToTop(tl);
+        tl.call(next, undefined, 0.85);
         return () => {
           tl.kill();
         };

@@ -91,7 +91,12 @@ const MobileSpecialistList = ({
             </>
           );
           return master.href ? (
-            <Link key={master.id} href={master.href} className={ROW_CLASS}>
+            <Link
+              key={master.id}
+              prefetch={false}
+              href={master.href}
+              className={ROW_CLASS}
+            >
               {row}
             </Link>
           ) : (

@@ -39,6 +39,7 @@ const CatalogCard = ({
         index={index}
       >
         <Link
+          prefetch={false}
           title={localizeInfos?.title}
           href={`/services/${pageUrl}`}
           className="z-10 block transition-transform duration-300 hover:scale-105 focus:outline-none"
@@ -55,6 +56,7 @@ const CatalogCard = ({
   return (
     <CardAnimations className={'relative flex shrink-0 flex-col'} index={index}>
       <Link
+        prefetch={false}
         title={localizeInfos?.title}
         href={`/services/${pageUrl}`}
         className="z-10 flex size-57.5 flex-col items-center justify-center gap-2 overflow-hidden rounded-full p-8 text-center text-xl text-neutral-600 transition-colors duration-300 hover:text-fuchsia-600 max-xl:size-50 max-xs:size-32.5 max-md:size-40 max-md:p-6 max-sm:size-35 max-sm:p-5"

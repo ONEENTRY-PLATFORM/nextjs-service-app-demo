@@ -25,6 +25,7 @@ const SpecialistsGrid = ({
       {masters.map((spec) => (
         <Link
           key={spec.id}
+          prefetch={false}
           href={spec.href ?? '/masters'}
           className="group relative block overflow-hidden rounded-[15px] bg-slate-100 text-left shadow-[0_10px_30px_rgba(124,42,232,0.18)]"
           style={{ aspectRatio: '3/4' }}

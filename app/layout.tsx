@@ -1,13 +1,11 @@
 import '@/app/globals.css';
 import '@/app/styles/nav-menu.scss';
-import 'react-toastify/dist/ReactToastify.css';
 
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { Lato, Oswald } from 'next/font/google';
 import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX, ReactNode } from 'react';
-import { ToastContainer } from 'react-toastify';
 
 import { getMenuByMarker, LANG_CODE } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
@@ -17,6 +15,7 @@ import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import StoreProvider from '@/app/store/providers/StoreProvider';
 import OffscreenModal from '@/components/layout/mobile-menu';
 import Modal from '@/components/layout/modal';
+import ResponsiveToastContainer from '@/components/shared/ResponsiveToastContainer';
 
 import RegisterGSAP from './animations/RegisterGSAP';
 import TransitionProvider from './animations/TransitionProvider';
@@ -131,9 +130,16 @@ const generateStructuredData = (siteName: string): object => {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>): Promise<JSX.Element> {
+  /**
+   * The dictionary and the main menu are independent — fetch them in parallel
+   * so the whole tree is not serialized behind two sequential round trips.
+   */
+  const [dictData, { error, isError, menu }] = await Promise.all([
+    getDictionary(),
+    getMenuByMarker('main'),
+  ]);
   /** Get dictionary and set to server provider */
-  const [dict] = ServerProvider('dict', await getDictionary());
-  const { error, isError, menu } = await getMenuByMarker('main');
+  const [dict] = ServerProvider('dict', dictData);
 
   /**
    * Only a confirmed "resource is closed" (403) is fatal enough to replace the
@@ -207,7 +213,7 @@ export default async function RootLayout({
           </AuthProvider>
           <IntroAnimations />
         </StoreProvider>
-        <ToastContainer position="bottom-right" autoClose={2000} />
+        <ResponsiveToastContainer />
       </body>
     </html>
   );

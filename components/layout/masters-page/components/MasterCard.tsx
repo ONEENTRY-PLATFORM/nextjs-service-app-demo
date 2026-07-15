@@ -64,6 +64,7 @@ const MasterCard = ({ item }: { item: MasterItem }): JSX.Element => {
 
   return item.href ? (
     <Link
+      prefetch={false}
       href={item.href}
       title={item.name}
       className={className}
