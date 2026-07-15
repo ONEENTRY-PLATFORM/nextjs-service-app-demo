@@ -18,11 +18,17 @@ export default defineConfig({
   // overwhelm `next dev` and cause goto timeouts
   workers: process.env.CI ? 1 : 3,
   reporter: 'html',
+  // Centralized timeouts: routes compile on demand and every page waits on live
+  // OneEntry calls, so the defaults (30s test / 5s expect) are too tight here.
+  timeout: 60_000,
+  expect: { timeout: 15_000 },
   use: {
     // Dedicated port: 3000 is often occupied by dev servers of OTHER projects,
     // and reuseExistingServer would silently run tests against a foreign app
     baseURL: 'http://localhost:3010',
     trace: 'on-first-retry',
+    actionTimeout: 15_000,
+    navigationTimeout: 30_000,
   },
   projects: [
     {

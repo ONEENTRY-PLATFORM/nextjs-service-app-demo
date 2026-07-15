@@ -8,6 +8,10 @@ import type { Dispatch, JSX, SetStateAction } from 'react';
 import { toast } from 'react-toastify';
 
 import { updateOrderByMarkerAndId } from '@/app/api';
+import {
+  ORDERS_STATUS_COMPLETED,
+  ORDERS_STORAGE_MARKER,
+} from '@/app/store/orderMarkers';
 
 /**
  * SaveOrderButton Component
@@ -48,12 +52,12 @@ const SaveOrderButton = ({
         productId: product.id,
         quantity: product.quantity,
       })),
-      statusIdentifier: 'completed',
+      statusIdentifier: ORDERS_STATUS_COMPLETED,
     } as IOrderData;
 
     /** Update order with the prepared data */
     const { isError, error } = await updateOrderByMarkerAndId({
-      marker: 'orders',
+      marker: ORDERS_STORAGE_MARKER,
       id: orderData.id,
       data: formData,
     });

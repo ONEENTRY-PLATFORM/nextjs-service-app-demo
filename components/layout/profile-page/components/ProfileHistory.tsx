@@ -1,6 +1,5 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
@@ -8,10 +7,44 @@ import type { JSX } from 'react';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { getAllOrdersByMarker } from '@/app/api';
+import {
+  ORDERS_STATUS_CANCELED,
+  ORDERS_STATUS_COMPLETED,
+  ORDERS_STATUS_UPCOMING,
+  ORDERS_STORAGE_MARKER,
+} from '@/app/store/orderMarkers';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 
 import VisitGroups from './VisitGroups';
 import VisitSection from './VisitSection';
+
+/** Page size of a single orders request. */
+const PAGE_LIMIT = 100;
+
+/**
+ * Visit timestamp of an order, used to order upcoming appointments.
+ * Falls back to the creation date when the interval is missing.
+ * @param   {IOrderByMarkerEntity} order - Order to read
+ * @returns {number}                     Milliseconds since epoch
+ */
+const visitTime = (order: IOrderByMarkerEntity): number => {
+  const interval = order.formData?.find((f) => f.marker === 'interval')?.value;
+  const start = Array.isArray(interval)
+    ? (interval as unknown[]).flat()[0]
+    : undefined;
+  const parsed = typeof start === 'string' ? Date.parse(start) : NaN;
+  return Number.isNaN(parsed)
+    ? Date.parse(String(order.createdDate ?? '')) || 0
+    : parsed;
+};
+
+/**
+ * Creation timestamp of an order, used to order past appointments.
+ * @param   {IOrderByMarkerEntity} order - Order to read
+ * @returns {number}                     Milliseconds since epoch
+ */
+const createdTime = (order: IOrderByMarkerEntity): number =>
+  Date.parse(String(order.createdDate ?? '')) || 0;
 
 /**
  * ProfileHistory displays the user's visit history split into three always-
@@ -29,8 +62,6 @@ const ProfileHistory = ({
   dict: IAttributeValues;
   masters: IAdminEntity[] | undefined;
 }): JSX.Element => {
-  /** Get search parameters from the URL */
-  const searchParams = useSearchParams();
   /** Get authentication status from context */
   const { isAuth } = useContext(AuthContext);
   /** State to hold all orders (across every status) */
@@ -38,42 +69,73 @@ const ProfileHistory = ({
   /** State to trigger refetching of data (after cancel / save) */
   const [refetch, setRefetch] = useState(false);
 
-  /** Determine current page from search parameters or default to 0 */
-  const currentPage = Number(searchParams.get('page')) || 0;
-  const pageLimit = 100;
-
   /** Effect to fetch orders when dependencies change */
   useEffect(() => {
     if (!isAuth) return;
+    /** Guard against stale writes if auth flips while paging. */
+    let cancelled = false;
 
     const fetchOrders = async () => {
-      const { isError, error, orders } = await getAllOrdersByMarker({
-        marker: 'orders',
-        offset: currentPage * pageLimit,
-        limit: pageLimit,
-      });
+      /**
+       * Page through the storage until every order is loaded: the history is
+       * grouped client-side, so stopping at the first page would silently hide
+       * older visits once a user passes {@link PAGE_LIMIT} appointments.
+       */
+      const all: IOrderByMarkerEntity[] = [];
+      let offset = 0;
 
-      /** Store every order; bucketing by status happens below */
-      if (orders && !isError) {
-        setOrders(orders);
-      } else if (isError) {
-        // eslint-disable-next-line no-console
-        console.error(error);
+      for (;;) {
+        const { isError, error, orders, total } = await getAllOrdersByMarker({
+          marker: ORDERS_STORAGE_MARKER,
+          offset,
+          limit: PAGE_LIMIT,
+        });
+
+        if (isError || !orders) {
+          if (isError) {
+            // eslint-disable-next-line no-console
+            console.error(error);
+          }
+          break;
+        }
+
+        all.push(...orders);
+        offset += PAGE_LIMIT;
+
+        /** Done once the reported total is covered (or the API ran dry). */
+        if (orders.length === 0 || all.length >= total) {
+          break;
+        }
       }
 
-      /** Reset refetch state */
-      setRefetch(false);
+      if (!cancelled) {
+        setOrders(all);
+        setRefetch(false);
+      }
     };
 
     fetchOrders();
-  }, [currentPage, isAuth, refetch]);
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuth, refetch]);
 
-  /** Split orders into the three status buckets */
+  /**
+   * Split orders into the three status buckets with an explicit order: the API
+   * returns them in its own sequence, so without sorting the groups would shift
+   * around between refetches. Upcoming reads soonest-first, past visits newest-first.
+   */
   const buckets = useMemo(
     () => ({
-      upcoming: orders.filter((o) => o.statusIdentifier === 'upcoming'),
-      completed: orders.filter((o) => o.statusIdentifier === 'completed'),
-      canceled: orders.filter((o) => o.statusIdentifier === 'canceled'),
+      upcoming: orders
+        .filter((o) => o.statusIdentifier === ORDERS_STATUS_UPCOMING)
+        .sort((a, b) => visitTime(a) - visitTime(b)),
+      completed: orders
+        .filter((o) => o.statusIdentifier === ORDERS_STATUS_COMPLETED)
+        .sort((a, b) => createdTime(b) - createdTime(a)),
+      canceled: orders
+        .filter((o) => o.statusIdentifier === ORDERS_STATUS_CANCELED)
+        .sort((a, b) => createdTime(b) - createdTime(a)),
     }),
     [orders],
   );

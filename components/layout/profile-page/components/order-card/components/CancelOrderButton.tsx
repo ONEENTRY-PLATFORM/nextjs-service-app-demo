@@ -9,6 +9,10 @@ import { useCallback } from 'react';
 import { toast } from 'react-toastify';
 
 import { updateOrderByMarkerAndId } from '@/app/api';
+import {
+  ORDERS_STATUS_CANCELED,
+  ORDERS_STORAGE_MARKER,
+} from '@/app/store/orderMarkers';
 
 /**
  * Cancel order button
@@ -45,12 +49,12 @@ const CancelOrderButton = ({
         productId: product.id,
         quantity: product.quantity,
       })),
-      statusIdentifier: 'canceled',
+      statusIdentifier: ORDERS_STATUS_CANCELED,
     } as IOrderData;
 
     /** Update the order using the API function */
     const { isError, error } = await updateOrderByMarkerAndId({
-      marker: 'orders',
+      marker: ORDERS_STORAGE_MARKER,
       id,
       data: formData,
     });

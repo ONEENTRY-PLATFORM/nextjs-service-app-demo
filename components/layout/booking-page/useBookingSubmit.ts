@@ -5,6 +5,10 @@ import { useContext, useState } from 'react';
 
 import { getApi, isError } from '@/app/api';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
+import {
+  ORDERS_FORM_IDENTIFIER,
+  ORDERS_STORAGE_MARKER,
+} from '@/app/store/orderMarkers';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import {
   addServiceToCart,
@@ -133,14 +137,17 @@ export const useBookingSubmit = (): {
         value: [[start.toISOString(), end.toISOString()]],
       });
 
-      const createdOrder = await getApi().Orders.createOrder('orders', {
-        formIdentifier: 'order',
-        paymentAccountIdentifier: 'cash',
-        products: [{ productId: sel.service.productId, quantity: 1 }],
-        formData,
-      } as unknown as Parameters<
-        ReturnType<typeof getApi>['Orders']['createOrder']
-      >[1]);
+      const createdOrder = await getApi().Orders.createOrder(
+        ORDERS_STORAGE_MARKER,
+        {
+          formIdentifier: ORDERS_FORM_IDENTIFIER,
+          paymentAccountIdentifier: 'cash',
+          products: [{ productId: sel.service.productId, quantity: 1 }],
+          formData,
+        } as unknown as Parameters<
+          ReturnType<typeof getApi>['Orders']['createOrder']
+        >[1],
+      );
 
       if (isError(createdOrder)) {
         setError(createdOrder.message);

@@ -1,5 +1,14 @@
+import bundleAnalyzer from '@next/bundle-analyzer';
 import type { NextConfig } from 'next';
 import path from 'path';
+
+/**
+ * Bundle analyzer — opt-in via `npm run analyze`, inert during normal builds,
+ * so first-load JS budgets can be inspected after the bundle-size work.
+ */
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -93,4 +102,4 @@ const nextConfig: NextConfig = {
   compress: true,
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
