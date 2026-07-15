@@ -15,6 +15,13 @@ import { formatUaePhone } from '@/components/utils';
 import getLocalGalleryItems from '../../gallery/getLocalGalleryItems';
 
 /**
+ * CMS content is the same for everyone — prerender this route and refresh it
+ * on a timer (ISR) instead of rendering it per request.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 300;
+
+/**
  * Salon detail page (`/salons/downtown`, `/salons/marina`, `/salons/jbr`).
  *
  * Ported from the static-html mock (`SalonPage.tsx`). Address/phone come from

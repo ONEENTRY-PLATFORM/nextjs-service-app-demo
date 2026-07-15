@@ -17,6 +17,13 @@ import StatsStrip from '@/components/layout/services-page/StatsStrip';
 import SectionHeading from '@/components/shared/SectionHeading';
 import { formatUaePhone } from '@/components/utils';
 
+/**
+ * CMS content is the same for everyone — prerender this route and refresh it
+ * on a timer (ISR) instead of rendering it per request.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 300;
+
 /** Card accent colors cycled over the salon cards (mock: PINK, CYAN, PURPLE) */
 const SALON_COLORS = ['#ed21f1', '#109aa9', '#9b4fb2'];
 

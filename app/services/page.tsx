@@ -13,6 +13,13 @@ import StatsStrip from '@/components/layout/services-page/StatsStrip';
 import { getServicesCatalogData } from './catalog-data';
 
 /**
+ * CMS content is the same for everyone — prerender this route and refresh it
+ * on a timer (ISR) instead of rendering it per request.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 60;
+
+/**
  * ServicesPageLayout component renders the "Services & Prices" page following
  * the static-html mock (`PricesPage.tsx`): photo hero with the page title,
  * gradient stats strip, the interactive catalog (salon selector, search,

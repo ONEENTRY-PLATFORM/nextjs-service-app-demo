@@ -10,6 +10,13 @@ import { GALLERY_MAIN_CATS } from '@/components/layout/gallery-page/taxonomy';
 import getLocalGalleryItems from '../getLocalGalleryItems';
 
 /**
+ * CMS content is the same for everyone — prerender this route and refresh it
+ * on a timer (ISR) instead of rendering it per request.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 60;
+
+/**
  * Map a gallery category page handle (`gallery-hair`, `gallery-face`, …) onto a
  * main gallery filter (`HAIR`, `FACE`, …). Unknown handles open the default tab.
  * @param   {string}                        handle - `pageUrl` of the gallery category page

@@ -5,6 +5,12 @@ import { getPageByUrl } from '@/app/api';
 import ReviewsPageContent from '@/components/layout/reviews-page';
 
 /**
+ * ISR: refresh the prerendered CMS content on a timer. Not `force-static` —
+ * this route reads request-time data (searchParams) or has no static params.
+ */
+export const revalidate = 60;
+
+/**
  * ReviewsPageLayout — the "/reviews" page following the static-html mock
  * (`ReviewsPage.tsx`): a gradient accent strip and the interactive reviews
  * body (back link, heading with average rating, salon / category / specialist

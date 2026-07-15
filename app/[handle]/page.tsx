@@ -9,6 +9,12 @@ import PaymentCanceled from '@/components/pages/PaymentCanceled';
 import PaymentSuccess from '@/components/pages/PaymentSuccess';
 
 /**
+ * ISR: refresh the prerendered CMS content on a timer. Not `force-static` —
+ * this route reads request-time data (searchParams) or has no static params.
+ */
+export const revalidate = 60;
+
+/**
  * Dynamic page for displaying content based on URL
  * Used to display special pages such as payment success or payment cancellation
  * @async

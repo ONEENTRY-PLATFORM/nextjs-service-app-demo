@@ -16,6 +16,13 @@ import type {
 } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
 
+/**
+ * CMS content is the same for everyone — prerender this route and refresh it
+ * on a timer (ISR) instead of rendering it per request.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 60;
+
 /** Services child page `pageUrl` → main price-list category */
 const CATEGORY_BY_PAGEURL: Record<string, MastersMainCategory> = {
   hair: 'HAIR',

@@ -12,8 +12,11 @@ import MasterLoader from '@/components/layout/master-single/components/MasterLoa
 import PortfolioGridLayout from '@/components/layout/portfolio-grid';
 import PortfolioGridLoader from '@/components/layout/portfolio-grid/components/PortfolioGridLoader';
 
-// export const revalidate = 10;
-// export const dynamicParams = true;
+/**
+ * ISR: refresh the prerendered CMS content on a timer. Not `force-static` —
+ * this route reads request-time data (searchParams) or has no static params.
+ */
+export const revalidate = 60;
 
 /**
  * MasterPage Layout component that displays a single master's details.

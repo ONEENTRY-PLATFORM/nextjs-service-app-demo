@@ -10,6 +10,13 @@ import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { offerTermsData } from '@/components/data';
 import OfferDetailCard from '@/components/layout/offers-page/OfferDetailCard';
 
+/**
+ * CMS content is the same for everyone — prerender this route and refresh it
+ * on a timer (ISR) instead of rendering it per request.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 60;
+
 /** Brand text colors from the static-html mock (`OffersPage.tsx`) */
 const DARK = '#4c4d56';
 const PINK = '#ed21f1';

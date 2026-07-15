@@ -11,6 +11,13 @@ import BookingHero from '@/components/layout/booking-page/BookingHero';
 import { getBookingData } from './booking-data';
 
 /**
+ * CMS content is the same for everyone — prerender this route and refresh it
+ * on a timer (ISR) instead of rendering it per request.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 300;
+
+/**
  * Enables dynamic parameter generation
  * Allows dynamic route parameters that were not explicitly defined at build time
  */

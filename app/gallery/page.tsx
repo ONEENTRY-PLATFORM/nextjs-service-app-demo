@@ -10,6 +10,12 @@ import getCmsGalleryItems from './getCmsGalleryItems';
 import getLocalGalleryItems from './getLocalGalleryItems';
 
 /**
+ * ISR: refresh the prerendered CMS content on a timer. Not `force-static` —
+ * this route reads request-time data (searchParams) or has no static params.
+ */
+export const revalidate = 60;
+
+/**
  * Gallery page following the static-html mock (`GalleryPage.tsx`): gradient
  * accent strip, Service/Specialist filter block, full-bleed photo grid and a
  * lightbox.

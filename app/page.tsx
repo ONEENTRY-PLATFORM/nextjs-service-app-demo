@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
+// Aliased: the route-segment `export const dynamic` below owns the name `dynamic`.
+import nextDynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
@@ -11,54 +12,61 @@ import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { sortArrayByPosition } from '@/components/utils';
 
 /**
+ * CMS content is the same for everyone — prerender this route and refresh it
+ * on a timer (ISR) instead of rendering it per request.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 300;
+
+/**
  * `getPageByUrl('home')` is called from `generateMetadata`, the layout, and
  * `generateStructuredData`. React's `cache()` dedupes them within a single
  * request so the SDK is hit once.
  */
 const getHomePage = cache(() => getPageByUrl('home'));
 
-const HomeHero = dynamic(() => import('@/components/layout/home/home-hero'), {
-  ssr: true,
-});
+const HomeHero = nextDynamic(
+  () => import('@/components/layout/home/home-hero'),
+  {
+    ssr: true,
+  },
+);
 
-const CatalogSection = dynamic(
+const CatalogSection = nextDynamic(
   () => import('@/components/layout/home/catalog-grid'),
   { ssr: true },
 );
 
-const GalleryFeed = dynamic(
+const GalleryFeed = nextDynamic(
   () => import('@/components/layout/home/gallery-feed'),
   {
     ssr: true,
   },
 );
 
-const HomeCtaBanner = dynamic(
+const HomeCtaBanner = nextDynamic(
   () => import('@/components/layout/home/home-cta-banner'),
   { ssr: true },
 );
 
-const ReviewsCarousel = dynamic(
+const ReviewsCarousel = nextDynamic(
   () => import('@/components/layout/home/reviews-carousel'),
   { ssr: true },
 );
 
-const MastersFeed = dynamic(
+const MastersFeed = nextDynamic(
   () => import('@/components/layout/home/masters-feed'),
   {
     ssr: true,
   },
 );
 
-const OffersFeed = dynamic(
+const OffersFeed = nextDynamic(
   () => import('@/components/layout/home/offers-feed'),
   {
     ssr: true,
   },
 );
-
-// export const revalidate = 10;
-// export const dynamicParams = true;
 
 /**
  * Generate page metadata

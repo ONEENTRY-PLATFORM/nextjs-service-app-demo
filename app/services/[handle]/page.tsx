@@ -13,6 +13,13 @@ import StatsStrip from '@/components/layout/services-page/StatsStrip';
 import { getServicesCatalogData } from '../catalog-data';
 
 /**
+ * CMS content is the same for everyone — prerender this route and refresh it
+ * on a timer (ISR) instead of rendering it per request.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 60;
+
+/**
  * Category service page (`/services/hair`, `/services/haircut`, …).
  *
  * Mirrors the static-html mock, where a category deep-link opens the same
