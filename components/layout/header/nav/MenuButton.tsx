@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
+import { prefetchPopup } from '@/components/layout/prefetchPopup';
 
 /**
  * Mobile menu trigger button component.
@@ -31,6 +32,8 @@ const MobileMenuTrigger = (): JSX.Element => {
   return (
     <button
       onClick={handleClick}
+      onPointerEnter={() => prefetchPopup('MobileMenu')}
+      onFocus={() => prefetchPopup('MobileMenu')}
       aria-label="Open menu"
       className="flex size-10 flex-col items-center justify-center gap-1 rounded-md transition-colors lg:hidden"
     >

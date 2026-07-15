@@ -106,20 +106,40 @@ const ContactFormCard = (): JSX.Element => {
     try {
       setLoading(true);
       if (formFields.length > 0) {
-        /** Map local values onto the CMS attributes by marker */
-        const formData = formFields.map(
-          (field: { marker: string; type: string }) => {
+        /**
+         * Map local values onto the CMS attributes by marker, skipping fields
+         * the user left blank — empty strings must not be submitted as answers.
+         */
+        const formData = formFields
+          .filter(
+            (field: { marker: string }) =>
+              (fields[field.marker as FieldKey] ?? '') !== '',
+          )
+          .map((field: { marker: string; type: string }) => {
             const value = fields[field.marker as FieldKey] ?? '';
             if (field.type === 'text') {
+              /** A `text` answer carries exactly ONE value key, not both. */
               return {
                 marker: field.marker,
                 type: 'text',
-                value: [{ htmlValue: value, plainValue: value }],
+                value: [
+                  {
+                    plainValue: value,
+                    params: { editorMode: 'plain' },
+                  },
+                ],
               };
             }
             return { marker: field.marker, type: 'string', value };
-          },
-        );
+          });
+
+        /**
+         * Module routing comes from the form itself (where the CMS should
+         * deliver the submission) — hardcoding 0/'' detaches the answer from
+         * its module config.
+         */
+        const moduleConfig = data?.moduleFormConfigs?.[0];
+
         /**
          * `postFormsData` returns `IPostFormResponse | IError` — an API failure
          * is a value, not a thrown error. Check it so a failed submit does not
@@ -128,10 +148,11 @@ const ContactFormCard = (): JSX.Element => {
         const result = await getApi().FormData.postFormsData({
           formIdentifier: 'contact_us',
           formData,
-          formModuleConfigId: 0,
-          moduleEntityIdentifier: '',
+          formModuleConfigId: moduleConfig?.id ?? 0,
+          moduleEntityIdentifier:
+            moduleConfig?.entityIdentifiers?.[0]?.id ?? '',
           replayTo: null,
-          status: '',
+          status: 'sent',
         });
         if (isSdkError(result)) {
           setError(
@@ -167,7 +188,10 @@ const ContactFormCard = (): JSX.Element => {
           >
             <Send size={28} color="#fff" />
           </div>
-          <p className="text-lg font-bold text-slate-400">Message sent!</p>
+          {/* Success copy comes from the form's own CMS settings when set. */}
+          <p className="text-lg font-bold text-slate-400">
+            {data?.localizeInfos?.successMessage || 'Message sent!'}
+          </p>
           <p className="text-sm text-neutral-300">
             We&apos;ll get back to you within 24 hours.
           </p>

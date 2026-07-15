@@ -5,7 +5,7 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
 import type { JSX } from 'react';
 
-import { UserForm } from '@/components/forms';
+import UserForm from '@/components/forms/UserForm';
 
 import Avatar from './Avatar';
 import { getUserDisplayName } from './getUserDisplayName';

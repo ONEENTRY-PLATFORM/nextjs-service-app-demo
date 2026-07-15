@@ -8,6 +8,7 @@ import { useContext } from 'react';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import ProfileIcon from '@/components/icons/profile';
+import { prefetchPopup } from '@/components/layout/prefetchPopup';
 
 import UserProfileMenu from './user-menu/UserProfileMenu';
 
@@ -42,6 +43,8 @@ const NavItemProfile = ({
     return (
       <button
         onClick={handleSignInClick}
+        onPointerEnter={() => prefetchPopup('SignInForm')}
+        onFocus={() => prefetchPopup('SignInForm')}
         className="group relative my-auto box-border flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-[#d0d0dc] transition-colors duration-200 hover:border-fuchsia-500"
         aria-label="Sign In"
       >

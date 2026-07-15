@@ -51,6 +51,23 @@ const FormInput = (
   };
 
   /**
+   * Placeholder and hint are authored per field in the CMS
+   * (`additionalFields`); the label title is only a fallback for the
+   * placeholder so the input is never left blank.
+   */
+  const additionalFields = (
+    field as IAttributes & {
+      additionalFields?: {
+        placeholder?: { value?: string };
+        hint?: { value?: string };
+      };
+    }
+  ).additionalFields;
+  const placeholder =
+    additionalFields?.placeholder?.value || localizeInfos?.title || '';
+  const hint = additionalFields?.hint?.value;
+
+  /**
    * Determine the input type from the flags. The marker is only a fallback for
    * the confirm-password field, which carries `isPassword: false` in the CMS
    * yet must stay masked.
@@ -123,7 +140,7 @@ const FormInput = (
       {type === 'textarea' && (
         <textarea
           id={field.marker}
-          placeholder={localizeInfos?.title}
+          placeholder={placeholder}
           className="border-b border-none border-b-slate-300 py-3 text-xl text-zinc-600"
           required={required}
           onChange={(val) => setValue(val.currentTarget.value)}
@@ -135,7 +152,7 @@ const FormInput = (
         <input
           type={type}
           id={field.marker}
-          placeholder={localizeInfos?.title}
+          placeholder={placeholder}
           className="relative border-b border-none border-b-slate-300 py-3 text-xl text-zinc-600"
           required={required}
           onChange={(val) => setValue(val.currentTarget.value)}
@@ -161,6 +178,8 @@ const FormInput = (
           {type === 'password' ? <EyeIcon /> : <EyeOpenIcon />}
         </button>
       )}
+      {/* Field hint authored in the CMS, shown under the input */}
+      {hint && <p className="mt-1 text-xs text-neutral-300">{hint}</p>}
     </FormFieldAnimations>
   );
 };

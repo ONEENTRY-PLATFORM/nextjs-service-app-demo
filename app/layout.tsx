@@ -13,8 +13,7 @@ import { AuthProvider } from '@/app/store/providers/AuthContext';
 import { OpenDrawerProvider } from '@/app/store/providers/OpenDrawerContext';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import StoreProvider from '@/app/store/providers/StoreProvider';
-import OffscreenModal from '@/components/layout/mobile-menu';
-import Modal from '@/components/layout/modal';
+import PopupRoot from '@/components/layout/PopupRoot';
 import ResponsiveToastContainer from '@/components/shared/ResponsiveToastContainer';
 
 import RegisterGSAP from './animations/RegisterGSAP';
@@ -207,8 +206,8 @@ export default async function RootLayout({
                 <Footer dict={dict} />
               </TransitionProvider>
               <BottomMenu />
-              <Modal dict={dict} />
-              <OffscreenModal menu={safeMenu} />
+              {/* Mounts (and downloads) only the popup that is actually open. */}
+              <PopupRoot dict={dict} menu={safeMenu} />
             </OpenDrawerProvider>
           </AuthProvider>
           <IntroAnimations />

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { flatMenuToNested } from '@/components/utils';
@@ -46,8 +46,18 @@ const OffscreenModal = ({ menu }: { menu: IMenusEntity }): JSX.Element => {
     return () => window.removeEventListener('resize', handleResize);
   }, [setOpen]);
 
-  /** Close menu when pathname changes (navigation occurs) */
+  /**
+   * Close the menu when the route actually changes.
+   *
+   * The path at mount is remembered so this does not fire on mount: the drawer
+   * is mounted lazily *because* it was just opened, and closing it immediately
+   * would make the hamburger appear dead.
+   */
+  const mountedPath = useRef(pathname);
   useEffect(() => {
+    if (mountedPath.current === pathname) {
+      return;
+    }
     setOpen(false);
   }, [pathname, setOpen]);
 

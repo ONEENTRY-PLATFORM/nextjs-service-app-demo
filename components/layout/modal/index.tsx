@@ -1,15 +1,48 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { FC, JSX } from 'react';
+import type { ComponentType, JSX } from 'react';
 import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
-import * as forms from '@/components/forms';
 import ModalAnimations from '@/components/layout/modal/animations/ModalAnimations';
 
 import CloseModal from './components/CloseModal';
 import ModalBackdrop from './components/ModalBackdrop';
+
+/** Props every modal form accepts. */
+type ModalFormProps = {
+  className: string;
+  dict: IAttributeValues;
+  isActive: boolean;
+};
+
+/**
+ * Forms are event-driven — nothing is shown until the user opens the modal —
+ * and each one pulls in the OneEntry SDK. Loading them through `dynamic()`
+ * instead of a namespace import of the barrel keeps all seven (and the SDK)
+ * out of the first-load JS of every page; only the opened form is fetched.
+ *
+ * Each form declares only the props it actually uses (some take just `dict`,
+ * some just `className`), while the modal always passes the full set — extra
+ * props are simply ignored, hence the single cast to the common shape.
+ */
+const formsMap = {
+  ContactUsForm: dynamic(() => import('@/components/forms/ContactUsForm')),
+  ForgotPasswordForm: dynamic(
+    () => import('@/components/forms/ForgotPasswordForm'),
+  ),
+  ResetPasswordForm: dynamic(
+    () => import('@/components/forms/ResetPasswordForm'),
+  ),
+  SignInForm: dynamic(() => import('@/components/forms/SignInForm')),
+  SignUpForm: dynamic(() => import('@/components/forms/SignUpForm')),
+  UserForm: dynamic(() => import('@/components/forms/UserForm')),
+  VerificationForm: dynamic(
+    () => import('@/components/forms/VerificationForm'),
+  ),
+} as unknown as Record<string, ComponentType<ModalFormProps> | undefined>;
 
 /**
  * useTitleData component
@@ -83,11 +116,7 @@ const Modal = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
   const { component } = useContext(OpenDrawerContext);
 
   /** Dynamically select form component by component name */
-  const Form: FC<{
-    className: string;
-    dict: IAttributeValues;
-    isActive: boolean;
-  }> = forms[component as keyof typeof forms] || null;
+  const Form = formsMap[component];
 
   /** Get title data based on current component and dictionary */
   const title = useTitleData({ dict, component });

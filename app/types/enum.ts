@@ -42,6 +42,9 @@ export enum FormFieldsEnum {
   password = 'password',
   phone = 'tel',
   date = 'date',
+  /** OneEntry `dateTime` / `time` map onto the native pickers, not plain text. */
+  dateTime = 'datetime-local',
+  time = 'time',
   text = 'textarea',
   list = 'list',
   spam = 'spam',
