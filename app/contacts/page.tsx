@@ -95,7 +95,7 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
   const title = page.localizeInfos?.title ?? 'Contacts';
 
   return (
-    <div className="bg-white">
+    <div className="bg-white" data-testid="contacts-page">
       {/* Mobile: thin gradient strip instead of the hero */}
       <div className="h-1.25 bg-gradient-stats md:hidden" />
 

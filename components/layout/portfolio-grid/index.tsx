@@ -97,7 +97,7 @@ const PortfolioGridLayout = async ({
 
   /** Render portfolio heading + gallery with lightbox */
   return (
-    <section className="bg-white pb-4">
+    <section className="bg-white pb-4" data-testid="portfolio">
       <div className="mx-auto flex max-w-7xl flex-col items-center p-3 md:px-8 md:py-6">
         <h2
           className="border-b border-ink pb-1.5 text-center font-light tracking-fine text-ink uppercase"

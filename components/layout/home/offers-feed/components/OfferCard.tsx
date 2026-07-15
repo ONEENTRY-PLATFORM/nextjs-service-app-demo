@@ -114,6 +114,8 @@ const OfferCard = ({
       }
     >
       <div
+        data-testid="offer-card"
+        data-product-id={product.id}
         onClick={() => router.push('/offers')}
         className="flex h-full flex-col"
       >

@@ -19,7 +19,10 @@ const AuthError = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
 
   return (
     /** Main container with centered content and vertical padding */
-    <div className="flex w-full flex-col items-center px-5 py-24">
+    <div
+      className="flex w-full flex-col items-center px-5 py-24"
+      data-testid="auth-required"
+    >
       {/* 401 error status code display */}
       <h1 className="mb-6 text-6xl text-slate-700">401</h1>
       {/* Error message with localized text and fallback */}

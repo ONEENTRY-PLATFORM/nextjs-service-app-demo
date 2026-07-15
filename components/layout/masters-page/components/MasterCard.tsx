@@ -69,11 +69,18 @@ const MasterCard = ({ item }: { item: MasterItem }): JSX.Element => {
       title={item.name}
       className={className}
       style={style}
+      data-testid="master-card"
+      data-master-id={item.id}
     >
       {inner}
     </Link>
   ) : (
-    <div className={className} style={style}>
+    <div
+      className={className}
+      style={style}
+      data-testid="master-card"
+      data-master-id={item.id}
+    >
       {inner}
     </div>
   );

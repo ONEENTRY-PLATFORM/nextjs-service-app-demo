@@ -58,7 +58,11 @@ const EntryScreen = ({
         >
           Start your booking
         </p>
-        <h3 className="text-xl font-light" style={{ color: DARK }}>
+        <h3
+          className="text-xl font-light"
+          style={{ color: DARK }}
+          data-testid="booking-entry-title"
+        >
           How would you like to start?
         </h3>
         <p className="mt-1 hidden text-sm sm:block" style={{ color: MUTED }}>
@@ -96,6 +100,7 @@ const EntryScreen = ({
           {picked?.subtitle}
         </p>
         <button
+          data-testid="booking-entry-continue"
           onClick={() => onChoose(pick)}
           className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-base font-bold tracking-wider text-white uppercase transition-transform active:scale-95"
           style={{

@@ -21,10 +21,15 @@ const SpecialistsGrid = ({
   masters: MasterItem[];
 }): JSX.Element => {
   return (
-    <div className="mt-4 grid grid-cols-2 gap-3 px-3 sm:grid-cols-3 md:mt-10 md:gap-4 md:px-6 lg:grid-cols-6">
+    <div
+      data-testid="specialists-strip"
+      className="mt-4 grid grid-cols-2 gap-3 px-3 sm:grid-cols-3 md:mt-10 md:gap-4 md:px-6 lg:grid-cols-6"
+    >
       {masters.map((spec) => (
         <Link
           key={spec.id}
+          data-testid="master-card"
+          data-master-id={spec.id}
           prefetch={false}
           href={spec.href ?? '/masters'}
           className="group relative block overflow-hidden rounded-[15px] bg-slate-100 text-left shadow-[0_10px_30px_rgba(124,42,232,0.18)]"

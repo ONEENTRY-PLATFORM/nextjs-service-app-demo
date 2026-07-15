@@ -4,17 +4,25 @@ test.describe('Smoke', () => {
   test('the homepage loads', async ({ page }) => {
     await page.goto('/');
     await expect(page).not.toHaveURL(/error/);
-    await expect(page.locator('body')).toBeVisible();
+    // The SERVICE catalog section is rendered by the homepage itself — unlike
+    // `body`, it is absent on an error shell or on the not-found UI
+    await expect(page.getByTestId('home-catalog')).toBeAttached({
+      timeout: 30_000,
+    });
   });
 
   test('the services page loads', async ({ page }) => {
     await page.goto('/services');
-    await expect(page.locator('body')).toBeVisible();
+    await expect(page.getByTestId('services-catalog')).toBeAttached({
+      timeout: 30_000,
+    });
   });
 
   test('the masters page loads', async ({ page }) => {
     await page.goto('/masters');
-    await expect(page.locator('body')).toBeVisible();
+    await expect(page.getByTestId('masters-page')).toBeAttached({
+      timeout: 30_000,
+    });
   });
 
   test('unknown route shows the not-found UI', async ({ page }) => {
@@ -23,7 +31,7 @@ test.describe('Smoke', () => {
     await page.goto('/definitely-missing-page-404');
     await expect(page.getByTestId('not-found')).toBeVisible();
     await expect(
-      page.getByRole('link', { name: /return home/i }),
+      page.getByTestId('not-found').getByRole('link', { name: /return home/i }),
     ).toBeVisible();
   });
 

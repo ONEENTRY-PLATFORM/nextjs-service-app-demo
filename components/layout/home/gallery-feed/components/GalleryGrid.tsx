@@ -20,10 +20,14 @@ export type GalleryGridCard = {
  */
 const GalleryGrid = ({ cards }: { cards: GalleryGridCard[] }): JSX.Element => {
   return (
-    <div className="mt-4 grid grid-cols-2 gap-3 px-3 sm:grid-cols-3 md:mt-10 md:gap-4 md:px-6 lg:grid-cols-6">
+    <div
+      data-testid="gallery-strip"
+      className="mt-4 grid grid-cols-2 gap-3 px-3 sm:grid-cols-3 md:mt-10 md:gap-4 md:px-6 lg:grid-cols-6"
+    >
       {cards.map((card, index) => (
         <Link
           key={index}
+          data-testid="gallery-strip-item"
           prefetch={false}
           href={card.link || '/gallery'}
           className="group relative block aspect-4/5 overflow-hidden rounded-2xl bg-slate-100"

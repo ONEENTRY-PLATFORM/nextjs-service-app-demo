@@ -56,7 +56,10 @@ const SalonLocations = ({
         </div>
 
         {salons.length === 0 ? (
-          <p className="py-8 text-center text-base text-neutral-300">
+          <p
+            data-testid="contacts-salons-empty"
+            className="py-8 text-center text-base text-neutral-300"
+          >
             No salon locations available at the moment.
           </p>
         ) : (

@@ -56,7 +56,7 @@ const ProfilePageLayout = ({
   }
 
   return (
-    <div className="my-10">
+    <div className="my-10" data-testid="profile-page">
       {/* Mobile-only Profile / History switcher */}
       <MobileTabs
         active={mobileTab}

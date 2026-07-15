@@ -39,10 +39,15 @@ const PortfolioGallery = ({
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-3 px-3 pb-4 sm:grid-cols-3 md:gap-4 md:px-6 lg:grid-cols-5">
+      <div
+        data-testid="portfolio-grid"
+        className="grid grid-cols-2 gap-3 px-3 pb-4 sm:grid-cols-3 md:gap-4 md:px-6 lg:grid-cols-5"
+      >
         {images.map((item, index) => (
           <button
             key={index}
+            data-testid="portfolio-item"
+            data-index={index}
             onClick={() => setOpenIndex(index)}
             aria-label={`Open portfolio image ${index + 1}`}
             className="group relative aspect-4/5 cursor-pointer overflow-hidden rounded-2xl"

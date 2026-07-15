@@ -51,7 +51,7 @@ const ServiceStep = ({
   const filtered = services.filter((s) => cat === 'All' || s.category === cat);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="booking-step-service">
       <h3 className="text-lg font-light" style={{ color: DARK }}>
         Choose a service
       </h3>
@@ -65,6 +65,7 @@ const ServiceStep = ({
           <p
             className="rounded-xl p-4 text-base"
             style={{ background: `${PINK}08`, color: MUTED }}
+            data-testid="booking-services-empty"
           >
             No services available yet — please check back soon.
           </p>
@@ -83,6 +84,8 @@ const ServiceStep = ({
                   ? `0 0 0 2px ${PINK}22`
                   : '0 1px 4px rgba(0,0,0,0.04)',
               }}
+              data-testid="booking-service-option"
+              data-service-id={s.id}
             >
               <div className="flex-1">
                 <p className="font-medium" style={{ color: DARK }}>

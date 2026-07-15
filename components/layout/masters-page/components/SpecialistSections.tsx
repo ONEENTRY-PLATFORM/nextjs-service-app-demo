@@ -24,11 +24,15 @@ const SpecialistSections = ({
 }): JSX.Element => (
   <div className="hidden pb-4 md:block">
     {sections.length === 0 ? (
-      <div className="mx-auto max-w-7xl px-3 py-16 text-center md:px-8">
+      <div
+        data-testid="masters-empty"
+        className="mx-auto max-w-7xl px-3 py-16 text-center md:px-8"
+      >
         <p className="text-sm text-neutral-300">
           No specialists match the current filter.
         </p>
         <button
+          data-testid="masters-clear-filters"
           onClick={onClearAll}
           className="mt-3 rounded-full bg-fuchsia-500/10 px-5 py-2 text-xs font-bold tracking-wider text-accent-pink uppercase transition-colors hover:bg-fuchsia-500/20"
         >
@@ -41,7 +45,11 @@ const SpecialistSections = ({
           key={group[0]?.section ?? String(idx)}
           className="py-5 md:py-7"
         >
-          <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-8 px-3 md:gap-12 md:px-8 lg:gap-17.5">
+          <div
+            data-testid="specialist-section"
+            data-section={group[0]?.section ?? String(idx)}
+            className="mx-auto flex max-w-7xl flex-wrap justify-center gap-8 px-3 md:gap-12 md:px-8 lg:gap-17.5"
+          >
             {group.map((master) => (
               <MasterCard key={master.id} item={master} />
             ))}

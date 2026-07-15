@@ -27,7 +27,7 @@ const SalonStep = ({
   onSelect: (id: string) => void;
 }): JSX.Element => {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-testid="booking-step-salon">
       <h3 className="text-lg font-light" style={{ color: DARK }}>
         Choose your studio
       </h3>
@@ -38,6 +38,8 @@ const SalonStep = ({
             <button
               key={s.id}
               onClick={() => onSelect(s.id)}
+              data-testid="booking-salon-option"
+              data-salon-id={s.id}
               className="flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all duration-200 hover:scale-101 active:scale-99"
               style={{
                 borderColor: active ? PINK : '#e8e8f0',

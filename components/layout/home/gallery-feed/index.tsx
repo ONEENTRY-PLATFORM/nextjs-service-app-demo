@@ -59,7 +59,10 @@ const GalleryFeed = async ({
 
   /** Render gallery feed section with title and photo grid */
   return (
-    <section className="flex w-full flex-col justify-center py-5">
+    <section
+      className="flex w-full flex-col justify-center py-5"
+      data-testid="home-gallery"
+    >
       <div className="flex w-full flex-col">
         <SectionTitle title={title} delay={0.5} className="mb-6 md:mb-10" />
         {/** Render the static six-tile gallery grid (static-html mock) */}

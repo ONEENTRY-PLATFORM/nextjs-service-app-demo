@@ -61,6 +61,7 @@ const OfferCardFooter = ({
       )}
     </div>
     <button
+      data-testid="offer-book"
       onClick={(e) => {
         e.stopPropagation();
         onBook();

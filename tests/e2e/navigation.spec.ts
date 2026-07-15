@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Header navigation and search', () => {
-  // The header search bar is hidden below the 2xl breakpoint (1536px)
+  // The header search trigger is `hidden lg:flex` — only rendered from 1024px up
   test.use({ viewport: { width: 1600, height: 900 } });
 
   test('main menu from the OneEntry Menus API navigates between pages', async ({
@@ -9,12 +9,17 @@ test.describe('Header navigation and search', () => {
   }) => {
     await page.goto('/');
 
-    const nav = page.locator('#header nav');
-    await expect(nav).toBeVisible();
+    const nav = page.getByTestId('main-nav');
+    await expect(nav).toBeVisible({ timeout: 30_000 });
 
-    // Menu items come from the CMS — follow the first non-home link
-    const menuLink = nav.locator('a[href^="/"]:not([href="/"])').first();
-    const href = await menuLink.getAttribute('href');
+    // Menu items come from the CMS — follow the first non-home top-level link.
+    // Scoped to `main-nav-link` so dropdown children (`main-nav-sublink`,
+    // hidden until group-hover) can never be picked up
+    const menuLink = nav
+      .getByTestId('main-nav-link')
+      .and(page.locator('[data-menu-href]:not([data-menu-href="/"])'))
+      .first();
+    const href = await menuLink.getAttribute('data-menu-href');
     await menuLink.click();
 
     await expect(page).toHaveURL(new RegExp(`${href}$`));
@@ -23,29 +28,35 @@ test.describe('Header navigation and search', () => {
   test('typing a query opens the live search dropdown', async ({ page }) => {
     await page.goto('/');
 
+    // The input lives inside the search popup — it does not exist until the
+    // header icon opens it (SearchModal renders it behind an `open` gate)
+    await page.getByTestId('header-search-open').click();
+
     const input = page.getByTestId('header-search-input');
     await expect(input).toBeVisible();
     await input.fill('hair');
 
-    // Debounce is 300ms; the dropdown shows either results or "No products found"
+    // Debounce is 300ms, then the results come from the CMS
     await expect(page.getByTestId('search-results')).toBeVisible({
-      timeout: 15_000,
+      timeout: 30_000,
     });
   });
 
-  test('submitting the search navigates to the services page', async ({
+  test('picking a service from the search results opens its page', async ({
     page,
   }) => {
     await page.goto('/');
 
-    const input = page.getByTestId('header-search-input');
-    await input.fill('hair');
-    // The input pushes the query into the URL via router.replace (300ms
-    // debounce) — wait for it before submitting, otherwise the submit
-    // handler reads stale (empty) searchParams
-    await expect(page).toHaveURL(/search=hair/);
-    await input.press('Enter');
+    await page.getByTestId('header-search-open').click();
+    await page.getByTestId('header-search-input').fill('hair');
 
-    await expect(page).toHaveURL(/\/services\?.*search=hair/);
+    // Rows are equivalent — any one proves the result → page navigation
+    const service = page.getByTestId('search-result-service').first();
+    await expect(service).toBeVisible({ timeout: 30_000 });
+
+    const href = await service.getAttribute('href');
+    await service.click();
+
+    await expect(page).toHaveURL(new RegExp(`${href}$`));
   });
 });

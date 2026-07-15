@@ -63,7 +63,7 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
   );
 
   return (
-    <div className="bg-white">
+    <div className="bg-white" data-testid="offers-page">
       {/* Gradient accent strip */}
       <div className="h-1.25 bg-gradient-stats" />
 
@@ -89,13 +89,19 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
       </div>
 
       {/* Offer details */}
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-3 py-10 md:px-8">
+      <div
+        className="mx-auto flex max-w-7xl flex-col gap-8 px-3 py-10 md:px-8"
+        data-testid="offers-list"
+      >
         {offers.length > 0 ? (
           offers.map((offer, index) => (
             <OfferDetailCard key={offer.id} product={offer} index={index} />
           ))
         ) : (
-          <p className="text-center text-base text-neutral-300">
+          <p
+            className="text-center text-base text-neutral-300"
+            data-testid="offers-empty"
+          >
             No special offers available right now — check back soon.
           </p>
         )}

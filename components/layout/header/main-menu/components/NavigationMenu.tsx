@@ -22,7 +22,10 @@ import NavigationMenuItem from './NavigationMenuItem';
  */
 const NavigationMenu = ({ menu }: { menu: IMenusPages[] }): JSX.Element => {
   return (
-    <nav className="hidden text-slate-400 fade-in lg:flex">
+    <nav
+      className="hidden text-slate-400 fade-in lg:flex"
+      data-testid="main-nav"
+    >
       <ul className="nav-menu my-auto flex flex-row flex-wrap items-center gap-8">
         {menu.map((item, index) => {
           const hasChildren =
@@ -48,6 +51,8 @@ const NavigationMenu = ({ menu }: { menu: IMenusPages[] }): JSX.Element => {
                           prefetch={false}
                           href={`/${item.pageUrl}/${child.pageUrl}`}
                           className="flex w-full py-2 text-neutral-500 uppercase transition-colors duration-300 ease-in-out hover:text-fuchsia-500 focus:text-fuchsia-500 focus:outline-none"
+                          data-testid="main-nav-sublink"
+                          data-menu-url={`${item.pageUrl}/${child.pageUrl}`}
                         >
                           {child.localizeInfos?.menuTitle ||
                             child.localizeInfos?.title ||

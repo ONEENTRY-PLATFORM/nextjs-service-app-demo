@@ -40,7 +40,7 @@ const VisitSection = ({
   const dotColor = DOT_COLOR[status];
 
   return (
-    <div>
+    <div data-testid={`profile-visits-${status}`}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}

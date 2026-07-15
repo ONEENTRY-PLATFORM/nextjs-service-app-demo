@@ -55,6 +55,7 @@ const GalleryLightbox = ({
 
   return (
     <div
+      data-testid="gallery-lightbox"
       className="fixed inset-0 z-300 flex items-center justify-center backdrop-blur-2xl"
       style={{ background: 'rgba(6,0,14,0.94)' }}
       onClick={(e) => e.target === e.currentTarget && onClose()}

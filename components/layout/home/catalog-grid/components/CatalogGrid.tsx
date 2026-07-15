@@ -21,7 +21,7 @@ const CatalogGrid = async (): Promise<JSX.Element> => {
   const { pages, isError } = await getChildPagesByParentUrl('services');
   /** Show error message if pages failed to load */
   if (!pages || isError) {
-    return <div>Error loading pages.</div>;
+    return <div data-testid="catalog-error">Error loading pages.</div>;
   }
 
   /** Placeholder tiles until the service categories are created in the CMS */
@@ -33,6 +33,7 @@ const CatalogGrid = async (): Promise<JSX.Element> => {
             key={tile}
             href="/services"
             title={tile}
+            data-testid="catalog-card"
             className="z-10 block transition-transform duration-300 hover:scale-105 focus:outline-none"
           >
             <div className="size-36 md:size-44 lg:size-56">

@@ -62,7 +62,14 @@ const VisitGroups = ({
 
   /** Empty state — degrade gracefully when the bucket has no orders. */
   if (groups.length === 0) {
-    return <p className="py-2 text-sm text-neutral-300">No visits yet</p>;
+    return (
+      <p
+        className="py-2 text-sm text-neutral-300"
+        data-testid="profile-visits-empty"
+      >
+        No visits yet
+      </p>
+    );
   }
 
   return (

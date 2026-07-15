@@ -80,7 +80,7 @@ const MastersPageContent = ({
   };
 
   return (
-    <div>
+    <div data-testid="masters-page">
       {/* ── Filter block ─────────────────────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-3 pt-8 pb-4 md:px-8">
         <SalonFilter
@@ -133,6 +133,7 @@ const MastersPageContent = ({
           </p>
           {hasActiveFilter && (
             <button
+              data-testid="masters-clear-all"
               onClick={clearAll}
               className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-bold tracking-wider text-accent-pink uppercase transition-colors hover:bg-fuchsia-500/10"
             >

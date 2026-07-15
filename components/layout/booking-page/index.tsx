@@ -79,6 +79,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
   return (
     <section
       id="booking-section"
+      data-testid="booking-page"
       className="flex-1 py-6 xl:pb-12 md:py-12 md:pb-20"
       style={{ background: 'linear-gradient(180deg,#f7f7fb 0%,#fff 60%)' }}
     >
@@ -143,6 +144,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                 <div className="mt-auto flex items-stretch gap-3 pt-8">
                   <button
                     onClick={handleBack}
+                    data-testid="booking-back"
                     className="flex items-center gap-2 rounded-xl px-5 py-3.5 text-sm font-bold tracking-wider uppercase transition-all hover:opacity-80 md:text-base"
                     style={{ background: '#f7f7fb', color: MUTED }}
                   >
@@ -153,6 +155,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                     <button
                       onClick={handleNext}
                       disabled={!canNext}
+                      data-testid="booking-continue"
                       className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold tracking-wider uppercase transition-all enabled:hover:scale-102 enabled:active:scale-98 md:text-base"
                       style={{
                         background: canNext ? BRAND_GRADIENT : '#f7f7fb',
@@ -169,6 +172,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                     <button
                       onClick={() => setMobileSummary(true)}
                       disabled={!time}
+                      data-testid="booking-summary-open"
                       className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold tracking-wider uppercase transition-all enabled:hover:scale-102 enabled:active:scale-98 xl:hidden md:text-base"
                       style={{
                         background: time ? BRAND_GRADIENT : '#f7f7fb',

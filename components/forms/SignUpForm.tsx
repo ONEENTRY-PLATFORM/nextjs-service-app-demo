@@ -273,6 +273,7 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
     <FormAnimations className={''} isLoading={isLoading} isActive={true}>
       <form
         onSubmit={onSignUp}
+        data-testid="auth-form-sign-up"
         className="mx-auto flex min-h-full w-full max-w-107.5 flex-col gap-4 text-xl leading-5"
       >
         {/** Display sign in link and account creation description */}

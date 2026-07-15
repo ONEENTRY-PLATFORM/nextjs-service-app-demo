@@ -48,6 +48,7 @@ const SearchModal = ({ placeholder }: { placeholder: string }): JSX.Element => {
       <button
         onClick={() => setOpen(true)}
         aria-label={placeholder}
+        data-testid="header-search-open"
         className="hidden rounded-lg p-2 text-neutral-400 transition-colors hover:bg-gray-100 lg:flex"
       >
         <Search size={18} />

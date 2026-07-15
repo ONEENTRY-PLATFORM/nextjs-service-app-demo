@@ -38,6 +38,7 @@ const MobileSpecialistList = ({
       />
       <input
         type="text"
+        data-testid="masters-search-input"
         value={query}
         onChange={(e) => onQuery(e.target.value)}
         placeholder="Search specialist"
@@ -57,7 +58,10 @@ const MobileSpecialistList = ({
     {/* Compact specialist row list — mobile only */}
     <div className="space-y-2 md:hidden">
       {masters.length === 0 ? (
-        <p className="py-4 text-center text-sm text-neutral-300">
+        <p
+          data-testid="masters-rows-empty"
+          className="py-4 text-center text-sm text-neutral-300"
+        >
           No specialists found.
         </p>
       ) : (
@@ -95,12 +99,19 @@ const MobileSpecialistList = ({
               key={master.id}
               prefetch={false}
               href={master.href}
+              data-testid="master-row"
+              data-master-id={master.id}
               className={ROW_CLASS}
             >
               {row}
             </Link>
           ) : (
-            <div key={master.id} className={ROW_CLASS}>
+            <div
+              key={master.id}
+              data-testid="master-row"
+              data-master-id={master.id}
+              className={ROW_CLASS}
+            >
               {row}
             </div>
           );

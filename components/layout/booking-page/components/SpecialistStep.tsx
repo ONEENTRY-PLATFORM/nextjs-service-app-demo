@@ -141,7 +141,7 @@ const SpecialistStep = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="booking-step-specialist">
       <h3 className="text-lg font-light" style={{ color: DARK }}>
         Choose your specialist
       </h3>
@@ -203,6 +203,7 @@ const SpecialistStep = ({
         <p
           className="rounded-xl p-4 text-base"
           style={{ background: `${PINK}08`, color: MUTED }}
+          data-testid="booking-specialists-empty"
         >
           {categoryFilter === 'All'
             ? 'No specialists match the previous selections. Try a different studio or service.'
@@ -243,6 +244,7 @@ const SpecialistStep = ({
           <p
             className="col-span-full py-6 text-center text-base"
             style={{ color: MUTED }}
+            data-testid="booking-specialists-search-empty"
           >
             No specialists match “{specSearch}”.
           </p>

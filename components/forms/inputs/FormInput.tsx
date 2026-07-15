@@ -122,6 +122,7 @@ const FormInput = (
       {type === 'list' && (
         <select
           id={field.marker}
+          data-testid={`form-field-${field.marker}`}
           className="border-b border-none border-b-slate-300 py-3 text-xl text-zinc-600"
           required={required}
           value={value}
@@ -140,6 +141,7 @@ const FormInput = (
       {type === 'textarea' && (
         <textarea
           id={field.marker}
+          data-testid={`form-field-${field.marker}`}
           placeholder={placeholder}
           className="border-b border-none border-b-slate-300 py-3 text-xl text-zinc-600"
           required={required}
@@ -152,6 +154,7 @@ const FormInput = (
         <input
           type={type}
           id={field.marker}
+          data-testid={`form-field-${field.marker}`}
           placeholder={placeholder}
           className="relative border-b border-none border-b-slate-300 py-3 text-xl text-zinc-600"
           required={required}

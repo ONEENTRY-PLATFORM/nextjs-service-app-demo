@@ -17,6 +17,7 @@ import { BRAND_GRADIENT, DARK, MUTED, PINK } from '../constants';
 const SuccessModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
   return (
     <div
+      data-testid="booking-success"
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(30,0,40,0.55)', backdropFilter: 'blur(4px)' }}
     >

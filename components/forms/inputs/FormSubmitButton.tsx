@@ -26,6 +26,7 @@ const FormSubmitButton = ({
   return (
     <FormFieldAnimations index={index} className="w-full">
       <button
+        data-testid="form-submit"
         disabled={isLoading}
         type="submit"
         className="relative h-15 w-full items-center justify-center rounded-card border-fuchsia-500 bg-fuchsia-500 px-10 py-2.5 text-xl font-bold tracking-wide text-white uppercase transition-colors duration-300 hover:bg-fuchsia-600 focus-visible:outline-fuchsia-600 disabled:bg-neutral-300/50 disabled:text-neutral-300"

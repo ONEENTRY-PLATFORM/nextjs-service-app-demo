@@ -44,6 +44,7 @@ const ContactsHero = ({
           Beauty Studio
         </p>
         <h1
+          data-testid="contacts-hero-title"
           className="hero-title font-black tracking-widest text-white uppercase"
           style={{
             fontSize: 'clamp(2rem,5vw,3.5rem)',

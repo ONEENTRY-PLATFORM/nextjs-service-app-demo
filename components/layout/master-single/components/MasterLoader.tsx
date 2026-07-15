@@ -24,7 +24,10 @@ import LoaderAnimations from '../animations/LoaderAnimations';
 const MasterLoader = (): JSX.Element => {
   return (
     <>
-      <section className="loader relative mx-auto box-border flex w-full max-w-360 shrink-0 flex-col">
+      <section
+        data-testid="master-loader"
+        className="loader relative mx-auto box-border flex w-full max-w-360 shrink-0 flex-col"
+      >
         <div className="flex w-full flex-col justify-center px-5 py-20 max-md:max-w-full max-sm:py-10">
           <TitleAnimations className="relative mx-auto mb-16 box-border flex shrink-0 flex-col max-lg:mb-8 max-sm:mb-6">
             <h1 className="title min-w-65 bg-slate-200 text-center text-4xl leading-9 font-light text-transparent uppercase max-sm:leading-none">

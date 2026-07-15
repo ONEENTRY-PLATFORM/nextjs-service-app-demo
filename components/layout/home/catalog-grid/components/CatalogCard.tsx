@@ -43,6 +43,8 @@ const CatalogCard = ({
           title={localizeInfos?.title}
           href={`/services/${pageUrl}`}
           className="z-10 block transition-transform duration-300 hover:scale-105 focus:outline-none"
+          data-testid="catalog-card"
+          data-page-id={item.id}
         >
           <div className="size-36 md:size-44 lg:size-56">
             <CategoryTile tile={tile} suffix={`${tile}_${index}`} />
@@ -60,6 +62,8 @@ const CatalogCard = ({
         title={localizeInfos?.title}
         href={`/services/${pageUrl}`}
         className="z-10 flex size-57.5 flex-col items-center justify-center gap-2 overflow-hidden rounded-full p-8 text-center text-xl text-neutral-600 transition-colors duration-300 hover:text-fuchsia-600 max-xl:size-50 max-xs:size-32.5 max-md:size-40 max-md:p-6 max-sm:size-35 max-sm:p-5"
+        data-testid="catalog-card"
+        data-page-id={item.id}
       >
         {/** Display catalog card icon */}
         <CatalogCardIcon item={item} />

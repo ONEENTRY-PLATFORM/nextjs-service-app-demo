@@ -67,6 +67,8 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
 
   return (
     <div
+      data-testid="service-card"
+      data-service-id={service.id}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className="relative flex flex-col gap-3 rounded-2xl bg-white p-5"
@@ -132,6 +134,7 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
           <span />
         )}
         <button
+          data-testid="service-book"
           onClick={handleBook}
           disabled={unavailable}
           className="rounded-xl px-12 py-3 text-base font-bold tracking-wide uppercase transition-all duration-200 active:scale-95"

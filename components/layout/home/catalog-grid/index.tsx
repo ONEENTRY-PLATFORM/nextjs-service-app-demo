@@ -32,12 +32,18 @@ const CatalogSection = ({
 
   /** Render catalog section with title, grid and background elements */
   return (
-    <section className="relative flex min-h-0 shrink-0 flex-col justify-center overflow-hidden bg-white py-2 xl:min-h-112 xl:py-10 md:min-h-80 md:py-6">
+    <section
+      data-testid="home-catalog"
+      className="relative flex min-h-0 shrink-0 flex-col justify-center overflow-hidden bg-white py-2 xl:min-h-112 xl:py-10 md:min-h-80 md:py-6"
+    >
       <div className="relative mx-auto flex w-full max-w-7xl shrink-0 grow flex-col self-stretch px-3 md:px-8">
         {/* title */}
         <SectionTitle title={title} className="mb-6 md:mb-10" />
         {/* pages */}
-        <div className="relative z-10 grid grid-cols-2 place-items-center gap-4 md:grid-cols-4 md:gap-y-10 lg:gap-x-8">
+        <div
+          data-testid="catalog-grid"
+          className="relative z-10 grid grid-cols-2 place-items-center gap-4 md:grid-cols-4 md:gap-y-10 lg:gap-x-8"
+        >
           <CatalogGrid />
         </div>
       </div>

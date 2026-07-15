@@ -107,6 +107,7 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
     <FormAnimations className={''} isLoading={isLoading} isActive={true}>
       <form
         name="resetPasswordForm"
+        data-testid="auth-form-reset-password"
         className="mx-auto flex min-h-full w-full max-w-107.5 flex-col gap-4 text-xl leading-5"
         onSubmit={onResetSubmit}
       >

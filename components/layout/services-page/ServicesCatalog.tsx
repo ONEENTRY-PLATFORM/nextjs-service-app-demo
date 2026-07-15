@@ -106,6 +106,7 @@ const ServicesCatalog = ({
 
   return (
     <section
+      data-testid="services-catalog"
       className="py-10"
       style={{ background: 'linear-gradient(180deg,#f7f7fb 0%,#fff 50%)' }}
     >
@@ -120,6 +121,7 @@ const ServicesCatalog = ({
             className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2"
           />
           <input
+            data-testid="services-search-input"
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -167,14 +169,21 @@ const ServicesCatalog = ({
         )}
 
         {/* Service grid */}
-        <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div
+          data-testid="services-grid"
+          className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           {filtered.map((item) => (
             <ServiceCard key={item.id} service={item} />
           ))}
         </div>
 
         {filtered.length === 0 && (
-          <p className="mt-6 text-center text-base" style={{ color: MUTED }}>
+          <p
+            data-testid="services-empty"
+            className="mt-6 text-center text-base"
+            style={{ color: MUTED }}
+          >
             {searching
               ? `No services match “${query.trim()}”.`
               : 'No services in this section.'}

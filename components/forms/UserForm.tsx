@@ -159,6 +159,7 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
   /** Render user profile form with all fields */
   return (
     <form
+      data-testid="profile-form"
       className="flex min-h-full w-full max-w-107.5 flex-col gap-4 text-xl leading-5"
       onSubmit={onUpdateUserData}
     >

@@ -163,6 +163,7 @@ const SignInForm = ({
       isActive={isActive}
     >
       <form
+        data-testid="auth-form-sign-in"
         className="relative mx-auto mt-2 mb-6 box-border flex shrink-0 flex-col gap-3"
         onSubmit={onSignIn}
       >

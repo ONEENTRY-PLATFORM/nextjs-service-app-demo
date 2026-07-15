@@ -232,6 +232,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
   return (
     <FormAnimations className={''} isLoading={isLoading} isActive={true}>
       <form
+        data-testid="auth-form-verification"
         className="mx-auto flex min-h-full w-full max-w-107.5 flex-col gap-4 text-xl leading-5"
         onSubmit={onSubmitHandle}
       >

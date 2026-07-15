@@ -93,6 +93,7 @@ export const ForgotPasswordForm = ({
   return (
     <FormAnimations className={''} isLoading={isLoading} isActive={true}>
       <form
+        data-testid="auth-form-forgot-password"
         className="mx-auto flex min-h-120 max-w-87.5 flex-col gap-4 text-xl leading-5"
         onSubmit={handleSubmit}
       >

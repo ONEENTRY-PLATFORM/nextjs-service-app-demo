@@ -127,7 +127,7 @@ const MasterSingleLayout = async ({
     .filter((chip) => chip.title);
 
   return (
-    <section className="bg-white">
+    <section className="bg-white" data-testid="master-page">
       {/* Top gradient strip (PINK2 → PINK → CYAN) */}
       <div className="h-1.25 w-full bg-gradient-stats" />
 

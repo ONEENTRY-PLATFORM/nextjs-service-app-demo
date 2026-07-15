@@ -11,7 +11,10 @@ import type { JSX } from 'react';
  */
 const GalleryPageSkeleton = (): JSX.Element => {
   return (
-    <div className="flex w-full flex-col bg-white">
+    <div
+      className="flex w-full flex-col bg-white"
+      data-testid="gallery-skeleton"
+    >
       {/* Gradient strip — same as the real page */}
       <div className="h-1.25 bg-gradient-stats" />
 

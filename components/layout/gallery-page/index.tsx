@@ -149,7 +149,7 @@ const GalleryPageContent = ({
     lightboxIndex !== null ? filtered[lightboxIndex] : undefined;
 
   return (
-    <div>
+    <div data-testid="gallery-page">
       <GalleryFilterBar
         tab={tab}
         onTab={setTab}
@@ -170,7 +170,10 @@ const GalleryPageContent = ({
 
       {/* ── Full-bleed photo grid ────────────────────────────────────────── */}
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-2 gap-3 px-3 pb-4 sm:grid-cols-3 md:gap-4 md:px-6 lg:grid-cols-5">
+        <div
+          data-testid="gallery-grid"
+          className="grid grid-cols-2 gap-3 px-3 pb-4 sm:grid-cols-3 md:gap-4 md:px-6 lg:grid-cols-5"
+        >
           {filtered.map((item, idx) => (
             <GalleryGridCell
               key={item.id}
@@ -182,11 +185,12 @@ const GalleryPageContent = ({
           ))}
         </div>
       ) : (
-        <div className="px-4 py-20 text-center">
+        <div data-testid="gallery-empty" className="px-4 py-20 text-center">
           <p className="text-sm text-neutral-300">
             No portfolio yet for this combination.
           </p>
           <button
+            data-testid="gallery-clear-filters"
             onClick={clearAll}
             className="mt-3 rounded-full bg-fuchsia-500/10 px-5 py-2 text-xs font-bold tracking-wider text-accent-pink uppercase transition-colors hover:bg-fuchsia-500/20"
           >

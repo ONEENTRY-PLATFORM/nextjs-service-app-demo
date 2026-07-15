@@ -86,7 +86,10 @@ const BookingSummary = ({
   const stepsRemaining = Math.max(0, totalSteps - 1 - currentIdx);
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-3xl shadow-[0_10px_34px_rgba(0,0,0,0.22)] md:h-full md:shadow-[0_4px_40px_rgba(237,33,241,0.08)]">
+    <div
+      data-testid="booking-summary"
+      className="flex flex-col overflow-hidden rounded-3xl shadow-[0_10px_34px_rgba(0,0,0,0.22)] md:h-full md:shadow-[0_4px_40px_rgba(237,33,241,0.08)]"
+    >
       <div
         className="p-6 md:p-8"
         style={{ background: `linear-gradient(135deg,${PINK2}dd,${PINK}cc)` }}
@@ -106,7 +109,10 @@ const BookingSummary = ({
         </div>
         <p className="mt-1 text-2xl font-bold text-white">Your Appointment</p>
         {flow && (
-          <p className="mt-1 hidden text-sm tracking-widest text-white/80 uppercase md:block">
+          <p
+            data-testid="booking-summary-flow"
+            className="mt-1 hidden text-sm tracking-widest text-white/80 uppercase md:block"
+          >
             {flow === 'specialist-first'
               ? 'Choose-a-specialist flow'
               : 'Studio-first flow'}

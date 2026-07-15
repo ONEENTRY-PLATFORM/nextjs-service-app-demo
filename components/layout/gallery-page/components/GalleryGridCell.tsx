@@ -36,6 +36,8 @@ const GalleryGridCell = ({
 }): JSX.Element => {
   return (
     <div
+      data-testid="gallery-item"
+      data-gallery-id={item.id}
       className="group relative aspect-4/5 cursor-pointer overflow-hidden rounded-2xl"
       onClick={onOpen}
     >

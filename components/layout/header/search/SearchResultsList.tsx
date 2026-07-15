@@ -102,7 +102,10 @@ const SearchResultsList = ({
    */
   if (!hasResults) {
     return searchValue ? (
-      <p className="px-5 py-8 text-center text-sm text-neutral-300">
+      <p
+        data-testid="search-empty"
+        className="px-5 py-8 text-center text-sm text-neutral-300"
+      >
         Nothing found for “{searchValue}”.
       </p>
     ) : (
@@ -111,7 +114,7 @@ const SearchResultsList = ({
   }
 
   return (
-    <div className="py-2">
+    <div data-testid="search-results" className="py-2">
       {specialists.length > 0 && (
         <div className="py-1">
           <p className="px-5 py-1.5 text-sm font-black tracking-widest text-neutral-300 uppercase">

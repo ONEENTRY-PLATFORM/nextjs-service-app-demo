@@ -197,7 +197,11 @@ const ContactFormCard = (): JSX.Element => {
           </p>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-1 flex-col">
+        <form
+          onSubmit={handleSubmit}
+          data-testid="contact-form"
+          className="flex flex-1 flex-col"
+        >
           <div className="space-y-5">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormField

@@ -96,7 +96,10 @@ const MastersFeed = async ({
   }
 
   return (
-    <section className="flex w-full flex-col justify-center py-5">
+    <section
+      className="flex w-full flex-col justify-center py-5"
+      data-testid="home-masters"
+    >
       <div className="flex w-full flex-col bg-white">
         <SectionTitle
           title={block?.localizeInfos?.title || 'Our Specialists'}

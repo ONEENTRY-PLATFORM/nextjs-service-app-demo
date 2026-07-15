@@ -45,6 +45,8 @@ const NavigationMenuItem = ({
     <Link
       prefetch={true}
       href={href === 'home' ? '/' : href}
+      data-testid="main-nav-link"
+      data-menu-href={href}
       className={clsx(
         'flex items-center justify-center gap-2 border-b-2 pb-0.5 text-base font-medium transition-colors duration-300 ease-in-out hover:text-fuchsia-500 focus:text-fuchsia-500 focus:outline-none',
         isActive

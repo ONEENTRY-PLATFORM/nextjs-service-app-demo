@@ -37,7 +37,10 @@ const OffersFeedBlock = ({
   const title = block?.localizeInfos?.title || 'Best Offers';
 
   return (
-    <section className="flex w-full justify-center bg-white py-10 pb-4">
+    <section
+      className="flex w-full justify-center bg-white py-10 pb-4"
+      data-testid="home-offers"
+    >
       <div className="mx-auto mb-6 w-full max-w-7xl flex-col px-3 md:px-8">
         <div className="flex w-full flex-col items-center justify-center">
           <SectionTitle title={title} delay={0.25} className="mb-6 md:mb-10" />
