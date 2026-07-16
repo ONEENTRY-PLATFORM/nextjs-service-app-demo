@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
+import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import SalonPageContent from '@/components/layout/salon-page';
 import {
   DEFAULT_SALON_CONTENT,
@@ -121,13 +122,14 @@ export async function generateMetadata({
   }
 
   const { localizeInfos } = page;
+  const description = getPagePlainContent(page) || localizeInfos?.title;
   return {
     title: localizeInfos?.title,
-    description: localizeInfos?.plainValue || localizeInfos?.title,
+    description,
     openGraph: {
       type: 'article',
       title: localizeInfos?.title,
-      description: localizeInfos?.plainValue || localizeInfos?.title,
+      description,
     },
   };
 }

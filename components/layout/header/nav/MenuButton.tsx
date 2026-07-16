@@ -28,7 +28,7 @@ const MobileMenuTrigger = (): JSX.Element => {
     setComponent('MobileMenu');
   };
 
-  /** Render mobile menu trigger button with hamburger icon */
+  /* Render mobile menu trigger button with hamburger icon */
   return (
     <button
       onClick={handleClick}

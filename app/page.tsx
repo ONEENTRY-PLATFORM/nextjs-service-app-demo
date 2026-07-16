@@ -9,6 +9,7 @@ import { cache } from 'react';
 import { getBlocksByPageUrl, getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import { sortArrayByPosition } from '@/components/utils';
 
@@ -86,14 +87,14 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: page.localizeInfos?.title || 'OneEntry Beauty',
     description:
-      page.localizeInfos?.plainValue ||
+      getPagePlainContent(page) ||
       page.localizeInfos?.title ||
       'OneEntry next-js Beauty description',
     openGraph: {
       type: 'website',
       title: page.localizeInfos?.title || 'OneEntry Beauty',
       description:
-        page.localizeInfos?.plainValue ||
+        getPagePlainContent(page) ||
         page.localizeInfos?.title ||
         'OneEntry next-js Beauty description',
     },
@@ -116,7 +117,7 @@ const generateStructuredData = async (): Promise<object> => {
     '@type': 'WebSite',
     name: page.localizeInfos?.title || 'OneEntry Beauty',
     description:
-      page.localizeInfos?.plainValue ||
+      getPagePlainContent(page) ||
       page.localizeInfos?.title ||
       'OneEntry next-js Beauty description',
     url: getSiteUrl(),

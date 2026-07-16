@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import PromoBanner from '@/components/layout/services-page/PromoBanner';
 import ServicesCatalog from '@/components/layout/services-page/ServicesCatalog';
@@ -77,7 +78,7 @@ export default async function ServicePageLayout({
     '@context': 'https://schema.org',
     '@type': 'Service',
     name: page.localizeInfos?.title,
-    description: page.localizeInfos?.plainValue || page.localizeInfos?.title,
+    description: getPagePlainContent(page) || page.localizeInfos?.title,
     provider: {
       '@type': 'Organization',
       name: 'OneEntry Beauty',
@@ -167,14 +168,15 @@ export async function generateMetadata({
 
   /** extract data from page */
   const { localizeInfos } = page;
+  const description = getPagePlainContent(page) || localizeInfos?.title;
 
   return {
     title: localizeInfos?.title,
-    description: localizeInfos?.plainValue || localizeInfos?.title,
+    description,
     openGraph: {
       type: 'article',
       title: localizeInfos?.title,
-      description: localizeInfos?.plainValue || localizeInfos?.title,
+      description,
     },
   };
 }

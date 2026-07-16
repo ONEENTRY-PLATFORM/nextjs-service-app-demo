@@ -7,6 +7,7 @@ import type { JSX } from 'react';
 import { getPageByUrl, getProductsByPageUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { offerTermsData } from '@/components/data';
 import OfferDetailCard from '@/components/layout/offers-page/OfferDetailCard';
 
@@ -154,7 +155,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: localizeInfos?.title,
-    description: localizeInfos?.plainValue,
+    description: getPagePlainContent(page) || localizeInfos?.title,
     openGraph: {
       type: 'article',
     },

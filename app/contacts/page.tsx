@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import BookCtaBanner from '@/components/layout/contacts-page/BookCtaBanner';
 import ContactFormCard from '@/components/layout/contacts-page/ContactFormCard';
 import ContactInfoCard from '@/components/layout/contacts-page/ContactInfoCard';
@@ -165,7 +166,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: localizeInfos?.title || 'Contacts',
-    description: localizeInfos?.plainValue || 'Contact information',
+    description: getPagePlainContent(page) || 'Contact information',
     openGraph: {
       type: 'article',
     },

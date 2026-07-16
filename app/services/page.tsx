@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import PromoBanner from '@/components/layout/services-page/PromoBanner';
 import ServicesCatalog from '@/components/layout/services-page/ServicesCatalog';
 import ServicesHero from '@/components/layout/services-page/ServicesHero';
@@ -95,7 +96,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: localizeInfos?.title,
-    description: localizeInfos?.plainValue,
+    description: getPagePlainContent(page) || localizeInfos?.title,
     openGraph: {
       type: 'article',
     },

@@ -7,6 +7,7 @@ import { getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import MasterSingleLayout from '@/components/layout/master-single';
 import MasterLoader from '@/components/layout/master-single/components/MasterLoader';
@@ -139,7 +140,7 @@ export async function generateMetadata({
   const title = masterName
     ? `${masterName} - ${localizeInfos?.title}`
     : localizeInfos?.title;
-  const description = localizeInfos?.plainValue || localizeInfos?.title;
+  const description = getPagePlainContent(page) || localizeInfos?.title;
 
   return {
     title,

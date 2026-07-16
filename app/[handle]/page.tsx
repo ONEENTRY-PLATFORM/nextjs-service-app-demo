@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import PaymentCanceled from '@/components/pages/PaymentCanceled';
 import PaymentSuccess from '@/components/pages/PaymentSuccess';
 
@@ -103,7 +104,7 @@ export async function generateMetadata({
 
   return {
     title: localizeInfos?.title || 'Default Title',
-    description: localizeInfos?.plainValue || 'Default Description',
+    description: getPagePlainContent(page) || 'Default Description',
     openGraph: {
       type: 'article',
     },

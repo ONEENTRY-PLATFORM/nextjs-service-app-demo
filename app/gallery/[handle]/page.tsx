@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
+import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import GalleryPageContent from '@/components/layout/gallery-page';
 import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
@@ -65,7 +66,7 @@ export default async function GallerySingleLayout({
     '@context': 'https://schema.org',
     '@type': 'ImageGallery',
     name: page.localizeInfos?.title,
-    description: page.localizeInfos?.plainValue || page.localizeInfos?.title,
+    description: getPagePlainContent(page) || page.localizeInfos?.title,
     url: `${getSiteUrl()}/gallery/${handle}`,
   };
 
@@ -126,14 +127,15 @@ export async function generateMetadata({
 
   /** extract data from page */
   const { localizeInfos } = page;
+  const description = getPagePlainContent(page) || localizeInfos?.title;
 
   return {
     title: localizeInfos?.title,
-    description: localizeInfos?.plainValue || localizeInfos?.title,
+    description,
     openGraph: {
       type: 'article',
       title: localizeInfos?.title,
-      description: localizeInfos?.plainValue || localizeInfos?.title,
+      description,
     },
   };
 }

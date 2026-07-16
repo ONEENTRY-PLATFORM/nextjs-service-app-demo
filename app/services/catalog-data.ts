@@ -89,15 +89,16 @@ const toServiceItem = (
         : null;
 
   /**
-   * Short description: the `description` text attribute (its `value` is a
-   * `[{ htmlValue, plainValue }]` array, not a string), with the localized
-   * plain value as a last-resort fallback.
+   * Short description: the `description` text attribute, whose `value` is a
+   * `[{ htmlValue, plainValue }]` array rather than a string.
+   *
+   * There is no `localizeInfos` fallback on purpose: a product's `localizeInfos`
+   * carries only `title` at runtime (verified against the live CMS), so reading
+   * `plainValue`/`plainContent` off it can never yield anything. The SDK's
+   * `ILocalizeInfo` type declares those fields, which is why such a fallback
+   * looks plausible and type-checks while being dead.
    */
-  const description =
-    plainTextFromTextAttr(attrs.description?.value) ||
-    (typeof product.localizeInfos?.plainValue === 'string'
-      ? product.localizeInfos.plainValue
-      : '');
+  const description = plainTextFromTextAttr(attrs.description?.value) || '';
 
   return {
     id: product.id,
