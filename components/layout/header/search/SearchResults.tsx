@@ -1,11 +1,8 @@
 'use client';
 
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import type { Dispatch, JSX, SetStateAction } from 'react';
-import { useEffect, useState } from 'react';
 
-import { getPageById } from '@/app/api';
 import { useSearchProducts } from '@/app/api/hooks/useSearchProducts';
 import Spinner from '@/components/shared/Spinner';
 
@@ -33,47 +30,10 @@ const SearchResults = ({
   state: boolean;
   setState: Dispatch<SetStateAction<boolean>>;
 }): JSX.Element => {
-  /** State to store page data associated with products */
-  const [pages, setPages] = useState<{
-    [key: number]: {
-      page?: IPagesEntity;
-    };
-  }>({});
   /** Fetch products based on search value using custom hook */
   const { loading, products } = useSearchProducts({
     name: searchValue,
   });
-
-  /** Effect to fetch page data for products when products change */
-  useEffect(() => {
-    /** Function to fetch page data for all products */
-    const fetchPages = async () => {
-      /** Initialize object to store page data with product IDs as keys */
-      const pagesData: {
-        [key: number]: {
-          page?: IPagesEntity;
-        };
-      } = {};
-      /** Fetch page data for each product concurrently */
-      await Promise.all(
-        products.map(async (product) => {
-          /** Only fetch page data if product has associated pages */
-          const firstPage = product.productPages?.[0];
-          if (firstPage) {
-            const pageData = await getPageById(firstPage.pageId);
-            pagesData[product.id] = pageData;
-          }
-        }),
-      );
-      /** Update state with fetched page data */
-      setPages(pagesData);
-    };
-
-    /** Trigger page data fetching only if there are products */
-    if (products.length > 0) {
-      fetchPages();
-    }
-  }, [products]);
 
   /** Show loading spinner while products are being fetched */
   if (loading) {
@@ -95,16 +55,18 @@ const SearchResults = ({
       {products.length > 0 ? (
         products.map((product: IProductsEntity) => {
           const { id, attributeSetIdentifier } = product;
+          const pageId = product.productPages?.[0]?.pageId;
 
           /** Skip special-offer products — they are not services. */
-          if (attributeSetIdentifier === 'offer' || !pages[id]) {
+          if (attributeSetIdentifier === 'offer' || !pageId) {
             return null;
           }
 
           return (
             <div key={id} className="flex w-full">
+              {/* The row resolves (and caches) its own page — see ProductRow. */}
               <ProductRow
-                pageData={pages[id].page as IPagesEntity}
+                pageId={pageId}
                 product={product}
                 setState={setState}
               />

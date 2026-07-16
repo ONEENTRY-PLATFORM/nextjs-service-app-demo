@@ -1,10 +1,9 @@
 'use client';
 
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { Dispatch, JSX, SetStateAction } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
-import { getPageById, useGetAdminsQuery } from '@/app/api';
+import { useGetAdminsQuery } from '@/app/api';
 import { useSearchProducts } from '@/app/api/hooks/useSearchProducts';
 import Spinner from '@/components/shared/Spinner';
 
@@ -28,12 +27,6 @@ const SearchResultsList = ({
   searchValue: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }): JSX.Element => {
-  /** State to store page data associated with products */
-  const [pages, setPages] = useState<{
-    [key: number]: {
-      page?: IPagesEntity;
-    };
-  }>({});
   /** Fetch products based on search value using custom hook */
   const { loading, products } = useSearchProducts({ name: searchValue });
   /** All masters — cached by RTK Query, filtered locally by the search term */
@@ -57,30 +50,6 @@ const SearchResultsList = ({
       })
       .slice(0, 6);
   }, [admins, searchValue]);
-
-  /** Effect to fetch page data for products when products change */
-  useEffect(() => {
-    const fetchPages = async () => {
-      const pagesData: {
-        [key: number]: {
-          page?: IPagesEntity;
-        };
-      } = {};
-      await Promise.all(
-        products.map(async (product) => {
-          const firstPage = product.productPages?.[0];
-          if (firstPage) {
-            pagesData[product.id] = await getPageById(firstPage.pageId);
-          }
-        }),
-      );
-      setPages(pagesData);
-    };
-
-    if (products.length > 0) {
-      fetchPages();
-    }
-  }, [products]);
 
   if (loading) {
     return (
@@ -131,15 +100,16 @@ const SearchResultsList = ({
           <p className="px-5 py-1.5 text-sm font-black tracking-widest text-neutral-300 uppercase">
             Services
           </p>
+          {/* Each row resolves (and caches) its own catalog page — see ProductRow. */}
           {services.map((product) => {
-            const pageEntry = pages[product.id];
-            if (!pageEntry) {
+            const pageId = product.productPages?.[0]?.pageId;
+            if (!pageId) {
               return null;
             }
             return (
               <ProductRow
                 key={product.id}
-                pageData={pageEntry.page as IPagesEntity}
+                pageId={pageId}
                 product={product}
                 setState={setOpen}
               />

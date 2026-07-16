@@ -2,11 +2,11 @@
 
 import { ArrowUpRight, Scissors } from 'lucide-react';
 import Link from 'next/link';
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import type { JSX } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 
+import { useGetPageByIdQuery } from '@/app/api';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
   addServiceToCart,
@@ -20,25 +20,34 @@ import {
  * This component represents a single product row in the search results dropdown.
  * It provides a link to the product page and adds the product to the cart when clicked.
  * The component uses Redux to manage the cart state and tabs state.
+ *
+ * The row resolves its own catalog page through RTK Query rather than having the
+ * list fetch every page up-front: rows of the same category then share a single
+ * cached request (and hooks cannot be called from the list's `.map()` anyway).
  * @param   {object}                            props          - Component properties
- * @param   {IPagesEntity}                      props.pageData - Page data associated with the product
+ * @param   {number}                            props.pageId   - Id of the catalog page the product belongs to
  * @param   {IProductsEntity}                   props.product  - Product entity to display
  * @param   {Dispatch<SetStateAction<boolean>>} props.setState - Function to update the search results visibility state
- * @returns {JSX.Element}                                      JSX.Element representing a product row in the search results
+ * @returns {JSX.Element | null}                               Product row, or `null` until its page is known
  */
 const ProductRow = ({
-  pageData,
+  pageId,
   product,
   setState,
 }: {
-  pageData: IPagesEntity;
+  pageId: number;
   product: IProductsEntity;
   setState: Dispatch<SetStateAction<boolean>>;
-}): JSX.Element => {
+}): JSX.Element | null => {
   /** Get dispatch function for Redux actions */
   const dispatch = useAppDispatch();
   /** Active cart row index */
   const activeId = useAppSelector(selectActiveItemId);
+  /** The product's catalog page — cached and deduped across rows by RTK Query */
+  const { data: pageData } = useGetPageByIdQuery(
+    { id: pageId },
+    { skip: !pageId },
+  );
 
   /** Handle apply button click to add product to cart and update UI */
   const onApplyHandle = () => {
@@ -60,6 +69,15 @@ const ProductRow = ({
     dispatch(setTabsState({ key: 'products', value: true }));
     dispatch(setTabsState({ key: 'services', value: true }));
   };
+
+  /**
+   * Hold the row back until its page resolves — same as before, when the list
+   * skipped products whose page had not been fetched yet. Rendering early would
+   * flash a row whose link and category subtitle are still empty.
+   */
+  if (!pageData) {
+    return null;
+  }
 
   /* Render product row with link to service page (styled as in the static-html mock) */
   return (

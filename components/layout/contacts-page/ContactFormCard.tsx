@@ -155,8 +155,14 @@ const ContactFormCard = (): JSX.Element => {
           status: 'sent',
         });
         if (isSdkError(result)) {
+          /**
+           * Mirror the success path: the failure copy comes from the form's own
+           * CMS settings when set (`unsuccessMessage`), with the technical
+           * status/message as the fallback while it is empty.
+           */
           setError(
-            `Error ${result.statusCode}: ${result.message ?? ''}`.trim(),
+            data?.localizeInfos?.unsuccessMessage ||
+              `Error ${result.statusCode}: ${result.message ?? ''}`.trim(),
           );
           return;
         }
@@ -165,7 +171,11 @@ const ContactFormCard = (): JSX.Element => {
       setFields(EMPTY_FIELDS);
       setTimeout(() => setSent(false), 3500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      /** A thrown (network) failure is still a failed submit — same CMS copy. */
+      setError(
+        data?.localizeInfos?.unsuccessMessage ||
+          (err instanceof Error ? err.message : 'An error occurred'),
+      );
     } finally {
       setLoading(false);
     }
