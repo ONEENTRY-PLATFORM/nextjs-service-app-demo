@@ -28,7 +28,11 @@ const SignOutButton = ({
   /** Handle user logout, then navigate to the home page. */
   const handleLogout = async () => {
     try {
-      await logOutUser({ marker: 'email' });
+      // Log out through the provider the user actually signed in with, which
+      // AuthContext.login persisted; 'email' is the fallback for legacy
+      // sessions saved before the marker was stored.
+      const marker = localStorage.getItem('authProviderMarker') ?? 'email';
+      await logOutUser({ marker });
       logout();
       router.push('/');
     } catch (error) {

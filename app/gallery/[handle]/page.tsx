@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
+import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import GalleryPageContent from '@/components/layout/gallery-page';
 import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
 import { GALLERY_MAIN_CATS } from '@/components/layout/gallery-page/taxonomy';
@@ -65,7 +66,7 @@ export default async function GallerySingleLayout({
     '@type': 'ImageGallery',
     name: page.localizeInfos?.title,
     description: page.localizeInfos?.plainValue || page.localizeInfos?.title,
-    url: `${process.env.NEXT_PUBLIC_ONEENTRY_URL || 'https://oneentry.cloud'}/gallery/${handle}`,
+    url: `${getSiteUrl()}/gallery/${handle}`,
   };
 
   return (

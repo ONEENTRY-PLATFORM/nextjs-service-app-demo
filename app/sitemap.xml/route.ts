@@ -1,13 +1,13 @@
 import { getChildPagesByParentUrl } from '@/app/api';
 import { getMastersList } from '@/app/api/utils/getMastersList';
+import { getSiteUrl } from '@/app/utils/getSiteUrl';
 
 /**
  * Generate sitemap.xml for the website
  * @returns {Promise<Response>} Response with XML content
  */
 export async function GET(): Promise<Response> {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_ONEENTRY_URL || 'https://oneentry.cloud';
+  const baseUrl = getSiteUrl();
 
   /** Get all pages for the sitemap */
   const staticPages = ['', 'services', 'gallery', 'masters', 'contacts'];

@@ -21,7 +21,19 @@ export const getFormAttributes = <T = IAttributes>(
   form: { attributes?: unknown } | undefined,
 ): T[] => {
   const attributes = form?.attributes;
-  return Array.isArray(attributes) ? ([...attributes] as T[]) : [];
+  if (Array.isArray(attributes)) {
+    return [...attributes] as T[];
+  }
+  /**
+   * The Forms API also returns `attributes` as an OBJECT keyed by marker — an
+   * empty `{}` for a field-less form, but a populated map once fields exist.
+   * Take its values so a configured object-shaped form renders instead of
+   * silently coming back blank (the empty `{}` still yields `[]`).
+   */
+  if (attributes && typeof attributes === 'object') {
+    return Object.values(attributes) as T[];
+  }
+  return [];
 };
 
 /**

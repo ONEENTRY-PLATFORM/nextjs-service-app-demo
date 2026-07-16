@@ -50,7 +50,7 @@ const SalonStep = ({
               }}
             >
               <div
-                className="flex size-10 flex-shrink-0 items-center justify-center rounded-full"
+                className="flex size-10 shrink-0 items-center justify-center rounded-full"
                 style={{ background: active ? `${PINK}22` : '#f7f7fb' }}
               >
                 <MapPin size={18} color={active ? PINK : MUTED} />

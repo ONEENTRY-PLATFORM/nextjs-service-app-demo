@@ -7,6 +7,7 @@ import { getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import MasterSingleLayout from '@/components/layout/master-single';
 import MasterLoader from '@/components/layout/master-single/components/MasterLoader';
 import PortfolioGridLayout from '@/components/layout/portfolio-grid';
@@ -52,7 +53,7 @@ export default async function MasterPageLayout({
         '@context': 'https://schema.org',
         '@type': 'Person',
         name: masterName,
-        url: `${process.env.NEXT_PUBLIC_ONEENTRY_URL || 'https://oneentry.cloud'}/masters/${handle}`,
+        url: `${getSiteUrl()}/masters/${handle}`,
       }
     : null;
 

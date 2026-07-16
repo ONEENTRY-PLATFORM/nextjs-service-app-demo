@@ -18,12 +18,6 @@ export const dynamic = 'force-static';
 export const revalidate = 300;
 
 /**
- * Enables dynamic parameter generation
- * Allows dynamic route parameters that were not explicitly defined at build time
- */
-export const dynamicParams = true;
-
-/**
  * BookingPageLayout — the booking page following the static-html mock
  * (`BookingPage.tsx`): a photo hero under the purple→pink veil and the
  * step-based booking wizard (entry screen, step bar, cross-filtered steps,

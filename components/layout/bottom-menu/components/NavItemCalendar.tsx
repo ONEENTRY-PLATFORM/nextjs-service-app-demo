@@ -46,13 +46,7 @@ const NavItemCalendar = ({ item }: { item: IMenusPages }): JSX.Element => {
       title={localizeInfos?.menuTitle ?? undefined}
       className="group relative box-border flex size-6 shrink-0 flex-col"
     >
-      {/** Display calendar icon */}
       <CalendarIcon />
-      {/**
-       * Show the badge only once something is actually picked. `> 0` rather
-       * than `badgeCount &&`: a plain `&&` renders the literal `0` as a text
-       * node when the cart is empty.
-       */}
       {badgeCount > 0 && (
         <div className="absolute top-1 right-1 z-10 size-4 rounded-full bg-fuchsia-500 text-center text-sm leading-4">
           {badgeCount}

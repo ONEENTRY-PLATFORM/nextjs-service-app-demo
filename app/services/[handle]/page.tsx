@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import PromoBanner from '@/components/layout/services-page/PromoBanner';
 import ServicesCatalog from '@/components/layout/services-page/ServicesCatalog';
 import ServicesHero from '@/components/layout/services-page/ServicesHero';
@@ -81,7 +82,7 @@ export default async function ServicePageLayout({
       '@type': 'Organization',
       name: 'OneEntry Beauty',
     },
-    url: `${process.env.NEXT_PUBLIC_ONEENTRY_URL || 'https://oneentry.cloud'}/services/${handle}`,
+    url: `${getSiteUrl()}/services/${handle}`,
   };
 
   return (

@@ -9,6 +9,7 @@ import { Suspense, useContext, useState } from 'react';
 
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import AuthError from '@/components/pages/AuthError';
+import SpinnerLoader from '@/components/shared/SpinnerLoader';
 
 import FromAnimations from './animations/FromAnimations';
 import HistoryAnimations from './animations/HistoryAnimations';
@@ -40,7 +41,7 @@ const ProfilePageLayout = ({
   masters?: IAdminEntity[];
 }): JSX.Element => {
   /** Get authentication state and user data from context */
-  const { isAuth, user } = useContext(AuthContext);
+  const { isAuth, isLoading, user } = useContext(AuthContext);
   /** Active mobile tab (Profile / History); ignored from `lg` up */
   const [mobileTab, setMobileTab] = useState<ProfileTab>('profile');
 
@@ -49,6 +50,19 @@ const ProfilePageLayout = ({
   const historyOfVisitsText =
     (dict.history_of_visits_text?.value as string | undefined) ||
     'History of visits';
+
+  /**
+   * While the session is being restored the auth state is unknown — show a
+   * neutral spinner instead of the signed-out AuthError, which would otherwise
+   * flash its "401" for a valid session on every load/refresh.
+   */
+  if (isLoading) {
+    return (
+      <div className="my-10 flex min-h-100 items-center justify-center">
+        <SpinnerLoader />
+      </div>
+    );
+  }
 
   /** Handle unauthenticated state or missing page/user data */
   if (!page || !isAuth || !user?.formData) {

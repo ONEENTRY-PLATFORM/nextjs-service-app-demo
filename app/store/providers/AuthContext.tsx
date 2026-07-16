@@ -84,7 +84,14 @@ export const AuthContext = createContext<ContextProps>({
 export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  /**
+   * Starts `true`: until `onInit()` has probed the stored refresh token the auth
+   * state is unknown, not "signed out". Auth-gated pages must show a neutral
+   * placeholder during this window instead of flashing their signed-out screen
+   * (e.g. the profile page's 401 AuthError). `onInit` flips it to `false` — for
+   * a guest almost immediately (no refresh token → early return).
+   */
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<IUserEntity | undefined>();
   const [refetch, setRefetch] = useState<boolean>(false);
   const [refetchUser, setRefetchUser] = useState<boolean>(false);

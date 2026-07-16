@@ -12,6 +12,7 @@ import { AuthProvider } from '@/app/store/providers/AuthContext';
 import { OpenDrawerProvider } from '@/app/store/providers/OpenDrawerContext';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import StoreProvider from '@/app/store/providers/StoreProvider';
+import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import BottomMenu from '@/components/layout/bottom-menu';
 import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/header';
@@ -54,8 +55,8 @@ const oswald = Oswald({
   variable: '--font-oswald',
 });
 
-const oneentryUrl =
-  process.env.NEXT_PUBLIC_ONEENTRY_URL || 'https://oneentry.cloud';
+/** This site's public origin (NOT the CMS host) — for OG/canonical/JSON-LD. */
+const siteUrl = getSiteUrl();
 
 /** Site name fallback when the `system_content` dictionary is unavailable. */
 const SITE_NAME_FALLBACK = 'Thalia Beauty Studio';
@@ -88,7 +89,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       locale: LANG_CODE,
-      url: oneentryUrl,
+      url: siteUrl,
       siteName,
     },
   };
@@ -107,8 +108,8 @@ const generateStructuredData = (siteName: string): object => {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: siteName,
-    url: oneentryUrl,
-    logo: `${oneentryUrl}/logo.png`,
+    url: siteUrl,
+    logo: `${siteUrl}/logo.png`,
     sameAs: [
       'https://www.facebook.com/OneEntry',
       'https://twitter.com/OneEntry',

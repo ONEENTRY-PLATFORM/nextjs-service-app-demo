@@ -9,6 +9,7 @@ import { cache } from 'react';
 import { getBlocksByPageUrl, getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import { sortArrayByPosition } from '@/components/utils';
 
 /**
@@ -118,7 +119,7 @@ const generateStructuredData = async (): Promise<object> => {
       page.localizeInfos?.plainValue ||
       page.localizeInfos?.title ||
       'OneEntry next-js Beauty description',
-    url: process.env.NEXT_PUBLIC_ONEENTRY_URL || 'https://oneentry.cloud',
+    url: getSiteUrl(),
   };
 };
 

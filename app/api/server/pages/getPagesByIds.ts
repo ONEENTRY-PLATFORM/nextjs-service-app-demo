@@ -19,14 +19,17 @@ export const getPagesByIds = async (
 }> => {
   try {
     const data = await Promise.all(
-      ids.map(async (id: number) => {
-        const page = await getApi().Pages.getPageById(id);
-        return page;
-      }),
-    ).then((results) => results);
+      ids.map((id: number) => getApi().Pages.getPageById(id)),
+    );
 
-    if (isError(data)) {
-      return { isError: true, error: data };
+    /**
+     * `data` is the array of per-id results, so `isError(data)` would never fire
+     * (an array has no `statusCode`). Check the elements: each `getPageById` may
+     * itself return an `IError`, which must not be cast to a page.
+     */
+    const failed = data.find((page): page is IError => isError(page));
+    if (failed) {
+      return { isError: true, error: failed };
     }
     return { isError: false, pages: data as IPagesEntity[] };
   } catch (e) {
