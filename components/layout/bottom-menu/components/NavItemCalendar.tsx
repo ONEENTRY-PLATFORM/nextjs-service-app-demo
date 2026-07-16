@@ -5,6 +5,8 @@ import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 
 import { useAppSelector } from '@/app/store/hooks';
+import { selectFilledCartCount } from '@/app/store/reducers/CartSlice';
+import { useHydrated } from '@/app/store/useHydrated';
 import CalendarIcon from '@/components/icons/calendar';
 
 /**
@@ -14,10 +16,24 @@ import CalendarIcon from '@/components/icons/calendar';
  * @returns {JSX.Element}            JSX.Element.
  */
 const NavItemCalendar = ({ item }: { item: IMenusPages }): JSX.Element => {
-  /** Get service count from cart reducer for badge display */
-  const cartCount = useAppSelector((state) => {
-    return state.cartReducer.servicesData?.length;
-  });
+  /**
+   * Rows the user actually picked something into — the old
+   * `servicesData.length` was a constant 1, so the badge showed "1" even for an
+   * empty cart (see {@link selectFilledCartCount}).
+   */
+  const cartCount = useAppSelector(selectFilledCartCount);
+
+  /**
+   * The count above now genuinely differs between server and client — the cart
+   * is `redux-persist` state, so the server always counts 0 while a returning
+   * client counts its saved selections. Rendering that on the hydration pass
+   * would make the tree differ from the server HTML ("Hydration failed"), so
+   * the badge appears one commit later. (Before the count was fixed this gate
+   * was unnecessary: the old `servicesData.length` was a constant 1 on both
+   * sides, and gating it would only have made the badge flash.)
+   */
+  const hydrated = useHydrated();
+  const badgeCount = hydrated ? cartCount : 0;
 
   /** Extract page URL and localized information from menu item */
   const { pageUrl, localizeInfos } = item;
@@ -32,10 +48,14 @@ const NavItemCalendar = ({ item }: { item: IMenusPages }): JSX.Element => {
     >
       {/** Display calendar icon */}
       <CalendarIcon />
-      {/** Show cart count badge when services are added */}
-      {cartCount && (
+      {/**
+       * Show the badge only once something is actually picked. `> 0` rather
+       * than `badgeCount &&`: a plain `&&` renders the literal `0` as a text
+       * node when the cart is empty.
+       */}
+      {badgeCount > 0 && (
         <div className="absolute top-1 right-1 z-10 size-4 rounded-full bg-fuchsia-500 text-center text-sm leading-4">
-          {cartCount}
+          {badgeCount}
         </div>
       )}
     </Link>

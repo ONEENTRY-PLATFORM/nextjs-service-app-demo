@@ -204,6 +204,34 @@ export const selectCartData = (state: {
 }): CartItem[] => state.cartReducer.servicesData;
 
 /**
+ * Count the cart rows the user has actually picked something into.
+ *
+ * NOT `servicesData.length`, which is a constant 1: `initialState` seeds one
+ * empty row (`[{ id: 0 }]`), {@link addServiceToCart} merges into the row
+ * matching `payload.id`, and every call site passes {@link selectActiveItemId},
+ * which is seeded to 0 and never written (multi-row booking is vestigial). A
+ * row only counts once it carries a real selection, so an untouched cart
+ * counts 0.
+ *
+ * Returns a number, so subscribers re-render only when the count itself
+ * changes despite the intermediate filter allocating.
+ * @param   {object}     state                          - The Redux store state.
+ * @param   {object}     state.cartReducer              - The cart reducer state.
+ * @param   {CartItem[]} state.cartReducer.servicesData - Normalized cart rows.
+ * @returns {number}                                    Number of rows holding a salon, service, product or master
+ */
+export const selectFilledCartCount = (state: {
+  cartReducer: { servicesData: CartItem[] };
+}): number =>
+  state.cartReducer.servicesData?.filter(
+    (row) =>
+      row.salonId != null ||
+      row.serviceId != null ||
+      row.productId != null ||
+      row.masterId != null,
+  ).length ?? 0;
+
+/**
  * Select the index of the currently active cart row.
  *
  * Legacy value — always 0 in practice, multi-row booking was never wired up.

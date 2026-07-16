@@ -7,6 +7,7 @@ import {
   selectActiveItemId,
   selectCartData,
 } from '@/app/store/reducers/CartSlice';
+import { useHydrated } from '@/app/store/useHydrated';
 
 import { ANY_MASTER, CATEGORY_ORDER, FLOWS } from './constants';
 import type {
@@ -143,11 +144,24 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   const [touched, setTouched] = useState(false);
 
   /**
+   * The cart lives in `redux-persist` (localStorage), so the server cannot know
+   * it. Applying the preselection during the FIRST client render would make the
+   * hydrated tree differ from the server HTML — React throws "Hydration failed"
+   * and re-renders the whole page on the client. `useSyncExternalStore` returns
+   * the server snapshot (`false`) for SSR *and* the hydration render, then the
+   * client snapshot (`true`) right after: the first render matches the server,
+   * and the jump to the preselected step lands in the very next commit.
+   */
+  const hydrated = useHydrated();
+
+  /**
    * Preselection is applied while rendering (React's "adjust state on prop
    * change" pattern, no effect): once per distinct cart content and never
    * over a flow the user has already started themselves.
    */
-  const cartKey = `${cartMasterId ?? ''}:${cartProductId ?? ''}:${cartSalonId ?? ''}`;
+  const cartKey = hydrated
+    ? `${cartMasterId ?? ''}:${cartProductId ?? ''}:${cartSalonId ?? ''}`
+    : '';
   const [appliedCartKey, setAppliedCartKey] = useState('');
   if (cartKey !== appliedCartKey) {
     setAppliedCartKey(cartKey);

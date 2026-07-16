@@ -5,6 +5,7 @@ import reducer, {
   removeAllServices,
   selectActiveItemId,
   selectCartData,
+  selectFilledCartCount,
   selectTabDataIds,
   selectTabsState,
   setCartVersion,
@@ -84,5 +85,32 @@ describe('CartSlice', () => {
     expect(selectActiveItemId(root)).toBe(0);
     expect(selectTabsState('salons', root).dataIds).toEqual([9]);
     expect(selectTabDataIds('salons', root)).toEqual([9]);
+  });
+
+  describe('selectFilledCartCount', () => {
+    it('counts an untouched cart as 0 even though a row exists', () => {
+      const state = init();
+
+      /** The seeded placeholder row must not light up the nav badge. */
+      expect(state.servicesData).toHaveLength(1);
+      expect(selectFilledCartCount({ cartReducer: state })).toBe(0);
+    });
+
+    it('counts the row once anything is picked, and stays 1 as the same row is merged into', () => {
+      let state = reducer(init(), addServiceToCart({ id: 0, masterId: 7 }));
+      expect(selectFilledCartCount({ cartReducer: state })).toBe(1);
+
+      /** Merging more fields into the same row must not inflate the badge. */
+      state = reducer(state, addServiceToCart({ id: 0, productId: 233 }));
+      state = reducer(state, addServiceToCart({ id: 0, salonId: 39 }));
+      expect(selectFilledCartCount({ cartReducer: state })).toBe(1);
+    });
+
+    it('drops back to 0 once the cart is cleared', () => {
+      let state = reducer(init(), addServiceToCart({ id: 0, productId: 233 }));
+      state = reducer(state, removeAllServices());
+
+      expect(selectFilledCartCount({ cartReducer: state })).toBe(0);
+    });
   });
 });
