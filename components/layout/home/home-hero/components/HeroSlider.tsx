@@ -81,13 +81,22 @@ const HeroSlider = ({
               variant keeps the preload (mobile-first traffic); the desktop
               variant still loads eagerly, just without its own preload link.
             */}
+            {/*
+              `sizes` must mirror the CSS breakpoint that shows each variant.
+              With a flat `sizes="100vw"` both variants claim the full viewport,
+              so the browser downloads a viewport-wide JPEG for the one that is
+              `display:none` too — Next.js flags exactly this ("image is not
+              rendered at full viewport width"). Claiming `1px` outside its own
+              range makes the hidden variant resolve to the smallest srcset
+              candidate instead. `768px` is Tailwind's default `md`.
+            */}
             {slide.desktop && (
               <Image
                 fill
                 loading={i === 0 ? 'eager' : 'lazy'}
                 src={slide.desktop}
                 alt={alt}
-                sizes="100vw"
+                sizes="(min-width: 768px) 100vw, 1px"
                 className="hidden object-cover md:block"
               />
             )}
@@ -97,7 +106,7 @@ const HeroSlider = ({
                 priority={i === 0}
                 src={slide.mobile}
                 alt={alt}
-                sizes="100vw"
+                sizes="(min-width: 768px) 1px, 100vw"
                 className="object-cover md:hidden"
               />
             )}

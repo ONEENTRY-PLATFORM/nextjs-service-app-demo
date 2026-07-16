@@ -20,3 +20,16 @@ export const ORDERS_STATUS_COMPLETED = 'completed';
 
 /** Status of an appointment cancelled by the client. */
 export const ORDERS_STATUS_CANCELED = 'canceled';
+
+/** Identifier of the offline "pay at the salon" payment account. */
+export const PAYMENT_ACCOUNT_CASH = 'cash';
+
+/**
+ * Payment accounts that redirect the client to an external gateway.
+ *
+ * A whitelist, not `!== 'cash'`: with a blacklist any future OFFLINE provider
+ * (bank transfer, gift card) would be mistaken for an online one, sent through
+ * `createSession` and would never reach the success screen. Extend this list
+ * when a new gateway is connected in the admin panel.
+ */
+export const ONLINE_PAYMENT_ACCOUNTS: readonly string[] = ['stripe'];

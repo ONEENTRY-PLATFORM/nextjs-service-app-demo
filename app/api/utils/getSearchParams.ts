@@ -1,5 +1,7 @@
 import type { IFilterParams } from 'oneentry/dist/products/productsInterfaces';
 
+import { PRODUCT_STATUS_IN_STOCK } from '@/app/api/utils/productStatusMarkers';
+
 /**
  * Generate search parameters for product filtering
  *
@@ -28,18 +30,19 @@ const getSearchParams = (searchParams?: {
     conditionValue: null,
     title: searchParams?.search || '',
     isNested: false,
+    /**
+     * `statusMarker` is a global modifier of the body, not a filter of its own:
+     * it rides on an existing record. A separate record is only needed when the
+     * body has no other filters — and `servicesFilter` is always present here.
+     * The previous second record was not a valid catch-all either (it carried
+     * `attributeMarker: 'price'` with no `conditionMarker`), so its semantics
+     * were undefined.
+     */
+    ...(searchParams?.in_stock
+      ? { statusMarker: PRODUCT_STATUS_IN_STOCK }
+      : {}),
   };
   expandedFilters.push(servicesFilter);
-
-  if (searchParams?.in_stock) {
-    expandedFilters.push({
-      statusMarker: 'in_stock',
-      attributeMarker: 'price',
-      conditionValue: null,
-      title: searchParams.search || '',
-      isNested: false,
-    });
-  }
 
   return expandedFilters;
 };

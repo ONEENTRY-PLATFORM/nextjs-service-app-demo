@@ -113,7 +113,7 @@ const useTitleData = ({
  * @returns {JSX.Element}                 Modal with form component or null if form component is not found
  */
 const Modal = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
-  const { component } = useContext(OpenDrawerContext);
+  const { open, component } = useContext(OpenDrawerContext);
 
   /** Dynamically select form component by component name */
   const Form = formsMap[component];
@@ -121,8 +121,14 @@ const Modal = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
   /** Get title data based on current component and dictionary */
   const title = useTitleData({ dict, component });
 
-  /** Don't render if form component is not found */
-  if (!Form) {
+  /**
+   * Gate on `open` here, not only inside `ModalAnimations`, so the popup owns
+   * its own visibility instead of inheriting it from a child's internals.
+   * Behaviour is unchanged: `open` stays `true` for the whole closing
+   * animation (that is driven by `transition === 'close'`), and
+   * `ModalAnimations` already returns nothing at exactly `!open`.
+   */
+  if (!open || !Form) {
     return <></>;
   }
 

@@ -1,11 +1,9 @@
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type {
-  IMenusEntity,
-  IMenusPages,
-} from 'oneentry/dist/menus/menusInterfaces';
+import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 
 import { getBlockByMarker, getMenuByMarker } from '@/app/api';
+import { normalizeMenuPages } from '@/components/normalizeMenuPages';
 import { flatMenuToNested } from '@/components/utils';
 
 import Copyrights from './Copyrights';
@@ -27,10 +25,7 @@ const toFooterItems = (
   menu: IMenusEntity | undefined,
   baseUrl: string,
 ): FooterMenuItem[] => {
-  const pages = flatMenuToNested(
-    Array.isArray(menu?.pages) ? (menu.pages as IMenusPages[]) : [],
-    null,
-  );
+  const pages = flatMenuToNested(normalizeMenuPages(menu?.pages), null);
   const href = (pageUrl: string | null) =>
     baseUrl ? `/${baseUrl}/${pageUrl ?? ''}` : `/${pageUrl ?? ''}`;
 

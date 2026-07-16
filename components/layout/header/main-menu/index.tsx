@@ -1,6 +1,7 @@
 import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 
+import { normalizeMenuPages } from '@/components/normalizeMenuPages';
 import { flatMenuToNested } from '@/components/utils';
 
 import MainMenuLoader from './components/MenuLoader';
@@ -31,10 +32,7 @@ const MainMenu = async ({
   }
 
   /** Convert menu flat array to nested structure */
-  const mainMenu = flatMenuToNested(
-    Array.isArray(menu.pages) ? menu.pages : [],
-    null,
-  );
+  const mainMenu = flatMenuToNested(normalizeMenuPages(menu.pages), null);
 
   return <NavigationMenu menu={mainMenu} />;
 };

@@ -7,6 +7,7 @@ import type { JSX } from 'react';
 import { useContext, useEffect, useRef } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
+import { normalizeMenuPages } from '@/components/normalizeMenuPages';
 import { flatMenuToNested } from '@/components/utils';
 
 import ModalBackdrop from '../modal/components/ModalBackdrop';
@@ -27,10 +28,7 @@ const OffscreenModal = ({ menu }: { menu: IMenusEntity }): JSX.Element => {
   const { open, setOpen, component } = useContext(OpenDrawerContext);
 
   /** Convert flat menu structure to nested structure for rendering */
-  const mainMenu = flatMenuToNested(
-    Array.isArray(menu.pages) ? menu.pages : [],
-    null,
-  );
+  const mainMenu = flatMenuToNested(normalizeMenuPages(menu.pages), null);
 
   /** Handle window resize to close menu on larger screens */
   useEffect(() => {

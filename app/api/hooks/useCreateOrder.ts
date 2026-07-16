@@ -5,7 +5,9 @@ import { useState } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
+import { ORDERS_STORAGE_MARKER } from '@/app/store/orderMarkers';
 import { removeAllServices } from '@/app/store/reducers/CartSlice';
 import { removeOrder } from '@/app/store/reducers/OrderSlice';
 
@@ -44,7 +46,7 @@ export const useCreateOrder = (): {
     setIsLoading(true);
 
     try {
-      if (order?.paymentAccountIdentifier === 'cash') {
+      if (!isOnlinePayment(order?.paymentAccountIdentifier)) {
         router.push('/profile');
         return 'payment_success';
       }
@@ -53,10 +55,21 @@ export const useCreateOrder = (): {
         setError(session.message);
         return 'payment_error';
       }
-      if (session.paymentUrl) {
-        router.push(session.paymentUrl);
-        return 'payment_method';
+      if (!session.paymentUrl) {
+        /**
+         * A session without a `paymentUrl` cannot be paid. Surface it instead of
+         * falling through to `return ''`, which left the client on a dead screen
+         * with no error and an order already created.
+         */
+        setError('Payment session has no paymentUrl');
+        return 'payment_error';
       }
+      /**
+       * `paymentUrl` points at the gateway's own host. `router.push` is for
+       * in-app routes — a full navigation is what actually leaves the site.
+       */
+      window.location.href = session.paymentUrl;
+      return 'payment_method';
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -90,12 +103,15 @@ export const useCreateOrder = (): {
       }));
 
       /** Create order with Orders API */
-      const createdOrder = await getApi().Orders.createOrder('orders', {
-        ...order,
-        formData: orderFormData,
-        formIdentifier: order.formIdentifier,
-        paymentAccountIdentifier: order.paymentAccountIdentifier,
-      });
+      const createdOrder = await getApi().Orders.createOrder(
+        ORDERS_STORAGE_MARKER,
+        {
+          ...order,
+          formData: orderFormData,
+          formIdentifier: order.formIdentifier,
+          paymentAccountIdentifier: order.paymentAccountIdentifier,
+        },
+      );
 
       if (isError(createdOrder)) {
         setError(createdOrder.message);
@@ -111,7 +127,7 @@ export const useCreateOrder = (): {
       dispatch(removeOrder());
 
       /** Handle payment session based on payment method */
-      if (paymentAccountIdentifier !== 'cash') {
+      if (isOnlinePayment(paymentAccountIdentifier)) {
         await createSession(id);
       } else {
         router.push('/profile');

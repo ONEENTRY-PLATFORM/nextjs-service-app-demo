@@ -7,6 +7,10 @@ import { useEffect, useState } from 'react';
 
 import { getPageById } from '@/app/api';
 import { isError } from '@/app/api';
+import {
+  ORDERS_STATUS_CANCELED,
+  ORDERS_STATUS_COMPLETED,
+} from '@/app/store/orderMarkers';
 
 import CardAnimations from '../../animations/CardAnimations';
 import StatusBadge from '../StatusBadge';
@@ -106,8 +110,8 @@ const OrderCard = ({
       index={index}
     >
       {/* Status badge — top-right for completed / cancelled orders */}
-      {(statusIdentifier === 'completed' ||
-        statusIdentifier === 'canceled') && (
+      {(statusIdentifier === ORDERS_STATUS_COMPLETED ||
+        statusIdentifier === ORDERS_STATUS_CANCELED) && (
         <span className="absolute top-3 right-3 z-10">
           <StatusBadge status={statusIdentifier} />
         </span>

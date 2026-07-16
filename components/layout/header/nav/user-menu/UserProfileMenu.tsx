@@ -1,14 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import type {
-  IMenusEntity,
-  IMenusPages,
-} from 'oneentry/dist/menus/menusInterfaces';
+import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import ProfileIcon from '@/components/icons/profile';
+import { normalizeMenuPages } from '@/components/normalizeMenuPages';
 
 import ProfileMenuAnimations from '../../animations/ProfileMenuAnimations';
 import LogoutMenuItem from './LogoutMenuItem';
@@ -28,15 +26,8 @@ const UserProfileMenu = ({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  /**
-   * The menu API may return `pages` as an array OR a single object (or nothing).
-   * Normalize to an array so `.map` never crashes and a lone page is not lost.
-   */
-  const pages: IMenusPages[] = Array.isArray(userMenu.pages)
-    ? (userMenu.pages as IMenusPages[])
-    : userMenu.pages
-      ? [userMenu.pages as IMenusPages]
-      : [];
+  /** Array or single object — see `normalizeMenuPages`. */
+  const pages = normalizeMenuPages(userMenu.pages);
 
   useEffect(() => {
     if (!isOpen) return;

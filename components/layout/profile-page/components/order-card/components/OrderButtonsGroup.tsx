@@ -4,6 +4,8 @@ import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces
 import type { Dispatch, JSX, SetStateAction } from 'react';
 import { useState } from 'react';
 
+import { ORDERS_STATUS_UPCOMING } from '@/app/store/orderMarkers';
+
 import CancelOrderButton from './CancelOrderButton';
 import EditOrderButton from './EditOrderButton';
 import RepeatOrder from './RepeatOrder';
@@ -38,7 +40,7 @@ const OrderButtonsGroup = ({
     /** Full-width action row below the order details */
     <div className="flex w-full gap-2 text-base font-bold tracking-wide">
       {/* Conditional rendering based on order status */}
-      {statusIdentifier === 'upcoming' ? (
+      {statusIdentifier === ORDERS_STATUS_UPCOMING ? (
         /** For upcoming orders, show edit/save + cancel options */
         <>
           {editState ? (

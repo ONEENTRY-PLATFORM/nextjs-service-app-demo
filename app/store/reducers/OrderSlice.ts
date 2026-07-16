@@ -5,6 +5,7 @@ import type {
   IOrdersFormData,
 } from 'oneentry/dist/orders/ordersInterfaces';
 
+import { ORDERS_FORM_IDENTIFIER } from '@/app/store/orderMarkers';
 import type { IAppOrder } from '@/app/types/global';
 
 /**
@@ -31,7 +32,7 @@ const initialState: InitialStateType = {
   order: {
     formData: [],
     products: [],
-    formIdentifier: 'order',
+    formIdentifier: ORDERS_FORM_IDENTIFIER,
   },
 };
 

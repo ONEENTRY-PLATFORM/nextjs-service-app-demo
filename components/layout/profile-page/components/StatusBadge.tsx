@@ -1,20 +1,23 @@
 import { Check, X } from 'lucide-react';
 import type { JSX } from 'react';
 
+import type { ORDERS_STATUS_CANCELED } from '@/app/store/orderMarkers';
+import { ORDERS_STATUS_COMPLETED } from '@/app/store/orderMarkers';
+
 /**
  * StatusBadge renders the small status pill shown in the top-right corner of a
  * completed or cancelled order card: a cyan "Completed" pill with a check, or a
  * muted "Cancelled" pill with a cross.
- * @param   {object}                   props        - Component props
- * @param   {'completed' | 'canceled'} props.status - Order status identifier
- * @returns {JSX.Element}                           Status pill element
+ * @param   {object}      props        - Component props
+ * @param   {string}      props.status - Order status identifier, one of the CMS status markers
+ * @returns {JSX.Element}              Status pill element
  */
 const StatusBadge = ({
   status,
 }: {
-  status: 'completed' | 'canceled';
+  status: typeof ORDERS_STATUS_COMPLETED | typeof ORDERS_STATUS_CANCELED;
 }): JSX.Element => {
-  const isCompleted = status === 'completed';
+  const isCompleted = status === ORDERS_STATUS_COMPLETED;
 
   return (
     <span

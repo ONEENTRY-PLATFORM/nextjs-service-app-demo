@@ -359,10 +359,16 @@ export const RTKApi = createApi({
     /**
      * Update a single order from the order storage object created by the user.
      * Updates a specific order by its ID and the marker of its storage object.
-     * @param id     - ID of the order object
-     * @param marker - Text identifier of the order storage object
-     * @param body   - Data to update the order with
-     * @returns      Base orders entity
+     * @deprecated Use the `updateOrder` mutation below instead. This is a WRITE
+     * operation wrongly declared as `build.query`: it therefore caches its
+     * result and declares `providesTags` where it should `invalidatesTags`, so
+     * updating an order through it would leave every cached order list stale.
+     * Kept only because the project does not delete unused exports without an
+     * explicit request; not consumed by any component.
+     * @param      id     - ID of the order object
+     * @param      marker - Text identifier of the order storage object
+     * @param      body   - Data to update the order with
+     * @returns           Base orders entity
      */
     updateOrderByMarkerAndId: build.query<IBaseOrdersEntity, SingleOrderProps>({
       queryFn: async ({ id, marker, body }) => {

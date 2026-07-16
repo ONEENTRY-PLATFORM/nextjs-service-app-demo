@@ -3,7 +3,10 @@ import type { JSX } from 'react';
 
 import ApiTestClient from './ApiTestClient';
 
-// Force-dynamic: the layout chain uses `useSearchParams()` (see the home page).
+// Force-dynamic: this is a dev-only benchmark dashboard, not CMS content — it
+// must re-run its measurements on every load rather than be served from a
+// prerender. (The rule against force-dynamic targets CMS pages; in production
+// this route is notFound() anyway, see below.)
 export const dynamic = 'force-dynamic';
 
 /**
