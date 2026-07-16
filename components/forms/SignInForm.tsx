@@ -1,7 +1,8 @@
 'use client';
 
 import type { IAuthPostBody } from 'oneentry/dist/auth-provider/authProvidersInterfaces';
-import type { IAttributes, IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { FormEvent, JSX } from 'react';
 import { useContext, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -188,7 +189,7 @@ const SignInForm = ({
 
         {/** Render form fields based on active tab */}
         <div className="relative mb-4 box-border flex shrink-0 flex-col gap-4">
-          {formFields.map((field: IAttributes, index: number) => {
+          {formFields.map((field: IFormAttribute, index: number) => {
             if (
               field.marker === `${tab}_reg` ||
               field.marker === 'password_reg'

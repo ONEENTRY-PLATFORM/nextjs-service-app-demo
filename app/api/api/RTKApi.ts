@@ -154,6 +154,37 @@ export const RTKApi = createApi({
       keepUnusedDataFor: 300, // 5 minutes for products by ID
     }),
     /**
+     * Search products by name (live search in the header popup).
+     *
+     * Search-as-you-type is client data loaded on interaction, so it belongs to
+     * RTK Query: retyping a term or reopening the popup is served from cache
+     * instead of hitting the API again, and concurrent subscribers share one
+     * request. `searchProduct` returns `IProductsEntity[] | IError`, so a failure
+     * is a VALUE, not a throw — it must be checked, never cast to an array.
+     * @param name - Product name or partial name to search for
+     * @returns    Array of matching product entities
+     */
+    searchProducts: build.query<IProductsEntity[], { name: string }>({
+      queryFn: async ({ name }) => {
+        /** Empty query — nothing to ask the API for. */
+        if (!name) {
+          return { data: [] };
+        }
+        try {
+          const result = await getApi().Products.searchProduct(name);
+          if (isError(result) || !Array.isArray(result)) {
+            return { data: [] };
+          }
+          return { data: result };
+        } catch {
+          /** Network failure degrades to an empty list, not a broken popup. */
+          return { data: [] };
+        }
+      },
+      providesTags: ['Products'],
+      keepUnusedDataFor: 300, // 5 minutes — repeated terms come from cache
+    }),
+    /**
      * Get product by ID.
      * Fetches a single product by its ID.
      * @param id - ID of the product to fetch
@@ -441,6 +472,7 @@ export const {
   useGetProductsQuery,
   useGetProductsByPageUrlQuery,
   useGetProductsByIdsQuery,
+  useSearchProductsQuery,
   useUpdateOrderByMarkerAndIdQuery,
   useUpdateUserStateMutation,
   useUpdateOrderMutation,

@@ -1,4 +1,4 @@
-import type { IAttributes } from 'oneentry/dist/base/utils';
+import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
 
 import { CurrencyEnum, IntlEnum } from '@/app/types/enum';
@@ -17,7 +17,7 @@ import { CurrencyEnum, IntlEnum } from '@/app/types/enum';
  * const fields = getFormAttributes(data).sort((a, b) => a.position - b.position);
  * ```
  */
-export const getFormAttributes = <T = IAttributes>(
+export const getFormAttributes = <T = IFormAttribute>(
   form: { attributes?: unknown } | undefined,
 ): T[] => {
   const attributes = form?.attributes;
@@ -257,7 +257,21 @@ export const flatMenuToNested = (
   return data.reduce((r: IMenusPages[], element: IMenusPages) => {
     if (pid == element.parentId) {
       const object = { ...element };
-      const children = flatMenuToNested(data, element.id);
+      /**
+       * The Menus API may already hand back a tree. Prefer the children it sent
+       * over rebuilding them from `parentId`: reconstruction searches the FLAT
+       * list, so for a tree response it finds nothing and the real submenu would
+       * be deleted below. All menus arrive flat today (every `parentId` is null,
+       * every `children` an empty array), which is what keeps this latent.
+       */
+      const apiChildren = Array.isArray(element.children)
+        ? element.children
+        : element.children
+          ? [element.children as IMenusPages]
+          : [];
+      const children = apiChildren.length
+        ? apiChildren
+        : flatMenuToNested(data, element.id);
       if (children.length) {
         object.children = children;
       } else {

@@ -46,6 +46,14 @@ describe('sortObjectFieldsByPosition', () => {
   });
 });
 
+/**
+ * First root item of a nested menu — the subject of most cases below.
+ * @param   {IMenusPages[]}           flat - Menu pages in either API shape
+ * @returns {IMenusPages | undefined}      First root item, if any
+ */
+const nestedFirst = (flat: IMenusPages[]): IMenusPages | undefined =>
+  flatMenuToNested(flat, null)[0];
+
 describe('flatMenuToNested', () => {
   it('builds a tree from parentId references', () => {
     const flat = [
@@ -58,6 +66,40 @@ describe('flatMenuToNested', () => {
     const children = nested[1]?.children as IMenusPages[] | undefined;
 
     expect(nested).toHaveLength(2);
+    expect(children).toHaveLength(1);
+    expect(children?.[0]?.id).toBe(3);
+  });
+
+  it('drops the empty children array the API sends on every page', () => {
+    const flat = [
+      { id: 1, parentId: null, children: [] },
+    ] as unknown as IMenusPages[];
+
+    expect(nestedFirst(flat)).not.toHaveProperty('children');
+  });
+
+  it('keeps children the API already nested instead of deleting them', () => {
+    // Guards the latent defect: children were rebuilt from `parentId` against
+    // the FLAT list, so for a tree response the lookup found nothing and the
+    // real submenu was `delete`d. Menus arrive flat today — only a test holds
+    // this branch honest.
+    const tree = [
+      { id: 2, parentId: null, children: [{ id: 3, parentId: 2 }] },
+    ] as unknown as IMenusPages[];
+
+    const children = nestedFirst(tree)?.children as IMenusPages[] | undefined;
+
+    expect(children).toHaveLength(1);
+    expect(children?.[0]?.id).toBe(3);
+  });
+
+  it('accepts a single child object, not just an array', () => {
+    const tree = [
+      { id: 2, parentId: null, children: { id: 3, parentId: 2 } },
+    ] as unknown as IMenusPages[];
+
+    const children = nestedFirst(tree)?.children as IMenusPages[] | undefined;
+
     expect(children).toHaveLength(1);
     expect(children?.[0]?.id).toBe(3);
   });

@@ -39,7 +39,16 @@ const getProductsImpl = unstable_cache(
         expandedFilters,
         undefined,
         {
-          sortOrder: 'ASC',
+          /**
+           * Same order as `getProductsByPageUrl` — the two wrappers used to sort
+           * the same catalog in OPPOSITE directions (ASC here, DESC there),
+           * which would have been a confusing bug the moment both fed one screen.
+           *
+           * Note this is creation date, not the admin-controlled `position`: the
+           * catalog order cannot be curated from the admin panel today. Switching
+           * to `position` is a product decision — it visibly reorders services.
+           */
+          sortOrder: 'DESC',
           sortKey: 'date',
           offset: offset,
           limit: limit,

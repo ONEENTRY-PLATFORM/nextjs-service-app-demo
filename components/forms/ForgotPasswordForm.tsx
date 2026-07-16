@@ -1,6 +1,7 @@
 'use client';
 
-import type { IAttributes, IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { FormEvent, JSX } from 'react';
 import { useContext, useState } from 'react';
 
@@ -105,8 +106,8 @@ export const ForgotPasswordForm = ({
 
         <div className="relative mb-8 box-border flex shrink-0 flex-col gap-4">
           {getFormAttributes(data)
-            .filter((field: IAttributes) => field.marker === 'email_reg')
-            .map((field: IAttributes, index: number) => (
+            .filter((field: IFormAttribute) => field.marker === 'email_reg')
+            .map((field: IFormAttribute, index: number) => (
               <FormInput key={index} index={index} {...field} />
             ))}
         </div>

@@ -5,7 +5,7 @@ import type {
   IAuthPostBody,
   ISignUpData,
 } from 'oneentry/dist/auth-provider/authProvidersInterfaces';
-import type { IAttributes } from 'oneentry/dist/base/utils';
+import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { FormEvent, JSX } from 'react';
 import { useCallback, useContext, useMemo, useState } from 'react';
 
@@ -23,6 +23,17 @@ import FormInput from './inputs/FormInput';
 import SubmitButton from './inputs/FormSubmitButton';
 
 /**
+ * A single form field, as the SDK's forms API describes it.
+ *
+ * `IFormAttribute` — not `IAttributes` from `base/utils`: the former is the type
+ * for FORM fields and already declares the auth/notification flags this file
+ * routes on (`isLogin`, `isPassword`, `isSignUpRequired`, `isNotification*`),
+ * which `IAttributes` lacks entirely. They used to be bolted on by hand here,
+ * duplicating the SDK.
+ */
+type FormField = IFormAttribute;
+
+/**
  * Form-field flag helpers.
  *
  * Fields are routed into authData / formData / notificationData by the flags
@@ -30,15 +41,6 @@ import SubmitButton from './inputs/FormSubmitButton';
  * to module scope so their reference is stable across renders (so hooks that
  * depend on them don't need to track them in their dependency arrays).
  */
-type FormField = IAttributes & {
-  isLogin?: boolean | null;
-  isSignUp?: boolean | null;
-  isSignUpRequired?: boolean | null;
-  isPassword?: boolean | null;
-  isNotificationEmail?: boolean | null;
-  isNotificationPhoneSMS?: boolean | null;
-  isNotificationPhonePush?: boolean | null;
-};
 /**
  * isPasswordField — whether the CMS flagged the field as a password input.
  * @param   {FormField} f - The form field to check

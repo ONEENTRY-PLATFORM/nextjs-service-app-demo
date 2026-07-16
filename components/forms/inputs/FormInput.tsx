@@ -1,4 +1,4 @@
-import type { IAttributes } from 'oneentry/dist/base/utils';
+import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { JSX, Key } from 'react';
 import { useEffect, useState } from 'react';
 
@@ -24,7 +24,7 @@ import EyeOpenIcon from '@/components/icons/eye-o';
  * @returns {JSX.Element}                     FormInput component with appropriate input type and validation
  */
 const FormInput = (
-  field: IAttributes & { value?: string; index: number },
+  field: IFormAttribute & { value?: string; index: number },
 ): JSX.Element => {
   /** Extract localized information from field properties */
   const { localizeInfos } = field;
@@ -37,13 +37,11 @@ const FormInput = (
   /**
    * Field-shaping flags come from the CMS field, not from the marker string:
    * `isPassword` marks a password field, the email validator marks an email
-   * field, `isSignUpRequired` marks a required field. (These runtime flags are
-   * not in the SDK's `IAttributes` type, hence the cast.)
+   * field, `isSignUpRequired` marks a required field. `IFormAttribute` declares
+   * them, so no cast is needed — `IAttributes` did not, which is what the old
+   * cast here was working around.
    */
-  const flags = field as IAttributes & {
-    isPassword?: boolean;
-    isSignUpRequired?: boolean;
-  };
+  const flags = field;
   const validators = (field.validators ?? {}) as {
     requiredValidator?: { strict?: boolean };
     emailInspectionValidator?: boolean;
@@ -55,17 +53,13 @@ const FormInput = (
    * (`additionalFields`); the label title is only a fallback for the
    * placeholder so the input is never left blank.
    */
-  const additionalFields = (
-    field as IAttributes & {
-      additionalFields?: {
-        placeholder?: { value?: string };
-        hint?: { value?: string };
-      };
-    }
-  ).additionalFields;
+  const additionalFields = field.additionalFields;
+  /** The map itself is typed; each entry's `value` is `unknown` by design. */
   const placeholder =
-    additionalFields?.placeholder?.value || localizeInfos?.title || '';
-  const hint = additionalFields?.hint?.value;
+    (additionalFields?.placeholder?.value as string | undefined) ||
+    localizeInfos?.title ||
+    '';
+  const hint = additionalFields?.hint?.value as string | undefined;
 
   /**
    * Determine the input type from the flags. The marker is only a fallback for

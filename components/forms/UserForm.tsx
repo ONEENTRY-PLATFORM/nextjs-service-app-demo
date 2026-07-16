@@ -2,7 +2,7 @@
 'use client';
 
 import type { IAuthFormData } from 'oneentry/dist/auth-provider/authProvidersInterfaces';
-import type { IAttributes } from 'oneentry/dist/base/utils';
+import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { FormEvent, JSX } from 'react';
 import { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -44,10 +44,18 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [isError, setError] = useState('');
 
-  /** Get form by marker with RTK */
-  const { data, isLoading, error } = useGetFormByMarkerQuery({
-    marker: 'reg',
-  });
+  /**
+   * Get form by marker with RTK.
+   *
+   * The marker comes from the user's own `formIdentifier` rather than a
+   * hardcoded `'reg'`: the profile form must be whichever form the account was
+   * registered with. It matches `'reg'` today (the only registration form), so
+   * this changes nothing now and stops being a guess if a second one appears.
+   */
+  const { data, isLoading, error } = useGetFormByMarkerQuery(
+    { marker: user?.formIdentifier ?? '' },
+    { skip: !user?.formIdentifier },
+  );
 
   /** get fields from formFieldsReducer */
   const fields = useAppSelector((state) => state.formFieldsReducer.fields);
@@ -62,11 +70,11 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
    */
   const formData = sortedFields
     .filter(
-      (field: IAttributes) =>
+      (field: IFormAttribute) =>
         field.marker !== 'email_notification_reg' &&
         !field.marker.includes('password'),
     )
-    .map((field: IAttributes) => ({
+    .map((field: IFormAttribute) => ({
       marker: field.marker,
       value: fields[field.marker as keyof typeof fields]?.value || '',
       type: field.type || 'string',
@@ -170,7 +178,7 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
             (field: { marker: string }) =>
               field.marker !== 'email_notification_reg',
           )
-          .map((field: IAttributes, index: number) => {
+          .map((field: IFormAttribute, index: number) => {
             const fieldData =
               Array.isArray(user?.formData) &&
               (user.formData.find((item) => item.marker === field.marker) as

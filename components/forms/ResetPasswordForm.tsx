@@ -1,6 +1,7 @@
 /* eslint-disable jsdoc/no-undefined-types */
 'use client';
 
+import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { FormEvent, JSX } from 'react';
 import { useContext, useState } from 'react';
 
@@ -15,23 +16,51 @@ import ErrorMessage from './inputs/ErrorMessage';
 import FormInput from './inputs/FormInput';
 import FormSubmitButton from './inputs/FormSubmitButton';
 
+/**
+ * Fields of the reset-password step.
+ *
+ * Synthesized locally rather than read from the CMS: the reset step is reached
+ * with only an OTP, so there is no user form to pull attributes from. They are
+ * still shaped as real `IFormAttribute`s so `FormInput` treats them exactly like
+ * CMS-authored fields — `isPassword` is what masks the input, and marking both
+ * fields with it means the confirm field no longer relies on FormInput's
+ * marker-name fallback.
+ *
+ * `isSignUpRequired` is the flag FormInput actually reads. These fields used to
+ * carry a plain `required: true`, which FormInput never looks at, so both inputs
+ * rendered as optional despite the form refusing to submit without them; naming
+ * the flag correctly makes the markup agree with that validation.
+ * @param   {string}         marker - Field marker, matching the CMS registration form
+ * @param   {string}         title  - Label shown above the input
+ * @returns {IFormAttribute}        Field definition for `FormInput`
+ */
+const passwordField = (
+  marker: string,
+  title: string,
+): IFormAttribute & { placeholder: string } => ({
+  marker,
+  type: 'string',
+  position: 0,
+  isVisible: true,
+  localizeInfos: { title } as IFormAttribute['localizeInfos'],
+  initialValue: null,
+  listTitles: [],
+  validators: {},
+  settings: {},
+  additionalFields: {},
+  isLogin: false,
+  isSignUp: false,
+  isPassword: true,
+  isSignUpRequired: true,
+  isNotificationEmail: false,
+  isNotificationPhonePush: false,
+  isNotificationPhoneSMS: false,
+  placeholder: '•••••',
+});
+
 export const resetPasswordFormFields = [
-  {
-    fieldType: 'password',
-    isVisible: true,
-    localizeInfos: { title: 'Password' },
-    placeholder: '•••••',
-    marker: 'password_reg',
-    required: true,
-  },
-  {
-    fieldType: 'password',
-    isVisible: true,
-    localizeInfos: { title: 'Confirm password' },
-    placeholder: '•••••',
-    marker: 'password_confirm',
-    required: true,
-  },
+  passwordField('password_reg', 'Password'),
+  passwordField('password_confirm', 'Confirm password'),
 ];
 
 /**
@@ -120,15 +149,7 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
         {/** Render reset password form fields */}
         <div className="relative mb-8 box-border flex shrink-0 flex-col gap-4">
           {resetPasswordFormFields.map((field, index) => (
-            <FormInput
-              key={index}
-              index={index}
-              {...field}
-              listTitles={[]}
-              position={0}
-              type={''}
-              validators={{}}
-            />
+            <FormInput key={index} index={index} {...field} />
           ))}
         </div>
         {/** Display submit button for password reset */}

@@ -1,6 +1,6 @@
 'use client';
 
-import type { IAttributes } from 'oneentry/dist/base/utils';
+import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { FormEvent, JSX } from 'react';
 import { useState } from 'react';
 
@@ -116,7 +116,7 @@ const ContactUsForm = ({ className }: { className: string }): JSX.Element => {
       onSubmit={handleSubmit}
     >
       <div className="relative mb-4 box-border flex shrink-0 flex-col gap-4">
-        {formFields.map((field: IAttributes, index: number) => {
+        {formFields.map((field: IFormAttribute, index: number) => {
           switch (field.type) {
             case 'button':
               return (
