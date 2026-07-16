@@ -173,6 +173,7 @@ export const getBookingData = async (): Promise<BookingData> => {
     name: item.title,
     duration: item.duration !== null ? `${item.duration} min` : '',
     price: item.price,
+    currency: item.currency,
     productId: item.id,
     categoryId: item.categoryId,
   }));

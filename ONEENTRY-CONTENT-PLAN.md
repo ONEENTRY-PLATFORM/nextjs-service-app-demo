@@ -158,6 +158,8 @@
 - статус `in_stock` (участвует в фильтре по цене).
 
 > **Статус:** 🟡 в основном сделано: **77 продуктов** заведены (набор `a_sets_tpl_catalog_1_ImportProcessingType.catalog`), у всех есть `title`, `description` (маркетинговые тексты из прайса), `sku` (`hh01`…`np04`), `duration` (мин) и `specialist_grade` (грейд списком — плановый бейдж-грейд, читает `ProductBadge`), статус `in_stock`, привязка к своим подкатегориям. ⚠️ Отличия: поля `sale` нет.
+>
+> **Обновлено 2026-07-17:** атрибут **`currency` заполнен значением `AED` у всех 81 продукта** (77 услуг + 4 оффера) — до этого он был пуст, из-за чего заказ не мог нести валюту. Заливка: `.claude/temp/fill-product-currency.mjs` (идемпотентна, `DRY_RUN=1`). Внутренний id поля **не хардкодится** — ищется по флагу `isCurrency` в схеме набора: у услуг это `string_id8`, а у офферов `string_id10`, так что фиксированный id записал бы четыре оффера в чужое поле. Фронт протянул валюту в заказ: `catalog-data` → `ServiceItem.currency` → `BookingService.currency` → поле `currency` формы `order`.
 
 ---
 
@@ -245,11 +247,21 @@
 
 1. **Форма `reg`** — единая для регистрации/входа/профиля. Поля: `email_reg`, `password_reg` (type=password), `phone_reg`, `email_notification_reg`; флаги isLogin/isSignUp на полях. Auth-провайдеры: **email** (используется при signUp) и **phone** (таб входа). ⚠️ В верстке авторизация телефон-центричная (OTP) — минимум включить оба провайдера.
 2. **Форма `contact_us`** — поля из верстки: Your name (text), Phone (text), E-mail (text), Message (textarea) + `spam` (reCAPTCHA, ключ в `settings.captchaKey`) + `button`.
-3. **Форма `order`** с полями: `master` (list), `order_salon` (entity), `interval` (timeInterval).
+3. **Форма `order`** с полями: `master` (list), `salon` (entity), `interval` (timeInterval), `price` (float), `currency` (string).
+   > ⚠️ В плане до 2026-07-17 значилось `order_salon` — в админке поле завели как **`salon`**. Код угадывал маркер по этому плану и отправлял `order_salon`, которого в форме нет: салон молча не попадал в заказ. Исправлено в `useBookingSubmit.ts`; маркеры сверены с живой формой (`.claude/temp/inspect-order-form.mjs`).
 4. **Хранилище заказов** с маркером **`orders`**; статусы: `upcoming`, `completed`, `canceled` (identifiers — точно такие, их сверяет `ProfileHistory`).
 5. **Платёжные аккаунты**: `cash` (обязателен — редирект в профиль) и Stripe (опционально).
 
-> **Статус (обновл. 2026-07-14):** 🟡 ✅ **auth-провайдеры `google` + `email` включены** (active=true). ✅ **форма `reg` полностью заполнена** (6 полей, проверено `inspect-reg-form.mjs` 2026-07-14: `email_reg` — isLogin + isSignUpRequired, required + email-валидатор; `name_reg` — isSignUpRequired; `phone_reg`; `password_reg` — isPassword + isSignUpRequired, required; `repeat_password`; `email_notification_reg` — isNotificationEmail). Фронт `SignUpForm` починен под флаговую маршрутизацию (2026-07-14): пароль определяется по `isPassword` (устаревшая проверка `additionalFields.type` удалена), `repeat_password` не отправляется — только клиентская проверка совпадения. ❌ формы `contact_us`, `order` всё ещё **без полей** (`attributes = {}`); `contact_us` отложена по решению пользователя (2026-07-14) — нужен site key reCAPTCHA для поля `spam`. `order` тоже отложена (2026-07-14): значения `interval` должны браться из атрибутов сущностей в зависимости от flow бронирования — график мастера (`master_schedule`) либо режим работы салона (`salon_time`), статичная настройка поля в форме не годится; см. открытый вопрос §11.8. ✅ платёжные аккаунты `cash` и `stripe` заведены оба. Хранилище `orders` app-токеном не проверяется (401 Unauthorized).
+> **Статус (обновл. 2026-07-14):** 🟡 ✅ **auth-провайдеры `google` + `email` включены** (active=true). ✅ **форма `reg` полностью заполнена** (6 полей, проверено `inspect-reg-form.mjs` 2026-07-14: `email_reg` — isLogin + isSignUpRequired, required + email-валидатор; `name_reg` — isSignUpRequired; `phone_reg`; `password_reg` — isPassword + isSignUpRequired, required; `repeat_password`; `email_notification_reg` — isNotificationEmail). Фронт `SignUpForm` починен под флаговую маршрутизацию (2026-07-14): пароль определяется по `isPassword` (устаревшая проверка `additionalFields.type` удалена), `repeat_password` не отправляется — только клиентская проверка совпадения. ❌ форма `contact_us` — **без полей** (`attributes = {}`), отложена по решению пользователя (2026-07-14): нужен site key reCAPTCHA для поля `spam`. Мёртвый дубль-компонент `ContactUsForm` + заглушка `FormCaptcha` удалены 2026-07-17; живая форма — `ContactFormCard` на `/contacts`, она деградирует без полей. ✅ платёжные аккаунты `cash` и `stripe` заведены оба.
+>
+> **Форма `order` — ЗАПОЛНЕНА (сверено 2026-07-17):** 5 полей — `master` (list), `salon` (entity), `interval` (timeInterval), `price` (float), `currency` (string). Фронт приведён к ним: маркер `salon` вместо выдуманного `order_salon`, id страницы салона числом (не строкой), добавлены `price` и `currency`.
+>
+> **⛔ Оформление заказа НЕ РАБОТАЕТ — два блокера, оба в админке** (диагностировано живым прогоном букинга 2026-07-16, `POST /orders-storage/marker/orders/orders` → 400):
+>
+> 1. **`400 "there aren't list values for type list"`** — у поля **`master`** (тип `list`) **пустой список значений** (`listTitles: []`), поэтому API отвергает любое значение. Нужно либо заполнить опции списка мастерами, либо сменить тип поля на `entity` (как у `salon`). Требует решения: чем именно идентифицировать мастера — id админа (сейчас код шлёт `adminId`) или именем.
+> 2. **`400 "Payment account identifier is wrong or payment accounts are not defined"`** — вылезает следом, когда `master` убран из payload. У аккаунтов `cash` и `stripe` **`isUsed: false`**, и к хранилищу `orders` не привязан ни один (`paymentAccountIdentifiers: []`). Нужно активировать `cash` и привязать его к хранилищу.
+>
+> Хранилище `orders`: `formIdentifier = null` (поэтому код обязан слать `'order'` литералом — брать из хранилища нельзя, ушёл бы `null`), `paymentAccountIdentifiers = []`. Проверка — `.claude/temp/probe-create-order.mjs`.
 
 ---
 

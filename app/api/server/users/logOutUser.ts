@@ -1,13 +1,25 @@
+'use client';
+
 import { clearSession, getApi } from '@/app/api';
 
 type LogOutProps = { marker: string; token?: string };
 
 /**
- * User logOut with API AuthProvider
- * @param   {object}          marker        - The marker of the logout method.
- * @param   {string}          marker.marker - The marker of the logout method.
- * @returns {Promise<object>}               result
- * @description — This method requires user authorization. For more information about configuring the authorization module, see the documentation in the configuration settings section of the SDK.
+ * logOutUser — revoke the session with `AuthProvider.logout` and clear it locally.
+ *
+ * ⚠️ CLIENT-ONLY, despite living under `app/api/server/`. That directory is the
+ * project's convention for every SDK wrapper (see CLAUDE.md), not a claim about
+ * where the code runs — and this one reads `localStorage`, so calling it from a
+ * Server Component throws `ReferenceError: localStorage is not defined`. The
+ * `'use client'` directive above makes that explicit instead of leaving it to
+ * whoever reads the path. Both real call sites (`SignOutButton`,
+ * `LogoutMenuItem`) are already client components.
+ *
+ * User-authorized SDK methods must run on the client anyway: the API ties the
+ * refresh token to the browser fingerprint (rules/auth-provider.md).
+ * @param   {LogOutProps}     props        - Function parameters
+ * @param   {string}          props.marker - Auth-provider marker the user signed in with (e.g. `'email'`)
+ * @returns {Promise<object>}              `{ data }` on success, `{ error }` with the message on failure
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
  */
 export const logOutUser = async ({ marker }: LogOutProps): Promise<object> => {

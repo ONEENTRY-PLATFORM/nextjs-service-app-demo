@@ -26,8 +26,10 @@ export interface BookingService {
   name: string;
   /** Human duration line, e.g. `60 min` (may be empty) */
   duration: string;
-  /** Price in AED, `null` when not set in the CMS */
+  /** Price, `null` when not set in the CMS */
   price: number | null;
+  /** Currency of `price` from the CMS (`'AED'`); `''` when unset or for demo services */
+  currency: string;
   /** CMS product id for the cart/order, `null` for demo services */
   productId: number | null;
   /** CMS services category page id (`serviceId` of the cart), `null` in demo */

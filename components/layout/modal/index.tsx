@@ -21,15 +21,17 @@ type ModalFormProps = {
 /**
  * Forms are event-driven — nothing is shown until the user opens the modal —
  * and each one pulls in the OneEntry SDK. Loading them through `dynamic()`
- * instead of a namespace import of the barrel keeps all seven (and the SDK)
+ * instead of a namespace import of the barrel keeps all six (and the SDK)
  * out of the first-load JS of every page; only the opened form is fetched.
  *
  * Each form declares only the props it actually uses (some take just `dict`,
  * some just `className`), while the modal always passes the full set — extra
  * props are simply ignored, hence the single cast to the common shape.
+ *
+ * The contact form is NOT here: it renders inline on `/contacts` as
+ * `ContactFormCard`, never in this modal.
  */
 const formsMap = {
-  ContactUsForm: dynamic(() => import('@/components/forms/ContactUsForm')),
   ForgotPasswordForm: dynamic(
     () => import('@/components/forms/ForgotPasswordForm'),
   ),

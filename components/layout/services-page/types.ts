@@ -42,8 +42,10 @@ export interface ServiceItem {
   title: string;
   /** Short description (may be empty) */
   description: string;
-  /** Price in AED, `null` when not set in the CMS ("Not available") */
+  /** Price, `null` when not set in the CMS ("Not available") */
   price: number | null;
+  /** Currency of `price` from the CMS `currency` attribute (`'AED'`); `''` when unset */
+  currency: string;
   /**
    * Product status marker from the CMS (e.g. `in_stock`). A service counts as
    * unavailable when this is not the in-stock marker — independent of price.

@@ -100,11 +100,20 @@ const toServiceItem = (
    */
   const description = plainTextFromTextAttr(attrs.description?.value) || '';
 
+  /**
+   * Currency of `price`, from the product's own `currency` attribute — the
+   * order form carries it alongside the price, so it must come from the CMS
+   * rather than a constant in the code.
+   */
+  const attrCurrency = attrs.currency?.value;
+  const currency = typeof attrCurrency === 'string' ? attrCurrency : '';
+
   return {
     id: product.id,
     title: product.localizeInfos?.title ?? '',
     description,
     price,
+    currency,
     statusIdentifier: product.statusIdentifier ?? '',
     duration,
     categoryUrl: category.pageUrl,

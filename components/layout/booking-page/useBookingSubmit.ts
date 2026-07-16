@@ -114,6 +114,17 @@ export const useBookingSubmit = (): {
     setIsLoading(true);
     try {
       const [start, end] = toInterval(sel);
+      /**
+       * Markers and types below mirror the `order` form in the CMS, verified
+       * against it (`.claude/temp/inspect-order-form.mjs`, 2026-07-17):
+       * `master` (list), `salon` (entity), `interval` (timeInterval),
+       * `price` (float), `currency` (string).
+       *
+       * They used to be guesses, and one was wrong: the salon went as
+       * `order_salon`, a marker the form does not have — once the form was
+       * filled in the admin panel, the salon silently stopped reaching the
+       * order. Re-check here whenever the form changes.
+       */
       const formData: { marker: string; type: string; value: unknown }[] = [];
       if (sel.master?.adminId) {
         formData.push({
@@ -125,9 +136,10 @@ export const useBookingSubmit = (): {
       const salonId = Number(sel.salon?.id);
       if (salonId) {
         formData.push({
-          marker: 'order_salon',
+          marker: 'salon',
           type: 'entity',
-          value: [salonId.toString()],
+          /** Entity refs to PAGES take numeric ids, not strings. */
+          value: [salonId],
         });
       }
       formData.push({
@@ -136,6 +148,20 @@ export const useBookingSubmit = (): {
         /** Send the interval as explicit ISO strings rather than Date objects. */
         value: [[start.toISOString(), end.toISOString()]],
       });
+      if (typeof sel.service.price === 'number') {
+        formData.push({
+          marker: 'price',
+          type: 'float',
+          value: sel.service.price,
+        });
+      }
+      if (sel.service.currency) {
+        formData.push({
+          marker: 'currency',
+          type: 'string',
+          value: sel.service.currency,
+        });
+      }
 
       const createdOrder = await getApi().Orders.createOrder(
         ORDERS_STORAGE_MARKER,
