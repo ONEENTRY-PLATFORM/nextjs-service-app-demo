@@ -13,7 +13,7 @@ import {
 import { useAppSelector } from '@/app/store/hooks';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
-import { EVENT_RESET_GENERATE } from '@/components/forms/authEventMarkers';
+import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
 import { getFormAttributes } from '@/components/utils';
 
 import SpinnerLoader from '../shared/SpinnerLoader';
@@ -66,7 +66,7 @@ export const ForgotPasswordForm = ({
       const result = await getApi().AuthProvider.generateCode(
         'email',
         fields.email_reg.value,
-        EVENT_RESET_GENERATE,
+        EVENT_PASSWORD_RESET,
       );
       if (isSdkError(result)) {
         setError(result.message || 'Could not send the verification code');

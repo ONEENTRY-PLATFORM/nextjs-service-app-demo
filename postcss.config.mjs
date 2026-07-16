@@ -2,7 +2,7 @@
 const config = {
   plugins: {
     'postcss-import': {},
-    "@tailwindcss/postcss": {},
+    '@tailwindcss/postcss': {},
     autoprefixer: {},
     ...(process.env.NODE_ENV === 'production' ? { cssnano: {} } : {}),
   },

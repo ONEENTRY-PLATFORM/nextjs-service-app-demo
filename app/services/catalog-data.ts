@@ -105,6 +105,7 @@ const toServiceItem = (
     title: product.localizeInfos?.title ?? '',
     description,
     price,
+    statusIdentifier: product.statusIdentifier ?? '',
     duration,
     categoryUrl: category.pageUrl,
     categoryId: category.id,

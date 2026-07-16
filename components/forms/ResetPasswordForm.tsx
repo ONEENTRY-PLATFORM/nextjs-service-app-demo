@@ -10,7 +10,7 @@ import { useAppSelector } from '@/app/store/hooks';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { FormProps } from '@/app/types/global';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
-import { EVENT_RESET_VERIFY } from '@/components/forms/authEventMarkers';
+import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
 
 import ErrorMessage from './inputs/ErrorMessage';
 import FormInput from './inputs/FormInput';
@@ -105,7 +105,7 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
       const result = await getApi().AuthProvider.changePassword(
         'email',
         email_reg.value,
-        EVENT_RESET_VERIFY,
+        EVENT_PASSWORD_RESET,
         1,
         otp_code.value.toString(),
         password_reg.value,

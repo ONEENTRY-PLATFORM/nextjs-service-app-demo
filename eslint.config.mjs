@@ -1,5 +1,5 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 import typescriptPlugin from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
@@ -11,9 +11,9 @@ import tailwindcssPlugin from 'eslint-plugin-tailwindcss';
 import simpleImportSortPlugin from 'eslint-plugin-simple-import-sort';
 import jsdocPlugin from 'eslint-plugin-jsdoc';
 
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+import { defineConfig, globalIgnores } from 'eslint/config';
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import nextTs from 'eslint-config-next/typescript';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,32 +23,22 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // Override default ignores of eslint-config-next.
   globalIgnores([
-    "node_modules/**",
+    'node_modules/**',
     // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
+    '.next/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts',
     // Figma-экспорт верстки — референс дизайна, не рабочий код
-    "static-html/**",
+    'static-html/**',
     // Служебные скрипты Claude (инспекция/наполнение CMS) — не рабочий код проекта
-    ".claude/**",
+    '.claude/**',
   ]),
 
   // Main ruleset for JS/TS/JSX/TSX
   {
-    files: [
-      '**/*.js',
-      '**/*.jsx',
-      '**/*.ts',
-      '**/*.tsx'
-    ],
-    ignores: [
-      'node_modules/**',
-      '.next/**',
-      'out/**',
-      '.claude/**'
-    ],
+    files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
+    ignores: ['node_modules/**', '.next/**', 'out/**', '.claude/**'],
     languageOptions: {
       ...reactPlugin.configs.flat.languageOptions,
       parser: typescriptParser,
@@ -117,14 +107,13 @@ const eslintConfig = defineConfig([
         },
       ],
 
-      // Prettier
-      'prettier/prettier': [
-        'error',
-        {
-          singleQuote: true,
-          endOfLine: 'auto',
-        },
-      ],
+      // Prettier — options live in .prettierrc, NOT inline here.
+      // eslint-plugin-prettier reads that file itself, so a single config drives
+      // both `eslint --fix` and standalone `prettier` / format-on-save. Inlining
+      // them again would fork the source of truth: whatever is missing here
+      // silently falls back to Prettier's defaults (double quotes), which is how
+      // format-on-save used to fight ESLint.
+      'prettier/prettier': 'error',
 
       // React
       'react/react-in-jsx-scope': 'off', // Next/React automatic runtime
@@ -139,7 +128,7 @@ const eslintConfig = defineConfig([
       // disable base rule and use typescript-aware rule instead
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['warn'],
-      
+
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/comma-dangle': 'off',
 
@@ -161,7 +150,7 @@ const eslintConfig = defineConfig([
       ],
 
       'no-console': 'warn',
-      
+
       // JSDoc rules
       'jsdoc/check-line-alignment': ['warn', 'always'],
     },

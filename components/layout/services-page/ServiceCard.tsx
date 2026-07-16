@@ -5,6 +5,7 @@ import { useTransitionRouter } from 'next-transition-router';
 import type { JSX } from 'react';
 import { useState } from 'react';
 
+import { PRODUCT_STATUS_IN_STOCK } from '@/app/api/utils/productStatusMarkers';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
   addServiceToCart,
@@ -43,7 +44,16 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
   /** Active cart row index */
   const activeId = useAppSelector(selectActiveItemId);
 
-  const unavailable = service.price === null;
+  /**
+   * A service is unavailable when it has no price OR the CMS flags it as not
+   * in stock. Status matters independently of price: a priced service marked
+   * out of stock must still show as unavailable. Every catalog product is
+   * `in_stock` today, so this changes nothing now — it just stops the card from
+   * lying once a service is ever taken out of stock in the admin panel.
+   */
+  const unavailable =
+    service.price === null ||
+    service.statusIdentifier !== PRODUCT_STATUS_IN_STOCK;
 
   /**
    * Add the service to the booking cart and navigate to the booking page

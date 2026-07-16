@@ -14,8 +14,8 @@ import { addField } from '@/app/store/reducers/FormFieldsSlice';
 import type { FormProps } from '@/app/types/global';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import {
-  EVENT_RESET_GENERATE,
-  EVENT_RESET_VERIFY,
+  EVENT_PASSWORD_RESET,
+  EVENT_REGISTRATION,
 } from '@/components/forms/authEventMarkers';
 
 import ErrorMessage from './inputs/ErrorMessage';
@@ -98,7 +98,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
         const result = await getApi().AuthProvider.checkCode(
           'email',
           fields.email_reg.value,
-          EVENT_RESET_VERIFY,
+          EVENT_PASSWORD_RESET,
           otp,
         );
         if (isError(result)) {
@@ -210,10 +210,16 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
        * — check it so a failed resend surfaces instead of silently starting
        * the cooldown.
        */
+      /**
+       * This form serves BOTH flows, so the resend must name the event that
+       * issued the original code: activation codes come from the registration
+       * event, reset codes from the password-reset one. Resending an activation
+       * code under the reset event would issue one `activateUser` cannot accept.
+       */
       const result = await getApi().AuthProvider.generateCode(
         'email',
         fields.email_reg.value,
-        EVENT_RESET_GENERATE,
+        action === 'activateUser' ? EVENT_REGISTRATION : EVENT_PASSWORD_RESET,
       );
       if (isError(result)) {
         throw new Error(result.message || 'Could not resend the code');
@@ -227,7 +233,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
       /** Always stop loading state */
       setLoading(false);
     }
-  }, [fields.email_reg, cooldown, resendCooldownSec]);
+  }, [fields.email_reg, cooldown, resendCooldownSec, action]);
 
   return (
     <FormAnimations className={''} isLoading={isLoading} isActive={true}>
