@@ -6,7 +6,7 @@ import { getMastersList } from '@/app/api/utils/getMastersList';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
 import SectionTitle from '@/components/shared/SectionTitle';
-import { fileDisplayUrl } from '@/components/utils';
+import { fileBlurDataUrl, fileDisplayUrl } from '@/components/utils';
 
 import SpecialistsGrid from './components/SpecialistsGrid';
 
@@ -48,6 +48,7 @@ const toMasterItem = (admin: IAdminEntity): MasterItem | null => {
     salonId,
     rating: Number(attrs.master_rating?.value) || 5,
     photo: fileDisplayUrl(attrs.master_image?.value),
+    photoBlur: fileBlurDataUrl(attrs.master_image?.value),
     href: `/masters/${admin.id}`,
   };
 };

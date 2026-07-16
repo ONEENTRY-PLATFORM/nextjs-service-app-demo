@@ -46,6 +46,8 @@ export interface BookingMaster {
   grade: string;
   /** Portrait URL (`master_image`), empty string when not set */
   photo: string;
+  /** Ready-made LQIP for the portrait (CMS `previewLink`); absent for files uploaded without previews */
+  photoBlur?: string | undefined;
   /** Specialties line of the card, e.g. `['Hair']` */
   specialties: string[];
   /** Rating 1–5 (`master_rating`) */

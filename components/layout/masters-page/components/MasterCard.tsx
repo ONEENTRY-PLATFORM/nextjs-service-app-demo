@@ -34,6 +34,8 @@ const MasterCard = ({ item }: { item: MasterItem }): JSX.Element => {
           src={item.photo}
           alt={item.name}
           loading="lazy"
+          placeholder={item.photoBlur ? 'blur' : 'empty'}
+          {...(item.photoBlur ? { blurDataURL: item.photoBlur } : {})}
           className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
         />
       )}

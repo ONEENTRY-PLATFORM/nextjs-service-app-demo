@@ -11,6 +11,7 @@ import type {
   BookingService,
 } from '@/components/layout/booking-page/types';
 import {
+  fileBlurDataUrl,
   fileDisplayUrl,
   formatUaePhone,
   plainTextFromTextAttr,
@@ -112,6 +113,7 @@ const toBookingMaster = ({
     name,
     grade: typeof shortDescription === 'string' ? shortDescription : '',
     photo: fileDisplayUrl(attrs.master_image?.value),
+    photoBlur: fileBlurDataUrl(attrs.master_image?.value),
     specialties,
     rating: Number(attrs.master_rating?.value) || 5,
     reviews: null,

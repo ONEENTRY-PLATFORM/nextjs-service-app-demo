@@ -36,6 +36,8 @@ export type MasterItem = {
   rating: number;
   /** Portrait URL; `''` when the CMS attribute is empty */
   photo: string;
+  /** Ready-made LQIP for the portrait (CMS `previewLink`); absent for files uploaded without previews */
+  photoBlur?: string | undefined;
   /** Profile link (`/masters/{adminId}`) — absent for local demo specialists */
   href?: string | undefined;
 };

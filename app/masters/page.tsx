@@ -15,7 +15,7 @@ import type {
   SalonOption,
 } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
-import { fileDisplayUrl } from '@/components/utils';
+import { fileBlurDataUrl, fileDisplayUrl } from '@/components/utils';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it
@@ -104,6 +104,7 @@ const toMasterItem = ({
     salonId,
     rating: Number(attrs.master_rating?.value) || 5,
     photo: fileDisplayUrl(attrs.master_image?.value),
+    photoBlur: fileBlurDataUrl(attrs.master_image?.value),
     href:
       `/masters/${admin.id}` +
       (firstServiceId !== undefined ? `?service=${firstServiceId}` : ''),
