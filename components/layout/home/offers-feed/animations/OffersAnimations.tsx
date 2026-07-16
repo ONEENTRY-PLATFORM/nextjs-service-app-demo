@@ -22,29 +22,32 @@ const OffersAnimations = ({
   const ref = useRef(null);
 
   /** Setup scroll-triggered animation */
-  useGSAP(() => {
-    /** Create timeline with scroll trigger for offers section */
-    const tl = gsap.timeline({
-      paused: true,
-      scrollTrigger: {
-        trigger: ref.current,
-        toggleActions: 'restart reverse restart reverse',
-        start: 'top +=50',
-        end: 'center top',
-      },
-    });
+  useGSAP(
+    () => {
+      /** Create timeline with scroll trigger for offers section */
+      const tl = gsap.timeline({
+        paused: true,
+        scrollTrigger: {
+          trigger: ref.current,
+          toggleActions: 'restart reverse restart reverse',
+          start: 'top +=50',
+          end: 'center top',
+        },
+      });
 
-    /** Animate the opacity of the element when scrolled */
-    tl.to(ref?.current, {
-      autoAlpha: 0.5,
-      duration: 1,
-    });
+      /** Animate the opacity of the element when scrolled */
+      tl.to(ref?.current, {
+        autoAlpha: 0.5,
+        duration: 1,
+      });
 
-    /** Cleanup function to kill timeline on unmount */
-    return () => {
-      tl.kill();
-    };
-  }, []);
+      /** Cleanup function to kill timeline on unmount */
+      return () => {
+        tl.kill();
+      };
+    },
+    { dependencies: [], scope: ref },
+  );
 
   /** Render offers animations container */
   return (

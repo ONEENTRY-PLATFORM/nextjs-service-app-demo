@@ -36,62 +36,65 @@ const FormFieldAnimations = ({
    * Trigger timeline animation for form field elements
    * Controls the entrance animation of each form field with staggered delays
    */
-  useGSAP(() => {
-    /**
-     * Early return if DOM reference is not available
-     * Ensures the animation only runs when the element is mounted
-     */
-    if (!ref.current) {
-      return;
-    }
+  useGSAP(
+    () => {
+      /**
+       * Early return if DOM reference is not available
+       * Ensures the animation only runs when the element is mounted
+       */
+      if (!ref.current) {
+        return;
+      }
 
-    /**
-     * Set initial transform properties for smooth animation
-     * Establishes the origin point and prevents content overflow during animation
-     */
-    gsap.set(ref.current, {
-      transformOrigin: '0 0',
-      overflow: 'hidden',
-    });
+      /**
+       * Set initial transform properties for smooth animation
+       * Establishes the origin point and prevents content overflow during animation
+       */
+      gsap.set(ref.current, {
+        transformOrigin: '0 0',
+        overflow: 'hidden',
+      });
 
-    /**
-     * Create the main timeline for form field animation
-     * This timeline controls the width and opacity transitions
-     */
-    const triggerTl = gsap.timeline({
-      paused: true,
-    });
+      /**
+       * Create the main timeline for form field animation
+       * This timeline controls the width and opacity transitions
+       */
+      const triggerTl = gsap.timeline({
+        paused: true,
+      });
 
-    /**
-     * Define the animation sequence:
-     * - Start with zero width and opacity
-     * - Animate to full width and full opacity
-     * - Apply staggered delay based on field index for sequential appearance
-     */
-    triggerTl.fromTo(
-      ref.current,
-      {
-        width: 0,
-        opacity: 0,
-      },
-      {
-        width: '100%',
-        opacity: 1,
-        delay: index / 10 + 0.35,
-      },
-    );
+      /**
+       * Define the animation sequence:
+       * - Start with zero width and opacity
+       * - Animate to full width and full opacity
+       * - Apply staggered delay based on field index for sequential appearance
+       */
+      triggerTl.fromTo(
+        ref.current,
+        {
+          width: 0,
+          opacity: 0,
+        },
+        {
+          width: '100%',
+          opacity: 1,
+          delay: index / 10 + 0.35,
+        },
+      );
 
-    /** Play the entry animation on mount */
-    triggerTl.play();
+      /** Play the entry animation on mount */
+      triggerTl.play();
 
-    /**
-     * Cleanup function to prevent memory leaks
-     * Kills the timeline when component unmounts
-     */
-    return () => {
-      triggerTl.kill();
-    };
-  }, []);
+      /**
+       * Cleanup function to prevent memory leaks
+       * Kills the timeline when component unmounts
+       */
+      return () => {
+        triggerTl.kill();
+      };
+    },
+    { dependencies: [], scope: ref },
+  );
 
   return (
     <div ref={ref} className={className}>

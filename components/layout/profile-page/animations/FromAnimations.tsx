@@ -43,58 +43,61 @@ const FromAnimations = ({
   );
 
   /** Set up GSAP animations that respond to transition state changes */
-  useGSAP(() => {
-    /** Create a GSAP timeline for sequencing animation steps */
-    const stageTl = gsap.timeline({
-      id: 'stageFromTl',
-      paused: true,
-    });
+  useGSAP(
+    () => {
+      /** Create a GSAP timeline for sequencing animation steps */
+      const stageTl = gsap.timeline({
+        id: 'stageFromTl',
+        paused: true,
+      });
 
-    /** Only execute animations when the animation system is ready */
-    if (readyState) {
-      /** Initial page load scenario: component appears with fade-in effect */
-      if (stage === 'none' && prevStage === '') {
-        stageTl
-          .set(ref.current, {
-            autoAlpha: 0,
-          })
-          .to(ref.current, {
-            autoAlpha: 1,
-          });
-        stageTl.play();
+      /** Only execute animations when the animation system is ready */
+      if (readyState) {
+        /** Initial page load scenario: component appears with fade-in effect */
+        if (stage === 'none' && prevStage === '') {
+          stageTl
+            .set(ref.current, {
+              autoAlpha: 0,
+            })
+            .to(ref.current, {
+              autoAlpha: 1,
+            });
+          stageTl.play();
+        }
+        // Navigation to a new page: fade in the new content
+        else if (stage === 'entering' && prevStage === 'leaving') {
+          stageTl
+            .set(ref.current, {
+              autoAlpha: 0,
+            })
+            .to(ref.current, {
+              autoAlpha: 1,
+            });
+          stageTl.play();
+        }
+        // Navigation away from current page: fade out the current content
+        else if (stage === 'leaving' && prevStage === 'none') {
+          stageTl
+            .set(ref.current, {
+              autoAlpha: 1,
+            })
+            .to(ref.current, {
+              autoAlpha: 0,
+            });
+          stageTl.play();
+        }
       }
-      // Navigation to a new page: fade in the new content
-      else if (stage === 'entering' && prevStage === 'leaving') {
-        stageTl
-          .set(ref.current, {
-            autoAlpha: 0,
-          })
-          .to(ref.current, {
-            autoAlpha: 1,
-          });
-        stageTl.play();
-      }
-      // Navigation away from current page: fade out the current content
-      else if (stage === 'leaving' && prevStage === 'none') {
-        stageTl
-          .set(ref.current, {
-            autoAlpha: 1,
-          })
-          .to(ref.current, {
-            autoAlpha: 0,
-          });
-        stageTl.play();
-      }
-    }
 
-    /** Update the tracking of previous stage for next render cycle */
-    setPrevStage(stage);
+      /** Update the tracking of previous stage for next render cycle */
+      setPrevStage(stage);
 
-    /** Cleanup function that runs when component unmounts or dependencies change */
-    return () => {
-      stageTl.kill();
-    };
-  }, [stage, readyState]);
+      /** Cleanup function that runs when component unmounts or dependencies change */
+      return () => {
+        stageTl.kill();
+      };
+    },
+    { dependencies: [stage, readyState], scope: ref },
+  );
 
   return (
     <div className={className} ref={ref}>

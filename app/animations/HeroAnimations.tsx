@@ -39,118 +39,121 @@ const HeroAnimations = ({
   const hasLeftRef = useRef(false);
 
   /** triggerTl animations */
-  useGSAP(() => {
-    if (!ref.current) {
-      return;
-    }
+  useGSAP(
+    () => {
+      if (!ref.current) {
+        return;
+      }
 
-    const title = ref.current.querySelector('.hero-title');
-    const description = ref.current.querySelector('.hero-description');
-    const heroBg = ref.current.querySelector('.hero-bg');
-    const button = ref.current.querySelector('.hero-button');
+      const title = ref.current.querySelector('.hero-title');
+      const description = ref.current.querySelector('.hero-description');
+      const heroBg = ref.current.querySelector('.hero-bg');
+      const button = ref.current.querySelector('.hero-button');
 
-    /** bgTl */
-    const bgTl = gsap.timeline({
-      id: 'heroBgTl',
-      paused: true,
-      scrollTrigger: {
-        trigger: ref.current,
-        scrub: 5,
-        toggleActions: 'play reverse restart reverse',
-        start: '10% top',
-        end: 'bottom center',
-      },
-    });
-    /** triggerTl */
-    const triggerTl = gsap.timeline({
-      id: 'heroTriggerTl',
-      paused: true,
-      scrollTrigger: {
-        trigger: ref.current,
-        scrub: 3,
-        toggleActions: 'play reverse restart reverse',
-        start: '130px top',
-        end: 'bottom center',
-      },
-    });
-    setBackTl(bgTl);
-    setTriggerTl(triggerTl);
-    /** title */
-    if (title) {
-      triggerTl.fromTo(
-        title,
-        {
-          y: '0',
-          autoAlpha: 1,
-          scale: 1,
+      /** bgTl */
+      const bgTl = gsap.timeline({
+        id: 'heroBgTl',
+        paused: true,
+        scrollTrigger: {
+          trigger: ref.current,
+          scrub: 5,
+          toggleActions: 'play reverse restart reverse',
+          start: '10% top',
+          end: 'bottom center',
         },
-        {
-          y: '-5vh',
-          autoAlpha: 0.5,
-          scale: 1.3,
-          ease: 'none',
-          duration: 2,
-          id: 'title',
+      });
+      /** triggerTl */
+      const triggerTl = gsap.timeline({
+        id: 'heroTriggerTl',
+        paused: true,
+        scrollTrigger: {
+          trigger: ref.current,
+          scrub: 3,
+          toggleActions: 'play reverse restart reverse',
+          start: '130px top',
+          end: 'bottom center',
         },
-      );
-    }
-    /** descr */
-    if (description) {
-      triggerTl.fromTo(
-        description,
-        {
-          y: '0',
-          autoAlpha: 1,
-          scale: 1,
-        },
-        {
-          y: '-10vh',
-          autoAlpha: 0.5,
-          scale: 0.8,
-          ease: 'none',
-          duration: 1.5,
-          id: 'descr',
-        },
-        '-=1.5',
-      );
-    }
-    /** button */
-    if (button) {
-      triggerTl.to(
-        button,
-        {
-          autoAlpha: 0,
-          duration: 1,
-          ease: 'expo.inOut',
-          id: 'button',
-        },
-        '-=1.5',
-      );
-    }
-    /** bgTl */
-    if (heroBg) {
-      bgTl.fromTo(
-        heroBg,
-        {
-          autoAlpha: 1,
-          scale: 1,
-        },
-        {
-          autoAlpha: 0.5,
-          scale: 1.2,
-          ease: 'none',
-          duration: 2,
-          delay: 0.25,
-          id: 'bg',
-        },
-      );
-    }
+      });
+      setBackTl(bgTl);
+      setTriggerTl(triggerTl);
+      /** title */
+      if (title) {
+        triggerTl.fromTo(
+          title,
+          {
+            y: '0',
+            autoAlpha: 1,
+            scale: 1,
+          },
+          {
+            y: '-5vh',
+            autoAlpha: 0.5,
+            scale: 1.3,
+            ease: 'none',
+            duration: 2,
+            id: 'title',
+          },
+        );
+      }
+      /** descr */
+      if (description) {
+        triggerTl.fromTo(
+          description,
+          {
+            y: '0',
+            autoAlpha: 1,
+            scale: 1,
+          },
+          {
+            y: '-10vh',
+            autoAlpha: 0.5,
+            scale: 0.8,
+            ease: 'none',
+            duration: 1.5,
+            id: 'descr',
+          },
+          '-=1.5',
+        );
+      }
+      /** button */
+      if (button) {
+        triggerTl.to(
+          button,
+          {
+            autoAlpha: 0,
+            duration: 1,
+            ease: 'expo.inOut',
+            id: 'button',
+          },
+          '-=1.5',
+        );
+      }
+      /** bgTl */
+      if (heroBg) {
+        bgTl.fromTo(
+          heroBg,
+          {
+            autoAlpha: 1,
+            scale: 1,
+          },
+          {
+            autoAlpha: 0.5,
+            scale: 1.2,
+            ease: 'none',
+            duration: 2,
+            delay: 0.25,
+            id: 'bg',
+          },
+        );
+      }
 
-    return () => {
-      triggerTl.kill();
-      bgTl.kill();
-    };
-  }, []);
+      return () => {
+        triggerTl.kill();
+        bgTl.kill();
+      };
+    },
+    { dependencies: [], scope: ref },
+  );
 
   /** heroStageTl */
   useGSAP(() => {

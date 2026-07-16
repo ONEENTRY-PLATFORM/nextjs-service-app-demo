@@ -44,66 +44,72 @@ const GalleryCardAnimations = ({
   );
 
   /** Scroll-triggered animation timeline for gallery card entrance effect */
-  useGSAP(() => {
-    if (!readyState) {
-      return;
-    }
-    const triggerTl = gsap.timeline({
-      paused: true,
-      scrollTrigger: {
-        trigger: ref.current,
-        toggleActions: 'restart reverse restart reverse',
-        start: 'top bottom',
-        end: 'bottom top',
-        onToggle: (self) => {
-          setInView(self.isActive);
+  useGSAP(
+    () => {
+      if (!readyState) {
+        return;
+      }
+      const triggerTl = gsap.timeline({
+        paused: true,
+        scrollTrigger: {
+          trigger: ref.current,
+          toggleActions: 'restart reverse restart reverse',
+          start: 'top bottom',
+          end: 'bottom top',
+          onToggle: (self) => {
+            setInView(self.isActive);
+          },
         },
-      },
-    });
-    setTriggerRef(triggerTl);
+      });
+      setTriggerRef(triggerTl);
 
-    /** Animate card from hidden to visible state */
-    triggerTl.fromTo(
-      ref.current,
-      {
-        autoAlpha: 0,
-      },
-      {
-        autoAlpha: 1,
-        delay: index / 20,
-        duration: 0.5,
-      },
-    );
+      /** Animate card from hidden to visible state */
+      triggerTl.fromTo(
+        ref.current,
+        {
+          autoAlpha: 0,
+        },
+        {
+          autoAlpha: 1,
+          delay: index / 20,
+          duration: 0.5,
+        },
+      );
 
-    return () => {
-      triggerTl.kill();
-    };
-  }, [readyState]);
+      return () => {
+        triggerTl.kill();
+      };
+    },
+    { dependencies: [readyState], scope: ref },
+  );
 
   /** Page transition animation timeline for handling exit animations */
-  useGSAP(() => {
-    const stageTl = gsap.timeline();
+  useGSAP(
+    () => {
+      const stageTl = gsap.timeline();
 
-    /** Execute leaving animation when page transition starts */
-    if (stage === 'leaving' && prevStage === 'none') {
-      triggerRef?.kill();
-      if (inView) {
-        stageTl.to(ref.current, {
-          scale: 0,
-          autoAlpha: 0,
-          duration: 0.65,
-          delay: index / 20,
-          ease: 'power1.inOut',
-        });
+      /** Execute leaving animation when page transition starts */
+      if (stage === 'leaving' && prevStage === 'none') {
+        triggerRef?.kill();
+        if (inView) {
+          stageTl.to(ref.current, {
+            scale: 0,
+            autoAlpha: 0,
+            duration: 0.65,
+            delay: index / 20,
+            ease: 'power1.inOut',
+          });
+        }
       }
-    }
 
-    setPrevStage(stage);
+      setPrevStage(stage);
 
-    return () => {
-      stageTl.kill();
-    };
-  }, [stage, readyState]);
+      return () => {
+        stageTl.kill();
+      };
+    },
+    { dependencies: [stage, readyState], scope: ref },
+  );
 
   return (
     <div className={className} style={style} ref={ref}>

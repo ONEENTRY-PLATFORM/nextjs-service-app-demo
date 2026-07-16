@@ -67,119 +67,125 @@ const CardAnimations = ({
    * a third of it is visible and undraws only after it has fully left the
    * screen, so the effect replays every time the section scrolls in and out.
    */
-  useGSAP(() => {
-    if (!readyState || !circleRef.current || !ref.current) return;
+  useGSAP(
+    () => {
+      if (!readyState || !circleRef.current || !ref.current) return;
 
-    const card = ref.current;
-    const circle = circleRef.current;
-    const paths = card.querySelectorAll('path');
-    const title = card.querySelectorAll('.title span');
-    const circleLength = Math.round(circle.getTotalLength());
+      const card = ref.current;
+      const circle = circleRef.current;
+      const paths = card.querySelectorAll('path');
+      const title = card.querySelectorAll('.title span');
+      const circleLength = Math.round(circle.getTotalLength());
 
-    /** Reset to the undrawn state (contour hidden, icons unfilled, label off) */
-    gsap.set(circle, {
-      strokeDasharray: circleLength,
-      strokeDashoffset: circleLength,
-    });
-    [...paths].forEach((path) => {
-      const length = path.getTotalLength();
-      gsap.set(path, {
-        fill: 'none',
-        stroke: '#525252',
-        strokeDasharray: length,
-        strokeDashoffset: length,
+      /** Reset to the undrawn state (contour hidden, icons unfilled, label off) */
+      gsap.set(circle, {
+        strokeDasharray: circleLength,
+        strokeDashoffset: circleLength,
       });
-    });
-    gsap.set(title, { autoAlpha: 0, xPercent: 100 });
+      [...paths].forEach((path) => {
+        const length = path.getTotalLength();
+        gsap.set(path, {
+          fill: 'none',
+          stroke: '#525252',
+          strokeDasharray: length,
+          strokeDashoffset: length,
+        });
+      });
+      gsap.set(title, { autoAlpha: 0, xPercent: 100 });
 
-    /**
-     * Draw-in timeline driven by its own ScrollTrigger. The tile scales up from
-     * its centre, the circle + icon contour draw, the icons fill and the label
-     * slides in. `toggleActions` replays it on every scroll: it draws in once a
-     * third of the tile is visible (`start`) and reverses (undraws) only after
-     * the tile has fully left the screen (`end`). Removing the old
-     * `clearProps` keeps the tween reversible so the undraw actually plays.
-     * `timeScale` slows the whole sequence uniformly — tune to taste.
-     */
-    const triggerTl = gsap.timeline({
-      id: 'CatalogCardTriggerTl',
-      paused: true,
-      scrollTrigger: {
-        trigger: card,
-        start: '33% bottom',
-        end: 'bottom top',
-        toggleActions: 'restart reverse restart reverse',
-        onToggle: (self) => setInView(self.isActive),
-      },
-      onComplete: () => addGroupClass(card),
-    });
-    triggerTl
-      .fromTo(
-        card,
-        { autoAlpha: 0, scale: 0, transformOrigin: 'center center' },
-        { autoAlpha: 1, scale: 1, duration: 0.85, delay: index / 10 },
-      )
-      .to([circle, ...paths], {
-        strokeDashoffset: 0,
-        duration: 1.25,
-        delay: index / 10,
-      })
-      .to(
-        paths,
-        { stroke: 'none', fill: '#525252', delay: -index / 10 },
-        '-=0.85',
-      )
-      .to(
-        title,
-        { autoAlpha: 1, xPercent: 0, delay: -0.5, duration: 1, stagger: 0.1 },
-        '-=0.45',
-      );
-    triggerTl.timeScale(0.5);
-    setTriggerRef(triggerTl);
+      /**
+       * Draw-in timeline driven by its own ScrollTrigger. The tile scales up from
+       * its centre, the circle + icon contour draw, the icons fill and the label
+       * slides in. `toggleActions` replays it on every scroll: it draws in once a
+       * third of the tile is visible (`start`) and reverses (undraws) only after
+       * the tile has fully left the screen (`end`). Removing the old
+       * `clearProps` keeps the tween reversible so the undraw actually plays.
+       * `timeScale` slows the whole sequence uniformly — tune to taste.
+       */
+      const triggerTl = gsap.timeline({
+        id: 'CatalogCardTriggerTl',
+        paused: true,
+        scrollTrigger: {
+          trigger: card,
+          start: '33% bottom',
+          end: 'bottom top',
+          toggleActions: 'restart reverse restart reverse',
+          onToggle: (self) => setInView(self.isActive),
+        },
+        onComplete: () => addGroupClass(card),
+      });
+      triggerTl
+        .fromTo(
+          card,
+          { autoAlpha: 0, scale: 0, transformOrigin: 'center center' },
+          { autoAlpha: 1, scale: 1, duration: 0.85, delay: index / 10 },
+        )
+        .to([circle, ...paths], {
+          strokeDashoffset: 0,
+          duration: 1.25,
+          delay: index / 10,
+        })
+        .to(
+          paths,
+          { stroke: 'none', fill: '#525252', delay: -index / 10 },
+          '-=0.85',
+        )
+        .to(
+          title,
+          { autoAlpha: 1, xPercent: 0, delay: -0.5, duration: 1, stagger: 0.1 },
+          '-=0.45',
+        );
+      triggerTl.timeScale(0.5);
+      setTriggerRef(triggerTl);
 
-    return () => triggerTl.kill();
-  }, [readyState]);
+      return () => triggerTl.kill();
+    },
+    { dependencies: [readyState], scope: ref },
+  );
 
   /** Handle stage transitions for leaving animation */
-  useGSAP(() => {
-    /** Create timeline for stage transition animations */
-    const stageTl = gsap.timeline({
-      id: 'CatalogCardStageTl',
-      onComplete: () => addGroupClass(ref.current),
-    });
+  useGSAP(
+    () => {
+      /** Create timeline for stage transition animations */
+      const stageTl = gsap.timeline({
+        id: 'CatalogCardStageTl',
+        onComplete: () => addGroupClass(ref.current),
+      });
 
-    /** Play leaving animation when transitioning out */
-    if (stage === 'leaving' && prevStage === 'none') {
-      /** Kill trigger timeline to prevent conflicts */
-      triggerRef?.kill();
-      /** Animate card exit if in view and circle reference exists */
-      if (inView && circleRef.current) {
-        const circleLength = Math.round(circleRef.current.getTotalLength());
-        stageTl
-          .set(circleRef.current, {
-            strokeDashoffset: 0,
-            strokeDasharray: circleLength,
-          })
-          .to(circleRef.current, {
-            strokeDashoffset: circleLength,
-            duration: 0.65,
-            delay: index / 10,
-          })
-          .to(ref.current, {
-            scale: 0,
-            autoAlpha: 0,
-            duration: 0.5,
-            delay: -0.35,
-          });
+      /** Play leaving animation when transitioning out */
+      if (stage === 'leaving' && prevStage === 'none') {
+        /** Kill trigger timeline to prevent conflicts */
+        triggerRef?.kill();
+        /** Animate card exit if in view and circle reference exists */
+        if (inView && circleRef.current) {
+          const circleLength = Math.round(circleRef.current.getTotalLength());
+          stageTl
+            .set(circleRef.current, {
+              strokeDashoffset: 0,
+              strokeDasharray: circleLength,
+            })
+            .to(circleRef.current, {
+              strokeDashoffset: circleLength,
+              duration: 0.65,
+              delay: index / 10,
+            })
+            .to(ref.current, {
+              scale: 0,
+              autoAlpha: 0,
+              duration: 0.5,
+              delay: -0.35,
+            });
+        }
       }
-    }
 
-    /** Update previous stage for transition tracking */
-    setPrevStage(stage);
+      /** Update previous stage for transition tracking */
+      setPrevStage(stage);
 
-    /* Cleanup timeline on unmount */
-    return () => stageTl.kill();
-  }, [stage, readyState, triggerRef, inView]);
+      /* Cleanup timeline on unmount */
+      return () => stageTl.kill();
+    },
+    { dependencies: [stage, readyState, triggerRef, inView], scope: ref },
+  );
 
   /** Render animated card with SVG circle decoration */
   return (

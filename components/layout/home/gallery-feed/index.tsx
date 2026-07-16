@@ -7,7 +7,6 @@ import { getChildPagesByParentUrl } from '@/app/api';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import getLocalGalleryItems from '@/app/gallery/getLocalGalleryItems';
 import masterNamesById from '@/app/gallery/masterNamesById';
-import getLqipPreview from '@/components/hooks/getLqipPreview';
 import { SUB_TO_MAIN } from '@/components/layout/gallery-page/taxonomy';
 import SectionTitle from '@/components/shared/SectionTitle';
 import type { OneEntryImageFile } from '@/components/utils';
@@ -168,8 +167,13 @@ function extractPhotosFromPage(
       /** Return null if no image source is available */
       if (!thumb) return null;
 
-      /** Reuse the ready-made blur, else generate a low-quality preview */
-      const preview = blur ?? (await getLqipPreview(thumb));
+      /**
+       * Only the ready-made CMS blur — never generate one here. The home strip
+       * ({@link GalleryGrid}) renders no placeholder, so generating an LQIP
+       * would download every tile server-side and run it through sharp for a
+       * value nothing reads.
+       */
+      const preview = blur;
 
       /** Return photo object with all required properties */
       return {

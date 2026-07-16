@@ -29,57 +29,60 @@ const MobileMenuAnimations = ({
   const ref = useRef<HTMLDivElement>(null);
 
   /** Handle open/close animations based on transition state */
-  useGSAP(() => {
-    if (!open || !ref.current) {
-      return;
-    }
-    /**
-     * Animate this drawer's own nodes instead of the global
-     * '#modalBg, #modalBody' selector: the forms modal renders the same ids,
-     * so a document-wide selector could target the wrong element.
-     * `#modalBody` is this wrapper itself; `#modalBg` is the backdrop inside.
-     */
-    const body = ref.current;
-    const bg = body.querySelector('#modalBg');
+  useGSAP(
+    () => {
+      if (!open || !ref.current) {
+        return;
+      }
+      /**
+       * Animate this drawer's own nodes instead of the global
+       * '#modalBg, #modalBody' selector: the forms modal renders the same ids,
+       * so a document-wide selector could target the wrong element.
+       * `#modalBody` is this wrapper itself; `#modalBg` is the backdrop inside.
+       */
+      const body = ref.current;
+      const bg = body.querySelector('#modalBg');
 
-    const tl = gsap.timeline({
-      paused: true,
-    });
+      const tl = gsap.timeline({
+        paused: true,
+      });
 
-    /** Animate closing transition */
-    if (transition === 'close') {
-      tl.to([bg, body], {
-        xPercent: -150,
-        autoAlpha: 0,
-        onComplete: () => {
-          setTransition('');
-          setOpen(false);
-        },
-      }).play();
-      /** Animate opening transition */
-    } else if (open) {
-      tl.set([bg, body], {
-        xPercent: -150,
-        autoAlpha: 0,
-      })
-        .to(bg, {
-          xPercent: 0,
-          autoAlpha: 1,
+      /** Animate closing transition */
+      if (transition === 'close') {
+        tl.to([bg, body], {
+          xPercent: -150,
+          autoAlpha: 0,
+          onComplete: () => {
+            setTransition('');
+            setOpen(false);
+          },
+        }).play();
+        /** Animate opening transition */
+      } else if (open) {
+        tl.set([bg, body], {
+          xPercent: -150,
+          autoAlpha: 0,
         })
-        .to(body, {
-          xPercent: 0,
-          autoAlpha: 1,
-        })
-        .to(bg, {
-          backdropFilter: 'blur(10px)',
-        })
-        .play();
-    }
+          .to(bg, {
+            xPercent: 0,
+            autoAlpha: 1,
+          })
+          .to(body, {
+            xPercent: 0,
+            autoAlpha: 1,
+          })
+          .to(bg, {
+            backdropFilter: 'blur(10px)',
+          })
+          .play();
+      }
 
-    return () => {
-      tl.kill();
-    };
-  }, [open, transition]);
+      return () => {
+        tl.kill();
+      };
+    },
+    { dependencies: [open, transition], scope: ref },
+  );
 
   /** Don't render if menu is not open */
   if (!open) {

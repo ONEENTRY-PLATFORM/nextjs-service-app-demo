@@ -52,101 +52,110 @@ const CardAnimations = ({
   );
 
   /** Animation timeline for scroll-triggered card entrance effect */
-  useGSAP(() => {
-    if (!readyState || loader) {
-      return;
-    }
-    const triggerTl = gsap.timeline({
-      paused: true,
-      scrollTrigger: {
-        trigger: ref.current,
-        toggleActions: 'restart reverse restart reverse',
-        start: 'top bottom',
-        end: 'bottom top',
-        onToggle: (self) => {
-          setInView(self.isActive);
+  useGSAP(
+    () => {
+      if (!readyState || loader) {
+        return;
+      }
+      const triggerTl = gsap.timeline({
+        paused: true,
+        scrollTrigger: {
+          trigger: ref.current,
+          toggleActions: 'restart reverse restart reverse',
+          start: 'top bottom',
+          end: 'bottom top',
+          onToggle: (self) => {
+            setInView(self.isActive);
+          },
         },
-      },
-    });
-    setTriggerRef(triggerTl);
+      });
+      setTriggerRef(triggerTl);
 
-    triggerTl.fromTo(
-      ref.current,
-      {
-        autoAlpha: 0,
-        scale: 0.5,
-        translateY: '50%',
-      },
-      {
-        autoAlpha: 1,
-        scale: 1,
-        translateY: 0,
-        delay: index / 20,
-        duration: 0.5,
-      },
-    );
+      triggerTl.fromTo(
+        ref.current,
+        {
+          autoAlpha: 0,
+          scale: 0.5,
+          translateY: '50%',
+        },
+        {
+          autoAlpha: 1,
+          scale: 1,
+          translateY: 0,
+          delay: index / 20,
+          duration: 0.5,
+        },
+      );
 
-    return () => {
-      triggerTl.kill();
-    };
-  }, [readyState]);
+      return () => {
+        triggerTl.kill();
+      };
+    },
+    { dependencies: [readyState], scope: ref },
+  );
 
   /** Loading animation timeline for cards displayed during loading state */
-  useGSAP(() => {
-    if (!readyState || !loader) {
-      return;
-    }
-    const loaderTl = gsap.timeline({
-      repeat: -1,
-      yoyo: true,
-      repeatDelay: 2.5,
-    });
+  useGSAP(
+    () => {
+      if (!readyState || !loader) {
+        return;
+      }
+      const loaderTl = gsap.timeline({
+        repeat: -1,
+        yoyo: true,
+        repeatDelay: 2.5,
+      });
 
-    loaderTl.fromTo(
-      ref.current,
-      {
-        autoAlpha: 0,
-        scale: 0.5,
-        translateY: '50%',
-      },
-      {
-        autoAlpha: 1,
-        scale: 1,
-        translateY: 0,
-        delay: index / 20,
-        duration: 0.5,
-      },
-    );
+      loaderTl.fromTo(
+        ref.current,
+        {
+          autoAlpha: 0,
+          scale: 0.5,
+          translateY: '50%',
+        },
+        {
+          autoAlpha: 1,
+          scale: 1,
+          translateY: 0,
+          delay: index / 20,
+          duration: 0.5,
+        },
+      );
 
-    return () => {
-      loaderTl.kill();
-    };
-  }, [readyState]);
+      return () => {
+        loaderTl.kill();
+      };
+    },
+    { dependencies: [readyState], scope: ref },
+  );
 
   /** Page transition animation timeline for handling exit animations */
-  useGSAP(() => {
-    const stageTl = gsap.timeline();
+  useGSAP(
+    () => {
+      const stageTl = gsap.timeline();
 
-    /** stage leaving */
-    if (stage === 'leaving' && prevStage === 'none') {
-      triggerRef?.kill();
-      if (inView) {
-        stageTl.to(ref.current, {
-          scale: 0,
-          autoAlpha: 0,
-          duration: 0.65,
-          delay: index / 20,
-          ease: 'power1.inOut',
-        });
+      /** stage leaving */
+      if (stage === 'leaving' && prevStage === 'none') {
+        triggerRef?.kill();
+        if (inView) {
+          stageTl.to(ref.current, {
+            scale: 0,
+            autoAlpha: 0,
+            duration: 0.65,
+            delay: index / 20,
+            ease: 'power1.inOut',
+          });
+        }
       }
-    }
 
-    setPrevStage(stage);
+      setPrevStage(stage);
 
-    return () => {
-      stageTl.kill();
-    };
-  }, [stage, readyState, triggerRef, inView]);
+      return () => {
+        stageTl.kill();
+      };
+    },
+    { dependencies: [stage, readyState, triggerRef, inView], scope: ref },
+  );
 
   return (
     <div className={className} style={style} ref={ref}>

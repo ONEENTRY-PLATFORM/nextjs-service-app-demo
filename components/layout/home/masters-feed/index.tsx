@@ -6,30 +6,12 @@ import { getMastersList } from '@/app/api/utils/getMastersList';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
 import SectionTitle from '@/components/shared/SectionTitle';
+import { fileDisplayUrl } from '@/components/utils';
 
 import SpecialistsGrid from './components/SpecialistsGrid';
 
 /** How many specialists the home strip shows */
 const STRIP_LENGTH = 6;
-
-/**
- * Extract a usable URL from a CMS file attribute value — tolerates the admin
- * `master_image` shape (`[{ downloadLink: string, … }]`) as well as the
- * `{ default: string[] }` link shape used elsewhere.
- * @param   {unknown} value - Raw `attributeValues.<marker>.value`
- * @returns {string}        File URL or `''`
- */
-const fileUrl = (value: unknown): string => {
-  if (!Array.isArray(value) || value.length === 0) return '';
-  const first = value[0] as {
-    previewLink?: string | { default?: string[] };
-    downloadLink?: string | { default?: string[] };
-  };
-  const link = first?.previewLink ?? first?.downloadLink;
-  if (!link) return '';
-  if (typeof link === 'string') return link;
-  return link.default?.[1] ?? link.default?.[0] ?? '';
-};
 
 /**
  * Map a CMS admin onto the normalized specialist shape the home strip renders.
@@ -65,7 +47,7 @@ const toMasterItem = (admin: IAdminEntity): MasterItem | null => {
     categories: [],
     salonId,
     rating: Number(attrs.master_rating?.value) || 5,
-    photo: fileUrl(attrs.master_image?.value),
+    photo: fileDisplayUrl(attrs.master_image?.value),
     href: `/masters/${admin.id}`,
   };
 };

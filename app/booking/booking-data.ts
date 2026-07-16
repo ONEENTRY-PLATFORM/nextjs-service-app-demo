@@ -10,7 +10,11 @@ import type {
   BookingSalon,
   BookingService,
 } from '@/components/layout/booking-page/types';
-import { formatUaePhone, plainTextFromTextAttr } from '@/components/utils';
+import {
+  fileDisplayUrl,
+  formatUaePhone,
+  plainTextFromTextAttr,
+} from '@/components/utils';
 
 /** Services child page `pageUrl` → display category of the wizard pills */
 const CATEGORY_BY_PAGEURL: Record<string, string> = {
@@ -18,28 +22,6 @@ const CATEGORY_BY_PAGEURL: Record<string, string> = {
   face: 'Face',
   body: 'Body',
   nails: 'Nails',
-};
-
-/** CMS file attribute value shape (same as the masters page helper) */
-type FileLink = { default: string[] } | string;
-type FileValue = Array<{
-  previewLink?: FileLink;
-  downloadLink?: FileLink;
-}>;
-
-/**
- * Extract a usable URL from a CMS file attribute value — tolerates both the
- * admin-entity shape (`{ default: string[] }`) and a plain string link.
- * @param   {unknown} value - Raw `attributeValues.<marker>.value`
- * @returns {string}        File URL or `''`
- */
-const fileUrl = (value: unknown): string => {
-  if (!Array.isArray(value) || value.length === 0) return '';
-  const first = (value as FileValue)[0];
-  const link = first?.previewLink ?? first?.downloadLink;
-  if (!link) return '';
-  if (typeof link === 'string') return link;
-  return link.default[1] ?? link.default[0] ?? '';
 };
 
 /**
@@ -129,7 +111,7 @@ const toBookingMaster = ({
     adminId: admin.id,
     name,
     grade: typeof shortDescription === 'string' ? shortDescription : '',
-    photo: fileUrl(attrs.master_image?.value),
+    photo: fileDisplayUrl(attrs.master_image?.value),
     specialties,
     rating: Number(attrs.master_rating?.value) || 5,
     reviews: null,

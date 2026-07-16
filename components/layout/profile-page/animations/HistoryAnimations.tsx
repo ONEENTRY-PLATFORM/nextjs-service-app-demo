@@ -49,60 +49,63 @@ const HistoryAnimations: FC<HistoryAnimationsProps> = ({
   );
 
   /** Set up GSAP animations using the useGSAP hook which integrates GSAP with React */
-  useGSAP(() => {
-    /** Create a GSAP timeline for managing the animation sequence */
-    const stageTl = gsap.timeline({
-      id: 'stageFromTl',
-      paused: true,
-    });
+  useGSAP(
+    () => {
+      /** Create a GSAP timeline for managing the animation sequence */
+      const stageTl = gsap.timeline({
+        id: 'stageFromTl',
+        paused: true,
+      });
 
-    /** Only execute animations when the ready state is true */
-    if (readyState) {
-      /** Case 1: Initial page load - no previous stage, current stage is 'none' */
-      if (stage === 'none' && prevStage === '') {
-        stageTl
-          .set(ref.current, {
-            autoAlpha: 0,
-          })
-          .to(ref.current, {
-            autoAlpha: 1,
-            duration: 0.5,
-          });
-        stageTl.play();
-      } else if (stage === 'entering' && prevStage === 'leaving') {
-        /** Case 2: Entering a new page - coming from a 'leaving' state */
-        stageTl
-          .set(ref.current, {
-            autoAlpha: 0,
-          })
-          .to(ref.current, {
-            autoAlpha: 1,
-            duration: 0.6,
-          });
-        stageTl.play();
-      } else if (stage === 'leaving' && prevStage === 'none') {
-        /** Case 3: Leaving the current page - transitioning from 'none' to 'leaving' */
-        stageTl
-          .set(ref.current, {
-            autoAlpha: 1,
-          })
-          .to(ref.current, {
-            autoAlpha: 0,
-            duration: 0.4,
-          });
-        stageTl.play();
+      /** Only execute animations when the ready state is true */
+      if (readyState) {
+        /** Case 1: Initial page load - no previous stage, current stage is 'none' */
+        if (stage === 'none' && prevStage === '') {
+          stageTl
+            .set(ref.current, {
+              autoAlpha: 0,
+            })
+            .to(ref.current, {
+              autoAlpha: 1,
+              duration: 0.5,
+            });
+          stageTl.play();
+        } else if (stage === 'entering' && prevStage === 'leaving') {
+          /** Case 2: Entering a new page - coming from a 'leaving' state */
+          stageTl
+            .set(ref.current, {
+              autoAlpha: 0,
+            })
+            .to(ref.current, {
+              autoAlpha: 1,
+              duration: 0.6,
+            });
+          stageTl.play();
+        } else if (stage === 'leaving' && prevStage === 'none') {
+          /** Case 3: Leaving the current page - transitioning from 'none' to 'leaving' */
+          stageTl
+            .set(ref.current, {
+              autoAlpha: 1,
+            })
+            .to(ref.current, {
+              autoAlpha: 0,
+              duration: 0.4,
+            });
+          stageTl.play();
+        }
+        /** Note: Other stage combinations are ignored to prevent unwanted animations */
       }
-      /** Note: Other stage combinations are ignored to prevent unwanted animations */
-    }
 
-    /** Update the tracking of previous stage for the next render cycle */
-    setPrevStage(stage);
+      /** Update the tracking of previous stage for the next render cycle */
+      setPrevStage(stage);
 
-    /** Cleanup function that runs when dependencies change or component unmounts */
-    return () => {
-      stageTl.kill();
-    };
-  }, [stage, readyState]);
+      /** Cleanup function that runs when dependencies change or component unmounts */
+      return () => {
+        stageTl.kill();
+      };
+    },
+    { dependencies: [stage, readyState], scope: ref },
+  );
 
   return (
     <div className={className} ref={ref}>

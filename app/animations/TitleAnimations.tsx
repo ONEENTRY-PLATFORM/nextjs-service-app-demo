@@ -56,119 +56,125 @@ const TitleAnimations = ({
   const [inView, setInView] = useState(false);
 
   /** triggerTl */
-  useGSAP(() => {
-    if (!ref.current || !readyState) {
-      return;
-    }
-    const title = ref.current?.querySelector('.title');
-    const hr = ref.current?.querySelector('hr');
+  useGSAP(
+    () => {
+      if (!ref.current || !readyState) {
+        return;
+      }
+      const title = ref.current?.querySelector('.title');
+      const hr = ref.current?.querySelector('hr');
 
-    const triggerTl = gsap.timeline({
-      paused: true,
-      scrollTrigger: {
-        trigger: ref.current,
-        toggleActions: 'restart reverse restart reverse',
-        start: 'top 80%',
-        end: 'bottom top',
-        onToggle: (self) => {
-          setInView(self.isActive);
+      const triggerTl = gsap.timeline({
+        paused: true,
+        scrollTrigger: {
+          trigger: ref.current,
+          toggleActions: 'restart reverse restart reverse',
+          start: 'top 80%',
+          end: 'bottom top',
+          onToggle: (self) => {
+            setInView(self.isActive);
+          },
         },
-      },
-      delay: delay,
-    });
-    setTriggerTl(triggerTl);
+        delay: delay,
+      });
+      setTriggerTl(triggerTl);
 
-    if (title) {
-      triggerTl.fromTo(
-        title,
-        {
-          autoAlpha: 0,
-        },
-        {
-          autoAlpha: 1,
-          duration: 1,
-        },
-      );
-    }
-    if (hr) {
-      triggerTl.fromTo(
-        hr,
-        {
-          autoAlpha: 0.5,
-          width: '0%',
-        },
-        {
-          autoAlpha: 1,
-          width: '100%',
-          duration: 1.25,
-          transformOrigin: 'center center',
-        },
-        '-=0.5',
-      );
-    }
-
-    return () => {
-      triggerTl.kill();
-    };
-  }, [readyState]);
-
-  /** stageTl */
-  useGSAP(() => {
-    if (!readyState || transition) {
-      return;
-    }
-    const title = ref.current?.querySelector('.title');
-    const hr = ref.current?.querySelector('hr');
-
-    const stageTl = gsap.timeline({
-      paused: true,
-    });
-
-    /** leaving stage */
-    if (stage === 'leaving' && prevStage === 'none') {
-      triggerTl?.kill();
-      setTransition(true);
       if (title) {
-        stageTl.fromTo(
+        triggerTl.fromTo(
           title,
           {
             autoAlpha: 0,
           },
           {
             autoAlpha: 1,
-            duration: 0.65,
-            ease: 'power2.inOut',
+            duration: 1,
           },
         );
       }
       if (hr) {
-        stageTl.fromTo(
+        triggerTl.fromTo(
           hr,
           {
-            autoAlpha: 0.25,
+            autoAlpha: 0.5,
             width: '0%',
           },
           {
             autoAlpha: 1,
             width: '100%',
-            duration: 0.75,
+            duration: 1.25,
             transformOrigin: 'center center',
-            ease: 'power2.inOut',
           },
-          '-=0.35',
+          '-=0.5',
         );
       }
-      if (inView) {
-        stageTl.reverse(1);
+
+      return () => {
+        triggerTl.kill();
+      };
+    },
+    { dependencies: [readyState], scope: ref },
+  );
+
+  /** stageTl */
+  useGSAP(
+    () => {
+      if (!readyState || transition) {
+        return;
       }
-    }
+      const title = ref.current?.querySelector('.title');
+      const hr = ref.current?.querySelector('hr');
 
-    setPrevStage(stage);
+      const stageTl = gsap.timeline({
+        paused: true,
+      });
 
-    return () => {
-      stageTl.kill();
-    };
-  }, [stage, readyState, triggerTl, inView]);
+      /** leaving stage */
+      if (stage === 'leaving' && prevStage === 'none') {
+        triggerTl?.kill();
+        setTransition(true);
+        if (title) {
+          stageTl.fromTo(
+            title,
+            {
+              autoAlpha: 0,
+            },
+            {
+              autoAlpha: 1,
+              duration: 0.65,
+              ease: 'power2.inOut',
+            },
+          );
+        }
+        if (hr) {
+          stageTl.fromTo(
+            hr,
+            {
+              autoAlpha: 0.25,
+              width: '0%',
+            },
+            {
+              autoAlpha: 1,
+              width: '100%',
+              duration: 0.75,
+              transformOrigin: 'center center',
+              ease: 'power2.inOut',
+            },
+            '-=0.35',
+          );
+        }
+        if (inView) {
+          stageTl.reverse(1);
+        }
+      }
+
+      setPrevStage(stage);
+
+      return () => {
+        stageTl.kill();
+      };
+    },
+    { dependencies: [stage, readyState, triggerTl, inView], scope: ref },
+  );
 
   return (
     <div ref={ref} className={className}>

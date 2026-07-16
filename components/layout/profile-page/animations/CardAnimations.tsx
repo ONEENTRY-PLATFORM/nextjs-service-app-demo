@@ -41,72 +41,75 @@ const CardAnimations = ({
   );
 
   /** stageTl - Timeline for handling stage transitions with GSAP */
-  useGSAP(() => {
-    /** Exit early if the element reference is not available or animations are not ready */
-    if (!ref.current || !readyState) {
-      return;
-    }
+  useGSAP(
+    () => {
+      /** Exit early if the element reference is not available or animations are not ready */
+      if (!ref.current || !readyState) {
+        return;
+      }
 
-    /** Determine the type of transition occurring */
-    const first = stage === 'none' && prevStage === ''; // Initial load
-    const enter = stage === 'entering' && prevStage === 'leaving'; // Entering after leaving
-    const leaving = stage === 'leaving' && prevStage === 'none'; // Leaving the current stage
+      /** Determine the type of transition occurring */
+      const first = stage === 'none' && prevStage === ''; // Initial load
+      const enter = stage === 'entering' && prevStage === 'leaving'; // Entering after leaving
+      const leaving = stage === 'leaving' && prevStage === 'none'; // Leaving the current stage
 
-    /** Create a GSAP timeline for the animation sequence */
-    const stageTl = gsap.timeline({
-      id: 'stageProfileCardTl',
-    });
-
-    /** first loading - Animate cards in on initial page load */
-    if (first) {
-      stageTl.fromTo(
-        ref.current,
-        {
-          scale: 0,
-          autoAlpha: 0,
-        },
-        {
-          scale: 1,
-          autoAlpha: 1,
-          duration: 0.5,
-          delay: index / 10,
-        },
-      );
-    }
-    // enter stage - Animate cards in when entering a new stage
-    else if (enter) {
-      stageTl.fromTo(
-        ref.current,
-        {
-          scale: 0,
-          autoAlpha: 0,
-        },
-        {
-          scale: 1,
-          autoAlpha: 1,
-          duration: 0.5,
-          delay: index / 10,
-        },
-      );
-    }
-    // leaving stage - Animate cards out when leaving the current stage
-    else if (leaving) {
-      stageTl.to(ref.current, {
-        scale: 0,
-        duration: 0.5,
-        delay: index / 10,
-        ease: 'power1.inOut',
+      /** Create a GSAP timeline for the animation sequence */
+      const stageTl = gsap.timeline({
+        id: 'stageProfileCardTl',
       });
-    }
 
-    /** Update the previous stage to the current stage */
-    setPrevStage(stage);
+      /** first loading - Animate cards in on initial page load */
+      if (first) {
+        stageTl.fromTo(
+          ref.current,
+          {
+            scale: 0,
+            autoAlpha: 0,
+          },
+          {
+            scale: 1,
+            autoAlpha: 1,
+            duration: 0.5,
+            delay: index / 10,
+          },
+        );
+      }
+      // enter stage - Animate cards in when entering a new stage
+      else if (enter) {
+        stageTl.fromTo(
+          ref.current,
+          {
+            scale: 0,
+            autoAlpha: 0,
+          },
+          {
+            scale: 1,
+            autoAlpha: 1,
+            duration: 0.5,
+            delay: index / 10,
+          },
+        );
+      }
+      // leaving stage - Animate cards out when leaving the current stage
+      else if (leaving) {
+        stageTl.to(ref.current, {
+          scale: 0,
+          duration: 0.5,
+          delay: index / 10,
+          ease: 'power1.inOut',
+        });
+      }
 
-    /** Cleanup function to kill the timeline when the component unmounts or stage changes */
-    return () => {
-      stageTl.kill();
-    };
-  }, [stage]);
+      /** Update the previous stage to the current stage */
+      setPrevStage(stage);
+
+      /** Cleanup function to kill the timeline when the component unmounts or stage changes */
+      return () => {
+        stageTl.kill();
+      };
+    },
+    { dependencies: [stage], scope: ref },
+  );
 
   return (
     <div className={className} ref={ref}>

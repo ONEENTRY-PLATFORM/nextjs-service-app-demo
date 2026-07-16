@@ -24,62 +24,65 @@ const ReviewsAnimations = ({
   const ref = useRef<HTMLDivElement>(null);
 
   /** Set up scroll-triggered animations for reviews */
-  useGSAP(() => {
-    /** Exit early if ref is not attached */
-    if (!ref.current) {
-      return;
-    }
-    /** Create GSAP timeline and set up scroll trigger */
-    const tl = gsap.timeline({
-      paused: true,
-      scrollTrigger: {
-        trigger: ref.current,
-        toggleActions: 'restart reverse restart reverse',
-        start: 'top bottom',
-        end: 'bottom top',
-      },
-    });
-
-    /** Select arrow elements for animation */
-    const arrows = ref.current.querySelectorAll('.arrow');
-    /** Select slide items for animation */
-    const items = ref.current.querySelectorAll('.slide');
-
-    /** Add fade-in animation to arrow elements */
-    if (arrows) {
-      tl.fromTo(
-        arrows,
-        {
-          autoAlpha: 0,
+  useGSAP(
+    () => {
+      /** Exit early if ref is not attached */
+      if (!ref.current) {
+        return;
+      }
+      /** Create GSAP timeline and set up scroll trigger */
+      const tl = gsap.timeline({
+        paused: true,
+        scrollTrigger: {
+          trigger: ref.current,
+          toggleActions: 'restart reverse restart reverse',
+          start: 'top bottom',
+          end: 'bottom top',
         },
-        {
-          autoAlpha: 1,
-          duration: 0.5,
-          stagger: 0.25,
-        },
-      );
-    }
+      });
 
-    /** Add fade-in animation to slide items */
-    if (items) {
-      tl.fromTo(
-        items,
-        {
-          autoAlpha: 0,
-        },
-        {
-          autoAlpha: 1,
-          duration: 0.5,
-          stagger: 0.15,
-        },
-      );
-    }
+      /** Select arrow elements for animation */
+      const arrows = ref.current.querySelectorAll('.arrow');
+      /** Select slide items for animation */
+      const items = ref.current.querySelectorAll('.slide');
 
-    /** Clean up timeline when component unmounts */
-    return () => {
-      tl.kill();
-    };
-  }, []);
+      /** Add fade-in animation to arrow elements */
+      if (arrows) {
+        tl.fromTo(
+          arrows,
+          {
+            autoAlpha: 0,
+          },
+          {
+            autoAlpha: 1,
+            duration: 0.5,
+            stagger: 0.25,
+          },
+        );
+      }
+
+      /** Add fade-in animation to slide items */
+      if (items) {
+        tl.fromTo(
+          items,
+          {
+            autoAlpha: 0,
+          },
+          {
+            autoAlpha: 1,
+            duration: 0.5,
+            stagger: 0.15,
+          },
+        );
+      }
+
+      /** Clean up timeline when component unmounts */
+      return () => {
+        tl.kill();
+      };
+    },
+    { dependencies: [], scope: ref },
+  );
 
   /** Render reviews animations container */
   return (

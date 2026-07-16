@@ -34,59 +34,62 @@ const FormAnimations = ({
   const ref = useRef(null);
 
   /** Form transition animations */
-  useGSAP(() => {
-    /**
-     * Early return conditions for the animation
-     * Skip animation if form is not open, ref is not available,
-     * component is loading, or animation is not active
-     */
-    if (!open || !ref.current || isLoading || !isActive) {
-      return;
-    }
+  useGSAP(
+    () => {
+      /**
+       * Early return conditions for the animation
+       * Skip animation if form is not open, ref is not available,
+       * component is loading, or animation is not active
+       */
+      if (!open || !ref.current || isLoading || !isActive) {
+        return;
+      }
 
-    /**
-     * Create GSAP timeline for form animations
-     * Handles both forward and reverse animations with cleanup callbacks
-     */
-    const tl = gsap.timeline({
-      paused: true,
-      onComplete: () => {
-        setTransition('');
-      },
-      onReverseComplete: () => {
-        setTransition('');
-      },
-    });
+      /**
+       * Create GSAP timeline for form animations
+       * Handles both forward and reverse animations with cleanup callbacks
+       */
+      const tl = gsap.timeline({
+        paused: true,
+        onComplete: () => {
+          setTransition('');
+        },
+        onReverseComplete: () => {
+          setTransition('');
+        },
+      });
 
-    /**
-     * Define animation sequence:
-     * 1. Fade out the form element
-     * 2. Fade in the form element
-     */
-    tl.from(ref.current, {
-      autoAlpha: 0,
-    }).to(ref.current, {
-      autoAlpha: 1,
-    });
+      /**
+       * Define animation sequence:
+       * 1. Fade out the form element
+       * 2. Fade in the form element
+       */
+      tl.from(ref.current, {
+        autoAlpha: 0,
+      }).to(ref.current, {
+        autoAlpha: 1,
+      });
 
-    /**
-     * Play or reverse animation based on transition state
-     * 'close' transition reverses the animation, otherwise plays forward
-     */
-    if (transition === 'close') {
-      tl.reverse(0.5);
-    } else {
-      tl.play();
-    }
+      /**
+       * Play or reverse animation based on transition state
+       * 'close' transition reverses the animation, otherwise plays forward
+       */
+      if (transition === 'close') {
+        tl.reverse(0.5);
+      } else {
+        tl.play();
+      }
 
-    /**
-     * Cleanup function to kill timeline on unmount
-     * Prevents memory leaks and ensures clean animation state
-     */
-    return () => {
-      tl.kill();
-    };
-  }, [transition, open, isLoading]);
+      /**
+       * Cleanup function to kill timeline on unmount
+       * Prevents memory leaks and ensures clean animation state
+       */
+      return () => {
+        tl.kill();
+      };
+    },
+    { dependencies: [transition, open, isLoading], scope: ref },
+  );
 
   return (
     <div className={className} ref={ref}>

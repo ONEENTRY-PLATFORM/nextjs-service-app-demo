@@ -26,20 +26,23 @@ const ProfileMenuAnimations = ({
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
   /** Build the open/close timeline once and keep it across state changes */
-  useGSAP(() => {
-    if (!ref.current) {
-      return;
-    }
+  useGSAP(
+    () => {
+      if (!ref.current) {
+        return;
+      }
 
-    /** Set initial hidden state so reverse() lands on the correct values */
-    gsap.set(ref.current, { autoAlpha: 0, height: 0 });
+      /** Set initial hidden state so reverse() lands on the correct values */
+      gsap.set(ref.current, { autoAlpha: 0, height: 0 });
 
-    timelineRef.current = gsap.timeline({ paused: true }).to(ref.current, {
-      autoAlpha: 1,
-      height: 'auto',
-      duration: 0.5,
-    });
-  }, []);
+      timelineRef.current = gsap.timeline({ paused: true }).to(ref.current, {
+        autoAlpha: 1,
+        height: 'auto',
+        duration: 0.5,
+      });
+    },
+    { dependencies: [], scope: ref },
+  );
 
   /** Play or reverse the persistent timeline when state changes */
   useEffect(() => {

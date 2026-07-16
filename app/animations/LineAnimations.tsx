@@ -36,85 +36,88 @@ const LineAnimations = ({
   const ref = useRef<HTMLDivElement>(null);
 
   /** stage animations */
-  useGSAP(() => {
-    if (!ref.current) {
-      return;
-    }
-    const lineMask = ref.current.querySelectorAll('#line_mask path');
+  useGSAP(
+    () => {
+      if (!ref.current) {
+        return;
+      }
+      const lineMask = ref.current.querySelectorAll('#line_mask path');
 
-    const stageTl = gsap.timeline({
-      paused: true,
-    });
+      const stageTl = gsap.timeline({
+        paused: true,
+      });
 
-    stageTl.to(ref.current, {
-      autoAlpha: 0,
-      duration: 0.5,
-    });
+      stageTl.to(ref.current, {
+        autoAlpha: 0,
+        duration: 0.5,
+      });
 
-    /** loaderTl */
-    const loaderTl = gsap.timeline({
-      id: 'heroLoaderTl',
-      paused: true,
-    });
+      /** loaderTl */
+      const loaderTl = gsap.timeline({
+        id: 'heroLoaderTl',
+        paused: true,
+      });
 
-    /** first loading */
-    if (stage === 'none' && prevStage === '') {
-      loaderTl
-        .to(lineMask, {
-          duration: 0.5,
-          attr: { d: 'M0 502S175 272 500 272s500 230 500 230V0H0Z' },
-          ease: 'power2.in',
-        })
-        .to(lineMask, {
-          duration: 0.5,
-          attr: { d: 'M0 2S175 1 500 1s500 1 500 1V0H0Z' },
-          ease: 'power2.out',
-        })
-        .play();
-      stageTl.reverse(1);
-    }
-    // enter stage
-    else if (stage === 'entering' && prevStage === 'leaving') {
-      loaderTl
-        .to(lineMask, {
-          duration: 0.5,
-          attr: { d: 'M0 502S175 272 500 272s500 230 500 230V0H0Z' },
-          ease: 'power2.in',
-        })
-        .to(lineMask, {
-          duration: 0.5,
-          attr: { d: 'M0 2S175 1 500 1s500 1 500 1V0H0Z' },
-          ease: 'power2.out',
-        })
-        .play();
-      stageTl.reverse(1);
-    }
-    // leaving stage
-    if (stage === 'leaving' && prevStage === 'none') {
-      loaderTl
-        .set(lineMask, {
-          attr: { d: 'M0 1005S175 995 500 995s500 5 500 5V0H0Z' },
-        })
-        .to(lineMask, {
-          attr: { d: 'M0 502S175 272 500 272s500 230 500 230V0H0Z' },
-          duration: 0.5,
-          ease: 'power2.in',
-        })
-        .to(lineMask, {
-          attr: { d: 'M0 2S175 1 500 1s500 1 500 1V0H0Z' },
-          duration: 0.5,
-          ease: 'power2.out',
-        })
-        .reverse(1);
-      stageTl.play();
-    }
+      /** first loading */
+      if (stage === 'none' && prevStage === '') {
+        loaderTl
+          .to(lineMask, {
+            duration: 0.5,
+            attr: { d: 'M0 502S175 272 500 272s500 230 500 230V0H0Z' },
+            ease: 'power2.in',
+          })
+          .to(lineMask, {
+            duration: 0.5,
+            attr: { d: 'M0 2S175 1 500 1s500 1 500 1V0H0Z' },
+            ease: 'power2.out',
+          })
+          .play();
+        stageTl.reverse(1);
+      }
+      // enter stage
+      else if (stage === 'entering' && prevStage === 'leaving') {
+        loaderTl
+          .to(lineMask, {
+            duration: 0.5,
+            attr: { d: 'M0 502S175 272 500 272s500 230 500 230V0H0Z' },
+            ease: 'power2.in',
+          })
+          .to(lineMask, {
+            duration: 0.5,
+            attr: { d: 'M0 2S175 1 500 1s500 1 500 1V0H0Z' },
+            ease: 'power2.out',
+          })
+          .play();
+        stageTl.reverse(1);
+      }
+      // leaving stage
+      if (stage === 'leaving' && prevStage === 'none') {
+        loaderTl
+          .set(lineMask, {
+            attr: { d: 'M0 1005S175 995 500 995s500 5 500 5V0H0Z' },
+          })
+          .to(lineMask, {
+            attr: { d: 'M0 502S175 272 500 272s500 230 500 230V0H0Z' },
+            duration: 0.5,
+            ease: 'power2.in',
+          })
+          .to(lineMask, {
+            attr: { d: 'M0 2S175 1 500 1s500 1 500 1V0H0Z' },
+            duration: 0.5,
+            ease: 'power2.out',
+          })
+          .reverse(1);
+        stageTl.play();
+      }
 
-    setPrevStage(stage);
+      setPrevStage(stage);
 
-    return () => {
-      stageTl.kill();
-    };
-  }, [stage]);
+      return () => {
+        stageTl.kill();
+      };
+    },
+    { dependencies: [stage], scope: ref },
+  );
 
   return (
     <div className={className} ref={ref}>

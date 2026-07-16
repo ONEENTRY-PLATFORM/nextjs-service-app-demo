@@ -34,48 +34,51 @@ const BookingAnimations = ({
    * Handle page transition animations based on stage changes
    * Controls fade in/out effects for booking form elements
    */
-  useGSAP(() => {
-    /** Create timeline for stage transitions */
-    const stageTl = gsap.timeline();
-    /** Get container and title elements for animation */
-    const container = ref.current?.querySelectorAll('.mx-auto') || '';
-    const title = ref.current?.querySelectorAll('.title') || '';
+  useGSAP(
+    () => {
+      /** Create timeline for stage transitions */
+      const stageTl = gsap.timeline();
+      /** Get container and title elements for animation */
+      const container = ref.current?.querySelectorAll('.mx-auto') || '';
+      const title = ref.current?.querySelectorAll('.title') || '';
 
-    /** Set initial state to hidden except for specific leaving transition */
-    if (!(stage === 'leaving' && prevStage === 'none')) {
-      stageTl.set([container, title], {
-        autoAlpha: 0,
-      });
-    }
-
-    /** Execute animations when component is ready */
-    if (readyState && isReady) {
-      /** Handle entering animation when stage is 'none' */
-      if (
-        (stage === 'none' && prevStage === '') ||
-        (stage === 'none' && prevStage === 'entering') ||
-        (stage === 'none' && prevStage === 'none')
-      ) {
-        stageTl.to([container, title], {
-          autoAlpha: 1,
-        });
-        /** Animate elements fading in */
-      } else if (stage === 'leaving' && prevStage === 'none') {
-        /** Handle leaving animation */
-        stageTl.to([title, container], {
+      /** Set initial state to hidden except for specific leaving transition */
+      if (!(stage === 'leaving' && prevStage === 'none')) {
+        stageTl.set([container, title], {
           autoAlpha: 0,
-          delay: 0.15,
         });
       }
-    }
-    /** Update previous stage state */
-    setPrevStage(stage);
 
-    /** Clean up timeline on unmount */
-    return () => {
-      stageTl.kill();
-    };
-  }, [stage, readyState, isReady]);
+      /** Execute animations when component is ready */
+      if (readyState && isReady) {
+        /** Handle entering animation when stage is 'none' */
+        if (
+          (stage === 'none' && prevStage === '') ||
+          (stage === 'none' && prevStage === 'entering') ||
+          (stage === 'none' && prevStage === 'none')
+        ) {
+          stageTl.to([container, title], {
+            autoAlpha: 1,
+          });
+          /** Animate elements fading in */
+        } else if (stage === 'leaving' && prevStage === 'none') {
+          /** Handle leaving animation */
+          stageTl.to([title, container], {
+            autoAlpha: 0,
+            delay: 0.15,
+          });
+        }
+      }
+      /** Update previous stage state */
+      setPrevStage(stage);
+
+      /** Clean up timeline on unmount */
+      return () => {
+        stageTl.kill();
+      };
+    },
+    { dependencies: [stage, readyState, isReady], scope: ref },
+  );
 
   return (
     <section className={className} ref={ref}>

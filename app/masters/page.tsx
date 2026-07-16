@@ -15,6 +15,7 @@ import type {
   SalonOption,
 } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
+import { fileDisplayUrl } from '@/components/utils';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it
@@ -29,28 +30,6 @@ const CATEGORY_BY_PAGEURL: Record<string, MastersMainCategory> = {
   face: 'FACE',
   body: 'BODY',
   nails: 'NAILS',
-};
-
-/** CMS file attribute value shape (same as `SpecialistImage`) */
-type FileLink = { default: string[] } | string;
-type FileValue = Array<{
-  previewLink?: FileLink;
-  downloadLink?: FileLink;
-}>;
-
-/**
- * Extract a usable URL from a CMS file attribute value — tolerates both the
- * admin-entity shape (`{ default: string[] }`) and a plain string link.
- * @param   {unknown} value - Raw `attributeValues.<marker>.value`
- * @returns {string}        File URL or `''`
- */
-const fileUrl = (value: unknown): string => {
-  if (!Array.isArray(value) || value.length === 0) return '';
-  const first = (value as FileValue)[0];
-  const link = first?.previewLink ?? first?.downloadLink;
-  if (!link) return '';
-  if (typeof link === 'string') return link;
-  return link.default[1] ?? link.default[0] ?? '';
 };
 
 /**
@@ -124,7 +103,7 @@ const toMasterItem = ({
       categories.length > 0 ? categories : ['HAIR', 'FACE', 'BODY', 'NAILS'],
     salonId,
     rating: Number(attrs.master_rating?.value) || 5,
-    photo: fileUrl(attrs.master_image?.value),
+    photo: fileDisplayUrl(attrs.master_image?.value),
     href:
       `/masters/${admin.id}` +
       (firstServiceId !== undefined ? `?service=${firstServiceId}` : ''),

@@ -43,86 +43,92 @@ const MasterAnimations = ({
   );
 
   /** Setup scroll-triggered animations when readyState is true */
-  useGSAP(() => {
-    /** Exit early if animations are not ready */
-    if (!readyState) {
-      return;
-    }
-    /** Get all items with 'item' class for animation */
-    const items = ref.current?.querySelectorAll('.item') || [];
+  useGSAP(
+    () => {
+      /** Exit early if animations are not ready */
+      if (!readyState) {
+        return;
+      }
+      /** Get all items with 'item' class for animation */
+      const items = ref.current?.querySelectorAll('.item') || [];
 
-    /** Create scroll-triggered timeline with toggle actions */
-    const triggerTl = gsap.timeline({
-      paused: true,
-      scrollTrigger: {
-        trigger: ref.current,
-        toggleActions: 'restart reverse restart reverse',
-        start: 'top bottom',
-        end: '+=120% top',
-        onToggle: (self) => {
-          /** Update inView state based on scroll trigger activation */
-          setInView(self.isActive);
+      /** Create scroll-triggered timeline with toggle actions */
+      const triggerTl = gsap.timeline({
+        paused: true,
+        scrollTrigger: {
+          trigger: ref.current,
+          toggleActions: 'restart reverse restart reverse',
+          start: 'top bottom',
+          end: '+=120% top',
+          onToggle: (self) => {
+            /** Update inView state based on scroll trigger activation */
+            setInView(self.isActive);
+          },
         },
-      },
-    });
-    /** Store reference to the timeline for later use */
-    setTriggerRef(triggerTl);
+      });
+      /** Store reference to the timeline for later use */
+      setTriggerRef(triggerTl);
 
-    /** Define animation sequence: fade in items with stagger */
-    triggerTl.fromTo(
-      items,
-      {
-        autoAlpha: 0,
-      },
-      {
-        autoAlpha: 1,
-        duration: 0.35,
-        stagger: 0.05,
-      },
-    );
+      /** Define animation sequence: fade in items with stagger */
+      triggerTl.fromTo(
+        items,
+        {
+          autoAlpha: 0,
+        },
+        {
+          autoAlpha: 1,
+          duration: 0.35,
+          stagger: 0.05,
+        },
+      );
 
-    /** Cleanup function to kill timeline on unmount */
-    return () => {
-      triggerTl.kill();
-    };
-  }, [readyState]);
+      /** Cleanup function to kill timeline on unmount */
+      return () => {
+        triggerTl.kill();
+      };
+    },
+    { dependencies: [readyState], scope: ref },
+  );
 
   /** Handle animations during page transitions */
-  useGSAP(() => {
-    /** Get all items with 'item' class for animation */
-    const items = ref.current?.querySelectorAll('.item') || [];
+  useGSAP(
+    () => {
+      /** Get all items with 'item' class for animation */
+      const items = ref.current?.querySelectorAll('.item') || [];
 
-    /** Create timeline for stage transition animations */
-    const stageTl = gsap.timeline({
-      paused: true,
-    });
+      /** Create timeline for stage transition animations */
+      const stageTl = gsap.timeline({
+        paused: true,
+      });
 
-    /** leaving stage */
-    if (stage === 'leaving' && prevStage === 'none') {
-      /** Kill scroll trigger timeline */
-      triggerRef?.kill();
-      /** Animate items out when page is transitioning out */
-      if (inView) {
-        stageTl
-          .to([...items]?.reverse(), {
-            autoAlpha: 0,
-            yPercent: 50,
-            duration: 0.35,
-            stagger: 0.05,
-            ease: 'power1.inOut',
-          })
-          .play();
+      /** leaving stage */
+      if (stage === 'leaving' && prevStage === 'none') {
+        /** Kill scroll trigger timeline */
+        triggerRef?.kill();
+        /** Animate items out when page is transitioning out */
+        if (inView) {
+          stageTl
+            .to([...items]?.reverse(), {
+              autoAlpha: 0,
+              yPercent: 50,
+              duration: 0.35,
+              stagger: 0.05,
+              ease: 'power1.inOut',
+            })
+            .play();
+        }
       }
-    }
 
-    /** Update previous stage state */
-    setPrevStage(stage);
+      /** Update previous stage state */
+      setPrevStage(stage);
 
-    /** Cleanup function to kill timeline on unmount */
-    return () => {
-      stageTl.kill();
-    };
-  }, [stage, readyState, triggerRef, inView]);
+      /** Cleanup function to kill timeline on unmount */
+      return () => {
+        stageTl.kill();
+      };
+    },
+    { dependencies: [stage, readyState, triggerRef, inView], scope: ref },
+  );
 
   /** Render animated master container */
   return (

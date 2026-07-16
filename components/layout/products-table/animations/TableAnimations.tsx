@@ -60,82 +60,88 @@ const TableAnimations = ({
   );
 
   /** Setup scroll-triggered animations when readyState is true */
-  useGSAP(() => {
-    /** Exit early if animations are not ready to prevent premature animation */
-    if (!readyState) {
-      return;
-    }
+  useGSAP(
+    () => {
+      /** Exit early if animations are not ready to prevent premature animation */
+      if (!readyState) {
+        return;
+      }
 
-    /** Create scroll-triggered timeline with toggle actions for enter/exit animations */
-    const triggerTl = gsap.timeline({
-      id: 'tableTriggerTl',
-      paused: true,
-      scrollTrigger: {
-        trigger: ref.current,
-        toggleActions: 'restart reverse restart reverse',
-        start: 'center bottom',
-        end: 'bottom top',
-        onToggle: (self) => {
-          /** Update inView state based on scroll trigger activation status */
-          setInView(self.isActive);
+      /** Create scroll-triggered timeline with toggle actions for enter/exit animations */
+      const triggerTl = gsap.timeline({
+        id: 'tableTriggerTl',
+        paused: true,
+        scrollTrigger: {
+          trigger: ref.current,
+          toggleActions: 'restart reverse restart reverse',
+          start: 'center bottom',
+          end: 'bottom top',
+          onToggle: (self) => {
+            /** Update inView state based on scroll trigger activation status */
+            setInView(self.isActive);
+          },
         },
-      },
-    });
+      });
 
-    /** Store reference to the timeline for later use in cleanup or control */
-    setTriggerRef(triggerTl);
+      /** Store reference to the timeline for later use in cleanup or control */
+      setTriggerRef(triggerTl);
 
-    /** Define animation sequence: fade in with specified delay */
-    triggerTl.fromTo(
-      ref.current,
-      {
-        autoAlpha: 0,
-      },
-      {
-        autoAlpha: 1,
-        duration: 0.5,
-        delay: delay,
-      },
-    );
+      /** Define animation sequence: fade in with specified delay */
+      triggerTl.fromTo(
+        ref.current,
+        {
+          autoAlpha: 0,
+        },
+        {
+          autoAlpha: 1,
+          duration: 0.5,
+          delay: delay,
+        },
+      );
 
-    /** Cleanup function to kill timeline on unmount or dependency change */
-    return () => {
-      triggerTl.kill();
-    };
-  }, [readyState]);
+      /** Cleanup function to kill timeline on unmount or dependency change */
+      return () => {
+        triggerTl.kill();
+      };
+    },
+    { dependencies: [readyState], scope: ref },
+  );
 
   /** Handle animations during page transitions (navigation events) */
-  useGSAP(() => {
-    /** Create timeline for stage transition animations */
-    const stageTl = gsap.timeline({
-      paused: true,
-    });
+  useGSAP(
+    () => {
+      /** Create timeline for stage transition animations */
+      const stageTl = gsap.timeline({
+        paused: true,
+      });
 
-    /** Handle leaving stage animation when transitioning to a new page */
-    if (stage === 'leaving' && prevStage === 'none') {
-      /** Kill scroll trigger timeline to prevent conflicts during navigation */
-      triggerRef?.kill();
+      /** Handle leaving stage animation when transitioning to a new page */
+      if (stage === 'leaving' && prevStage === 'none') {
+        /** Kill scroll trigger timeline to prevent conflicts during navigation */
+        triggerRef?.kill();
 
-      /** Animate table out when page is transitioning out and table is in view */
-      if (inView) {
-        stageTl
-          .to(ref.current, {
-            autoAlpha: 0,
-            borderColor: 'transparent',
-            duration: 0.65,
-          })
-          .play();
+        /** Animate table out when page is transitioning out and table is in view */
+        if (inView) {
+          stageTl
+            .to(ref.current, {
+              autoAlpha: 0,
+              borderColor: 'transparent',
+              duration: 0.65,
+            })
+            .play();
+        }
       }
-    }
 
-    /** Update previous stage state to track transition changes */
-    setPrevStage(stage);
+      /** Update previous stage state to track transition changes */
+      setPrevStage(stage);
 
-    /** Cleanup function to kill timeline on unmount or dependency change */
-    return () => {
-      stageTl.kill();
-    };
-  }, [stage, readyState, triggerRef, inView]);
+      /** Cleanup function to kill timeline on unmount or dependency change */
+      return () => {
+        stageTl.kill();
+      };
+    },
+    { dependencies: [stage, readyState, triggerRef, inView], scope: ref },
+  );
 
   /** Render animated table container with all props applied */
   return (
