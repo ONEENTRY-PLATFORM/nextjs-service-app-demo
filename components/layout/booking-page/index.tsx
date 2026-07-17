@@ -60,6 +60,9 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
     isAuth,
     isLoading,
     error,
+    paymentAccounts,
+    paymentAccount,
+    selectPaymentAccount,
     startFlow,
     selectSalon,
     selectService,
@@ -213,6 +216,9 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
               time={time}
               currentIdx={stepIdx}
               totalSteps={stepKeys.length}
+              paymentAccounts={paymentAccounts}
+              paymentAccount={paymentAccount}
+              onSelectPaymentAccount={selectPaymentAccount}
               onBook={handleConfirm}
               isLoggedIn={isAuth}
               isLoading={isLoading}

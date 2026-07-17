@@ -15,6 +15,7 @@ import SalonChips from './SalonChips';
  * @param   {string}         props.photo       - Team photo of the chosen salon
  * @param   {string}         props.specialties - Category subtitle (mock `ANY_LABEL`)
  * @param   {number | null}  props.fromPrice   - Cheapest matching "from" price
+ * @param   {string}         [props.currency]  - Currency of `fromPrice` from the CMS
  * @param   {BookingSalon[]} props.salons      - Salons listed as chips
  * @param   {string}         props.chipsMinH   - Shared chips min-height (desktop rhythm)
  * @returns {JSX.Element}                      Any-specialist card
@@ -25,6 +26,7 @@ const AnySpecialistCard = ({
   photo,
   specialties,
   fromPrice,
+  currency,
   salons,
   chipsMinH,
 }: {
@@ -33,6 +35,7 @@ const AnySpecialistCard = ({
   photo: string;
   specialties: string;
   fromPrice: number | null;
+  currency?: string | undefined;
   salons: BookingSalon[];
   chipsMinH: string;
 }): JSX.Element => (
@@ -94,7 +97,7 @@ const AnySpecialistCard = ({
                 className="text-xl leading-none font-semibold"
                 style={{ color: DARK }}
               >
-                <Price big amount={fromPrice} />
+                <Price big amount={fromPrice} currency={currency} />
               </span>
             </p>
           )}
@@ -165,7 +168,7 @@ const AnySpecialistCard = ({
                 className="text-2xl leading-none font-semibold"
                 style={{ color: DARK }}
               >
-                <Price big amount={fromPrice} />
+                <Price big amount={fromPrice} currency={currency} />
               </span>
             </p>
           )}

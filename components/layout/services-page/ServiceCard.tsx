@@ -12,7 +12,7 @@ import {
   selectActiveItemId,
   setTabsState,
 } from '@/app/store/reducers/CartSlice';
-import Dirham from '@/components/shared/Dirham';
+import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
 import type { ServiceItem } from './types';
 
@@ -121,7 +121,8 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
                 className="flex items-baseline font-medium whitespace-nowrap"
                 style={{ fontSize: '1.5rem', lineHeight: 1, color: DARK }}
               >
-                <Dirham big /> {service.price}
+                <CurrencySymbol currency={service.currency} big />{' '}
+                {service.price}
               </span>
             </div>
           )}

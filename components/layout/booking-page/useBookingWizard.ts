@@ -1,8 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces';
+import { useContext, useMemo, useState } from 'react';
 
+import { usePaymentAccounts } from '@/app/api/hooks/usePaymentAccounts';
+import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
 import { useAppSelector } from '@/app/store/hooks';
+import { PAYMENT_ACCOUNT_CASH } from '@/app/store/orderMarkers';
+import { AuthContext } from '@/app/store/providers/AuthContext';
 import {
   selectActiveItemId,
   selectCartData,
@@ -76,6 +81,12 @@ export interface BookingWizardState {
   isLoading: boolean;
   /** The order error message (`''` when none) */
   error: string;
+  /** Payment accounts the salon offers for these orders (see `usePaymentAccounts`) */
+  paymentAccounts: IAccountsEntity[];
+  /** Identifier of the payment account the order will use */
+  paymentAccount: string;
+  /** Choose a payment account */
+  selectPaymentAccount: (identifier: string) => void;
   /** Start a flow from the entry screen */
   startFlow: (f: BookingFlow) => void;
   /** Choose a salon */
@@ -130,8 +141,31 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   /** Jump to the Date & Time step once the step list settles (repeat flow) */
   const [pendingDateTime, setPendingDateTime] = useState(false);
 
+  /**
+   * Payment accounts the salon actually offers for these orders, and the
+   * client's pick. A single-account salon never sees a picker at all — the
+   * choice only appears because more than one account is linked.
+   *
+   * The default is the OFFLINE account (pay at the salon), not simply the first
+   * one the API returns: the design books an appointment without asking about
+   * payment at all, so paying on site is the expected path, and `getAccounts`
+   * happens to list the online provider first — defaulting to it would send
+   * every client who ignores the picker to a payment gateway.
+   */
+  const { isAuth: authed } = useContext(AuthContext);
+  const { accounts: paymentAccounts } = usePaymentAccounts({ isAuth: authed });
+  const [paymentAccount, setPaymentAccount] = useState('');
+  const offlineAccount = paymentAccounts.find(
+    (account) => !isOnlinePayment(account.identifier),
+  );
+  const activePaymentAccount =
+    paymentAccount ||
+    offlineAccount?.identifier ||
+    paymentAccounts[0]?.identifier ||
+    PAYMENT_ACCOUNT_CASH;
+
   const { submit, booked, closeSuccess, isAuth, isLoading, error } =
-    useBookingSubmit();
+    useBookingSubmit({ paymentAccount: activePaymentAccount });
 
   /** ── Preselection from the booking cart ──────────────────────────────── */
   const activeId = useAppSelector(selectActiveItemId);
@@ -478,6 +512,9 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     isAuth,
     isLoading,
     error,
+    paymentAccounts,
+    paymentAccount: activePaymentAccount,
+    selectPaymentAccount: setPaymentAccount,
     startFlow,
     selectSalon,
     selectService,

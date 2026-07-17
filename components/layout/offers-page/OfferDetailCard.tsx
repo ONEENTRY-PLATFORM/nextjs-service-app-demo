@@ -13,6 +13,7 @@ import {
   selectActiveItemId,
   setTabsState,
 } from '@/app/store/reducers/CartSlice';
+import { productCurrency } from '@/components/shared/productCurrency';
 
 import OfferDetailMedia from './OfferDetailMedia';
 import OfferDetailPanel from './OfferDetailPanel';
@@ -115,6 +116,7 @@ const OfferDetailCard = ({
         discount={discount}
         accentColor={accentColor}
         price={price}
+        currency={productCurrency(product)}
         original={original}
       />
 

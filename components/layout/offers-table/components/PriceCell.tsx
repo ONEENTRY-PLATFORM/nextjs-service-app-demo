@@ -1,7 +1,8 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import type { JSX } from 'react';
 
-import Dirham from '@/components/shared/Dirham';
+import CurrencySymbol from '@/components/shared/CurrencySymbol';
+import { productCurrency } from '@/components/shared/productCurrency';
 
 /**
  * PriceDisplay component shows the price information for a product with sale price
@@ -25,19 +26,20 @@ const PriceDisplay = ({
     Number(product.attributeValues?.offer_sale?.value) || product.price;
   const original =
     Number(product.attributeValues?.offer_price?.value) || undefined;
+  const currency = productCurrency(product);
 
   return (
     <div className="float-right flex w-auto flex-row gap-3 self-stretch text-right text-lg">
       {/* Display crossed-out original price in gray */}
       {original ? (
         <div className="whitespace-nowrap text-gray-400 line-through">
-          <Dirham />
+          <CurrencySymbol currency={currency} />
           {original}
         </div>
       ) : null}
       {/* Display current price in specified color */}
       <div className={'font-bold whitespace-nowrap'} style={{ color: color }}>
-        <Dirham />
+        <CurrencySymbol currency={currency} />
         {price}
       </div>
     </div>

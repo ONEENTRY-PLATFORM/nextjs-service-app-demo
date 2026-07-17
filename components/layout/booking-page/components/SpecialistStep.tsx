@@ -223,6 +223,7 @@ const SpecialistStep = ({
             photo={anySpecialistImg(selectedSalon)}
             specialties={anySpecialties}
             fromPrice={anyFromPrice}
+            currency={service?.currency}
             salons={salons}
             chipsMinH={chipsMinH}
           />

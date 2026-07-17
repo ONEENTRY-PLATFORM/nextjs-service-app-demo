@@ -101,9 +101,9 @@ const toServiceItem = (
   const description = plainTextFromTextAttr(attrs.description?.value) || '';
 
   /**
-   * Currency of `price`, from the product's own `currency` attribute — the
-   * order form carries it alongside the price, so it must come from the CMS
-   * rather than a constant in the code.
+   * Currency of `price`, from the product's own `currency` attribute (flagged
+   * `isCurrency` in the CMS attribute set). Rendered by `CurrencySymbol` — the
+   * dirham glyph is no longer assumed.
    */
   const attrCurrency = attrs.currency?.value;
   const currency = typeof attrCurrency === 'string' ? attrCurrency : '';

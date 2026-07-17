@@ -1,7 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import type { JSX } from 'react';
 
-import Dirham from '@/components/shared/Dirham';
+import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
 /** Brand text colors from the static-html mock */
 const DARK = '#4c4d56';
@@ -17,6 +17,7 @@ const MUTED = '#a8a9b5';
  * @param   {string}      props.accentGrad  - Accent gradient
  * @param   {number}      props.price       - Current price
  * @param   {number}      props.original    - Crossed-out original price (`0` hides it)
+ * @param   {string}      props.currency    - Currency symbol
  * @param   {() => void}  props.onBook      - Add the offer to the cart and go to booking
  * @returns {JSX.Element}                   Offer card footer
  */
@@ -26,6 +27,7 @@ const OfferCardFooter = ({
   accentGrad,
   price,
   original,
+  currency,
   onBook,
 }: {
   featured: boolean;
@@ -33,6 +35,7 @@ const OfferCardFooter = ({
   accentGrad: string;
   price: number;
   original: number;
+  currency?: string | undefined;
   onBook: () => void;
 }): JSX.Element => (
   <div
@@ -47,7 +50,7 @@ const OfferCardFooter = ({
         className="flex items-baseline text-[1.85rem] leading-none font-black whitespace-nowrap"
         style={{ color: featured ? '#fff' : DARK }}
       >
-        <Dirham big /> {price}
+        <CurrencySymbol currency={currency} big /> {price}
       </span>
       {/* Old price */}
       {original > 0 && (
@@ -55,7 +58,7 @@ const OfferCardFooter = ({
           className="mb-1 text-sm whitespace-nowrap line-through"
           style={{ color: featured ? 'rgba(255,255,255,0.55)' : MUTED }}
         >
-          <Dirham />
+          <CurrencySymbol currency={currency} />
           {original}
         </span>
       )}

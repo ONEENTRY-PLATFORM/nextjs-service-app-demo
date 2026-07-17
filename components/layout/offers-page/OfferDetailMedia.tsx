@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import type { JSX } from 'react';
 
-import Dirham from '@/components/shared/Dirham';
+import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
 /**
  * OfferDetailMedia — the left photo pane of an offer detail card: a full-bleed
@@ -14,6 +14,7 @@ import Dirham from '@/components/shared/Dirham';
  * @param   {string}      props.accentColor - Accent colour hex (badge)
  * @param   {number}      props.price       - Current price
  * @param   {number}      props.original    - Crossed-out original price (`0` hides it)
+ * @param   {string}      [props.currency]  - Currency code from the CMS
  * @returns {JSX.Element}                   Photo pane
  */
 const OfferDetailMedia = ({
@@ -23,6 +24,7 @@ const OfferDetailMedia = ({
   accentColor,
   price,
   original,
+  currency,
 }: {
   image: string;
   name: string;
@@ -30,6 +32,7 @@ const OfferDetailMedia = ({
   accentColor: string;
   price: number;
   original: number;
+  currency?: string | undefined;
 }): JSX.Element => (
   <div className="relative min-h-60">
     <Image
@@ -58,7 +61,7 @@ const OfferDetailMedia = ({
         className="flex items-baseline leading-none font-black text-white"
         style={{ fontSize: '1.9rem' }}
       >
-        <Dirham big />
+        <CurrencySymbol currency={currency} big />
         {price}
       </span>
       {original > 0 && (
@@ -66,7 +69,7 @@ const OfferDetailMedia = ({
           className="mb-0.5 flex items-baseline text-sm line-through"
           style={{ color: 'rgba(255,255,255,0.7)' }}
         >
-          <Dirham />
+          <CurrencySymbol currency={currency} />
           {original}
         </span>
       )}

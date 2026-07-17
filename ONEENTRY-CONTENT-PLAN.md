@@ -159,7 +159,13 @@
 
 > **Статус:** 🟡 в основном сделано: **77 продуктов** заведены (набор `a_sets_tpl_catalog_1_ImportProcessingType.catalog`), у всех есть `title`, `description` (маркетинговые тексты из прайса), `sku` (`hh01`…`np04`), `duration` (мин) и `specialist_grade` (грейд списком — плановый бейдж-грейд, читает `ProductBadge`), статус `in_stock`, привязка к своим подкатегориям. ⚠️ Отличия: поля `sale` нет.
 >
-> **Обновлено 2026-07-17:** атрибут **`currency` заполнен значением `AED` у всех 81 продукта** (77 услуг + 4 оффера) — до этого он был пуст, из-за чего заказ не мог нести валюту. Заливка: `.claude/temp/fill-product-currency.mjs` (идемпотентна, `DRY_RUN=1`). Внутренний id поля **не хардкодится** — ищется по флагу `isCurrency` в схеме набора: у услуг это `string_id8`, а у офферов `string_id10`, так что фиксированный id записал бы четыре оффера в чужое поле. Фронт протянул валюту в заказ: `catalog-data` → `ServiceItem.currency` → `BookingService.currency` → поле `currency` формы `order`.
+> **Обновлено 2026-07-17:** атрибут **`currency` заполнен значением `AED` у всех 81 продукта** (77 услуг + 4 оффера) — до этого он был пуст. Заливка: `.claude/temp/fill-product-currency.mjs` (идемпотентна, `DRY_RUN=1`). Внутренний id поля **не хардкодится** — ищется по флагу `isCurrency` в схеме набора: у услуг это `string_id8`, а у офферов `string_id10`, так что фиксированный id записал бы четыре оффера в чужое поле.
+>
+> ✅ **Фронт читает валюту из CMS (2026-07-17).** Введён `components/shared/CurrencySymbol.tsx`: `AED` → дизайнерский глиф дирхама, любой другой код → сам код текстом, пустое значение → глиф (деградация, проект пока только AED). Прямых импортов `Dirham` в ценах не осталось — все 6 точек переведены: `ServiceCard`, booking-`Price` (+`BookingSummary`, `AnySpecialistCard`), `ProductPrice`, `PriceCell` (офферы), `OfferCardFooter`, `OfferDetailMedia`. Источник: у продуктов — `productCurrency(product)` (хелпер `components/shared/productCurrency.ts`), у каталога/букинга — `ServiceItem.currency` → `BookingService.currency`.
+>
+> *Проверено экспериментом:* продукту 233 («Haircut») временно поставили `USD` → на `/services/hair` карточка отрисовала **«USD 260»**, соседние услуги остались с глифом дирхама. Значение возвращено на `AED` (сверено: у всех 81 продукта `["AED"]`).
+>
+> ⚠️ Оговорка: на оформление заказа currency НЕ влияла — гипотеза «пока значение пустое, заказ не работает» **не подтвердилась**. Заказ упирался в пустой список `master` и в непривязанные платёжные аккаунты; `currency` в formData заказа API вообще отвергает (см. §8.3).
 
 ---
 
@@ -247,21 +253,29 @@
 
 1. **Форма `reg`** — единая для регистрации/входа/профиля. Поля: `email_reg`, `password_reg` (type=password), `phone_reg`, `email_notification_reg`; флаги isLogin/isSignUp на полях. Auth-провайдеры: **email** (используется при signUp) и **phone** (таб входа). ⚠️ В верстке авторизация телефон-центричная (OTP) — минимум включить оба провайдера.
 2. **Форма `contact_us`** — поля из верстки: Your name (text), Phone (text), E-mail (text), Message (textarea) + `spam` (reCAPTCHA, ключ в `settings.captchaKey`) + `button`.
-3. **Форма `order`** с полями: `master` (list), `salon` (entity), `interval` (timeInterval), `price` (float), `currency` (string).
-   > ⚠️ В плане до 2026-07-17 значилось `order_salon` — в админке поле завели как **`salon`**. Код угадывал маркер по этому плану и отправлял `order_salon`, которого в форме нет: салон молча не попадал в заказ. Исправлено в `useBookingSubmit.ts`; маркеры сверены с живой формой (`.claude/temp/inspect-order-form.mjs`).
+3. **Форма `order`** — набор атрибутов принимает ровно три поля: `master` (list), `salon` (entity), `interval` (timeInterval).
+   > ⚠️ В плане до 2026-07-17 значилось `order_salon` — в админке поле завели как **`salon`**. Код угадывал маркер по этому плану и слал `order_salon`, которого в форме нет: салон молча не попадал в заказ. Исправлено в `useBookingSubmit.ts`.
+   >
+   > ⚠️ **`getFormByMarker('order')` врёт:** публичный листинг показывает 5 атрибутов, добавляя `price` (float) и `currency` (string), но набор атрибутов формы содержит только три (`list_id1`, `entity_id2`, `timeInterval_id3`), и `createOrder` отвергает лишние маркеры — `400 "form includes an attribute's marker that is not presented in corresponding form's attributes sets"`. Проверено реальными POST-ами (`.claude/temp/probe-order-fields.mjs`). **Сверять состав полей боевым запросом, а не листингом.**
 4. **Хранилище заказов** с маркером **`orders`**; статусы: `upcoming`, `completed`, `canceled` (identifiers — точно такие, их сверяет `ProfileHistory`).
 5. **Платёжные аккаунты**: `cash` (обязателен — редирект в профиль) и Stripe (опционально).
 
 > **Статус (обновл. 2026-07-14):** 🟡 ✅ **auth-провайдеры `google` + `email` включены** (active=true). ✅ **форма `reg` полностью заполнена** (6 полей, проверено `inspect-reg-form.mjs` 2026-07-14: `email_reg` — isLogin + isSignUpRequired, required + email-валидатор; `name_reg` — isSignUpRequired; `phone_reg`; `password_reg` — isPassword + isSignUpRequired, required; `repeat_password`; `email_notification_reg` — isNotificationEmail). Фронт `SignUpForm` починен под флаговую маршрутизацию (2026-07-14): пароль определяется по `isPassword` (устаревшая проверка `additionalFields.type` удалена), `repeat_password` не отправляется — только клиентская проверка совпадения. ❌ форма `contact_us` — **без полей** (`attributes = {}`), отложена по решению пользователя (2026-07-14): нужен site key reCAPTCHA для поля `spam`. Мёртвый дубль-компонент `ContactUsForm` + заглушка `FormCaptcha` удалены 2026-07-17; живая форма — `ContactFormCard` на `/contacts`, она деградирует без полей. ✅ платёжные аккаунты `cash` и `stripe` заведены оба.
 >
-> **Форма `order` — ЗАПОЛНЕНА (сверено 2026-07-17):** 5 полей — `master` (list), `salon` (entity), `interval` (timeInterval), `price` (float), `currency` (string). Фронт приведён к ним: маркер `salon` вместо выдуманного `order_salon`, id страницы салона числом (не строкой), добавлены `price` и `currency`.
+> **Форма `order` — ЗАПОЛНЕНА (сверено 2026-07-17):** принимает `master` (list), `salon` (entity), `interval` (timeInterval). Фронт приведён к ней: маркер `salon` вместо выдуманного `order_salon`, id страницы салона числом (не строкой). `price`/`currency` слать НЕЛЬЗЯ (см. §8.3).
 >
-> **⛔ Оформление заказа НЕ РАБОТАЕТ — два блокера, оба в админке** (диагностировано живым прогоном букинга 2026-07-16, `POST /orders-storage/marker/orders/orders` → 400):
+> ✅ **Список мастеров у поля `master` заполнен (2026-07-17):** 32 опции, `title` = имя мастера, `value` = **id админа** (именно это шлёт `useBookingSubmit`). Опции формы живут не в форме, а в наборе атрибутов: set 1 (`identifier: order`) → `schema.attribute1.listTitles.en_US`; UI — `/settings/attributes/single-attribute/1/1`. Скрипт `.claude/temp/fill-order-master-list.mjs` (идемпотентен, `DRY_RUN=1`, бэкап набора в `backup-attributes-set-1.json`). Формат скопирован с живого образца (set 15 / `specialist_grade`): `{title, value, extended:{type:null,value:null}, position}`. Ошибка `400 "there aren't list values for type list"` устранена — проверено публичным SDK и боевым POST.
 >
-> 1. **`400 "there aren't list values for type list"`** — у поля **`master`** (тип `list`) **пустой список значений** (`listTitles: []`), поэтому API отвергает любое значение. Нужно либо заполнить опции списка мастерами, либо сменить тип поля на `entity` (как у `salon`). Требует решения: чем именно идентифицировать мастера — id админа (сейчас код шлёт `adminId`) или именем.
-> 2. **`400 "Payment account identifier is wrong or payment accounts are not defined"`** — вылезает следом, когда `master` убран из payload. У аккаунтов `cash` и `stripe` **`isUsed: false`**, и к хранилищу `orders` не привязан ни один (`paymentAccountIdentifiers: []`). Нужно активировать `cash` и привязать его к хранилищу.
+> ✅ **ОФОРМЛЕНИЕ ЗАКАЗА РАБОТАЕТ (2026-07-17).** Пользователь активировал `cash` и `stripe` (`isUsed: true`) и привязал оба к хранилищу; заодно у хранилища появился `formIdentifier: "order"` (был `null`). Проверено сквозным прогоном через реальный UI: `POST /orders-storage/marker/orders/orders` → **201**, экран «Booked!», заказ виден в профиле (Upcoming), салон и мастер отрисованы. Содержимое заказа сверено через API: `master (list) = ["3"]`, `salon (entity) = [40]`, `interval (timeInterval)`, `status=upcoming`, `payment=cash`.
 >
-> Хранилище `orders`: `formIdentifier = null` (поэтому код обязан слать `'order'` литералом — брать из хранилища нельзя, ушёл бы `null`), `paymentAccountIdentifiers = []`. Проверка — `.claude/temp/probe-create-order.mjs`.
+> **Попутно найдена и починена вторая половина бага `order_salon`** — она была не только на записи, но и на **чтении**: `order-card/index.tsx` искал `order_salon` в formData (салон в карточке не отображался), а `RepeatOrder.tsx` вдобавок читал значение как `[{id}]`, тогда как хранится плоский массив id (`[40]`) — «повторить заказ» терял салон. Оба места приведены к маркеру `salon`. Маркера `order_salon` в коде не осталось.
+>
+> **⚠️ Новое (изменилась предпосылка двух ранее опровергнутых находок MISMATCH-LOG §4):**
+>
+> - к хранилищу привязаны **ДВА** платёжных аккаунта (`cash` + `stripe`) → клауза правила `orders` «2+ привязанных — показать ВСЕ варианты» теперь **наступила**, а `useBookingSubmit` жёстко шлёт `'cash'`. Выбор оплаты в букинге отсутствует.
+> - `storage.formIdentifier` теперь `"order"`, а не `null` → брать его из хранилища стало возможно (раньше это сломало бы заказ).
+>
+> Проверка — `.claude/temp/probe-order-fields.mjs`, `probe-create-order.mjs`.
 
 ---
 

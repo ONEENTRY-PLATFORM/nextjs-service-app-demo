@@ -41,13 +41,18 @@ const RepeatOrder = ({
    * so we don't need to re-fetch anything here.
    */
   const repeatOrderHandle = () => {
-    /** Extract salon id from the archived order's form data */
+    /**
+     * Extract salon id from the archived order's form data.
+     *
+     * Marker is `salon` (what the CMS `order` form declares — `order_salon` was
+     * a guess that exists nowhere), and the stored value is a plain array of
+     * page ids: `[40]`. Reading it as `[{ id }]` yielded `undefined`, so the
+     * repeated order silently lost its salon even once the marker was right.
+     */
     const salonEntity = orderData?.formData?.find(
-      (field: { marker: string }) => field?.marker === 'order_salon',
+      (field: { marker: string }) => field?.marker === 'salon',
     );
-    const salonId = (
-      salonEntity?.value as Array<{ id: number }> | undefined
-    )?.[0]?.id;
+    const salonId = (salonEntity?.value as number[] | undefined)?.[0];
 
     /** Extract product id from the archived order's products list */
     const productId = orderData?.products[0]?.id;

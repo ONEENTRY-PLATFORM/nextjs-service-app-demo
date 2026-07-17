@@ -44,7 +44,7 @@ export interface ServiceItem {
   description: string;
   /** Price, `null` when not set in the CMS ("Not available") */
   price: number | null;
-  /** Currency of `price` from the CMS `currency` attribute (`'AED'`); `''` when unset */
+  /** Currency code from the CMS `currency` attribute (`'AED'`); `''` when unset */
   currency: string;
   /**
    * Product status marker from the CMS (e.g. `in_stock`). A service counts as

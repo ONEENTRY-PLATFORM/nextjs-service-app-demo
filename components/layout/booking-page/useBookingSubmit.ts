@@ -4,6 +4,7 @@ import { useTransitionRouter } from 'next-transition-router';
 import { useContext, useState } from 'react';
 
 import { getApi, isError } from '@/app/api';
+import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
   ORDERS_FORM_IDENTIFIER,
@@ -56,13 +57,22 @@ const toInterval = (sel: BookingSelection): [Date, Date] => {
  * Signed-out clients get their selection stashed into the booking cart and
  * are sent to `/profile` to sign in (the cart survives, so the selection is
  * not lost). Signed-in clients get an appointment created in the `orders`
- * storage with the `order` form and cash payment — the same payload the
- * legacy booking form assembled in `Payment.tsx` (`master` / `order_salon` /
- * `interval` form fields plus the product). Demo selections (no CMS product
- * behind the service) show the success modal without an API call.
- * @returns {object} `submit`, `booked` flag, `closeSuccess`, `isLoading`, `error`
+ * storage with the `order` form (`master` / `salon` / `interval` fields plus
+ * the product). Demo selections (no CMS product behind the service) show the
+ * success modal without an API call.
+ *
+ * Payment splits the tail: an offline account (pay at the salon) ends on the
+ * success modal, an online one creates a payment session and hands the client
+ * over to the gateway.
+ * @param   {object} props                - Hook parameters
+ * @param   {string} props.paymentAccount - Identifier of the chosen payment account
+ * @returns {object}                      `submit`, `booked` flag, `closeSuccess`, `isLoading`, `error`
  */
-export const useBookingSubmit = (): {
+export const useBookingSubmit = ({
+  paymentAccount,
+}: {
+  paymentAccount: string;
+}): {
   submit: (sel: BookingSelection) => Promise<void>;
   booked: boolean;
   closeSuccess: () => void;
@@ -115,15 +125,22 @@ export const useBookingSubmit = (): {
     try {
       const [start, end] = toInterval(sel);
       /**
-       * Markers and types below mirror the `order` form in the CMS, verified
-       * against it (`.claude/temp/inspect-order-form.mjs`, 2026-07-17):
-       * `master` (list), `salon` (entity), `interval` (timeInterval),
-       * `price` (float), `currency` (string).
+       * Markers and types mirror the `order` form's ATTRIBUTE SET, verified by
+       * actually posting orders (`.claude/temp/probe-order-fields.mjs`,
+       * 2026-07-17): `master` (list), `salon` (entity), `interval`
+       * (timeInterval) — and nothing else.
        *
        * They used to be guesses, and one was wrong: the salon went as
-       * `order_salon`, a marker the form does not have — once the form was
-       * filled in the admin panel, the salon silently stopped reaching the
-       * order. Re-check here whenever the form changes.
+       * `order_salon`, a marker the form does not have, so once the form was
+       * filled in the admin panel the salon silently stopped reaching the order.
+       *
+       * ⚠️ Do NOT add `price` / `currency` here, however tempting:
+       * `getFormByMarker('order')` lists them as attributes, but the form's
+       * attribute set holds only the three above, and `createOrder` rejects the
+       * extra markers outright — `400 "form includes an attribute's marker that
+       * is not presented in corresponding form's attributes sets"`. The public
+       * form listing and the set disagree; the set wins. Verify against a real
+       * POST, not the listing, whenever this changes.
        */
       const formData: { marker: string; type: string; value: unknown }[] = [];
       if (sel.master?.adminId) {
@@ -148,26 +165,12 @@ export const useBookingSubmit = (): {
         /** Send the interval as explicit ISO strings rather than Date objects. */
         value: [[start.toISOString(), end.toISOString()]],
       });
-      if (typeof sel.service.price === 'number') {
-        formData.push({
-          marker: 'price',
-          type: 'float',
-          value: sel.service.price,
-        });
-      }
-      if (sel.service.currency) {
-        formData.push({
-          marker: 'currency',
-          type: 'string',
-          value: sel.service.currency,
-        });
-      }
 
       const createdOrder = await getApi().Orders.createOrder(
         ORDERS_STORAGE_MARKER,
         {
           formIdentifier: ORDERS_FORM_IDENTIFIER,
-          paymentAccountIdentifier: 'cash',
+          paymentAccountIdentifier: paymentAccount,
           products: [{ productId: sel.service.productId, quantity: 1 }],
           formData,
         } as unknown as Parameters<
@@ -181,6 +184,30 @@ export const useBookingSubmit = (): {
       }
 
       dispatch(removeAllServices());
+
+      /**
+       * Online providers finish payment on the gateway's own host, so the order
+       * is created first and the client leaves the site — no success modal.
+       * Offline ones (pay at the salon) are done here.
+       */
+      if (isOnlinePayment(paymentAccount)) {
+        const session = await getApi().Payments.createSession(
+          createdOrder.id,
+          'session',
+        );
+        if (isError(session)) {
+          setError(session.message);
+          return;
+        }
+        if (!session.paymentUrl) {
+          setError('Payment session has no paymentUrl');
+          return;
+        }
+        /** Full navigation — `router.push` is for in-app routes only. */
+        window.location.href = session.paymentUrl;
+        return;
+      }
+
       setRealOrder(true);
       setBooked(true);
     } catch (err) {

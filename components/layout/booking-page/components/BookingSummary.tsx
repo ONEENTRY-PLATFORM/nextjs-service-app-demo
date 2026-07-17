@@ -1,6 +1,7 @@
 'use client';
 
 import { Calendar, MapPin, Scissors, User } from 'lucide-react';
+import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces';
 import type { JSX } from 'react';
 
 import { BRAND_GRADIENT, DARK, MONTHS, MUTED, PINK, PINK2 } from '../constants';
@@ -11,6 +12,7 @@ import type {
   BookingService,
 } from '../types';
 import MasterSummaryCard from './MasterSummaryCard';
+import PaymentMethodPicker from './PaymentMethodPicker';
 import Price from './Price';
 import SummaryRow from './SummaryRow';
 
@@ -20,22 +22,25 @@ import SummaryRow from './SummaryRow';
  * a gradient header with a Reset link, the picked studio / service /
  * specialist / date rows, the total and the confirm button (its label walks
  * through "Step x of y" → "Sign in to book" / "Book Appointment").
- * @param   {object}                     props            - Component properties
- * @param   {BookingFlow | null}         props.flow       - Active flow (`null` on the entry screen)
- * @param   {BookingSalon | undefined}   props.salon      - Picked salon
- * @param   {BookingService | undefined} props.service    - Picked service
- * @param   {BookingMaster | undefined}  props.master     - Picked specialist
- * @param   {boolean}                    props.masterAny  - "Any specialist" picked
- * @param   {string}                     props.date       - Picked date key `y-m-d`
- * @param   {string}                     props.time       - Picked time `HH:MM`
- * @param   {number}                     props.currentIdx - Index of the active step
- * @param   {number}                     props.totalSteps - Step count of the flow
- * @param   {() => void}                 props.onBook     - Confirm the booking
- * @param   {boolean}                    props.isLoggedIn - Whether the client is signed in
- * @param   {boolean}                    props.isLoading  - Order request in flight
- * @param   {string}                     props.error      - Order error message (`''` when none)
- * @param   {() => void}                 props.onReset    - Reset the whole wizard
- * @returns {JSX.Element}                                 Booking summary card
+ * @param   {object}                     props                        - Component properties
+ * @param   {BookingFlow | null}         props.flow                   - Active flow (`null` on the entry screen)
+ * @param   {BookingSalon | undefined}   props.salon                  - Picked salon
+ * @param   {BookingService | undefined} props.service                - Picked service
+ * @param   {BookingMaster | undefined}  props.master                 - Picked specialist
+ * @param   {boolean}                    props.masterAny              - "Any specialist" picked
+ * @param   {string}                     props.date                   - Picked date key `y-m-d`
+ * @param   {string}                     props.time                   - Picked time `HH:MM`
+ * @param   {number}                     props.currentIdx             - Index of the active step
+ * @param   {number}                     props.totalSteps             - Step count of the flow
+ * @param   {() => void}                 props.onBook                 - Confirm the booking
+ * @param   {boolean}                    props.isLoggedIn             - Whether the client is signed in
+ * @param   {boolean}                    props.isLoading              - Order request in flight
+ * @param   {string}                     props.error                  - Order error message (`''` when none)
+ * @param   {IAccountsEntity[]}          props.paymentAccounts        - Payment accounts offered for these orders
+ * @param   {string}                     props.paymentAccount         - Identifier of the chosen payment account
+ * @param   {(id: string) => void}       props.onSelectPaymentAccount - Choose a payment account
+ * @param   {() => void}                 props.onReset                - Reset the whole wizard
+ * @returns {JSX.Element}                                             Booking summary card
  */
 const BookingSummary = ({
   flow,
@@ -47,6 +52,9 @@ const BookingSummary = ({
   time,
   currentIdx,
   totalSteps,
+  paymentAccounts,
+  paymentAccount,
+  onSelectPaymentAccount,
   onBook,
   isLoggedIn,
   isLoading,
@@ -62,6 +70,9 @@ const BookingSummary = ({
   time: string;
   currentIdx: number;
   totalSteps: number;
+  paymentAccounts: IAccountsEntity[];
+  paymentAccount: string;
+  onSelectPaymentAccount: (identifier: string) => void;
   onBook: () => void;
   isLoggedIn: boolean;
   isLoading: boolean;
@@ -149,7 +160,7 @@ const BookingSummary = ({
             sub={
               <>
                 {service.duration && <>{service.duration} · </>}
-                <Price amount={service.price} />
+                <Price amount={service.price} currency={service.currency} />
               </>
             }
           />
@@ -181,10 +192,19 @@ const BookingSummary = ({
                 className="text-xl font-bold whitespace-nowrap"
                 style={{ color: DARK }}
               >
-                <Price amount={service.price} />
+                <Price amount={service.price} currency={service.currency} />
               </span>
             </div>
           </div>
+        )}
+        {/* Payment — only once the client is signed in and the salon offers a
+            real choice; PaymentMethodPicker renders nothing for a single one. */}
+        {flow && isLoggedIn && (
+          <PaymentMethodPicker
+            accounts={paymentAccounts}
+            value={paymentAccount}
+            onSelect={onSelectPaymentAccount}
+          />
         )}
         {flow && (
           <div className="pt-2 md:mt-auto">

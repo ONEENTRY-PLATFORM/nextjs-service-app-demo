@@ -68,8 +68,14 @@ const OrderCard = ({
   const [salonAddress, setSalonAddress] = useState<string>('');
   const [salonTitle, setSalonTitle] = useState<string>('');
 
-  /** Find the salon entity from order form data */
-  const salonEntity = order.formData.find((el) => el.marker === 'order_salon');
+  /**
+   * Find the salon entity in the order's form data.
+   *
+   * `salon` is the marker the CMS `order` form actually declares. This used to
+   * look for `order_salon` — the same guess the booking side wrote with, so both
+   * halves were wrong together and the salon line rendered blank.
+   */
+  const salonEntity = order.formData.find((el) => el.marker === 'salon');
   const salonId = (salonEntity?.value as number[] | undefined)?.[0];
 
   /** Load salon data when salon ID changes */

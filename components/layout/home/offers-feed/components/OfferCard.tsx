@@ -13,6 +13,7 @@ import {
   selectActiveItemId,
   setTabsState,
 } from '@/app/store/reducers/CartSlice';
+import { productCurrency } from '@/components/shared/productCurrency';
 
 import OfferCardFooter from './OfferCardFooter';
 import { parseOffer } from './parseOffer';
@@ -186,6 +187,7 @@ const OfferCard = ({
           accentColor={accentColor}
           accentGrad={accentGrad}
           price={price}
+          currency={productCurrency(product)}
           original={original}
           onBook={handleBook}
         />

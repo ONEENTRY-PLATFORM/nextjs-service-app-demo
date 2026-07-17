@@ -111,7 +111,7 @@ section {
 
 .section-bg {
   position: absolute;
-  top: 140px;
+  top: 0px;
   left: 50%;
   z-index: 0;
   transform: translateX(-50%);
