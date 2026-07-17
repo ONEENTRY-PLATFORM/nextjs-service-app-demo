@@ -43,6 +43,9 @@ interface SingleOrderProps {
   body: IOrderData;
 }
 
+/** Page size of a single orders request when paging the whole storage. */
+const ORDERS_PAGE_LIMIT = 100;
+
 /**
  * Redux Toolkit API service for OneEntry CMS
  * @name RTKApi
@@ -352,6 +355,46 @@ export const RTKApi = createApi({
       keepUnusedDataFor: 60, // 1 minute for orders
     }),
     /**
+     * Every order of the signed-in user, across all statuses.
+     *
+     * Pages through the storage inside the endpoint: the profile buckets orders
+     * by status client-side, so stopping at the first page would silently hide
+     * older visits once a user passes {@link ORDERS_PAGE_LIMIT} appointments.
+     *
+     * `providesTags: ['Orders']` is what makes cancelling or saving an order
+     * refresh this list — those mutations declare `invalidatesTags: ['Orders']`,
+     * so no manual refetch flag has to be threaded down the component tree.
+     * @param marker - Text identifier of the order storage object
+     * @returns      Every order in the storage
+     */
+    getAllOrdersByMarker: build.query<
+      IOrderByMarkerEntity[],
+      { marker: string }
+    >({
+      queryFn: async ({ marker }) => {
+        const all: IOrderByMarkerEntity[] = [];
+        for (let offset = 0; ; offset += ORDERS_PAGE_LIMIT) {
+          const result = await getApi().Orders.getAllOrdersByMarker(
+            marker,
+            undefined,
+            offset,
+            ORDERS_PAGE_LIMIT,
+          );
+          if (isError(result)) {
+            return { error: result };
+          }
+          const page = result.items ?? [];
+          all.push(...page);
+          if (page.length < 1 || all.length >= (result.total ?? 0)) {
+            break;
+          }
+        }
+        return { data: all };
+      },
+      providesTags: ['Orders'],
+      keepUnusedDataFor: 60, // 1 minute — orders change on cancel / save
+    }),
+    /**
      * Get a single payment session by its identifier.
      * Fetches a payment session by its ID.
      * @param id - Identifier of the payment session to fetch
@@ -467,6 +510,7 @@ export const {
   useGetPaymentSessionByIdQuery,
   useLazyGetPaymentSessionByIdQuery,
   useGetOrderStorageByMarkerQuery,
+  useGetAllOrdersByMarkerQuery,
   useGetSingleOrderQuery,
   useGetProductByIdQuery,
   useGetProductsQuery,

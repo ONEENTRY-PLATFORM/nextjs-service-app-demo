@@ -6,18 +6,29 @@ import { ORDERS_STATUS_COMPLETED } from '@/app/store/orderMarkers';
 
 /**
  * StatusBadge renders the small status pill shown in the top-right corner of a
- * completed or cancelled order card: a cyan "Completed" pill with a check, or a
- * muted "Cancelled" pill with a cross.
- * @param   {object}      props        - Component props
- * @param   {string}      props.status - Order status identifier, one of the CMS status markers
- * @returns {JSX.Element}              Status pill element
+ * completed or cancelled order card: a cyan pill with a check, or a muted one
+ * with a cross.
+ *
+ * The label comes from the order's own `statusLocalizeInfos.title` — the status
+ * names live in the admin panel and are renamable there, so hardcoding them
+ * guarantees drift. It already had: the pill said "Cancelled" while the CMS
+ * calls that status "Canceled". The marker still drives the STYLING (colour and
+ * icon), which is a design decision rather than CMS data.
+ * @param   {object}      props         - Component props
+ * @param   {string}      props.status  - Order status identifier, one of the CMS status markers
+ * @param   {string}      [props.title] - Localized status name from `statusLocalizeInfos`
+ * @returns {JSX.Element}               Status pill element
  */
 const StatusBadge = ({
   status,
+  title,
 }: {
   status: typeof ORDERS_STATUS_COMPLETED | typeof ORDERS_STATUS_CANCELED;
+  title?: string | undefined;
 }): JSX.Element => {
   const isCompleted = status === ORDERS_STATUS_COMPLETED;
+  /** Fall back to the marker itself — never render an empty pill. */
+  const label = title || status;
 
   return (
     <span
@@ -29,7 +40,7 @@ const StatusBadge = ({
       }
     >
       {isCompleted ? <Check size={9} /> : <X size={9} />}
-      {isCompleted ? 'Completed' : 'Cancelled'}
+      {label}
     </span>
   );
 };

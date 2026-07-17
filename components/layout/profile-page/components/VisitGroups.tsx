@@ -1,7 +1,7 @@
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
-import type { Dispatch, JSX, SetStateAction } from 'react';
+import type { JSX } from 'react';
 
 import OrderCard from '@/components/layout/profile-page/components/order-card';
 
@@ -40,23 +40,20 @@ const groupOrdersByMaster = (
  * VisitGroups renders the body of one visit-history section: the bucket's
  * orders grouped by master (master card on the left, order cards on the right),
  * or a muted empty-state message when the bucket has no orders.
- * @param   {object}                            props            - Component props
- * @param   {IOrderByMarkerEntity[]}            props.orders     - Orders in this status bucket
- * @param   {IAdminEntity[]}                    [props.masters]  - Masters lookup list
- * @param   {IAttributeValues}                  props.dict       - Dictionary with localized strings
- * @param   {Dispatch<SetStateAction<boolean>>} props.setRefetch - Trigger a re-fetch of orders
- * @returns {JSX.Element}                                        Grouped order list or empty state
+ * @param   {object}                 props           - Component props
+ * @param   {IOrderByMarkerEntity[]} props.orders    - Orders in this status bucket
+ * @param   {IAdminEntity[]}         [props.masters] - Masters lookup list
+ * @param   {IAttributeValues}       props.dict      - Dictionary with localized strings
+ * @returns {JSX.Element}                            Grouped order list or empty state
  */
 const VisitGroups = ({
   orders,
   masters,
   dict,
-  setRefetch,
 }: {
   orders: IOrderByMarkerEntity[];
   masters: IAdminEntity[] | undefined;
   dict: IAttributeValues;
-  setRefetch: Dispatch<SetStateAction<boolean>>;
 }): JSX.Element => {
   const groups = groupOrdersByMaster(orders);
 
@@ -96,7 +93,6 @@ const VisitGroups = ({
                   dict={dict}
                   order={order}
                   master={masterData as IAdminEntity}
-                  setRefetch={setRefetch}
                 />
               ))}
             </div>

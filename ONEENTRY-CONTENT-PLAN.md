@@ -313,32 +313,34 @@
 `home_hero` (4 слайда) / `home_catalog` / `home_gallery` / `home_offers_feed` / `home_discounts` / `home_masters` / `reviews_carousel` — ✅ созданы и привязаны к `home`;
 `system_content` ✅ (34 UI-текста, `fill-system-content.mjs`); `opening_time` ❌ — отложен пользователем (2026-07-14; часы на фолбэке кода, контакты на моке `data.js`).
 
-- [ ] **Этап 7 — формы и заказы** 🟡:
+- [x] **Этап 7 — формы и заказы** ✅ (обновл. 2026-07-17):
 форма `reg` заполнена (6 полей, флаги isLogin/isPassword/isNotificationEmail/isSignUpRequired) ✅;
-форма `order` — без полей, отложена: источник слотов `interval` зависит от flow (§11.8) ❌;
-форма `contact_us` — без полей, отложена (2026-07-14) ❌;
-auth-провайдеры `google`+`email` включены ✅;
-оплата `cash`+`stripe` ✅;
-storage `orders` не проверен (401).
+форма `order` заполнена — принимает `master` (list) / `salon` (entity) / `interval` (timeInterval) ✅; список значений `master` заведён (32 мастера, `value` = id админа) ✅;
+auth-провайдеры `google`+`email` ✅; события (Events) заведены — `reset_password`, `otp` + 3 заказных ✅;
+оплата: `cash`+`stripe` активны (`isUsed`) и привязаны к storage; storage `orders` получил `formIdentifier: "order"` ✅. **Stripe не подключён** (`settings.status: not_connected`) — фронт его не предлагает, пока не подключат.
+❌ Остаётся: форма `contact_us` без полей (отложена 2026-07-14 — нужен site key reCAPTCHA); слоты `interval` в форме без данных (`intervals: null`) — источник зависит от flow, см. §11.8.
 
-- [x] **Этап 8 — проверка** 🟡 (2026-07-14, Playwright на dev :3700, desktop 1280):
-auth-флоу целиком ✅ — регистрация по CMS-форме `reg` через UI (несовпадение паролей блокируется на клиенте) → signUp → автологин → профиль (name/phone из formData; password/repeat_password в formData НЕ попадают) → выход → повторный вход; тестовый юзер `claude.test1@example.com`;
-страницы home / services/hair / masters/13 / contacts / gallery / offers / booking / reviews — рендер из CMS, 0 ошибок консоли ✅; телефоны всех салонов форматируются ✅;
-❌ не проверено: отправка `contact_us` и создание заказа из бронирования — блокировано отложенными формами (§8).
-Замечания: (1) ✅ ИСПРАВЛЕНО 2026-07-14 — шумные 400/401 при logout: `logOutUser` теперь чистит `refresh-token`/`authProviderMarker` и сбрасывает SDK-инстанс (`clearSession`), а `SignOutButton`/`LogoutMenuItem` гасят состояние синхронно через новый `AuthContext.logout()` вместо `authenticate()` (по `rules/tokens.md`: мёртвый токен чистит приложение; перепроверено — консоль чистая за весь цикл вход/выход); (2) ✅ ИСПРАВЛЕНО 2026-07-14 — metadata: `generateMetadata` в `app/layout.tsx` берёт title/og:siteName из `site_name` `system_content` (сейчас «Thalia Beauty Studio», фолбэк захардкожен), туда же — имя Organization в JSON-LD; (3) в профиле поле E-mail пустое (login-credential не хранится в formData — поведение шаблона); (4) hero-слайд 4 — заглушки Sale/Title/Text в CMS.
+- [x] **Этап 8 — проверка** ✅ (обновл. 2026-07-17, Playwright на dev :3700):
+auth-флоу целиком ✅ (регистрация → автологин → профиль → выход → повторный вход; юзер `claude.test1@example.com`);
+страницы home / services/hair / masters/13 / contacts / gallery / offers / booking / reviews — рендер из CMS, 0 ошибок консоли ✅;
+**создание заказа из бронирования ✅** — сквозной прогон через UI: `POST /orders-storage/marker/orders/orders` → **201**, экран «Booked!», заказ в профиле; содержимое сверено через API (`master`/`salon`/`interval`, `status=upcoming`, `payment=cash`);
+**отмена заказа ✅** — `PUT` → 200, статус в CMS `canceled`, список в профиле обновляется сам (RTK-инвалидация тега `Orders`);
+❌ не проверена только отправка `contact_us` — блокировано формой без полей.
+Замечания: (1) в профиле поле E-mail пустое (login-credential не хранится в formData — поведение шаблона); (2) hero-слайд 4 — заглушки Sale/Title/Text в CMS.
 
 ---
 
 ## 11. Открытые вопросы / несоответствия верстки и шаблона
 
 1. **Цены по салонам и тарифам** (premium/mid/budget × 3 салона) — шаблон поддерживает одну цену + `sale`. Этап 1: цена Downtown/Premium; расширение — отдельной задачей.
-2. **Hero-карусель** (4 слайда в верстке) vs один блок `home_hero` — нужен либо один слайд, либо доработка фронта под несколько блоков.
+2. ~~**Hero-карусель** (4 слайда в верстке) vs один блок `home_hero`~~ — **ЗАКРЫТО**: слайды приходят через `Blocks.getSlides(marker)`, 4 слайда заведены, фронт рендерит карусель.
 3. **Отзывы** — см. п. 9.
 4. **Тарифный переключатель Hair (Top/Senior/Stylist)** на странице цен — на фронте шаблона отсутствует; в админке можно отразить грейд бейджем `specialist_grade`.
 5. **Домен e-mail**: в верстке `@beautystudio.com` при бренде «Thalia» — уточнить перед заведением контактов.
 6. **Промо «First Visit 15%» / «10% off online»** — в шаблоне только контентный блок `home_discounts`, логика скидки на фронте не реализована.
 7. **Соцсети** (Instagram/Facebook/Twitter) — в верстке ссылки-заглушки; реальные URL завести в `system_content`.
-8. **Поле `interval` формы `order`** — слоты должны зависеть от выбранного flow бронирования: при выборе мастера — из `master_schedule` (timeInterval админа), при выборе «любой специалист»/от салона — из режима работы салона (`salon_time`). В форму значение попадает из атрибутов сущностей на фронте; статичные опции timeInterval в самой форме не подходят. Требуется спроектировать до заведения поля (отложено 2026-07-14).
+8. **Слоты поля `interval` формы `order`** — поле заведено и заказы через него создаются, но **опций слотов у него нет** (`localizeInfos.intervals: null`, сверено 2026-07-17), а фронт показывает статичный массив `TIMES` (`booking-page/constants.ts`) и никогда не блокирует занятое время (`busyTimes` всегда пуст). Слоты должны зависеть от flow: при выборе мастера — из `master_schedule` (timeInterval админа), при «любом специалисте»/от салона — из режима работы салона (`salon_time`). Требуется спроектировать; статичные опции timeInterval в самой форме не подходят. **Открыто.**
+9. **Выбор оплаты** — сделан по решению пользователя (2026-07-17), хотя в верстке его нет вовсе (шаги `salon/specialist/service/datetime`, `completeBooking()` сразу показывает «Booked!»). Селектор появляется, только когда подключено 2+ аккаунта; сейчас показан не будет — **Stripe не подключён**. Подключите Stripe в админке, и выбор появится сам.
 
 ---
 

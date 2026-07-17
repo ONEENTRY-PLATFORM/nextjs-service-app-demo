@@ -4,11 +4,10 @@ import type {
   IOrderData,
 } from 'oneentry/dist/orders/ordersInterfaces';
 import type { JSX } from 'react';
-import type { Dispatch, SetStateAction } from 'react';
 import { useCallback } from 'react';
 import { toast } from 'react-toastify';
 
-import { updateOrderByMarkerAndId } from '@/app/api';
+import { useUpdateOrderMutation } from '@/app/api/api/RTKApi';
 import {
   ORDERS_STATUS_CANCELED,
   ORDERS_STORAGE_MARKER,
@@ -16,21 +15,23 @@ import {
 
 /**
  * Cancel order button
- * @param   {object}                            props            - Component props
- * @param   {IAttributeValues}                  props.dict       - The dictionary object containing translations
- * @param   {IOrderByMarkerEntity}              props.orderData  - The order data to be cancelled
- * @param   {Dispatch<SetStateAction<boolean>>} props.setRefetch - Function to trigger a refetch of order data after cancellation
- * @returns {JSX.Element}                                        JSX.Element
+ *
+ * Writes through the `updateOrder` mutation, which declares
+ * `invalidatesTags: ['Orders']` — the history list re-reads itself, so no
+ * refetch flag has to be passed in from the page.
+ * @param   {object}               props           - Component props
+ * @param   {IAttributeValues}     props.dict      - The dictionary object containing translations
+ * @param   {IOrderByMarkerEntity} props.orderData - The order data to be cancelled
+ * @returns {JSX.Element}                          JSX.Element
  */
 const CancelOrderButton = ({
   dict,
   orderData,
-  setRefetch,
 }: {
   dict: IAttributeValues;
   orderData?: IOrderByMarkerEntity;
-  setRefetch: Dispatch<SetStateAction<boolean>>;
 }): JSX.Element => {
+  const [updateOrder] = useUpdateOrderMutation();
   /** Destructure cancel text from dictionary */
   const { cancel_text } = dict;
 
@@ -41,7 +42,16 @@ const CancelOrderButton = ({
     /** Extract id and products from order data */
     const { id, products } = orderData;
 
-    /** Construct form data for updating the order status */
+    /**
+     * Construct form data for updating the order status.
+     *
+     * The whole read object is spread and `statusIdentifier` set — verified
+     * against the live API (2026-07-17, three orders cancelled through this
+     * button): the server applies it and the extra read-only fields do no harm.
+     * The `create-orders-list` recipe prescribes a minimal payload with
+     * `statusMarker` instead; re-verify with a real request before switching,
+     * since the recipe's key is NOT what this API accepted.
+     */
     const formData = {
       ...orderData,
       /** Map through products to extract necessary fields */
@@ -52,23 +62,25 @@ const CancelOrderButton = ({
       statusIdentifier: ORDERS_STATUS_CANCELED,
     } as IOrderData;
 
-    /** Update the order using the API function */
-    const { isError, error } = await updateOrderByMarkerAndId({
-      marker: ORDERS_STORAGE_MARKER,
-      id,
-      data: formData,
-    });
-
-    /** Surface a failed cancellation instead of falsely reporting success */
-    if (isError) {
-      toast.error(error?.message || 'Could not cancel the order');
+    try {
+      /** `.unwrap()` turns a failed mutation into a throw we can catch */
+      await updateOrder({
+        marker: ORDERS_STORAGE_MARKER,
+        id,
+        body: formData,
+      }).unwrap();
+    } catch (e) {
+      /** Surface a failed cancellation instead of falsely reporting success */
+      const message =
+        (e as { message?: string } | undefined)?.message ??
+        'Could not cancel the order';
+      toast.error(message);
       return;
     }
 
-    /** Trigger refetching of data and show a toast notification */
-    setRefetch(true);
+    /** The list refreshes itself — the mutation invalidates the `Orders` tag */
     toast('Order canceled!');
-  }, [orderData, setRefetch]);
+  }, [orderData, updateOrder]);
 
   /** Render the cancel button */
   return (

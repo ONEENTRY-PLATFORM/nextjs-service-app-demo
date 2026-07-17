@@ -2,8 +2,7 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 
 /**
  * `master_name` of every master admin keyed by admin id, for resolving the
- * `master_id` link of gallery photo pages — same lookup as the home gallery
- * feed (`components/layout/gallery-grid`). Admins without `master_name` are
+ * `master_id` link of gallery photo pages. Admins without `master_name` are
  * not masters and are skipped.
  * @param   {IAdminEntity[] | undefined} admins - Admin list from `getAdminsInfo`
  * @returns {Map<number, string>}               Admin id → master display name

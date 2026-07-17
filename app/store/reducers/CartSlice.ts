@@ -6,9 +6,9 @@ import { createSlice } from '@reduxjs/toolkit';
 /**
  * Cart item — holds only IDs of OneEntry entities, not the entities themselves.
  *
- * Entities are re-hydrated at read sites via RTK Query hooks (see `useCartItem`).
- * This keeps the Redux state small enough that `ImmutableStateInvariantMiddleware`
- * and redux-persist don't choke on deep clones of entire CMS payloads.
+ * Entities are re-hydrated at read sites via RTK Query hooks. This keeps the
+ * Redux state small enough that `ImmutableStateInvariantMiddleware` and
+ * redux-persist don't choke on deep clones of entire CMS payloads.
  */
 export interface CartItem {
   id: number;
@@ -193,7 +193,7 @@ export const {
 /**
  * Select the raw cart items array (IDs only).
  *
- * Use `useCartItem` from `@/app/store/useCartItem` to get hydrated entities.
+ * Read sites hydrate the entities themselves through RTK Query hooks.
  * @param   {object}     state                          - The Redux store state.
  * @param   {object}     state.cartReducer              - The cart reducer state.
  * @param   {CartItem[]} state.cartReducer.servicesData - Normalized cart rows.

@@ -57,7 +57,7 @@ const RepeatOrder = ({
     /** Extract product id from the archived order's products list */
     const productId = orderData?.products[0]?.id;
 
-    /** Dispatch IDs-only payload to cart; useCartItem will hydrate at read sites */
+    /** Dispatch IDs-only payload to cart; read sites hydrate the entities */
     dispatch(
       addServiceToCart({
         id: activeId,

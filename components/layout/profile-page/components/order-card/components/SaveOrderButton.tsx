@@ -7,7 +7,7 @@ import type {
 import type { Dispatch, JSX, SetStateAction } from 'react';
 import { toast } from 'react-toastify';
 
-import { updateOrderByMarkerAndId } from '@/app/api';
+import { useUpdateOrderMutation } from '@/app/api/api/RTKApi';
 import {
   ORDERS_STATUS_COMPLETED,
   ORDERS_STORAGE_MARKER,
@@ -18,23 +18,26 @@ import {
  *
  * This component renders a button that allows users to save an order. When clicked,
  * it updates the order status to 'completed' and saves the order data.
+ *
+ * Writes through the `updateOrder` mutation, which declares
+ * `invalidatesTags: ['Orders']` — the history list re-reads itself, so no
+ * refetch flag has to be passed in from the page.
  * @param   {object}               props              - The component props.
  * @param   {IOrderByMarkerEntity} props.orderData    - The order data to be saved. If not provided, the save operation will be skipped.
- * @param   {Function}             props.setRefetch   - Function to trigger a refetch of order data after saving
  * @param   {Function}             props.setEditState - Function to update the edit state of the order form
  * @param   {IAttributeValues}     props.dict         - Dictionary object
  * @returns {JSX.Element}                             JSX.Element - A button component for saving orders
  */
 const SaveOrderButton = ({
   orderData,
-  setRefetch,
   setEditState,
 }: {
   dict: IAttributeValues;
   orderData?: IOrderByMarkerEntity;
-  setRefetch: Dispatch<SetStateAction<boolean>>;
   setEditState: Dispatch<SetStateAction<IOrderByMarkerEntity | undefined>>;
 }): JSX.Element => {
+  const [updateOrder] = useUpdateOrderMutation();
+
   /**
    * Handles the order saving process
    *
@@ -55,21 +58,23 @@ const SaveOrderButton = ({
       statusIdentifier: ORDERS_STATUS_COMPLETED,
     } as IOrderData;
 
-    /** Update order with the prepared data */
-    const { isError, error } = await updateOrderByMarkerAndId({
-      marker: ORDERS_STORAGE_MARKER,
-      id: orderData.id,
-      data: formData,
-    });
-
-    /** On failure keep the edit form open and surface the error */
-    if (isError) {
-      toast.error(error?.message || 'Could not save the order');
+    try {
+      /** `.unwrap()` turns a failed mutation into a throw we can catch */
+      await updateOrder({
+        marker: ORDERS_STORAGE_MARKER,
+        id: orderData.id,
+        body: formData,
+      }).unwrap();
+    } catch (e) {
+      /** On failure keep the edit form open and surface the error */
+      const message =
+        (e as { message?: string } | undefined)?.message ??
+        'Could not save the order';
+      toast.error(message);
       return;
     }
 
-    /** Trigger refetch and clear edit state after successful update */
-    setRefetch(true);
+    /** The list refreshes itself — the mutation invalidates the `Orders` tag */
     setEditState(undefined);
   };
 

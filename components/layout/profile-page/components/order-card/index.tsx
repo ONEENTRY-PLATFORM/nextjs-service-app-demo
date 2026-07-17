@@ -2,7 +2,7 @@ import { MapPin } from 'lucide-react';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
-import type { Dispatch, JSX, SetStateAction } from 'react';
+import type { JSX } from 'react';
 import { useEffect, useState } from 'react';
 
 import { getPageById } from '@/app/api';
@@ -43,25 +43,22 @@ async function fetchSalon(
 /**
  * OrderCard component renders a card with order details including salon information,
  * product title, date/time and action buttons.
- * @param   {object}                            props            - Component props
- * @param   {IAttributeValues}                  props.dict       - Dictionary containing localized strings
- * @param   {IOrderByMarkerEntity}              props.order      - Order entity containing order details
- * @param   {IAdminEntity}                      props.master     - Master entity associated with the order
- * @param   {Dispatch<SetStateAction<boolean>>} props.setRefetch - Function to trigger refetching of data
- * @param   {number}                            props.index      - Index of the card for animation purposes
- * @returns {JSX.Element}                                        JSX element representing the order card
+ * @param   {object}               props        - Component props
+ * @param   {IAttributeValues}     props.dict   - Dictionary containing localized strings
+ * @param   {IOrderByMarkerEntity} props.order  - Order entity containing order details
+ * @param   {IAdminEntity}         props.master - Master entity associated with the order
+ * @param   {number}               props.index  - Index of the card for animation purposes
+ * @returns {JSX.Element}                       JSX element representing the order card
  */
 const OrderCard = ({
   dict,
   order,
   master,
-  setRefetch,
   index,
 }: {
   dict: IAttributeValues;
   order: IOrderByMarkerEntity;
   master: IAdminEntity;
-  setRefetch: Dispatch<SetStateAction<boolean>>;
   index: number;
 }): JSX.Element => {
   /** State for storing salon address and title */
@@ -119,7 +116,10 @@ const OrderCard = ({
       {(statusIdentifier === ORDERS_STATUS_COMPLETED ||
         statusIdentifier === ORDERS_STATUS_CANCELED) && (
         <span className="absolute top-3 right-3 z-10">
-          <StatusBadge status={statusIdentifier} />
+          <StatusBadge
+            status={statusIdentifier}
+            title={order.statusLocalizeInfos?.title}
+          />
         </span>
       )}
 
@@ -150,12 +150,7 @@ const OrderCard = ({
       </div>
 
       {/* Buttons group for order actions */}
-      <OrderButtonsGroup
-        dict={dict}
-        order={order}
-        master={master}
-        setRefetch={setRefetch}
-      />
+      <OrderButtonsGroup dict={dict} order={order} master={master} />
     </CardAnimations>
   );
 };
