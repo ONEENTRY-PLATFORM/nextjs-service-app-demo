@@ -2,7 +2,7 @@ import '@/app/globals.css';
 import '@/app/styles/nav-menu.scss';
 
 import type { Metadata } from 'next';
-import { Lato, Oswald } from 'next/font/google';
+import { Lato, League_Gothic } from 'next/font/google';
 import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX, ReactNode } from 'react';
 
@@ -44,15 +44,19 @@ const lato = Lato({
 });
 
 /**
- * Condensed display face for the hero banner titles — matches the narrow font
- * baked into the promo artwork. Exposed as the `--font-oswald` CSS variable and
- * applied to the hero overlay via `style={{ fontFamily: 'var(--font-oswald)' }}`.
+ * Condensed display face for the hero banner titles — the font baked into the
+ * promo artwork. Exposed as the `--font-league-gothic` CSS variable and applied
+ * to the hero / CTA overlays via `style={{ fontFamily: 'var(--font-league-gothic)' }}`.
+ *
+ * Single weight by design: League Gothic ships only 400 (its variable axis is
+ * `wdth`, not `wght`). Do not put `font-medium`/`font-semibold` on text using
+ * it — there is no heavier cut to select, so the browser fakes one.
  */
-const oswald = Oswald({
+const leagueGothic = League_Gothic({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
+  weight: '400',
   display: 'swap',
-  variable: '--font-oswald',
+  variable: '--font-league-gothic',
 });
 
 /** This site's public origin (NOT the CMS host) — for OG/canonical/JSON-LD. */
@@ -156,7 +160,7 @@ export default async function RootLayout({
     return (
       <html lang={HTML_LANG}>
         <body
-          className={`${lato.variable} ${oswald.variable} flex min-h-screen flex-col`}
+          className={`${lato.variable} ${leagueGothic.variable} flex min-h-screen flex-col`}
         >
           <main className="flex grow flex-col items-center justify-center gap-3 p-8 text-center">
             <h1 className="text-2xl font-bold">Site temporarily unavailable</h1>
@@ -189,7 +193,7 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`${lato.variable} ${oswald.variable} flex min-h-screen flex-col`}
+        className={`${lato.variable} ${leagueGothic.variable} flex min-h-screen flex-col`}
       >
         <RegisterGSAP />
         <StoreProvider>

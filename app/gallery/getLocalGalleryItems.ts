@@ -7,13 +7,6 @@ import {
   DISC_ROLE,
 } from '@/components/layout/gallery-page/taxonomy';
 
-/**
- * Photo library location inside `public/`. Folder layout (same convention as
- * the static-html mock's `beautyContent.ts`):
- * `Gallery/<Salon>/<Master>_<disciplines>/<Service>_<n>.<ext>`
- */
-const GALLERY_ROOT = ['public', 'images', 'Beauty content', 'Gallery'];
-
 /** Image extensions the scanner accepts */
 const IMG_EXT = /\.(jpeg|jpg|png)$/i;
 
@@ -57,7 +50,26 @@ const safeReadDir = async (dir: string) => {
  * @returns {Promise<GalleryItem[]>} Flat, deterministically ordered photo list
  */
 const getLocalGalleryItems = async (): Promise<GalleryItem[]> => {
-  const root = path.join(process.cwd(), ...GALLERY_ROOT);
+  /**
+   * Photo library root. Folder layout (same convention as the static-html
+   * mock's `beautyContent.ts`):
+   * `Gallery/<Salon>/<Master>_<disciplines>/<Service>_<n>.<ext>`
+   *
+   * The segments are inlined literals ON PURPOSE — do not hoist them back into
+   * a `const SEGMENTS = [...]` and spread it. Turbopack's static analyzer cannot
+   * fold a spread const array, so `path.join(process.cwd(), ...SEGMENTS)` left
+   * the root unknown and it fell back to tracing the WHOLE project into this
+   * route's file trace: 1535 files / ~1.1 GB, including `static-html.zip`
+   * (617 MB) and all of `public/`. With literals it resolves the path and traces
+   * only what is really read.
+   */
+  const root = path.join(
+    process.cwd(),
+    'public',
+    'images',
+    'Beauty content',
+    'Gallery',
+  );
   const items: GalleryItem[] = [];
   /** First-seen role per master — mirrors the mock's `MASTER_ROLES` */
   const roles: Record<string, string> = {};

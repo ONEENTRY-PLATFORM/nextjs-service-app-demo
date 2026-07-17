@@ -2,6 +2,11 @@ import Link from 'next/link';
 import type { JSX } from 'react';
 
 import { getPageByUrl } from '@/app/api';
+import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
+
+/** Shown when the CMS page has no text — the page must never be bare */
+const FALLBACK_DESCRIPTION =
+  'The page you are looking for does not exist or has been moved.';
 
 /**
  * 404 page layout
@@ -20,6 +25,7 @@ const NotFound = async (): Promise<JSX.Element> => {
         className="mx-auto flex size-full max-w-(--breakpoint-xl) flex-col items-center justify-center py-8"
       >
         <h1 className="mb-10 text-6xl">404</h1>
+        <p className="mb-4">{FALLBACK_DESCRIPTION}</p>
         <Link
           href="/"
           className="items-center justify-center rounded-card border border-solid border-fuchsia-500 bg-transparent px-3.5 py-1 text-base font-bold tracking-wide text-fuchsia-500 uppercase transition-colors duration-300 hover:border-fuchsia-600 hover:text-fuchsia-600 focus-visible:text-fuchsia-600 focus-visible:outline-fuchsia-600 disabled:border-neutral-300 disabled:bg-neutral-300/50 disabled:text-neutral-300"
@@ -31,21 +37,21 @@ const NotFound = async (): Promise<JSX.Element> => {
   }
 
   /** extract data from page */
-  const { localizeInfos, attributeValues } = page;
+  const { localizeInfos } = page;
 
   return (
     <div
       data-testid="not-found"
       className="mx-auto flex min-h-96 w-full max-w-(--breakpoint-xl) flex-col items-center justify-center py-8 text-neutral-700"
     >
-      <h1 className="mb-10 text-6xl">{localizeInfos?.title}</h1>
+      <h1 className="mb-10 text-6xl">{localizeInfos?.title || '404'}</h1>
       <p className="mb-4">
-        {
-          (
-            attributeValues?.error_description?.value as
-              { plainValue?: string }[] | undefined
-          )?.[0]?.plainValue
-        }
+        {/*
+         * The text comes from the page's own content field, not from an
+         * `error_description` attribute: the page carries no attribute set, and
+         * every other route already reads its body text this way.
+         */}
+        {getPagePlainContent(page) || FALLBACK_DESCRIPTION}
       </p>
       <Link
         href="/"

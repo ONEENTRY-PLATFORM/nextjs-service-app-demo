@@ -114,19 +114,26 @@ const HeroSlider = ({
             {/* CMS text overlay — sale badge, title and subtitle from the slide,
                 vertically centered on the left. Empty fields are not rendered. */}
             {(slide.sale || slide.title || slide.text) && (
-              <div
-                className="absolute inset-y-0 left-16 z-10 flex max-w-[68%] flex-col items-start justify-center gap-3 pr-5 md:left-[7%] md:gap-5"
-                style={{ fontFamily: 'var(--font-oswald)' }}
-              >
+              <div className="absolute inset-y-0 left-16 z-10 flex max-w-[68%] flex-col items-start justify-center gap-3 pr-5 md:left-[7%] md:gap-5">
+                {/* League Gothic goes on the sale badge and the title only — the
+                    subtitle below stays on the site's default Lato, as in the
+                    promo artwork. Hence the per-element `fontFamily` instead of
+                    one on this wrapper, which would inherit down to all three. */}
                 {slide.sale && (
                   <div className="flex aspect-square w-64 items-center justify-center rounded-full border border-white/40 bg-fuchsia-500/35 backdrop-blur-md md:w-[12vw] md:max-w-44">
-                    <span className="px-2 text-center text-[clamp(8rem,3vw,8rem)] leading-none font-semibold text-nowrap text-white">
+                    <span
+                      className="px-2 text-center text-[clamp(8rem,3vw,8rem)] leading-none text-nowrap text-white"
+                      style={{ fontFamily: 'var(--font-league-gothic)' }}
+                    >
                       <SaleText text={slide.sale} />
                     </span>
                   </div>
                 )}
                 {slide.title && (
-                  <h1 className="text-5xl leading-none font-medium text-white md:text-7xl lg:text-8xl">
+                  <h1
+                    className="text-5xl leading-none text-white md:text-7xl lg:text-8xl"
+                    style={{ fontFamily: 'var(--font-league-gothic)' }}
+                  >
                     {slide.title}
                   </h1>
                 )}

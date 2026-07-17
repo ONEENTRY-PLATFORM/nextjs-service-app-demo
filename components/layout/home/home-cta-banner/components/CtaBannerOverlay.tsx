@@ -29,8 +29,8 @@ const CtaBannerOverlay = ({
   <div className="absolute inset-0 flex flex-col items-center justify-end gap-3 px-6 pb-[10%] text-center md:items-end md:justify-center md:px-[5%] md:pb-0 md:text-right">
     {title && (
       <h2
-        className="text-3xl leading-none font-medium text-white md:text-5xl lg:text-6xl"
-        style={{ fontFamily: 'var(--font-oswald)' }}
+        className="text-3xl leading-none text-white md:text-5xl lg:text-6xl"
+        style={{ fontFamily: 'var(--font-league-gothic)' }}
       >
         {title}
       </h2>
