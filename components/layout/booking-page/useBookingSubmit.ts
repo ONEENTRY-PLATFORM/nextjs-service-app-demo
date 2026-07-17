@@ -11,6 +11,7 @@ import {
   ORDERS_STORAGE_MARKER,
 } from '@/app/store/orderMarkers';
 import { AuthContext } from '@/app/store/providers/AuthContext';
+import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import {
   addServiceToCart,
   removeAllServices,
@@ -54,12 +55,15 @@ const toInterval = (sel: BookingSelection): [Date, Date] => {
 /**
  * useBookingSubmit — the confirm logic of the booking wizard.
  *
- * Signed-out clients get their selection stashed into the booking cart and
- * are sent to `/profile` to sign in (the cart survives, so the selection is
- * not lost). Signed-in clients get an appointment created in the `orders`
- * storage with the `order` form (`master` / `salon` / `interval` fields plus
- * the product). Demo selections (no CMS product behind the service) show the
- * success modal without an API call.
+ * Signed-out clients get the sign-in popup right on top of the wizard, so the
+ * booking is finished where it was started; the selection is also stashed into
+ * the booking cart, which survives a reload or a detour through the sign-up /
+ * verification forms. Signing in does NOT book on its own: the payment picker
+ * only appears once authenticated, so the client confirms the (now
+ * "Book Appointment") button themselves. Signed-in clients get an appointment
+ * created in the `orders` storage with the `order` form (`master` / `salon` /
+ * `interval` fields plus the product). Demo selections (no CMS product behind
+ * the service) show the success modal without an API call.
  *
  * Payment splits the tail: an offline account (pay at the salon) ends on the
  * success modal, an online one creates a payment session and hands the client
@@ -83,6 +87,7 @@ export const useBookingSubmit = ({
   const router = useTransitionRouter();
   const dispatch = useAppDispatch();
   const { isAuth } = useContext(AuthContext);
+  const { setOpen, setComponent } = useContext(OpenDrawerContext);
   const activeId = useAppSelector(selectActiveItemId);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -99,7 +104,13 @@ export const useBookingSubmit = ({
   const submit = async (sel: BookingSelection): Promise<void> => {
     setError('');
 
-    /** Signed out → stash the selection and go sign in */
+    /**
+     * Signed out → stash the selection and open the sign-in popup over the
+     * wizard. The stash is the safety net for the paths that DO leave the page
+     * (reload, "Create an account" → verification); the popup itself keeps the
+     * client here, so on success the wizard is still standing behind it with
+     * everything picked and the button flips to "Book Appointment".
+     */
     if (!isAuth) {
       dispatch(
         addServiceToCart({
@@ -110,7 +121,8 @@ export const useBookingSubmit = ({
           masterId: sel.master?.adminId ?? null,
         }),
       );
-      router.push('/profile');
+      setComponent('SignInForm');
+      setOpen(true);
       return;
     }
 
