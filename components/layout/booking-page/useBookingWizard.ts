@@ -15,6 +15,7 @@ import {
 import { useHydrated } from '@/app/store/useHydrated';
 
 import { ANY_MASTER, CATEGORY_ORDER, FLOWS } from './constants';
+import daySlots from './daySlots';
 import type {
   BookingData,
   BookingFlow,
@@ -61,6 +62,10 @@ export interface BookingWizardState {
   date: string;
   /** Chosen time slot */
   time: string;
+  /** Booking slots (`HH:MM`) for the chosen day, from the schedule; `[]` if none */
+  slots: string[];
+  /** Whether a CMS schedule drives the slots (else the step falls back to the static grid) */
+  hasSchedule: boolean;
   /** Resolved chosen salon */
   salonObj: BookingSalon | undefined;
   /** Resolved chosen service */
@@ -250,6 +255,20 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     () =>
       master === ANY_MASTER ? undefined : masters.find((m) => m.id === master),
     [masters, master],
+  );
+
+  /**
+   * Slot source for the Date & Time step: the chosen specialist's
+   * `master_schedule`, or — for "Any specialist" / before one is picked — the
+   * chosen salon's `salon_time`. `hasSchedule` distinguishes "no schedule in the
+   * CMS" (fall back to the static grid) from "open that day has no slots" (show
+   * none), which an empty `slots` alone cannot.
+   */
+  const daySchedule = masterObj?.schedule ?? salonObj?.schedule;
+  const hasSchedule = Boolean(daySchedule);
+  const slots = useMemo(
+    () => (date && daySchedule ? daySlots(daySchedule, date) : []),
+    [date, daySchedule],
   );
 
   /** Category pills: All + the categories the services actually cover */
@@ -478,6 +497,8 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   const onDate = (d: string) => {
     setTouched(true);
     setDate(d);
+    /** A new day has its own slots — drop a time that may not exist on it */
+    setTime('');
   };
   const onTime = (t: string) => {
     setTouched(true);
@@ -502,6 +523,8 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     master,
     date,
     time,
+    slots,
+    hasSchedule,
     salonObj,
     serviceObj,
     masterObj,

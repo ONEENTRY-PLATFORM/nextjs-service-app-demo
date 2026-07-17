@@ -40,11 +40,19 @@ const getFirstDayOfMonth = (y: number, m: number): number => {
  * static-html mock (`BookingPage.tsx` → `DateTimeStep`): a month calendar
  * (past days disabled, today highlighted cyan, the pick filled with the
  * brand gradient) and a grid of time slots below.
+ *
+ * Slots come from the chosen specialist's / salon's CMS schedule (`slots`,
+ * expanded per day upstream). `hasSchedule` gates the fallback: with no CMS
+ * schedule the static {@link TIMES} grid stands in (demo / unpopulated CMS);
+ * with a schedule but no slots that day, the specialist simply does not work
+ * then, so an explicit "no times" message shows instead of a misleading grid.
  * @param   {object}              props              - Component properties
  * @param   {string}              props.selectedDate - Chosen date key `y-m-d` (`''` when none)
  * @param   {string}              props.selectedTime - Chosen time `HH:MM` (`''` when none)
  * @param   {(d: string) => void} props.onDate       - Pick a date
  * @param   {(t: string) => void} props.onTime       - Pick a time
+ * @param   {string[]}            props.slots        - `HH:MM` slots for the chosen day from the schedule
+ * @param   {boolean}             props.hasSchedule  - Whether a CMS schedule drives the slots
  * @returns {JSX.Element}                            Date & time step
  */
 const DateTimeStep = ({
@@ -52,11 +60,15 @@ const DateTimeStep = ({
   selectedTime,
   onDate,
   onTime,
+  slots,
+  hasSchedule,
 }: {
   selectedDate: string;
   selectedTime: string;
   onDate: (d: string) => void;
   onTime: (t: string) => void;
+  slots: string[];
+  hasSchedule: boolean;
 }): JSX.Element => {
   const today = new Date();
   const [view, setView] = useState({
@@ -70,7 +82,28 @@ const DateTimeStep = ({
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysCount; d++) cells.push(d);
   const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+  /**
+   * Booked slots to strike through. Always empty for now: the public SDK only
+   * returns the signed-in client's own orders, so other clients' bookings — the
+   * real source of "busy" — are not readable here. Wired as a hook for when a
+   * server-side availability endpoint exists.
+   */
   const busyTimes: string[] = [];
+
+  /** Schedule-driven slots when the CMS has a schedule; the static grid otherwise */
+  const times = hasSchedule ? slots : TIMES;
+
+  /**
+   * Minutes-since-midnight now, used to disable slots already past on the
+   * current day. This is a single-timezone comparison on purpose: the studio and
+   * its clients share one locale (Dubai), so the slot label, the schedule and
+   * the browser clock are all the same wall-clock time — no timezone maths.
+   * `-1` on any other day means "nothing is past".
+   */
+  const isTodaySelected = selectedDate === todayKey;
+  const nowMinutes = isTodaySelected
+    ? today.getHours() * 60 + today.getMinutes()
+    : -1;
 
   return (
     <div className="space-y-5">
@@ -165,32 +198,45 @@ const DateTimeStep = ({
           <p className="text-sm font-medium" style={{ color: DARK }}>
             Available times
           </p>
-          <div className="grid grid-cols-4 gap-2">
-            {TIMES.map((t) => {
-              const busy = busyTimes.includes(t);
-              const active = selectedTime === t;
-              return (
-                <button
-                  key={t}
-                  disabled={busy}
-                  onClick={() => onTime(t)}
-                  className="rounded-xl py-2 text-sm font-medium transition-all duration-150"
-                  style={{
-                    background: active
-                      ? BRAND_GRADIENT
-                      : busy
-                        ? '#f7f7fb'
-                        : `${PINK}10`,
-                    color: active ? '#fff' : busy ? '#ccc' : PINK,
-                    boxShadow: active ? `0 4px 12px ${PINK}44` : 'none',
-                    textDecoration: busy ? 'line-through' : 'none',
-                  }}
-                >
-                  {t}
-                </button>
-              );
-            })}
-          </div>
+          {times.length === 0 ? (
+            <p
+              className="rounded-xl p-4 text-sm"
+              style={{ background: `${PINK}08`, color: MUTED }}
+              data-testid="booking-no-slots"
+            >
+              No available times on this day. Please pick another date.
+            </p>
+          ) : (
+            <div className="grid grid-cols-4 gap-2">
+              {times.map((t) => {
+                const [hh = 0, mm = 0] = t.split(':').map(Number);
+                /** Past on the current day, or booked — either way not pickable */
+                const unavailable =
+                  busyTimes.includes(t) || hh * 60 + mm <= nowMinutes;
+                const active = selectedTime === t;
+                return (
+                  <button
+                    key={t}
+                    disabled={unavailable}
+                    onClick={() => onTime(t)}
+                    className="rounded-xl py-2 text-sm font-medium transition-all duration-150"
+                    style={{
+                      background: active
+                        ? BRAND_GRADIENT
+                        : unavailable
+                          ? '#f7f7fb'
+                          : `${PINK}10`,
+                      color: active ? '#fff' : unavailable ? '#ccc' : PINK,
+                      boxShadow: active ? `0 4px 12px ${PINK}44` : 'none',
+                      textDecoration: unavailable ? 'line-through' : 'none',
+                    }}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>

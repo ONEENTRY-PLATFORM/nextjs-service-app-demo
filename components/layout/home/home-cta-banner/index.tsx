@@ -86,8 +86,6 @@ const HomeCtaBanner = ({
           />
           <CtaBannerOverlay
             title={title}
-            description={attrText(attrs.description?.value)}
-            phone={attrText(attrs.phone?.value)}
             buttonText={attrText(attrs.button_text?.value)}
           />
         </div>

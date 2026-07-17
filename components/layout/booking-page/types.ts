@@ -4,6 +4,8 @@
  * fallback and passed into the client wizard, so they must stay JSON-safe.
  */
 
+import type { IAttributeValue } from 'oneentry/dist/base/utils';
+
 /** A salon location — a child page of `salons` in the CMS or a demo studio. */
 export interface BookingSalon {
   /** Salon page id as a string (demo: `downtown` / `marina` / `jbr`) */
@@ -14,6 +16,12 @@ export interface BookingSalon {
   address: string;
   /** Phone from `salon_phone`, formatted via `formatUaePhone` (may be empty) */
   phone: string;
+  /**
+   * Raw `salon_time` timeInterval attribute — the studio's opening hours,
+   * expanded per day into booking slots when no specific master is chosen. JSON
+   * as it comes from the CMS; `undefined` for demo salons or when unset.
+   */
+  schedule?: IAttributeValue | undefined;
 }
 
 /** A bookable service — a plain (non-offer) product in the CMS. */
@@ -64,6 +72,12 @@ export interface BookingMaster {
   salonIds: string[];
   /** Ids of the services the specialist performs (`services` product links) */
   serviceIds: string[];
+  /**
+   * Raw `master_schedule` timeInterval attribute — the specialist's working
+   * hours, expanded per day into booking slots. JSON as it comes from the CMS;
+   * `undefined` for demo specialists or when unset.
+   */
+  schedule?: IAttributeValue | undefined;
 }
 
 /** All the data the booking wizard needs, assembled on the server. */

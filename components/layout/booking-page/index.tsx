@@ -50,6 +50,8 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
     master,
     date,
     time,
+    slots,
+    hasSchedule,
     salonObj,
     serviceObj,
     masterObj,
@@ -140,6 +142,8 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                     selectedTime={time}
                     onDate={onDate}
                     onTime={onTime}
+                    slots={slots}
+                    hasSchedule={hasSchedule}
                   />
                 )}
               </div>

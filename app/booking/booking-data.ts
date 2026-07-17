@@ -121,6 +121,8 @@ const toBookingMaster = ({
     bio: plainTextFromTextAttr(attrs.master_description?.value),
     salonIds,
     serviceIds,
+    /** Raw working-hours schedule; expanded per day into slots in the wizard */
+    schedule: attrs.master_schedule,
   };
 };
 
@@ -154,6 +156,8 @@ export const getBookingData = async (): Promise<BookingData> => {
             ? attrs.salon_address.value
             : '',
         phone: typeof phone === 'string' ? formatUaePhone(phone) : '',
+        /** Raw opening-hours schedule; the "any specialist" slot source */
+        schedule: attrs.salon_time,
       };
     },
   );
