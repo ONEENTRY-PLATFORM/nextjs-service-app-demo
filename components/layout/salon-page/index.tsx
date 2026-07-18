@@ -24,7 +24,7 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
   const c = salon.color;
 
   return (
-    <div className="bg-white">
+    <div className="bg-white" data-testid="salon-page">
       {/* Gradient strip */}
       <div className="h-1.25 bg-gradient-stats" />
 

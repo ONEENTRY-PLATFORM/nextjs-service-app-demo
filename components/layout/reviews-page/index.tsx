@@ -110,7 +110,7 @@ const ReviewsPageContent = ({
     : '—';
 
   return (
-    <div className="mx-auto max-w-7xl px-3 md:px-8">
+    <div className="mx-auto max-w-7xl px-3 md:px-8" data-testid="reviews-page">
       {/* Back link */}
       <div className="pt-6">
         <Link

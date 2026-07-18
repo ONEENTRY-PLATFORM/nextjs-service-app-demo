@@ -24,7 +24,10 @@ const Footer = async ({
   dict: IAttributeValues;
 }): Promise<JSX.Element> => {
   return (
-    <footer className="max-w-full bg-gradient-footer text-black fade-in">
+    <footer
+      data-testid="footer"
+      className="max-w-full bg-gradient-footer text-black fade-in"
+    >
       <MenuSection dict={dict} />
     </footer>
   );

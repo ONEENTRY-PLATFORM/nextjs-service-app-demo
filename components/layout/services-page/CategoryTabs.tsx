@@ -49,6 +49,9 @@ const CategoryTabs = ({
             <button
               key={c.url}
               onClick={() => onMain(c.url)}
+              data-testid="services-category-tab"
+              data-cat-url={c.url}
+              data-active={active ? 'true' : 'false'}
               className="flex min-w-28 shrink-0 items-center justify-center gap-2 rounded-full px-6 py-2.5 text-base font-semibold whitespace-nowrap transition-all duration-200 active:scale-96 md:min-w-0 md:px-5"
               style={{
                 background: active

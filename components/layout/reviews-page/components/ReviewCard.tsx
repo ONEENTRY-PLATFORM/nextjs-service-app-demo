@@ -16,6 +16,7 @@ import Stars from './Stars';
  */
 const ReviewCard = ({ review }: { review: Review }): JSX.Element => (
   <div
+    data-testid="review-card"
     className="flex flex-col gap-3 rounded-2xl border-[1.5px] border-slate-150 p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)]"
     style={{ animation: 'review-fade 0.25s ease-out' }}
   >
