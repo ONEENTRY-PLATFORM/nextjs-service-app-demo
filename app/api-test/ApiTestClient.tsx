@@ -286,6 +286,12 @@ export default function ApiTestClient(): JSX.Element {
       return true;
     };
 
+    /**
+     * worker — one async loop of the probe pool: keeps pulling work through
+     * `dispatchNext` until the run is exhausted or aborted. `concurrency` of
+     * these run concurrently in parallel mode (a single one in sequential mode).
+     * @returns {Promise<void>} Resolves once no indices remain to probe.
+     */
     const worker = async (): Promise<void> => {
       while (await dispatchNext()) {
         // loop drains until exhausted or aborted

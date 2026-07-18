@@ -25,7 +25,11 @@ const SignOutButton = ({
   /** Transition-aware router for the post-logout redirect. */
   const router = useTransitionRouter();
 
-  /** Handle user logout, then navigate to the home page. */
+  /**
+   * handleLogout — sign the user out through the provider they signed in with,
+   * drop the local session state and redirect home.
+   * @returns {Promise<void>} Resolves once logout + redirect are dispatched
+   */
   const handleLogout = async () => {
     try {
       // Log out through the provider the user actually signed in with, which

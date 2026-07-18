@@ -46,6 +46,7 @@
     "@reduxjs/toolkit": "^2.12.0",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/critters-webpack-plugin": "^3.0.0",

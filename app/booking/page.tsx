@@ -13,6 +13,15 @@ import { getBookingData } from './booking-data';
 /**
  * CMS content is the same for everyone — prerender this route and refresh it
  * on a timer (ISR) instead of rendering it per request.
+ *
+ * Because the page is fully prerendered (`force-static`), the heavy
+ * `getBookingData()` read runs at build / revalidation time, NOT per request —
+ * users are served static HTML and never wait on it. That is why the slow block
+ * is awaited inline here rather than streamed through a local `<Suspense>` (the
+ * `app/masters/[handle]` pattern, which is `revalidate`-only, not static): on a
+ * fully static page a Suspense fallback is resolved during prerender and never
+ * reaches the client, so it would add a skeleton component and indirection for
+ * zero user-facing benefit.
  */
 export const dynamic = 'force-static';
 export const revalidate = 300;

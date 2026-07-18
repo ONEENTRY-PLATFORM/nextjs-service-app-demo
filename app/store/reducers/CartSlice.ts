@@ -110,6 +110,12 @@ export const cartSlice = createSlice({
         (item) => item.id === payload.id,
       );
 
+      /**
+       * Apply the action payload onto a cart item in place: `null` clears the
+       * field, `undefined` leaves it untouched, and `id` is never overwritten.
+       * @param   {CartItem} target - Cart row mutated in place.
+       * @returns {void}            Nothing; `target` is modified directly.
+       */
       const applyPatch = (target: CartItem) => {
         const bag = target as unknown as Record<string, unknown>;
         (Object.keys(payload) as (keyof typeof payload)[]).forEach((key) => {

@@ -95,12 +95,27 @@ export const RTKApi = createApi({
     /**
      * Get products with filter.
      * Fetches products based on provided filter criteria.
-     * @param body - Filter criteria for products
-     * @returns    Products response containing products and metadata
+     * @param body   - Filter criteria for products
+     * @param offset - Number of products to skip (pagination); defaults to 0
+     * @param limit  - Maximum number of products to fetch; defaults to 30
+     * @returns      Products response containing products and metadata
      */
-    getProducts: build.query<IProductsResponse, { body: IFilterParams[] }>({
-      queryFn: async ({ body }) => {
-        const result = await getApi().Products.getProducts(body);
+    getProducts: build.query<
+      IProductsResponse,
+      { body: IFilterParams[]; offset?: number; limit?: number }
+    >({
+      queryFn: async ({ body, offset = 0, limit = 30 }) => {
+        /**
+         * Pass an explicit `userQuery` (offset/limit) so the list is not
+         * silently capped at the server default of 30 — mirrors the server
+         * wrappers in `app/api/server/products/*`.
+         */
+        const result = await getApi().Products.getProducts(body, undefined, {
+          sortOrder: 'DESC',
+          sortKey: 'date',
+          offset,
+          limit,
+        });
         if (isError(result)) {
           return { error: result };
         }
@@ -115,12 +130,26 @@ export const RTKApi = createApi({
      * @param url - URL of the page to get products for
      * @returns   Products response containing products and metadata
      */
-    getProductsByPageUrl: build.query<IProductsResponse, { url: string }>({
-      queryFn: async ({ url }) => {
+    getProductsByPageUrl: build.query<
+      IProductsResponse,
+      { url: string; offset?: number; limit?: number }
+    >({
+      queryFn: async ({ url, offset = 0, limit = 30 }) => {
+        /** An empty page url is nothing to fetch — degrade to an empty list. */
         if (!url) {
-          return { error: null };
+          return { data: { items: [], total: 0 } };
         }
-        const result = await getApi().Products.getProductsByPageUrl(url);
+        /**
+         * Pass an explicit `userQuery` (offset/limit) so the list is not
+         * silently capped at the server default of 30 — mirrors the server
+         * wrappers in `app/api/server/products/*`.
+         */
+        const result = await getApi().Products.getProductsByPageUrl(
+          url,
+          [],
+          undefined,
+          { sortOrder: 'DESC', sortKey: 'date', offset, limit },
+        );
         if (isError(result)) {
           return { error: result };
         }

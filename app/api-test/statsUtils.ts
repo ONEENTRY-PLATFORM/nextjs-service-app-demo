@@ -36,6 +36,11 @@ export const computeStats = (times: number[]): Stats | null => {
   const max = sorted[n - 1]!;
   const sum = sorted.reduce((acc, v) => acc + v, 0);
   const mean = sum / n;
+  /**
+   * percentile — nearest-rank sample: sorted[floor((p / 100) * n)], clamped to [0, n-1].
+   * @param   {number} p - Percentile rank between 0 and 100.
+   * @returns {number}   Sample value (ms) at that percentile.
+   */
   const percentile = (p: number): number =>
     sorted[Math.min(n - 1, Math.max(0, Math.floor((p / 100) * n)))]!;
   const variance = sorted.reduce((acc, v) => acc + (v - mean) ** 2, 0) / n;

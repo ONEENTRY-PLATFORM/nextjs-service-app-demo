@@ -9,7 +9,11 @@ import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { FormEvent, JSX } from 'react';
 import { useCallback, useContext, useMemo, useState } from 'react';
 
-import { getApi, useGetFormByMarkerQuery } from '@/app/api';
+import {
+  getApi,
+  useGetAuthProvidersQuery,
+  useGetFormByMarkerQuery,
+} from '@/app/api';
 import { isError } from '@/app/api';
 import { useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
@@ -65,6 +69,20 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
 
   /** Get current form field states from Redux store */
   const fields = useAppSelector((state) => state.formFieldsReducer.fields);
+
+  /**
+   * The registration provider marker and its `formIdentifier` come from the
+   * CMS auth providers, not hardcoded (skill:create-auth). The credential
+   * (non-OAuth) provider drives sign-up; fall back to `email`/`reg` — the
+   * current CMS values — while the query loads or when the field is unset.
+   */
+  const { data: authProviders } = useGetAuthProvidersQuery('en_US');
+  const credentialProvider = useMemo(
+    () => (authProviders ?? []).find((provider) => provider.type !== 'oauth'),
+    [authProviders],
+  );
+  const providerMarker = credentialProvider?.identifier ?? 'email';
+  const signUpFormIdentifier = credentialProvider?.formIdentifier ?? 'reg';
 
   /** All form attributes (unfiltered) from CMS, ordered by field position. */
   const attributes = useMemo(
@@ -169,7 +187,7 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
       }
 
       const signUpBody: ISignUpData = {
-        formIdentifier: 'reg',
+        formIdentifier: signUpFormIdentifier,
         authData,
         formData,
         notificationData,
@@ -184,7 +202,10 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
          * Call authentication provider to create new account (client-side
          * so the real browser fingerprint is sent).
          */
-        const res = await getApi().AuthProvider.signUp('email', signUpBody);
+        const res = await getApi().AuthProvider.signUp(
+          providerMarker,
+          signUpBody,
+        );
 
         if (isError(res)) {
           setError(`Error ${res.statusCode}: ${res.message ?? ''}`.trim());
@@ -200,7 +221,7 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
           const passwordValue = passwordField
             ? value(passwordField.marker)
             : '';
-          const authResult = await getApi().AuthProvider.auth('email', {
+          const authResult = await getApi().AuthProvider.auth(providerMarker, {
             authData: [
               {
                 marker: loginField?.marker ?? 'email_reg',
@@ -216,7 +237,7 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
             login({
               accessToken: authResult.accessToken,
               refreshToken: authResult.refreshToken,
-              authProviderMarker: 'email',
+              authProviderMarker: providerMarker,
             });
           }
           setOpen(false);
@@ -236,7 +257,17 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
         setLoading(false);
       }
     },
-    [fields, attributes, canSubmit, login, setOpen, setComponent, setAction],
+    [
+      fields,
+      attributes,
+      canSubmit,
+      login,
+      setOpen,
+      setComponent,
+      setAction,
+      providerMarker,
+      signUpFormIdentifier,
+    ],
   );
 
   /* Render the complete sign up form UI */

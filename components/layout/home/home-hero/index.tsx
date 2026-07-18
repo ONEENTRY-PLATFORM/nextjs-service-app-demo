@@ -40,11 +40,21 @@ const HomeHero = async ({
        */
       const attrs = slide.attributeValues as unknown as
         Record<string, unknown> | undefined;
+      /**
+       * First `downloadLink` of a raw slide file marker.
+       * @param   {string} marker - Slide file marker (e.g. `image_id1`)
+       * @returns {string}        First file URL, or `''` when absent
+       */
       const fileLink = (marker: string): string => {
         const arr = attrs?.[marker] as
           Array<{ downloadLink?: string }> | undefined;
         return arr?.[0]?.downloadLink ?? '';
       };
+      /**
+       * Trimmed value of a raw slide string marker.
+       * @param   {string} marker - Slide string marker (e.g. `string_id3`)
+       * @returns {string}        Trimmed string value, or `''` when absent
+       */
       const str = (marker: string): string => {
         const value = attrs?.[marker];
         return typeof value === 'string' ? value.trim() : '';

@@ -11,6 +11,9 @@ import { getApi, isError } from '@/app/api';
 import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
+  ORDER_FIELD_INTERVAL,
+  ORDER_FIELD_MASTER,
+  ORDER_FIELD_SALON,
   ORDERS_FORM_IDENTIFIER,
   ORDERS_STORAGE_MARKER,
 } from '@/app/store/orderMarkers';
@@ -161,7 +164,7 @@ export const useBookingSubmit = ({
       const formData: IOrdersFormData[] = [];
       if (sel.master?.adminId) {
         formData.push({
-          marker: 'master',
+          marker: ORDER_FIELD_MASTER,
           type: 'list',
           value: [sel.master.adminId.toString()],
         });
@@ -169,14 +172,14 @@ export const useBookingSubmit = ({
       const salonId = Number(sel.salon?.id);
       if (salonId) {
         formData.push({
-          marker: 'salon',
+          marker: ORDER_FIELD_SALON,
           type: 'entity',
           /** Entity refs to PAGES take numeric ids, not strings. */
           value: [salonId],
         });
       }
       formData.push({
-        marker: 'interval',
+        marker: ORDER_FIELD_INTERVAL,
         type: 'timeInterval',
         /** Send the interval as explicit ISO strings rather than Date objects. */
         value: [[start.toISOString(), end.toISOString()]],

@@ -92,6 +92,15 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
    * a guest almost immediately (no refresh token → early return).
    */
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  /**
+   * `user` is kept in local state ON PURPOSE — not read from the getMe hook's
+   * `data`, which `rule:performance-rtk` would normally prefer. The hook polls
+   * every 60s (session keepalive, below); reading `data` directly would
+   * re-render every AuthContext consumer on each poll. Instead the user is
+   * snapshotted only on the explicit `checkToken()` transitions (init / login /
+   * refetch), decoupling the exposed user from the keepalive traffic. `getMe`
+   * keeps a single subscriber, so RTK's dedup/caching is unaffected.
+   */
   const [user, setUser] = useState<IUserEntity | undefined>();
   const [refetch, setRefetch] = useState<boolean>(false);
   const [refetchUser, setRefetchUser] = useState<boolean>(false);
@@ -201,7 +210,17 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     void checkToken();
   };
 
-  /** Load cart from user state */
+  /**
+   * Legacy cart-sync stub — NOT a real cart loader, despite the old name.
+   *
+   * The `user.state.cart` → Redux hydration was never finished: this effect only
+   * flips a one-shot `cartVersion` flag the first time a signed-in user has a
+   * server cart, and nothing reads that flag except this same gate. The live
+   * cart runs entirely on Redux + redux-persist (`CartSlice`); the writing side
+   * (`updateUserState` / `useUpdateUserStateMutation`) is defined but never
+   * called from anywhere. Kept, not deleted, per project convention — revisit
+   * when the native cart API is wired up or the dead path is dropped on purpose.
+   */
   useEffect(() => {
     if (!user?.state.cart || cartVersion > 0) {
       return;

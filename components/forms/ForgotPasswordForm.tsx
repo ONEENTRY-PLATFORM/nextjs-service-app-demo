@@ -14,7 +14,7 @@ import { useAppSelector } from '@/app/store/hooks';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
-import { getFormAttributes } from '@/components/utils';
+import { getFormAttributes, sortArrayByPosition } from '@/components/utils';
 
 import SpinnerLoader from '../shared/SpinnerLoader';
 import ErrorMessage from './inputs/ErrorMessage';
@@ -105,7 +105,7 @@ export const ForgotPasswordForm = ({
         </div>
 
         <div className="relative mb-8 box-border flex shrink-0 flex-col gap-4">
-          {getFormAttributes(data)
+          {sortArrayByPosition(getFormAttributes(data))
             .filter((field: IFormAttribute) => field.marker === 'email_reg')
             .map((field: IFormAttribute, index: number) => (
               <FormInput key={index} index={index} {...field} />

@@ -12,6 +12,17 @@ export const ORDERS_STORAGE_MARKER = 'orders';
 /** Form identifier used to create an order. */
 export const ORDERS_FORM_IDENTIFIER = 'order';
 
+/**
+ * Field markers of the `order` form's attribute set: `master` (list), `salon`
+ * (entity → salon page) and `interval` (timeInterval) — the three fields
+ * `createOrder` actually accepts. Verified against a real POST (the form's
+ * public attribute listing disagrees; the set wins — see `useBookingSubmit`).
+ * Centralised here so an admin-panel rename stays a one-line change.
+ */
+export const ORDER_FIELD_MASTER = 'master';
+export const ORDER_FIELD_SALON = 'salon';
+export const ORDER_FIELD_INTERVAL = 'interval';
+
 /** Status of an appointment that has not happened yet. */
 export const ORDERS_STATUS_UPCOMING = 'upcoming';
 

@@ -393,14 +393,17 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
 
   /** ── Handlers (mock `BookingPage` handlers) ──────────────────────────── */
 
+  /** Advance to the next step, unless already on the last one. */
   const handleNext = () => {
     if (!isLastStep) setStepIdx((s) => s + 1);
   };
+  /** Step back; from the first step this exits the flow to the entry screen. */
   const handleBack = () => {
     setTouched(true);
     if (stepIdx > 0) setStepIdx((s) => s - 1);
     else setFlow(null);
   };
+  /** Clear every selection and return to the flow-choice entry screen. */
   const resetFlow = () => {
     setTouched(true);
     setFlow(null);
@@ -413,6 +416,10 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     setCategoryFilter('All');
     setServiceLocked(false);
   };
+  /**
+   * Enter a booking flow from the entry screen, resetting step/category state.
+   * @param {BookingFlow} f - The chosen flow (`salon-first` / `specialist-first`)
+   */
   const startFlow = (f: BookingFlow) => {
     setTouched(true);
     setFlow(f);
@@ -421,6 +428,10 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     setServiceLocked(false);
   };
 
+  /**
+   * Pick a studio; invalidates a chosen specialist who doesn't work there.
+   * @param {string} id - Salon id
+   */
   const selectSalon = (id: string) => {
     setTouched(true);
     setSalon(id);
@@ -430,6 +441,11 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
       if (m && m.salonIds.length > 0 && !m.salonIds.includes(id)) setMaster('');
     }
   };
+  /**
+   * Pick a service; syncs the category tab and invalidates a chosen specialist
+   * who doesn't perform it.
+   * @param {string} id - Service id
+   */
   const selectService = (id: string) => {
     setTouched(true);
     setService(id);
@@ -443,12 +459,18 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
         setMaster('');
     }
   };
+  /** Clear the chosen service and unlock the (preselected) service step. */
   const clearService = () => {
     setTouched(true);
     setService('');
     setServiceLocked(false);
     setCategoryFilter('All');
   };
+  /**
+   * Pick a specialist; auto-picks their single studio and invalidates a studio
+   * or service that specialist cannot cover.
+   * @param {string} id - Specialist id (or the "any specialist" sentinel)
+   */
   const selectMaster = (id: string) => {
     setTouched(true);
     setMaster(id);
@@ -473,6 +495,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     }
   };
 
+  /** Submit the assembled selection to the booking/checkout flow. */
   const handleConfirm = () => {
     void submit({
       salon: salonObj,
@@ -482,24 +505,41 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
       time,
     });
   };
+  /** Close the success modal and reset the wizard for a new booking. */
   const handleCloseSuccess = () => {
     closeSuccess();
     resetFlow();
   };
+  /**
+   * Jump directly to a step by index (step-bar navigation).
+   * @param {number} idx - Target step index
+   */
   const goStep = (idx: number) => {
     setTouched(true);
     setStepIdx(idx);
   };
+  /**
+   * Change the active service category tab.
+   * @param {string} cat - Category label (or `All`)
+   */
   const onCategoryChange = (cat: string) => {
     setTouched(true);
     setCategoryFilter(cat);
   };
+  /**
+   * Pick an appointment day; clears the time (slots differ per day).
+   * @param {string} d - Date key `year-monthIndex-day`
+   */
   const onDate = (d: string) => {
     setTouched(true);
     setDate(d);
     /** A new day has its own slots — drop a time that may not exist on it */
     setTime('');
   };
+  /**
+   * Pick an appointment time slot.
+   * @param {string} t - Time slot `HH:MM`
+   */
   const onTime = (t: string) => {
     setTouched(true);
     setTime(t);

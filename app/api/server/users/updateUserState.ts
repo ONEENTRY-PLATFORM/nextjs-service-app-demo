@@ -10,6 +10,13 @@ type Cart = Record<string, number> | object;
 /**
  * Persist the user's cart into `user.state`.
  *
+ * ⚠️ Currently UNUSED — legacy of an unfinished `user.state.cart` sync (see the
+ * cart-sync stub in `AuthContext`). The live cart runs on Redux + redux-persist
+ * (`CartSlice`); nothing calls this, `clearUserState`, or the
+ * `useUpdateUserStateMutation` hook today. Kept per project convention — wire it
+ * into the CartSlice write sites (or the native cart API) if server-side cart
+ * persistence is picked up.
+ *
  * Always fetches the freshest user via `getUser()` right before writing so that
  * concurrent updates (e.g. favorites) aren't clobbered, and spreads
  * `...user.state` to preserve other fields.
@@ -40,6 +47,11 @@ export const updateUserState = async ({
       value: String(item.value ?? ''),
     }));
 
+  /**
+   * First string value of a `formData` entry by marker.
+   * @param   {string}             marker - Form field marker to look up
+   * @returns {string | undefined}        The string value, or `undefined` when absent / non-string
+   */
   const findValue = (marker: string): string | undefined => {
     const hit = (user.formData ?? []).find(
       (item) => (item as { marker?: string }).marker === marker,
