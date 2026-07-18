@@ -30,7 +30,8 @@ import type { BookingMaster, BookingSalon, BookingService } from './types';
 /** Everything the wizard has picked by the time of the confirm click. */
 export interface BookingSelection {
   salon?: BookingSalon | undefined;
-  service?: BookingService | undefined;
+  /** Chosen services (one appointment can bundle several) */
+  services: BookingService[];
   master?: BookingMaster | undefined;
   /** Date key of the calendar, `year-monthIndex-day` */
   date: string;
@@ -40,7 +41,8 @@ export interface BookingSelection {
 
 /**
  * Parse the wizard's date key + time slot into the appointment interval.
- * The interval length comes from the service duration (default 60 min).
+ * The interval length is the sum of every chosen service's duration (each
+ * service defaults to 60 min when it has none; an empty selection → 60 min).
  * @param   {BookingSelection} sel - Confirmed selection
  * @returns {[Date, Date]}         Start / end of the appointment
  */
@@ -54,7 +56,11 @@ const toInterval = (sel: BookingSelection): [Date, Date] => {
    * by the client's offset.
    */
   const start = new Date(Date.UTC(y, m, d, hh, mm));
-  const minutes = Number.parseInt(sel.service?.duration ?? '', 10) || 60;
+  const minutes =
+    sel.services.reduce(
+      (sum, sv) => sum + (Number.parseInt(sv.duration, 10) || 60),
+      0,
+    ) || 60;
   const end = new Date(start.getTime() + minutes * 60_000);
   return [start, end];
 };
@@ -119,12 +125,19 @@ export const useBookingSubmit = ({
      * everything picked and the button flips to "Book Appointment".
      */
     if (!isAuth) {
+      /**
+       * The cart holds a single service (its "Book" buttons are one-service),
+       * so only the first pick is stashed as the reload safety net. The full
+       * multi-service selection survives anyway: the sign-in popup keeps the
+       * page, so the wizard is still standing behind it with everything picked.
+       */
+      const firstService = sel.services[0];
       dispatch(
         addServiceToCart({
           id: activeId,
           salonId: Number(sel.salon?.id) || null,
-          serviceId: sel.service?.categoryId ?? null,
-          productId: sel.service?.productId ?? null,
+          serviceId: firstService?.categoryId ?? null,
+          productId: firstService?.productId ?? null,
           masterId: sel.master?.adminId ?? null,
         }),
       );
@@ -133,8 +146,15 @@ export const useBookingSubmit = ({
       return;
     }
 
-    /** Demo data → no CMS entities to book, just show the confirmation */
-    if (!sel.service?.productId) {
+    /**
+     * Products to book — every chosen service that has a CMS product behind it.
+     * Demo services (no `productId`) are dropped; when none remain there is
+     * nothing to post, so just show the confirmation (demo booking).
+     */
+    const products = sel.services
+      .filter((sv) => sv.productId)
+      .map((sv) => ({ productId: sv.productId as number, quantity: 1 }));
+    if (products.length === 0) {
       setRealOrder(false);
       setBooked(true);
       return;
@@ -188,7 +208,7 @@ export const useBookingSubmit = ({
       const body: IOrderData = {
         formIdentifier: ORDERS_FORM_IDENTIFIER,
         paymentAccountIdentifier: paymentAccount,
-        products: [{ productId: sel.service.productId, quantity: 1 }],
+        products,
         formData,
       };
       const createdOrder = await getApi().Orders.createOrder(

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import type { JSX } from 'react';
 import { useState } from 'react';
 
+import RevealAnimations from '@/app/animations/RevealAnimations';
+
 import SalonLightbox from './components/SalonLightbox';
 import SalonPhotoGallery from './components/SalonPhotoGallery';
 import SalonSidebar from './components/SalonSidebar';
@@ -41,25 +43,25 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
       {/* Title + photo gallery */}
       <section className="pt-6 pb-10">
         <div className="mx-auto max-w-7xl px-3 md:px-8">
-          <div className="px-3 text-center lg:px-0 lg:text-left">
+          <RevealAnimations className="px-3 text-center lg:px-0 lg:text-left">
             <h1 className="inline-block border-b border-ink pb-1.5 text-[clamp(26px,4vw,2.6rem)] font-light tracking-fine text-ink uppercase">
               {salon.name}
             </h1>
-          </div>
-          <div className="mt-6">
+          </RevealAnimations>
+          <RevealAnimations className="mt-6">
             <SalonPhotoGallery
               photos={salon.photos}
               accent={c}
               onOpen={setLightboxIdx}
             />
-          </div>
+          </RevealAnimations>
         </div>
       </section>
 
       {/* About + sidebar */}
       <section className="pb-10">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-3 md:px-8 lg:grid-cols-[1.6fr_1fr]">
-          <div className="px-3 lg:px-0">
+          <RevealAnimations className="px-3 lg:px-0">
             <p
               className="mb-3 text-sm font-black tracking-[0.25em] uppercase"
               style={{ color: c }}
@@ -92,9 +94,11 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
                 ))}
               </ul>
             )}
-          </div>
+          </RevealAnimations>
 
-          <SalonSidebar salon={salon} />
+          <RevealAnimations fade>
+            <SalonSidebar salon={salon} />
+          </RevealAnimations>
         </div>
       </section>
 

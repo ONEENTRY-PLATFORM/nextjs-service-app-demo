@@ -3,6 +3,7 @@
 import type { JSX, UIEvent } from 'react';
 import { useState } from 'react';
 
+import RevealAnimations from '@/app/animations/RevealAnimations';
 import SectionHeading from '@/components/shared/SectionHeading';
 
 import SalonCard from './SalonCard';
@@ -51,9 +52,9 @@ const SalonLocations = ({
       style={{ background: 'linear-gradient(180deg,#f7f7fb 0%,#fff 60%)' }}
     >
       <div className="mx-auto max-w-7xl px-3 md:px-8">
-        <div className="mb-6 text-center md:mb-10">
+        <RevealAnimations className="mb-6 text-center md:mb-10">
           <SectionHeading size="lg">Our Locations</SectionHeading>
-        </div>
+        </RevealAnimations>
 
         {salons.length === 0 ? (
           <p
@@ -63,7 +64,7 @@ const SalonLocations = ({
             No salon locations available at the moment.
           </p>
         ) : (
-          <>
+          <RevealAnimations fade>
             <div
               onScroll={onLocScroll}
               className="grid grid-cols-1 gap-6 xl:grid-cols-3 md:max-xl:-mx-8 md:max-xl:flex md:max-xl:snap-x md:max-xl:overflow-x-auto md:max-xl:px-8 md:max-xl:[&::-webkit-scrollbar]:hidden"
@@ -88,7 +89,7 @@ const SalonLocations = ({
                 />
               ))}
             </div>
-          </>
+          </RevealAnimations>
         )}
       </div>
     </section>

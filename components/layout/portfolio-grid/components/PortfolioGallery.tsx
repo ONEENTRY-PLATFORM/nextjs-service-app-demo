@@ -4,6 +4,8 @@ import Image from 'next/image';
 import type { JSX } from 'react';
 import { useState } from 'react';
 
+import GridItemAnimations from '@/app/animations/GridItemAnimations';
+
 import PortfolioLightbox from './PortfolioLightbox';
 
 /** A single portfolio image with its full/thumbnail/preview sources. */
@@ -44,26 +46,27 @@ const PortfolioGallery = ({
         className="grid grid-cols-2 gap-3 px-3 pb-4 sm:grid-cols-3 md:gap-4 md:px-6 lg:grid-cols-5"
       >
         {images.map((item, index) => (
-          <button
-            key={index}
-            data-testid="portfolio-item"
-            data-index={index}
-            onClick={() => setOpenIndex(index)}
-            aria-label={`Open portfolio image ${index + 1}`}
-            className="group relative aspect-4/5 cursor-pointer overflow-hidden rounded-2xl"
-          >
-            {/* Grid cells use the thumbnail; the full-size `img` is the lightbox's. */}
-            <Image
-              src={item.thumb || item.img}
-              alt={item.alt}
-              fill
-              sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              {...(item.preview
-                ? { placeholder: 'blur' as const, blurDataURL: item.preview }
-                : {})}
-            />
-          </button>
+          <GridItemAnimations key={index} index={index} columns={3}>
+            <button
+              data-testid="portfolio-item"
+              data-index={index}
+              onClick={() => setOpenIndex(index)}
+              aria-label={`Open portfolio image ${index + 1}`}
+              className="group relative aspect-4/5 w-full cursor-pointer overflow-hidden rounded-2xl"
+            >
+              {/* Grid cells use the thumbnail; the full-size `img` is the lightbox's. */}
+              <Image
+                src={item.thumb || item.img}
+                alt={item.alt}
+                fill
+                sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                {...(item.preview
+                  ? { placeholder: 'blur' as const, blurDataURL: item.preview }
+                  : {})}
+              />
+            </button>
+          </GridItemAnimations>
         ))}
       </div>
 

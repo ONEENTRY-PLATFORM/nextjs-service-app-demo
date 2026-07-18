@@ -1,6 +1,7 @@
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 
+import RevealAnimations from '@/app/animations/RevealAnimations';
 import { getPagesByIds } from '@/app/api';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 
@@ -98,14 +99,14 @@ const PortfolioGridLayout = async ({
   /** Render portfolio heading + gallery with lightbox */
   return (
     <section className="bg-white pb-4" data-testid="portfolio">
-      <div className="mx-auto flex max-w-7xl flex-col items-center p-3 md:px-8 md:py-6">
+      <RevealAnimations className="mx-auto flex max-w-7xl flex-col items-center p-3 md:px-8 md:py-6">
         <h2
           className="border-b border-ink pb-1.5 text-center font-light tracking-fine text-ink uppercase"
           style={{ fontSize: 'clamp(1.1rem, 2.2vw, 1.65rem)' }}
         >
           Portfolio
         </h2>
-      </div>
+      </RevealAnimations>
       <PortfolioGallery
         images={portfolioImages}
         masterName={masterName}

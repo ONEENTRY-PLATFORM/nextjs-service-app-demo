@@ -25,7 +25,7 @@ import SummaryRow from './SummaryRow';
  * @param   {object}                     props                        - Component properties
  * @param   {BookingFlow | null}         props.flow                   - Active flow (`null` on the entry screen)
  * @param   {BookingSalon | undefined}   props.salon                  - Picked salon
- * @param   {BookingService | undefined} props.service                - Picked service
+ * @param   {BookingService[]}           props.services               - Picked services (one appointment can bundle several)
  * @param   {BookingMaster | undefined}  props.master                 - Picked specialist
  * @param   {boolean}                    props.masterAny              - "Any specialist" picked
  * @param   {string}                     props.date                   - Picked date key `y-m-d`
@@ -45,7 +45,7 @@ import SummaryRow from './SummaryRow';
 const BookingSummary = ({
   flow,
   salon,
-  service,
+  services,
   master,
   masterAny,
   date,
@@ -63,7 +63,7 @@ const BookingSummary = ({
 }: {
   flow: BookingFlow | null;
   salon?: BookingSalon | undefined;
-  service?: BookingService | undefined;
+  services: BookingService[];
   master?: BookingMaster | undefined;
   masterAny: boolean;
   date: string;
@@ -79,7 +79,19 @@ const BookingSummary = ({
   error: string;
   onReset: () => void;
 }): JSX.Element => {
-  const hasAny = Boolean(salon || service || master || masterAny || date);
+  const hasAny = Boolean(
+    salon || services.length || master || masterAny || date,
+  );
+
+  /**
+   * Combined price of the picked services and the currency to show it in.
+   * `null` when not a single service carries a price (nothing to total).
+   */
+  const pricedServices = services.filter((s) => s.price !== null);
+  const total = pricedServices.length
+    ? pricedServices.reduce((sum, s) => sum + (s.price ?? 0), 0)
+    : null;
+  const totalCurrency = pricedServices[0]?.currency ?? '';
 
   /**
    * Format a `y-m-d` date key as `1 January, 2026`.
@@ -152,8 +164,9 @@ const BookingSummary = ({
             sub={salon.address}
           />
         )}
-        {service && (
+        {services.map((service) => (
           <SummaryRow
+            key={service.id}
             icon={<Scissors size={15} />}
             label="Service"
             value={service.name}
@@ -164,7 +177,7 @@ const BookingSummary = ({
               </>
             }
           />
-        )}
+        ))}
         {master && <MasterSummaryCard master={master} />}
         {masterAny && !master && (
           <SummaryRow
@@ -182,7 +195,7 @@ const BookingSummary = ({
             sub={time ? `at ${time}` : 'Time not selected'}
           />
         )}
-        {service && service.price !== null && (
+        {total !== null && (
           <div className="border-t pt-4" style={{ borderColor: '#e8e8f0' }}>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium" style={{ color: MUTED }}>
@@ -192,7 +205,7 @@ const BookingSummary = ({
                 className="text-xl font-bold whitespace-nowrap"
                 style={{ color: DARK }}
               >
-                <Price amount={service.price} currency={service.currency} />
+                <Price amount={total} currency={totalCurrency} />
               </span>
             </div>
           </div>

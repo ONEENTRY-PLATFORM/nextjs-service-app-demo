@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
+import RevealAnimations from '@/app/animations/RevealAnimations';
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
@@ -123,25 +124,29 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
       {/* Get in touch */}
       <section className="bg-white pt-2 pb-6 md:pt-6 md:pb-10">
         <div className="mx-auto max-w-7xl px-3 md:px-8">
-          <div className="mb-6 text-center md:mb-10">
+          <RevealAnimations className="mb-6 text-center md:mb-10">
             <SectionHeading size="lg">Get in Touch</SectionHeading>
-          </div>
-          <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-5">
+          </RevealAnimations>
+          <RevealAnimations className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-5">
             <div className="lg:col-span-3">
               <ContactFormCard />
             </div>
             <div className="lg:col-span-2">
               <ContactInfoCard />
             </div>
-          </div>
+          </RevealAnimations>
         </div>
       </section>
 
       {/* Opening hours */}
-      <OpeningHours />
+      <RevealAnimations>
+        <OpeningHours />
+      </RevealAnimations>
 
       {/* Book CTA banner */}
-      <BookCtaBanner />
+      <RevealAnimations>
+        <BookCtaBanner />
+      </RevealAnimations>
     </div>
   );
 };

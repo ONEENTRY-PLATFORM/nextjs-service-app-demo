@@ -55,7 +55,7 @@ const SalonSelector = ({
                 boxShadow: active
                   ? `0 8px 24px ${PINK}33`
                   : '0 2px 10px rgba(0,0,0,0.05)',
-                border: active ? 'none' : '1.5px solid #e8e8f0',
+                border: active ? '1.5px solid transparent' : '1.5px solid #e8e8f0',
               }}
             >
               <div className="mb-1 flex items-center gap-2">

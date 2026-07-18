@@ -2,6 +2,10 @@ import Image from 'next/image';
 import type { JSX } from 'react';
 
 import HeroAnimations from '@/app/animations/HeroAnimations';
+import HeroBg from '@/app/animations/HeroBg';
+import HeroDescription from '@/app/animations/HeroDescription';
+import HeroKicker from '@/app/animations/HeroKicker';
+import HeroTitle from '@/app/animations/HeroTitle';
 
 /**
  * BookingHero component — the banner of the booking page as in the
@@ -12,8 +16,8 @@ import HeroAnimations from '@/app/animations/HeroAnimations';
  *
  * Wrapped in {@link HeroAnimations} so the header plays the same loader-reveal
  * mask overlay and page-transition/parallax animations as the home hero; the
- * `hero-bg` / `hero-title` / `hero-description` hook classes are what that
- * wrapper animates. The title keeps its `title` class as well — the page-level
+ * background, kicker, title and subtitle register their refs through the leaf
+ * wrappers. The title keeps its `title` class as well — the page-level
  * `BookingAnimations` still targets `.title` / `.mx-auto` for its own fade, and
  * both animations drive the title to the same state (visible on enter, hidden
  * on leave).
@@ -32,33 +36,35 @@ const BookingHero = ({
   return (
     <HeroAnimations className="relative flex h-38.5 items-center justify-center overflow-hidden md:h-80">
       <div className="absolute inset-0">
-        <Image
-          src="/images/Offer/banner_03.jpeg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="hero-bg object-cover"
-        />
+        <HeroBg className="absolute inset-0">
+          <Image
+            src="/images/Offer/banner_03.jpeg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </HeroBg>
         <div className="absolute inset-0 bg-gradient-booking-veil" />
       </div>
       <div className="relative px-4 text-center">
-        <p className="mb-2 text-xs tracking-[0.4em] text-white/80 uppercase">
+        <HeroKicker className="mb-2 text-xs tracking-[0.4em] text-white/80 uppercase">
           Online booking
-        </p>
-        <h1
-          className="title hero-title font-black tracking-widest text-white uppercase drop-shadow-lg"
+        </HeroKicker>
+        <HeroTitle
+          className="title font-black tracking-widest text-white uppercase drop-shadow-lg"
           style={{
             fontSize: 'clamp(2rem,5vw,3.5rem)',
             textShadow: '0 0 40px #ed21f188',
           }}
         >
           {title}
-        </h1>
+        </HeroTitle>
         {subtitle && (
-          <p className="hero-description mt-2 text-base text-white/85">
+          <HeroDescription className="mt-2 text-base text-white/85">
             {subtitle}
-          </p>
+          </HeroDescription>
         )}
       </div>
     </HeroAnimations>

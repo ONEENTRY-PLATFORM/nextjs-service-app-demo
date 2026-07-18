@@ -32,8 +32,8 @@ const ANY_LABEL: Record<string, string> = {
  * @param   {string}                     props.selected         - Chosen specialist id (`''`, id or `__any__`)
  * @param   {(id: string) => void}       props.onSelect         - Select a specialist by id
  * @param   {boolean}                    props.allowAny         - Offer the "Any specialist" card
- * @param   {BookingService | undefined} props.service          - The already chosen service (salon-first flow)
- * @param   {() => void}                 props.onClearService   - Clear the chosen service ("Change")
+ * @param   {BookingService[]}           props.services         - The already chosen services (salon-first flow)
+ * @param   {() => void}                 props.onClearService   - Clear the chosen services ("Change")
  * @param   {string[]}                   props.categories       - Category pill labels (with "All")
  * @param   {string}                     props.categoryFilter   - Active category pill
  * @param   {(cat: string) => void}      props.onCategoryChange - Activate a category pill
@@ -46,7 +46,7 @@ const SpecialistStep = ({
   selected,
   onSelect,
   allowAny,
-  service,
+  services,
   onClearService,
   categories,
   categoryFilter,
@@ -58,7 +58,7 @@ const SpecialistStep = ({
   selected: string;
   onSelect: (id: string) => void;
   allowAny: boolean;
-  service?: BookingService | undefined;
+  services: BookingService[];
   onClearService: () => void;
   categories: string[];
   categoryFilter: string;
@@ -100,7 +100,7 @@ const SpecialistStep = ({
     measure();
     window.addEventListener('resize', measure);
     return () => window.removeEventListener('resize', measure);
-  }, [masters, allowAny, categoryFilter, service]);
+  }, [masters, allowAny, categoryFilter, services]);
 
   /**
    * Reserve identical vertical rhythm across every card: the chips block gets
@@ -122,9 +122,29 @@ const SpecialistStep = ({
   const showAnyCard =
     allowAny && masters.length > 0 && categoryFilter !== 'All' && !q;
 
+  /**
+   * Combined price / currency of the picked services (salon-first flow). When
+   * services are chosen the cards show their exact total instead of a "from"
+   * master price; `null` when nothing priced was picked.
+   */
+  const hasServices = services.length > 0;
+  const pricedServices = services.filter((s) => s.price !== null);
+  const servicesTotal = pricedServices.length
+    ? pricedServices.reduce((sum, s) => sum + (s.price ?? 0), 0)
+    : null;
+  const servicesCurrency = pricedServices[0]?.currency;
+  /**
+   * Price to show on a specialist card: the picked-services total when any were
+   * chosen (and priced), otherwise that specialist's own "from" price.
+   * @param   {BookingMaster}   m - Specialist of the card
+   * @returns {number | null}      Price to display
+   */
+  const cardPrice = (m: BookingMaster): number | null =>
+    hasServices && servicesTotal !== null ? servicesTotal : m.price;
+
   /** "from" price of the any-card — the cheapest matching specialist */
   const anyPrices = masters
-    .map((m) => service?.price ?? m.price)
+    .map((m) => cardPrice(m))
     .filter((v): v is number => v !== null);
   const anyFromPrice = anyPrices.length ? Math.min(...anyPrices) : null;
 
@@ -167,8 +187,8 @@ const SpecialistStep = ({
         />
       </div>
 
-      {/* Sticky service chip — when a specific service is already chosen */}
-      {service && (
+      {/* Sticky service chip — when one or more services are already chosen */}
+      {hasServices && (
         <div
           className="flex items-center justify-between gap-2 rounded-xl border px-3 py-2"
           style={{ borderColor: `${PINK}33`, background: `${PINK}06` }}
@@ -179,14 +199,17 @@ const SpecialistStep = ({
               className="truncate text-base font-semibold"
               style={{ color: DARK }}
             >
-              {service.name}
+              {services.length === 1 ? services[0]?.name : `${services.length} services`}
             </span>
             <span
               className="text-sm whitespace-nowrap"
               style={{ color: MUTED }}
             >
-              {service.duration && <>· {service.duration} </>}·{' '}
-              <Price amount={service.price} />
+              {services.length === 1 && services[0]?.duration && (
+                <>· {services[0].duration} </>
+              )}
+              ·{' '}
+              <Price amount={servicesTotal} currency={servicesCurrency} />
             </span>
           </div>
           <button
@@ -223,7 +246,7 @@ const SpecialistStep = ({
             photo={anySpecialistImg(selectedSalon)}
             specialties={anySpecialties}
             fromPrice={anyFromPrice}
-            currency={service?.currency}
+            currency={servicesCurrency}
             salons={salons}
             chipsMinH={chipsMinH}
           />
@@ -236,8 +259,8 @@ const SpecialistStep = ({
             active={selected === m.id}
             onSelect={() => onSelect(m.id)}
             salons={salonsOf(m)}
-            price={service?.price ?? m.price}
-            showFrom={!service}
+            price={cardPrice(m)}
+            showFrom={!hasServices}
             chipsMinH={chipsMinH}
           />
         ))}

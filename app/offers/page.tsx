@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
+import RevealAnimations from '@/app/animations/RevealAnimations';
 import { getPageByUrl, getProductsByPageUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
@@ -80,14 +81,14 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
       </div>
 
       {/* Heading */}
-      <div className="mx-auto max-w-7xl px-3 pt-8 pb-2 text-center md:px-8">
+      <RevealAnimations className="mx-auto max-w-7xl px-3 pt-8 pb-2 text-center md:px-8">
         <h1
           className="inline-block border-b border-ink pb-2 font-light tracking-fine text-ink uppercase"
           style={{ fontSize: 'clamp(1.6rem, 3vw, 2.4rem)' }}
         >
           {title}
         </h1>
-      </div>
+      </RevealAnimations>
 
       {/* Offer details */}
       <div
@@ -109,7 +110,7 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
       </div>
 
       {/* Terms */}
-      <div className="mx-auto max-w-7xl px-3 pb-16 md:px-8">
+      <RevealAnimations className="mx-auto max-w-7xl px-3 pb-16 md:px-8">
         <div className="rounded-2xl p-6" style={{ background: '#f7f7fb' }}>
           <p className="mb-3 text-sm font-black tracking-widest text-ink uppercase">
             Good to know
@@ -130,7 +131,7 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
             ))}
           </ul>
         </div>
-      </div>
+      </RevealAnimations>
     </div>
   );
 };

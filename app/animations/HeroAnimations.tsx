@@ -4,12 +4,47 @@ import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { useTransitionState } from 'next-transition-router';
 import type { JSX, ReactNode } from 'react';
-import { useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useRef, useState } from 'react';
 
 import { useAppSelector } from '@/app/store/hooks';
 
+/** Roles of the hero elements the animation timeline drives. */
+export type HeroRole = 'bg' | 'kicker' | 'title' | 'description' | 'button';
+
+/**
+ * Ref-registration context provided by {@link HeroAnimations}. The value is a
+ * factory: `register(role)` returns the callback ref to attach to that element.
+ */
+const HeroRefContext = createContext<
+  ((role: HeroRole) => (el: Element | null) => void) | null
+>(null);
+
+/**
+ * useHeroRef — returns a callback ref that registers its element under `role`
+ * with the enclosing {@link HeroAnimations}, so the hero timeline animates it by
+ * reference instead of by CSS-class lookup. Attach it to the matching hero
+ * element (`bg` image wrapper, `kicker` / `title` / `description` text, `button`).
+ * Used by the small leaf wrappers (`HeroBg`, `HeroKicker`, `HeroTitle`,
+ * `HeroDescription`) and directly by the home `HeroSlider` for its background.
+ * @param   {HeroRole}                     role - Which hero element this ref is
+ * @returns {(el: Element | null) => void}      Callback ref to spread on the element
+ */
+export const useHeroRef = (role: HeroRole): ((el: Element | null) => void) => {
+  const register = useContext(HeroRefContext);
+  return useCallback(
+    (el: Element | null) => {
+      register?.(role)(el);
+    },
+    [register, role],
+  );
+};
+
 /**
  * HeroAnimations component for creating hero section animations.
+ *
+ * Drives the hero by element references collected through {@link useHeroRef}
+ * (no `.hero-*` class lookups): a covering loader-reveal mask, a scroll parallax
+ * on the background and text, and page-transition enter/leave animations.
  * @param   {object}      props           - The props for the HeroAnimations component.
  * @param   {ReactNode}   props.children  - The content to be wrapped with animations.
  * @param   {string}      props.className - The class name to be applied to the container.
@@ -38,6 +73,25 @@ const HeroAnimations = ({
    */
   const hasLeftRef = useRef(false);
 
+  /**
+   * Hero element references keyed by role, populated by the `useHeroRef`
+   * callback refs during commit (before the GSAP layout effects run).
+   */
+  const els = useRef<Record<HeroRole, Element | null>>({
+    bg: null,
+    kicker: null,
+    title: null,
+    description: null,
+    button: null,
+  });
+  /** Stable ref-registration factory handed to the context consumers. */
+  const register = useCallback(
+    (role: HeroRole) => (el: Element | null) => {
+      els.current[role] = el;
+    },
+    [],
+  );
+
   /** triggerTl animations */
   useGSAP(
     () => {
@@ -45,10 +99,11 @@ const HeroAnimations = ({
         return;
       }
 
-      const title = ref.current.querySelector('.hero-title');
-      const description = ref.current.querySelector('.hero-description');
-      const heroBg = ref.current.querySelector('.hero-bg');
-      const button = ref.current.querySelector('.hero-button');
+      const kicker = els.current.kicker;
+      const title = els.current.title;
+      const description = els.current.description;
+      const heroBg = els.current.bg;
+      const button = els.current.button;
 
       /** bgTl */
       const bgTl = gsap.timeline({
@@ -128,6 +183,26 @@ const HeroAnimations = ({
           '-=1.5',
         );
       }
+      /** kicker — runs in parallel with the title (absolute position 0) */
+      if (kicker) {
+        triggerTl.fromTo(
+          kicker,
+          {
+            y: '0',
+            autoAlpha: 1,
+            scale: 1,
+          },
+          {
+            y: '-5vh',
+            autoAlpha: 0.5,
+            scale: 1.1,
+            ease: 'none',
+            duration: 2,
+            id: 'kicker',
+          },
+          0,
+        );
+      }
       /** bgTl */
       if (heroBg) {
         bgTl.fromTo(
@@ -176,10 +251,11 @@ const HeroAnimations = ({
 
     const heroMask = ref.current.querySelectorAll('#hero_mask path');
 
-    const title = ref.current.querySelector('.hero-title');
-    const description = ref.current.querySelector('.hero-description');
-    const heroBg = ref.current.querySelector('.hero-bg');
-    const button = ref.current.querySelector('.hero-button');
+    const kicker = els.current.kicker;
+    const title = els.current.title;
+    const description = els.current.description;
+    const heroBg = els.current.bg;
+    const button = els.current.button;
 
     const first = stage === 'none' && prevStage === '';
     const enter = stage === 'entering' && prevStage === 'leaving';
@@ -252,6 +328,23 @@ const HeroAnimations = ({
           '-=0.5',
         );
       }
+      /** stageTl kicker — revealed together with the title/description */
+      if (kicker) {
+        stageTl.fromTo(
+          kicker,
+          {
+            autoAlpha: 0,
+            y: '-20vh',
+          },
+          {
+            y: '0',
+            autoAlpha: 1,
+            duration: 0.65,
+            id: 'kicker',
+          },
+          '-=0.5',
+        );
+      }
       /** stageTl button */
       if (button) {
         stageTl.fromTo(
@@ -293,6 +386,17 @@ const HeroAnimations = ({
       if (description) {
         stageTl.to(
           description,
+          {
+            autoAlpha: 0,
+            y: '-20vh',
+          },
+          '-=0.5',
+        );
+      }
+      /** stageTl kicker — leaves together with the title/description */
+      if (kicker) {
+        stageTl.to(
+          kicker,
           {
             autoAlpha: 0,
             y: '-20vh',
@@ -403,7 +507,9 @@ const HeroAnimations = ({
           d="M0 1005S175 995 500 995s500 5 500 5V0H0Z"
         />
       </svg>
-      {children}
+      <HeroRefContext.Provider value={register}>
+        {children}
+      </HeroRefContext.Provider>
     </div>
   );
 };

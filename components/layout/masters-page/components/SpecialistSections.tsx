@@ -2,6 +2,8 @@
 
 import type { JSX } from 'react';
 
+import GridItemAnimations from '@/app/animations/GridItemAnimations';
+
 import type { MasterItem } from '../taxonomy';
 import MasterCard from './MasterCard';
 
@@ -50,8 +52,15 @@ const SpecialistSections = ({
             data-section={group[0]?.section ?? String(idx)}
             className="mx-auto flex max-w-7xl flex-wrap justify-center gap-8 px-3 md:gap-12 md:px-8 lg:gap-17.5"
           >
-            {group.map((master) => (
-              <MasterCard key={master.id} item={master} />
+            {group.map((master, i) => (
+              <GridItemAnimations
+                key={master.id}
+                index={i}
+                columns={4}
+                className="shrink-0"
+              >
+                <MasterCard item={master} />
+              </GridItemAnimations>
             ))}
           </div>
 

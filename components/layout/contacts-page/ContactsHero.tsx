@@ -2,6 +2,10 @@ import Image from 'next/image';
 import type { JSX } from 'react';
 
 import HeroAnimations from '@/app/animations/HeroAnimations';
+import HeroBg from '@/app/animations/HeroBg';
+import HeroDescription from '@/app/animations/HeroDescription';
+import HeroKicker from '@/app/animations/HeroKicker';
+import HeroTitle from '@/app/animations/HeroTitle';
 
 /**
  * ContactsHero component — the desktop-only banner of the contacts page as in
@@ -12,8 +16,9 @@ import HeroAnimations from '@/app/animations/HeroAnimations';
  *
  * Wrapped in {@link HeroAnimations} so the header plays the same loader-reveal
  * mask overlay and page-transition/parallax animations as the home hero; the
- * `hero-bg` / `hero-title` / `hero-description` hook classes are what that
- * wrapper animates.
+ * background, kicker, title and subtitle register their refs through the
+ * {@link HeroBg}/{@link HeroKicker}/{@link HeroTitle}/{@link HeroDescription} leaf
+ * wrappers.
  * @param   {object}      props            - Component properties
  * @param   {string}      props.title      - Page title from the CMS (e.g. "Contacts")
  * @param   {string}      [props.subtitle] - Line under the title; hidden when not provided
@@ -29,34 +34,36 @@ const ContactsHero = ({
   return (
     <HeroAnimations className="relative hidden h-64 items-center justify-center overflow-hidden md:flex md:h-80">
       <div className="absolute inset-0">
-        <Image
-          src="/images/Beauty content/Contacts/Downtown/Downtown_01.jpeg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="hero-bg object-cover"
-        />
+        <HeroBg className="absolute inset-0">
+          <Image
+            src="/images/Beauty content/Contacts/Downtown/Downtown_01.jpeg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </HeroBg>
         <div className="absolute inset-0 bg-gradient-contacts-veil" />
       </div>
       <div className="relative px-4 text-center">
-        <p className="mb-2 text-xs tracking-[0.45em] text-white/75 uppercase">
+        <HeroKicker className="mb-2 text-xs tracking-[0.45em] text-white/75 uppercase">
           Beauty Studio
-        </p>
-        <h1
-          data-testid="contacts-hero-title"
-          className="hero-title font-black tracking-widest text-white uppercase"
+        </HeroKicker>
+        <HeroTitle
+          testId="contacts-hero-title"
+          className="font-black tracking-widest text-white uppercase"
           style={{
             fontSize: 'clamp(2rem,5vw,3.5rem)',
             textShadow: '0 0 40px #ed21f188',
           }}
         >
           {title}
-        </h1>
+        </HeroTitle>
         {subtitle && (
-          <p className="hero-description mt-2 text-sm text-white/70">
+          <HeroDescription className="mt-2 text-sm text-white/70">
             {subtitle}
-          </p>
+          </HeroDescription>
         )}
       </div>
     </HeroAnimations>

@@ -1,7 +1,11 @@
 'use client';
 
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import type { JSX } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import GridItemAnimations from '@/app/animations/GridItemAnimations';
+import RevealAnimations from '@/app/animations/RevealAnimations';
 
 import type { GalleryTab } from './components/GalleryFilterBar';
 import GalleryFilterBar from './components/GalleryFilterBar';
@@ -148,25 +152,40 @@ const GalleryPageContent = ({
   const lightboxItem =
     lightboxIndex !== null ? filtered[lightboxIndex] : undefined;
 
+  /**
+   * Changing a filter remounts the photo grid and changes the page height,
+   * leaving every ScrollTrigger's cached start/end stale — cells that stay in
+   * view can freeze at their hidden entrance state. Recompute trigger positions
+   * once the new grid has laid out (next frame), like the services catalog.
+   */
+  useEffect(() => {
+    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(id);
+  }, [filtered]);
+
   return (
     <div data-testid="gallery-page">
-      <GalleryFilterBar
-        tab={tab}
-        onTab={setTab}
-        mainCat={mainCat}
-        onMainCat={setMainCat}
-        subCats={subCats}
-        activeSubCat={activeSubCat}
-        onSubCat={setSubCat}
-        specialistsInMain={specialistsInMain}
-        activeSpecialist={activeSpecialist}
-        onSpecialist={setSpecialist}
-        query={query}
-        onQuery={setQuery}
-        count={filtered.length}
-        hasActiveFilter={hasActiveFilter}
-        onClearAll={clearAll}
-      />
+      {/* Filter cluster — fade-only reveal: it holds mobile dropdown controls
+          (position: fixed), which a lingering wrapper transform would break */}
+      <RevealAnimations fade>
+        <GalleryFilterBar
+          tab={tab}
+          onTab={setTab}
+          mainCat={mainCat}
+          onMainCat={setMainCat}
+          subCats={subCats}
+          activeSubCat={activeSubCat}
+          onSubCat={setSubCat}
+          specialistsInMain={specialistsInMain}
+          activeSpecialist={activeSpecialist}
+          onSpecialist={setSpecialist}
+          query={query}
+          onQuery={setQuery}
+          count={filtered.length}
+          hasActiveFilter={hasActiveFilter}
+          onClearAll={clearAll}
+        />
+      </RevealAnimations>
 
       {/* ── Full-bleed photo grid ────────────────────────────────────────── */}
       {filtered.length > 0 ? (
@@ -175,13 +194,14 @@ const GalleryPageContent = ({
           className="grid grid-cols-2 gap-3 px-3 pb-4 sm:grid-cols-3 md:gap-4 md:px-6 lg:grid-cols-5"
         >
           {filtered.map((item, idx) => (
-            <GalleryGridCell
-              key={item.id}
-              item={item}
-              liked={liked.has(item.id)}
-              onLike={toggleLike}
-              onOpen={() => setLightboxIndex(idx)}
-            />
+            <GridItemAnimations key={item.id} index={idx} columns={3}>
+              <GalleryGridCell
+                item={item}
+                liked={liked.has(item.id)}
+                onLike={toggleLike}
+                onOpen={() => setLightboxIndex(idx)}
+              />
+            </GridItemAnimations>
           ))}
         </div>
       ) : (

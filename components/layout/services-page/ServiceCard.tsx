@@ -81,7 +81,7 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
       data-service-id={service.id}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="relative flex flex-col gap-3 rounded-2xl bg-white p-5"
+      className="relative flex h-full flex-col gap-3 rounded-2xl bg-white p-5"
       style={{
         boxShadow: hovered
           ? `0 8px 32px ${PINK}22, 0 2px 8px rgba(0,0,0,0.06)`

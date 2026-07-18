@@ -1,9 +1,13 @@
 'use client';
 
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import type { JSX } from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+import GridItemAnimations from '@/app/animations/GridItemAnimations';
+import RevealAnimations from '@/app/animations/RevealAnimations';
 
 import CategoryChips from './components/CategoryChips';
 import MasterFilter from './components/MasterFilter';
@@ -109,6 +113,17 @@ const ReviewsPageContent = ({
     ? (filtered.reduce((n, r) => n + r.rating, 0) / filtered.length).toFixed(1)
     : '—';
 
+  /**
+   * Changing a filter remounts the review grid and changes the page height,
+   * leaving every ScrollTrigger's cached start/end stale — cards that stay in
+   * view can freeze at their hidden entrance state. Recompute trigger positions
+   * once the new grid has laid out (next frame), like the services catalog.
+   */
+  useEffect(() => {
+    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(id);
+  }, [filtered]);
+
   return (
     <div className="mx-auto max-w-7xl px-3 md:px-8" data-testid="reviews-page">
       {/* Back link */}
@@ -123,7 +138,7 @@ const ReviewsPageContent = ({
       </div>
 
       {/* Heading */}
-      <div className="pt-8 pb-2 text-center">
+      <RevealAnimations className="pt-8 pb-2 text-center">
         <h1
           className="inline-block border-b border-ink pb-2 font-light uppercase"
           style={{
@@ -143,30 +158,35 @@ const ReviewsPageContent = ({
             · {filtered.length} {filtered.length === 1 ? 'review' : 'reviews'}
           </span>
         </div>
-      </div>
+      </RevealAnimations>
 
-      <SalonFilter
-        salons={REVIEW_SALONS}
-        salonId={salonId}
-        onSelect={handleSalon}
-      />
+      {/* Filters — fade-only reveal (they hold dropdown/scroll controls) */}
+      <RevealAnimations fade>
+        <SalonFilter
+          salons={REVIEW_SALONS}
+          salonId={salonId}
+          onSelect={handleSalon}
+        />
 
-      <CategoryChips cats={cats} cat={cat} onSelect={handleCat} />
+        <CategoryChips cats={cats} cat={cat} onSelect={handleCat} />
 
-      <MasterFilter
-        masters={masters}
-        cat={cat}
-        masterSearch={masterSearch}
-        onSearch={setMasterSearch}
-        master={master}
-        onMaster={setMaster}
-      />
+        <MasterFilter
+          masters={masters}
+          cat={cat}
+          masterSearch={masterSearch}
+          onSearch={setMasterSearch}
+          master={master}
+          onMaster={setMaster}
+        />
+      </RevealAnimations>
 
       {/* Review cards */}
       <div className="py-8">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {filtered.map((r) => (
-            <ReviewCard key={r.id} review={r} />
+          {filtered.map((r, index) => (
+            <GridItemAnimations key={r.id} index={index} className="h-full">
+              <ReviewCard review={r} />
+            </GridItemAnimations>
           ))}
         </div>
 

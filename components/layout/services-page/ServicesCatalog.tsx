@@ -1,8 +1,12 @@
 'use client';
 
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { Search, X } from 'lucide-react';
 import type { JSX } from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+import GridItemAnimations from '@/app/animations/GridItemAnimations';
+import RevealAnimations from '@/app/animations/RevealAnimations';
 
 import CategoryTabs from './CategoryTabs';
 import { DARK, MUTED, PINK } from './constants';
@@ -104,6 +108,18 @@ const ServicesCatalog = ({
     );
   }, [services, mainCat, subCat, query]);
 
+  /**
+   * Switching the category/subcategory/search remounts the card grid and changes
+   * the page height, which leaves every ScrollTrigger's cached start/end stale —
+   * so cards that are actually in view can stay stuck at their hidden entrance
+   * state. Recompute all trigger positions once the new grid has laid out (next
+   * frame), letting the in-view cards fire their reveal.
+   */
+  useEffect(() => {
+    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(id);
+  }, [filtered]);
+
   return (
     <section
       data-testid="services-catalog"
@@ -111,70 +127,76 @@ const ServicesCatalog = ({
       style={{ background: 'linear-gradient(180deg,#f7f7fb 0%,#fff 50%)' }}
     >
       <div className="mx-auto max-w-7xl px-3 md:px-8">
-        <SalonSelector salons={salons} selected={salon} onSelect={setSalon} />
+        {/* Filter cluster — fade-only reveal: it holds the mobile salon dropdown
+            (position: fixed), which a lingering wrapper transform would break */}
+        <RevealAnimations fade>
+          <SalonSelector salons={salons} selected={salon} onSelect={setSalon} />
 
-        {/* Service search — under the salon filter; matches by service name */}
-        <div className="relative mb-6">
-          <Search
-            size={18}
-            color={MUTED}
-            className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2"
-          />
-          <input
-            data-testid="services-search-input"
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by service…"
-            className="w-full rounded-xl bg-white px-11 py-3 text-base transition-colors outline-none"
-            style={{
-              border: '1.5px solid #e8e8f0',
-              boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-              color: DARK,
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = PINK;
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = '#e8e8f0';
-            }}
-          />
-          {searching && (
-            <button
-              onClick={() => setQuery('')}
-              aria-label="Clear search"
-              className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 transition-colors"
-              style={{ color: MUTED }}
-            >
-              <X size={16} />
-            </button>
+          {/* Service search — under the salon filter; matches by service name */}
+          <div className="relative mb-6">
+            <Search
+              size={18}
+              color={MUTED}
+              className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2"
+            />
+            <input
+              data-testid="services-search-input"
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by service…"
+              className="w-full rounded-xl bg-white px-11 py-3 text-base transition-colors outline-none"
+              style={{
+                border: '1.5px solid #e8e8f0',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                color: DARK,
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = PINK;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = '#e8e8f0';
+              }}
+            />
+            {searching && (
+              <button
+                onClick={() => setQuery('')}
+                aria-label="Clear search"
+                className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 transition-colors"
+                style={{ color: MUTED }}
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+
+          {!searching && categories.length > 0 && (
+            <CategoryTabs
+              categories={categories}
+              mainCat={mainCat}
+              subCat={subCat}
+              onMain={handleMain}
+              onSub={setSubCat}
+            />
           )}
-        </div>
 
-        {!searching && categories.length > 0 && (
-          <CategoryTabs
-            categories={categories}
-            mainCat={mainCat}
-            subCat={subCat}
-            onMain={handleMain}
-            onSub={setSubCat}
-          />
-        )}
-
-        {searching && (
-          <p className="mb-2 text-sm" style={{ color: MUTED }}>
-            {filtered.length} {filtered.length === 1 ? 'result' : 'results'} for
-            “{query.trim()}”
-          </p>
-        )}
+          {searching && (
+            <p className="mb-2 text-sm" style={{ color: MUTED }}>
+              {filtered.length} {filtered.length === 1 ? 'result' : 'results'}{' '}
+              for “{query.trim()}”
+            </p>
+          )}
+        </RevealAnimations>
 
         {/* Service grid */}
         <div
           data-testid="services-grid"
           className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2"
         >
-          {filtered.map((item) => (
-            <ServiceCard key={item.id} service={item} />
+          {filtered.map((item, index) => (
+            <GridItemAnimations key={item.id} index={index} className="h-full">
+              <ServiceCard service={item} />
+            </GridItemAnimations>
           ))}
         </div>
 

@@ -6,6 +6,8 @@ import Link from 'next/link';
 import type { JSX } from 'react';
 import { useEffect, useState } from 'react';
 
+import { useHeroRef } from '@/app/animations/HeroAnimations';
+
 import SaleText from './SaleText';
 
 /**
@@ -47,6 +49,8 @@ const HeroSlider = ({
   const count = slides.length;
   /** Current slide — drives the single CTA button */
   const current = slides[idx];
+  /** Registers the slides layer as the hero `bg` for the parallax timeline */
+  const bgRef = useHeroRef('bg');
 
   /** Auto-advance the carousel, paused on hover */
   useEffect(() => {
@@ -65,7 +69,7 @@ const HeroSlider = ({
     >
       {/* Slides — crossfade; each carries its optional CMS text overlay
           (sale badge, title, subtitle) on the left. */}
-      <div className="hero-bg absolute inset-0">
+      <div ref={bgRef} className="absolute inset-0">
         {slides.map((slide, i) => (
           <div
             key={i}

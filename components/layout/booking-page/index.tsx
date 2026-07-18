@@ -46,14 +46,14 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
     filteredServices,
     filteredMasters,
     salon,
-    service,
+    selectedServiceIds,
     master,
     date,
     time,
     slots,
     hasSchedule,
     salonObj,
-    serviceObj,
+    serviceObjs,
     masterObj,
     masterAny,
     canNext,
@@ -117,8 +117,8 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                 {flow && currentStepKey === 'service' && (
                   <ServiceStep
                     services={filteredServices}
-                    selected={service}
-                    onSelect={selectService}
+                    selectedIds={selectedServiceIds}
+                    onToggle={selectService}
                   />
                 )}
                 {flow && currentStepKey === 'specialist' && (
@@ -127,7 +127,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                     selected={master}
                     onSelect={selectMaster}
                     allowAny
-                    service={serviceObj}
+                    services={serviceObjs}
                     onClearService={clearService}
                     categories={categories}
                     categoryFilter={categoryFilter}
@@ -213,7 +213,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
             <BookingSummary
               flow={flow}
               salon={salonObj}
-              service={serviceObj}
+              services={serviceObjs}
               master={masterObj}
               masterAny={masterAny}
               date={date}

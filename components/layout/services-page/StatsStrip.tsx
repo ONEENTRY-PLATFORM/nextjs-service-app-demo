@@ -3,6 +3,10 @@ import type { JSX } from 'react';
 /**
  * StatsStrip component — the pink→cyan gradient counters strip right under
  * the services page hero, as in the static-html mock (`PricesPage.tsx`).
+ *
+ * It is rendered inside the `ServicesHero` `HeroAnimations` wrapper, so the
+ * header's covering mask overlay reveals it together with the photo hero — it
+ * needs no entrance animation of its own.
  * @param   {object}                           props       - Component properties
  * @param   {Array<[string | number, string]>} props.stats - Pairs of [value, label], rendered in a 3-column grid
  * @returns {JSX.Element}                                  Gradient strip with the counters

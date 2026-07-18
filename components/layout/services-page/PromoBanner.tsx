@@ -2,18 +2,23 @@ import { Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import type { JSX } from 'react';
 
+import RevealAnimations from '@/app/animations/RevealAnimations';
+
 /**
  * PromoBanner component — the "First Visit? Get 15% Off" gradient banner at
  * the bottom of the services page, as in the static-html mock
  * (`PricesPage.tsx` → Special Offer Banner). The button leads to the booking
  * page. Texts are English fallbacks until `system_content` is set up in the
  * CMS.
+ *
+ * Wrapped in {@link RevealAnimations} so the banner slides up and fades in as it
+ * scrolls into view and fades away on page transitions.
  * @returns {JSX.Element} Promo banner section
  */
 const PromoBanner = (): JSX.Element => {
   return (
     <section className="py-10">
-      <div className="mx-auto max-w-7xl px-3 md:px-8">
+      <RevealAnimations className="mx-auto max-w-7xl px-3 md:px-8">
         <div className="relative flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-gradient-promo px-8 py-10 transition-transform duration-300 hover:scale-101 md:flex-row">
           <div
             className="absolute -top-12 -right-12 size-48 rounded-full opacity-20"
@@ -57,7 +62,7 @@ const PromoBanner = (): JSX.Element => {
             Book Now
           </Link>
         </div>
-      </div>
+      </RevealAnimations>
     </section>
   );
 };

@@ -54,8 +54,8 @@ export interface BookingWizardState {
   filteredMasters: BookingMaster[];
   /** Chosen salon id */
   salon: string;
-  /** Chosen service id */
-  service: string;
+  /** Chosen service ids (multi-select, in the order they were picked) */
+  selectedServiceIds: string[];
   /** Chosen specialist id (`''`, id or `__any__`) */
   master: string;
   /** Chosen date (ISO day) */
@@ -68,8 +68,8 @@ export interface BookingWizardState {
   hasSchedule: boolean;
   /** Resolved chosen salon */
   salonObj: BookingSalon | undefined;
-  /** Resolved chosen service */
-  serviceObj: BookingService | undefined;
+  /** Resolved chosen services (order matches {@link selectedServiceIds}) */
+  serviceObjs: BookingService[];
   /** Resolved chosen specialist (`undefined` for "Any specialist") */
   masterObj: BookingMaster | undefined;
   /** "Any specialist" is the current choice */
@@ -96,11 +96,11 @@ export interface BookingWizardState {
   startFlow: (f: BookingFlow) => void;
   /** Choose a salon */
   selectSalon: (id: string) => void;
-  /** Choose a service */
+  /** Toggle a service in or out of the multi-selection */
   selectService: (id: string) => void;
   /** Choose a specialist */
   selectMaster: (id: string) => void;
-  /** Clear the chosen service ("Change") */
+  /** Clear every chosen service ("Change") */
   clearService: () => void;
   /** Advance to the next step */
   handleNext: () => void;
@@ -136,7 +136,8 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   const [flow, setFlow] = useState<BookingFlow | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
   const [salon, setSalon] = useState('');
-  const [service, setService] = useState('');
+  /** Ids of the chosen services — one appointment can bundle several */
+  const [serviceIds, setServiceIds] = useState<string[]>([]);
   const [master, setMaster] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
@@ -220,7 +221,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
       /** Repeat/reschedule: everything known → jump to Date & Time */
       setFlow('specialist-first');
       setMaster(preMaster.id);
-      setService(preService.id);
+      setServiceIds([preService.id]);
       setSalon(preSalon?.id ?? preMaster.salonIds[0] ?? '');
       setCategoryFilter(preService.category);
       setPendingDateTime(true);
@@ -235,7 +236,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     } else if (preService) {
       /** From Services & Prices / an offer → salon-first, service locked */
       setFlow('salon-first');
-      setService(preService.id);
+      setServiceIds([preService.id]);
       setServiceLocked(true);
       setCategoryFilter(preService.category);
       setStepIdx(0);
@@ -247,9 +248,13 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     () => salons.find((s) => s.id === salon),
     [salons, salon],
   );
-  const serviceObj = useMemo(
-    () => services.find((s) => s.id === service),
-    [services, service],
+  /** Resolve the picked ids to services, preserving the pick order */
+  const serviceObjs = useMemo(
+    () =>
+      serviceIds
+        .map((id) => services.find((s) => s.id === id))
+        .filter((s): s is BookingService => Boolean(s)),
+    [services, serviceIds],
   );
   const masterObj = useMemo(
     () =>
@@ -297,10 +302,11 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
       ) {
         return false;
       }
+      /** Keep specialists who perform AT LEAST ONE of the picked services */
       if (
-        service &&
+        serviceIds.length > 0 &&
         m.serviceIds.length > 0 &&
-        !m.serviceIds.includes(service)
+        !serviceIds.some((sid) => m.serviceIds.includes(sid))
       ) {
         return false;
       }
@@ -313,7 +319,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
       }
       return true;
     });
-  }, [masters, flow, salon, service, categoryFilter, services]);
+  }, [masters, flow, salon, serviceIds, categoryFilter, services]);
 
   /** Salons narrowed to the chosen specialist's studios */
   const filteredSalons = useMemo(() => {
@@ -324,9 +330,13 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   }, [salons, master, masters]);
 
   /**
-   * In the specialist-first flow the Service step only offers what the
-   * chosen specialist performs, narrowed to the category they were chosen
-   * through ("Any specialist" → that category's services).
+   * In the specialist-first flow the Service step only offers what the chosen
+   * specialist performs. For a concrete specialist the WHOLE of their roster is
+   * shown across categories — the step's own category pills browse within it,
+   * and a multi-pick may span categories, so it must not be pre-narrowed by
+   * `categoryFilter` (which the pick itself keeps re-syncing). "Any specialist"
+   * has no roster to define the set, so it stays locked to the category they
+   * were chosen through.
    */
   const filteredServices = useMemo(() => {
     if (flow !== 'specialist-first' || !master) return services;
@@ -337,11 +347,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     }
     const m = masters.find((x) => x.id === master);
     if (!m || m.serviceIds.length === 0) return services;
-    return services.filter(
-      (s) =>
-        m.serviceIds.includes(s.id) &&
-        (categoryFilter === 'All' || s.category === categoryFilter),
-    );
+    return services.filter((s) => m.serviceIds.includes(s.id));
   }, [flow, master, masters, services, categoryFilter]);
 
   /**
@@ -375,7 +381,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
 
   const stepDone: Record<StepKey, boolean> = {
     salon: Boolean(salon),
-    service: Boolean(service),
+    service: serviceIds.length > 0,
     specialist: Boolean(master),
     datetime: Boolean(date) && Boolean(time),
   };
@@ -409,7 +415,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     setFlow(null);
     setStepIdx(0);
     setSalon('');
-    setService('');
+    setServiceIds([]);
     setMaster('');
     setDate('');
     setTime('');
@@ -442,33 +448,53 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     }
   };
   /**
-   * Pick a service; syncs the category tab and invalidates a chosen specialist
-   * who doesn't perform it.
+   * Toggle a service in or out of the multi-selection; syncs the category tab
+   * (a single category → that pill, a mixed pick → "All") and invalidates a
+   * chosen specialist who performs NONE of the remaining picks.
    * @param {string} id - Service id
    */
   const selectService = (id: string) => {
     setTouched(true);
-    setService(id);
-    /** Sync the category tab to the service for the specialist step */
-    const sv = services.find((x) => x.id === id);
-    if (sv) setCategoryFilter(sv.category);
-    /** Invalidate a chosen master who doesn't perform this service */
-    if (master && master !== ANY_MASTER) {
+    const next = serviceIds.includes(id)
+      ? serviceIds.filter((x) => x !== id)
+      : [...serviceIds, id];
+    setServiceIds(next);
+    /**
+     * Sync the category tab so the specialist step lands narrowed: a single
+     * shared category selects that pill, a mix (or an empty pick) falls to All.
+     */
+    const cats = [
+      ...new Set(
+        next
+          .map((sid) => services.find((x) => x.id === sid)?.category)
+          .filter((c): c is string => Boolean(c)),
+      ),
+    ];
+    setCategoryFilter(cats.length === 1 ? (cats[0] ?? 'All') : 'All');
+    /** Invalidate a chosen master who performs none of the remaining picks */
+    if (master && master !== ANY_MASTER && next.length > 0) {
       const m = masters.find((x) => x.id === master);
-      if (m && m.serviceIds.length > 0 && !m.serviceIds.includes(id))
+      if (
+        m &&
+        m.serviceIds.length > 0 &&
+        !next.some((sid) => m.serviceIds.includes(sid))
+      ) {
         setMaster('');
+      }
     }
   };
-  /** Clear the chosen service and unlock the (preselected) service step. */
+  /** Clear every chosen service and unlock the (preselected) service step. */
   const clearService = () => {
     setTouched(true);
-    setService('');
+    setServiceIds([]);
     setServiceLocked(false);
     setCategoryFilter('All');
   };
   /**
    * Pick a specialist; auto-picks their single studio and invalidates a studio
-   * or service that specialist cannot cover.
+   * the specialist cannot cover. The picked services are left untouched — a
+   * specialist qualifies by performing at least one of them, and the order
+   * still bundles every picked service.
    * @param {string} id - Specialist id (or the "any specialist" sentinel)
    */
   const selectMaster = (id: string) => {
@@ -482,16 +508,6 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
       }
       /** Auto-pick a single studio — skips the Salon step entirely */
       if (m?.salonIds.length === 1) setSalon(m.salonIds[0] ?? '');
-      /** Invalidate a chosen service the specialist doesn't perform */
-      if (
-        service &&
-        m &&
-        m.serviceIds.length > 0 &&
-        !m.serviceIds.includes(service)
-      ) {
-        setService('');
-        setCategoryFilter('All');
-      }
     }
   };
 
@@ -499,7 +515,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   const handleConfirm = () => {
     void submit({
       salon: salonObj,
-      service: serviceObj,
+      services: serviceObjs,
       master: masterObj,
       date,
       time,
@@ -559,14 +575,14 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     filteredServices,
     filteredMasters,
     salon,
-    service,
+    selectedServiceIds: serviceIds,
     master,
     date,
     time,
     slots,
     hasSchedule,
     salonObj,
-    serviceObj,
+    serviceObjs,
     masterObj,
     masterAny: master === ANY_MASTER,
     canNext,
