@@ -71,9 +71,7 @@ const SignInForm = ({
   const { data, isLoading } = useGetFormByMarkerQuery({ marker: 'reg' });
 
   /** Get form field values from Redux store */
-  const { email_reg, password_reg } = useAppSelector(
-    (state) => state.formFieldsReducer.fields,
-  );
+  const fields = useAppSelector((state) => state.formFieldsReducer.fields);
 
   /** Sort form fields by their position property */
   const formFields = useMemo(
@@ -83,6 +81,20 @@ const SignInForm = ({
           a.position - b.position,
       ),
     [data],
+  );
+
+  /**
+   * Credentials for sign-in are selected by the CMS flags `isLogin` /
+   * `isPassword`, NOT by marker name — the login (email) field and the
+   * password field. Profile-only fields like `phone_reg` (no flags) are
+   * excluded even though their marker looks like `${tab}_reg`.
+   */
+  const credentialFields = useMemo(
+    () =>
+      formFields.filter(
+        (f: IFormAttribute) => f.isLogin === true || f.isPassword === true,
+      ),
+    [formFields],
   );
 
   /**
@@ -109,8 +121,21 @@ const SignInForm = ({
    */
   const onSignIn = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    /** Validate required fields before submission */
-    if (!email_reg || !password_reg) return;
+
+    /**
+     * Build authData from the flagged credential fields, dropping empty
+     * values — FormInput seeds Redux with `value: ''` on mount, and the SDK
+     * rejects an empty string with a 400.
+     */
+    const authData: IAuthPostBody['authData'] = credentialFields
+      .map((field) => ({
+        marker: field.marker,
+        value: fields[field.marker]?.value?.toString().trim() ?? '',
+      }))
+      .filter((entry) => entry.value !== '');
+
+    /** Every credential field must be filled before submission */
+    if (authData.length < credentialFields.length) return;
 
     /** Attempt user authentication */
     try {
@@ -123,12 +148,7 @@ const SignInForm = ({
        * fingerprint — running it through a Server Action would set
        * deviceInfo.browser to "Node.js/..." instead.
        */
-      const body: IAuthPostBody = {
-        authData: [
-          { marker: 'email_reg', value: email_reg.value },
-          { marker: 'password_reg', value: password_reg.value },
-        ],
-      };
+      const body: IAuthPostBody = { authData };
       const result = await getApi().AuthProvider.auth(tab, body);
 
       if (isError(result)) {
@@ -187,17 +207,11 @@ const SignInForm = ({
           </FormFieldAnimations>
         </div>
 
-        {/** Render form fields based on active tab */}
+        {/** Render the flagged credential fields (login + password) */}
         <div className="relative mb-4 box-border flex shrink-0 flex-col gap-4">
-          {formFields.map((field: IFormAttribute, index: number) => {
-            if (
-              field.marker === `${tab}_reg` ||
-              field.marker === 'password_reg'
-            ) {
-              return <FormInput key={index} index={index + 2} {...field} />;
-            }
-            return null;
-          })}
+          {credentialFields.map((field: IFormAttribute, index: number) => (
+            <FormInput key={field.marker} index={index + 2} {...field} />
+          ))}
         </div>
 
         {/** Render sign in submit button */}

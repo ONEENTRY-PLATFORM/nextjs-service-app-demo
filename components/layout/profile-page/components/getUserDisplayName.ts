@@ -1,7 +1,5 @@
+import type { FormDataType } from 'oneentry/dist/forms-data/formsDataInterfaces';
 import type { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
-
-/** Form data field shape (a subset of the SDK's FormDataType union). */
-type NameField = { marker?: string; value?: unknown };
 
 /** Markers that may hold a human-readable name, in priority order. */
 const NAME_MARKERS = [
@@ -14,6 +12,20 @@ const NAME_MARKERS = [
 
 /** Markers that may hold the user's e-mail (used as a fallback name source). */
 const EMAIL_MARKERS = ['email_reg', 'email'] as const;
+
+/**
+ * Narrows a `FormDataType` union member to the marker-bearing shape.
+ *
+ * The SDK's `FormDataType` union includes a bare `Record<string, unknown>`
+ * variant without a `marker`, so `formData` items must be guarded before their
+ * `marker`/`value` are read.
+ * @param   {FormDataType} field - A single `formData` entry
+ * @returns {boolean}            True when the entry carries a string `marker`
+ */
+const hasMarker = (
+  field: FormDataType,
+): field is FormDataType & { marker: string; value: unknown } =>
+  typeof (field as { marker?: unknown }).marker === 'string';
 
 /**
  * Derives a human-readable display name for a user from their `formData`.
@@ -30,9 +42,9 @@ export const getUserDisplayName = (user: IUserEntity | undefined): string => {
     return 'Guest';
   }
 
-  const fields: NameField[] = Array.isArray(user.formData)
-    ? (user.formData as NameField[])
-    : [];
+  const fields = (Array.isArray(user.formData) ? user.formData : []).filter(
+    hasMarker,
+  );
 
   for (const marker of NAME_MARKERS) {
     const field = fields.find((f) => f.marker === marker);

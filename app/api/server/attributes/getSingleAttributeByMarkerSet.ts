@@ -28,10 +28,16 @@ const getSingleAttributeByMarkerSetImpl = unstable_cache(
     attribute?: IAttributesSetsEntity;
   }> => {
     try {
+      /**
+       * SDK signature is `(setMarker, attributeMarker, langCode)` — the URL is
+       * built as `/${setMarker}/attributes/${attributeMarker}`. The SDK's own
+       * `.d.ts` declares the arguments in the opposite order, so pass them
+       * positionally in the runtime order, not the way the types suggest.
+       */
       const attribute =
         await getApi().AttributesSets.getSingleAttributeByMarkerSet(
-          attributeMarker,
           setMarker,
+          attributeMarker,
         );
 
       if (isError(attribute)) {

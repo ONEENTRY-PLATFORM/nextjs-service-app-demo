@@ -1,5 +1,12 @@
 'use client';
 
+/*
+  Fullscreen lightbox viewer. Rule disabled file-wide because both images here
+  need a raw <img>: the stage image renders at its natural dimensions bounded by
+  the viewport (`max-h-[70vh]`), which next/image can't do without a fixed
+  width/height or a sized `fill` box; the thumbnail strip is on-demand overlay
+  micro-thumbnails whose bytes don't warrant the optimizer round-trip.
+*/
 /* eslint-disable @next/next/no-img-element */
 import { ChevronLeft, ChevronRight, Share2, X } from 'lucide-react';
 import type { JSX } from 'react';

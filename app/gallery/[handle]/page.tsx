@@ -9,6 +9,7 @@ import GalleryPageContent from '@/components/layout/gallery-page';
 import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
 import { GALLERY_MAIN_CATS } from '@/components/layout/gallery-page/taxonomy';
 
+import getCmsGalleryItems from '../getCmsGalleryItems';
 import getLocalGalleryItems from '../getLocalGalleryItems';
 
 /**
@@ -49,15 +50,22 @@ export default async function GallerySingleLayout({
   }>;
 }): Promise<JSX.Element> {
   const { handle } = await params;
-  /** The page read and the photo scan are independent — run in parallel. */
-  const [{ page, isError }, items] = await Promise.all([
+  /** The page read and the CMS gallery fetch are independent — run in parallel. */
+  const [{ page, isError }, cmsItems] = await Promise.all([
     getPageByUrl(handle),
-    getLocalGalleryItems(),
+    getCmsGalleryItems(),
   ]);
 
   if (!page || isError) {
     return notFound();
   }
+
+  /**
+   * Same source as `/gallery`: prefer the CMS gallery tree, fall back to the
+   * local library only when it is empty — so a category deep-link shows the
+   * very same photos as the unified page, just pre-filtered.
+   */
+  const items = cmsItems.length > 0 ? cmsItems : await getLocalGalleryItems();
 
   const initialCategory = handleToCategory(handle);
 

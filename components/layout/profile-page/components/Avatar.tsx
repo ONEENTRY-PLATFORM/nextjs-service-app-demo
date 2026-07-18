@@ -27,6 +27,10 @@ const Avatar = ({
       }}
     >
       {photo ? (
+        // The avatar photo is an optional URL of unknown origin; next/image's
+        // remotePatterns only allows the CMS host (**.oneentry.cloud/cloud-static),
+        // so a non-CMS avatar would make next/image throw at runtime. A raw
+        // <img> renders any host.
         // eslint-disable-next-line @next/next/no-img-element
         <img src={photo} alt={name} className="size-full object-cover" />
       ) : (

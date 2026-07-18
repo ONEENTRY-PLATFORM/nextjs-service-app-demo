@@ -6,7 +6,8 @@
 - **Дата:** 2026-07-14 (аудит) → 2026-07-15 (адверсариальная верификация завершена)
 - **Область:** `app/`, `components/`, корневые конфиги. Исключены: `static-html/`, `.claude/`, `node_modules/`, `.next/`, `*.md`.
 - **Измерений пройдено:** 22 правил + 20 скиллов = 42.
-- **Находок:** 246 за аудит. **Осталось требующих работы: 16** в секции 3 + непроверенные пункты секции 2. Остальное закрыто и удалено из файла.
+- **Находок:** 246 за аудит. **Осталось требующих работы: 15** в секции 3 + непроверенные пункты секции 2. Остальное закрыто и удалено из файла.
+- **🔄 Сверка с текущим деревом (2026-07-18):** пройдено по всем пунктам секций 2–3. Исправлено с момента аудита — **13** пунктов (2.2, 2.12, 2.20, 2.23, 2.24, 2.25, 2.31, 2.32, 2.33, 2.37, 2.45, 2.47, 2.52 + `rule:forms`/useBookingSubmit в секции 3); частично — 2.35 и `create-checkout`/DateTimeStep. Подробности и метки «✅ ИСПРАВЛЕНО (2026-07-18)» — в шапке секции 2 и в заголовках пунктов.
 - **Секция 3 = только actionable.** Разрешённые пункты из неё удалены (2026-07-17): исправленные, ⛔ опровергнутые и решённые (🔧 осознанные / 🟨 отклонённые по замеру). **Знание не потеряно** — все ⛔/🔧/🟨 перечислены в **секции 4** компактно, вместе с замерами (SDK 121 КБ gzip, картинки мастеров 52 КБ) и разбором, почему рекомендация неверна. Перед удалением машинно сверено, что секция 4 покрывает каждый пункт. Полностью закрытые измерения (15 шт.) убраны из заголовков.
 - **Счётчики `осталось: N`** в заголовках измерений синхронизированы с фактом скриптом, не вручную.
 - **Удалён мёртвый код (2026-07-17, по решению пользователя): 48 файлов**, недостижимых от дерева роутов — сняло 5 пунктов лога.
@@ -67,33 +68,13 @@
 
 Отсортировано по критичности. Каждый пункт прошёл независимую адверсариальную проверку.
 
-### 2.2. [СЕРЬЁЗНО] ✅ `app/gallery/[handle]/page.tsx:46`
+**🔄 Сверка с кодом (2026-07-18).** Все пункты секций 2–3 пройдены против текущего дерева (чтением кода + агенты-верификаторы). **Исправлено с момента аудита:** 2.2 (галерея из CMS), 2.12 (UTC-интервал), 2.20 (window-guard в saveFunction), 2.23 (fileUrl → общий `fileDisplayUrl` с guard), 2.24 (home: `notFound()` вместо строки «isError»), 2.25 (profile: `Promise.all`), 2.31 (isSignUpRequired в видимости полей), 2.32 (`FormField = IFormAttribute`), 2.33 (JSDoc `isConfirmPasswordField`), 2.37 (logout: маркер из localStorage), 2.45 (`getFormAttributes` дефолт `IFormAttribute`), 2.47 (layout: `Promise.all`), 2.52 (файл `getImageSize.ts` удалён при чистке мёртвого кода); в секции 3 — `rule:forms`/useBookingSubmit (salon = числовой id, interval = ISO-строки). **Частично исправлено:** 2.35 (пароль убран из formData, но пустые значения `|| ''` и роутинг по имени маркера остались); `skill:create-checkout`/DateTimeStep (слоты теперь читаются из `master_schedule`/`salon_time` через `daySlots`, статический `TIMES` — только фолбэк); `skill:create-checkout` маркеры вынесены в `orderMarkers.ts` (динамический путь всё ещё нежизнеспособен). **Остальные подтверждены как актуальные** — многие помечены 🔧 (осознанные) или ИНФО «оставить как есть». Заголовки исправленных ниже несут метку «✅ ИСПРАВЛЕНО (2026-07-18)».
 
-*Измерение: `rule:nextjs-pages`*
-
-**Суть:** Категорийный роут галереи /gallery/[handle] рендерит только локальные фото (getLocalGalleryItems), игнорируя CMS-галерею, хотя /gallery берёт контент из CMS (getCmsGalleryItems) с локальным фолбэком.
-
-**Детали:** В GallerySingleLayout (строки 44–47) в Promise.all вызывается только getLocalGalleryItems(); getCmsGalleryItems не используется вовсе. При этом app/gallery/page.tsx (строки 31–37) сначала берёт фото из дерева CMS-галереи и падает на локальный скан лишь при пустой CMS. По документации проекта CMS-галерея уже наполнена (fill-gallery.mjs, страницы-фото с gallery_photos и master_id), поэтому диплинки /gallery/gallery-hair и т.д. показывают другой (локальный, захардкоженный) набор фотографий, чем /gallery — контент страницы не из CMS, вопреки правилу и JSDoc самого файла («renders the very same ported GalleryPageContent as /gallery»).
-
-**Рекомендация:** В GallerySingleLayout использовать тот же источник, что и на /gallery: const [{ page, isError }, cmsItems] = await Promise.all([getPageByUrl(handle), getCmsGalleryItems()]); затем items = cmsItems.length > 0 ? cmsItems : await getLocalGalleryItems().
-
-> Проверка: Правило nextjs-pages действительно содержит цитируемый пункт «DO NOT hardcode page content — ✅ CORRECT — content from CMS». Файл app/gallery/[handle]/page.tsx:46 подтверждён дословно: в Promise.all только getLocalGalleryItems(), getCmsGalleryItems не импортируется; JSDoc файла обещает «the very same ported GalleryPageContent as /gallery». При этом app/gallery/page.tsx:31–37 использует CMS-first с локальным фолбэком. Обработки в другом месте нет: GalleryPageContent не фетчит данные (рендерит проп items), другие обёртки не вмешиваются. Живая инспекция CMS (inspect-gallery.mjs) подтвердила: галерея наполнена (4 категории, 32 фото-страницы с gallery_photos и master_id), значит /gallery показывает CMS-фото, а /gallery/gallery-hair и т.п. — другой, захардкоженный локальный набор из public/. Git: [handle]-страница из 0.1.19, getCmsGalleryItems появился в 0.1.21–0.1.22 — миграция на CMS не дошла до категорийного роута (не намеренно). Severity major оправдана: роуты прегенерируются через generateStaticParams, имеют metadata и structured data, то есть публичны, хотя внутренних ссылок на них в UI не найдено. Рекомендация из находки корректна и повторяет паттерн главной страницы галереи.
-
-### 2.12. [СЕРЬЁЗНО] ✅ `components/layout/booking-page/useBookingSubmit.ts:37`
-
-*Измерение: `rule:attribute-values`*
-
-**Суть:** Интервал записи (type: 'timeInterval') строится в локальном времени клиента, а профиль форматирует его по UTC — забронированное время отображается со сдвигом на таймзону (в Дубае −4 часа)
-
-**Детали:** toInterval создаёт new Date(y, m, d, hh, mm) — локальное время браузера. При отправке createOrder значение сериализуется в UTC-ISO: слот «10:00», выбранный в Дубае (UTC+4), уходит как 06:00Z. OrderDateTime.tsx (стр. 26–30) по правилу форматирует из getUTCHours()/getUTCMinutes() — пользователь видит в профиле 06:00 вместо выбранных 10:00; та же смещённая дата/время видна и в заказах CMS. Обёртка value: [interval] (стр. 126) соответствует требуемой форме [[start, end]], но правило требует UTC-семантику слотов по всей цепочке.
-
-**Рекомендация:** Строить интервал в UTC: new Date(Date.UTC(y, m, d, hh, mm)) (и конец аналогично), тогда «10:00» уйдёт как 10:00Z и getUTCHours() в OrderDateTime вернёт то, что выбрал пользователь.
-
-> Проверка: Находка подтверждается по всем пунктам. (1) Правило attribute-values действительно требует UTC-семантику по всей цепочке timeInterval: фильтрация слотов по UTC, «Time formatting — from UTC hours!» (getUTCHours/getUTCMinutes) и отправка выбранного слота как value: [[startISO, endISO]] — цитата ruleQuote дословная. (2) Код по file:line точен: useBookingSubmit.ts:37 — `const start = new Date(y, m, d, hh, mm)` строит Date в локальной таймзоне браузера ('use client'-хук), конец интервала — от start.getTime(). Слоты берутся не из CMS-UTC-интервалов, а из хардкода TIMES ('09:00'…'20:00', constants.ts) — «настенное» время салона. При сериализации в createOrder Date уходит как UTC-ISO со сдвигом на офсет клиента: «10:00» в Дубае (UTC+4) → 06:00Z. (3) Чтение подтверждено: OrderDateTime.tsx стр. 26–30 форматирует именно через getUTCMonth/getUTCDate/getUTCHours/getUTCMinutes — пользователь увидит 06:00 и, при переходе через полночь UTC, смещённую дату. (4) Нормализации/фолбэка нигде нет: grep по Date.UTC/getTimezoneOffset/toISOString не находит обработки в booking/orders-цепочке; серверных обёрток для createOrder нет; форма value: [interval] = [[start,end]] соответствует правилу — расходится только таймзонная семантика. Оговорка, не меняющая вердикт: по контент-плану у формы `order` поля пока не заведены (attributes = {}), так что до заведения поля `interval` баг может не проявляться визуально, но код-нарушение правила реально и проявится для всех клиентов вне UTC (вся целевая аудитория — Дубай). Severity major адекватна: запись создаётся, но время в профиле и в CMS сдвинуто на −4 часа.
-
-### 2.13. [СЕРЬЁЗНО] ✅ `components/layout/booking-page/useBookingSubmit.ts:134`
+### 2.13. [СЕРЬЁЗНО] ✅ ✔️ИСПРАВЛЕНО (2026-07-18) `components/layout/booking-page/useBookingSubmit.ts:134`
 
 *Измерение: `rule:typescript`*
+
+> **✔️ Сделано (2026-07-18):** тело `createOrder` типизировано как `IOrderData`, локальный `formData` — как `IOrdersFormData[]` (импорт `import type { IOrderData, IOrdersFormData } from 'oneentry/dist/orders/ordersInterfaces'`), двойной каст `as unknown as Parameters<…>[1]` удалён. `npm run typecheck` — exit 0: конфликта SDK/API нет (как и показывала эмпирическая проверка находки), опечатка в имени поля теперь ловится компилятором.
 
 **Суть:** Тело createOrder приводится через 'as unknown as Parameters<...>[1]' в обход SDK-типа IOrderData, а форма formData (строка 107) вручную дублирует IOrdersFormData.
 
@@ -103,9 +84,11 @@
 
 > Проверка: Все утверждения находки подтверждены первоисточниками. (1) Правило "typescript" действительно содержит секцию «Do not duplicate SDK types as flat DTOs» (распространяется на любые SDK-сущности), требует использовать типы SDK и документировать комментарием конфликт SDK-типа с API. (2) useBookingSubmit.ts:107 — локальный тип `{ marker: string; type: string; value: unknown }[]` посимвольно дублирует экспортируемый IOrdersFormData (ordersInterfaces.d.ts:259-263). (3) Строки 134-136 — двойной каст `as unknown as Parameters<...>[1]` (= IOrderData), отключающий проверку всего тела заказа. (4) Эмпирическая проверка: временно убрал каст и прогнал `npx tsc --noEmit` — вывод байт-в-байт совпадает с бейслайном (только посторонние ошибки в сгенерированных .next/dev/types), т.е. тело без каста типизируется как IOrderData без единой ошибки — конфликта SDK/API нет, каст не нужен, документирующего комментария нет. (5) Соседний вызов того же метода (app/api/hooks/useCreateOrder.ts:93) передаёт тело без каста — обработки/обхода в другом месте не существует. Severity major адекватна: каст полностью гасит типобезопасность платёжного/букингового payload (опечатка в имени поля скомпилируется молча). Файл восстановлен в исходное состояние.
 
-### 2.17. [СЕРЬЁЗНО] 🟡 🔧 `components/shared/Image.tsx:1`
+### 2.17. [СЕРЬЁЗНО] ✅ ✔️ИСПРАВЛЕНО (2026-07-18) 🔧 `components/shared/Image.tsx:1`
 
 *Измерение: `rule:linting`*
+
+> **✔️ Сделано (2026-07-18):** к моменту правки `Image.tsx`, `GalleryGrid`, `SpecialistsGrid`, `PortfolioGallery` уже были на next/image. Домигрирован `SalonPhotoGallery` (плитки → `next/image fill`, локальные фото из `public/`; проверено визуально desktop 1280 + mobile 390 — герой, сетка миниатюр, свайп-карусель рендерятся корректно). Оставшиеся сырые `<img>` — только где технически необходимы, каждое подавление снабжено обоснованием: **баннер `home-cta-banner`** (аспект неизвестен → интринсик `h-auto`; next/image требует фикс. width/height или сайзенного `fill`-бокса → сырой `<img>` единственный способ показать без обрезки; file-level disable ужат до построчных), **`Avatar`** (опциональное фото произвольного хоста vs жёсткий `remotePatterns` `**.oneentry.cloud/cloud-static/**` — next/image бросил бы на неразрешённом хосте; отклонение от буквы находки, т.к. она не учла ограничение remotePatterns), **лайтбоксы `GalleryLightbox`/`SalonLightbox`/`PortfolioLightbox`** (stage-картинки в натуральных размерах, ограниченных вьюпортом; thumbs — микро-превью в overlay по требованию). `priority` для галереи намеренно НЕ ставится: дуальный CSS-рендер mobile/desktop даёт prod-видимое «preloaded but not used». `eslint --report-unused-disable-directives` — exit 0.
 
 **Суть:** Системный обход @next/next/no-img-element: 16 вхождений <img> в 11 файлах через eslint-disable
 
@@ -115,7 +98,9 @@
 
 > Проверка: Правило подтверждено дословно: rule "linting" содержит «@next/next/no-img-element — <img> is prohibited, use next/image». Факты проверены: (1) все 11 указанных file:line-якорей точны (Image.tsx:1, home-cta-banner:1 с <img> на 20/26, SalonPhotoGallery.tsx:3, SalonLightbox.tsx:3, GalleryLightbox.tsx:3, GalleryGrid.tsx:31, SpecialistsGrid.tsx:33, Avatar.tsx:31, PortfolioLightbox.tsx:127/164, PortfolioGallery.tsx:50); (2) next/image действительно используется ровно в 17 файлах; (3) next.config.ts images полностью настроен (remotePatterns **.oneentry.cloud, formats avif/webp); (4) компенсации нигде нет — обёртка components/shared/Image.tsx сама рендерит два сырых <img> (LQIP + основное) без srcset/оптимизации, баннеры home-cta-banner (public/images/baners/*.png) грузятся оба (mobile+desktop скрываются CSS) и даже без loading="lazy", сетки GalleryGrid/SpecialistsGrid — lazy, но без srcset/форматов; (5) в CLAUDE.md отклонение не задокументировано. Единственная неточность — счёт файлов: <img> встречается 16 раз в 10 файлах, а не в 11 (11 — это число eslint-disable-комментариев: 5 блочных + 6 построчных; PortfolioLightbox содержит два). Совпадения в utils.ts/README.md/loading.tsx — комментарии/доки, не элементы. Суть, severity и рекомендация верны.
 
-### 2.19. [НЕЗНАЧИТЕЛЬНО] ✅ `app/api/api/api.ts:113`
+### 2.19. [НЕЗНАЧИТЕЛЬНО] ✅ ИСПРАВЛЕНО (2026-07-18) `app/api/api/api.ts:113`
+
+> ✅ ИСПРАВЛЕНО (2026-07-18): `reDefine(refreshToken, providerMarker = 'email')` теперь кладёт `auth.providerMarker` в конфиг `defineOneEntry`; `onInit` (AuthContext) читает `localStorage.getItem('authProviderMarker')` и передаёт его в `reDefine`. Проактивный refresh теперь идёт на `/marker/{providerMarker}/users/refresh` того провайдера, которым создавалась сессия.
 
 *Измерение: `rule:tokens`*
 
@@ -127,19 +112,9 @@
 
 > Проверка: Все утверждения находки подтверждены первоисточниками. (1) Правило "tokens" действительно содержит цитируемый текст: proactive refresh строит URL /marker/{providerMarker}/users/refresh из auth.providerMarker (дефолт 'email'), маркер «mandatory to save at login». (2) SDK в node_modules это подтверждает: stateModule.js:39 — дефолт 'email' из config.auth.providerMarker; asyncModules.js:154–157 — URL refresh собирается из state.providerMarker. (3) reDefine (api.ts:106–118, конфиг auth на строке 113) передаёт только saveFunction+refreshToken, providerMarker отсутствует; clearSession — тоже (но ему и не нужен: без refreshToken проактивный refresh не срабатывает). (4) Грепом по проекту: 'authProviderMarker' пишется в AuthContext.tsx:172, удаляется в logOutUser.ts:31 — и НИГДЕ не читается; onInit вызывает reDefine(refresh) без маркера. Компенсации в utils.ts / app/api/server / провайдерах нет. (5) SignInForm.tsx:123 реально передаёт tab ('email'|'phone') как authProviderMarker — сценарий отказа при восстановлении phone-сессии корректен. Severity minor точна: баг латентный — фактически используется только email (auth-провайдеры в админке пусты, phone-логин и так шлёт email_reg/password_reg). Контраргумент «пример reDefine в самом правиле тоже не передаёт providerMarker» не опровергает: правило прямо объясняет, что маркер обязателен к сохранению именно потому, что из него строится refresh-URL — сохранение без чтения лишает требование смысла.
 
-### 2.20. [НЕЗНАЧИТЕЛЬНО] ✅ `app/api/api/api.ts:26`
+### 2.21. [НЕЗНАЧИТЕЛЬНО] ✅ ИСПРАВЛЕНО (2026-07-18) `app/api/server/attributes/getSingleAttributeByMarkerSet.ts:28`
 
-*Измерение: `rule:tokens`*
-
-**Суть:** saveFunction обращается к localStorage без guard `typeof window !== 'undefined'`
-
-**Детали:** Канонический saveFunction в правиле обёрнут в проверку `typeof window !== 'undefined'`. Модуль api.ts исполняется и на сервере (его импортируют все обёртки app/api/server/**), и инстанс defineOneEntry создаётся на сервере тоже. Сегодня saveFunction фактически вызывается только на клиенте (refresh срабатывает лишь при auth.refreshToken, который ставится только клиентским reDefine/syncTokens), поэтому видимого эффекта нет. Но любой будущий серверный код, вызвавший авторизованный метод после ротации токена, упадёт с ReferenceError: localStorage is not defined. Та же проблема у logOutUser.ts (строки 15, 30–31): файл лежит в app/api/server/, но использует localStorage — работает только потому, что вызывается исключительно из клиентских компонентов.
-
-**Рекомендация:** Добавить в saveFunction guard `if (typeof window === 'undefined') return;`. Для logOutUser — как минимум JSDoc-пометка client-only (или перенос из каталога server/), чтобы его случайно не вызвали из Server Action.
-
-> Проверка: Правило tokens дословно содержит канонический saveFunction с guard'ом `typeof window !== 'undefined'` (цитата в находке точна; clearTokens в правиле — тоже с guard'ом). В app/api/api/api.ts:26 localStorage.setItem вызывается без guard'а (есть только `if (!refreshToken)`); saveFunction передаётся в defineOneEntry в трёх местах без какой-либо обёртки — обработки в другом месте нет. Модуль реально исполняется на сервере (обёртки app/api/server/** импортируют getApi; ни в одном файле server/ нет 'use server' — это shared-модули), инстанс SDK создаётся при module eval и на сервере. Оценка «сегодня эффекта нет» верна: reDefine/syncTokens вызываются только из клиентского AuthContext.tsx, серверный singleton никогда не получает refreshToken, поэтому единственный триггер saveFunction (успешный /refresh) на сервере не срабатывает — риск латентный, что соответствует severity minor. Детали по logOutUser.ts тоже подтверждены: строки 15, 30–31 используют localStorage, файл в app/api/server/, импортируется только клиентскими LogoutMenuItem.tsx и SignOutButton.tsx. Контраргумент про rulePaths правила (app/actions/**, components/** не покрывают api.ts) не опровергает: это триггеры подгрузки правила, а канонический saveFunction в самом правиле определён в lib/oneentry.ts — аналоге этого файла.
-
-### 2.21. [НЕЗНАЧИТЕЛЬНО] ✅ `app/api/server/attributes/getSingleAttributeByMarkerSet.ts:28`
+> ✅ ИСПРАВЛЕНО (2026-07-18): SDK-вызов теперь передаёт аргументы в рантайм-порядке `(setMarker, attributeMarker)` — URL собирается правильно `/${setMarker}/attributes/${attributeMarker}`. Добавлен комментарий про перепутанный порядок в `.d.ts` SDK.
 
 *Измерение: `rule:attribute-sets`*
 
@@ -163,42 +138,6 @@
 
 > Проверка: Правило nextjs-pages действительно содержит раздел «DO NOT hardcode page content» (цитата в находке точная), и его paths покрывают app/**/page.tsx. Все file:line подтверждены дословно: contacts:119 «Get in Touch», contacts:98 «Always happy to see you», contacts:105–107 stats ['Daily','10:00–22:00']/['Dubai','UAE']; offers:70 «Back to Home», offers:101 «Good to know» + offerTermsData из components/data.js; booking:41 «Premium beauty experience»; services:46 «locations across Dubai»; salons/[handle]:62 SALON_CONTENT из локального salonContent.ts. Обработки в другом месте нет: getDictionary() вызывается, но ни одна из этих строк из словаря не читается — «Get in Touch» существует только как JSX-литерал, паттерн dict?.x?.value || '…' для них отсутствует. Утверждение находки, что h1 везде из CMS и нарушение касается только вторичных текстов, тоже подтверждено. Severity minor корректна: нарушение буквы правила реально, но это задокументированное переходное состояние проекта (components/data.js — «временные данные до переноса в CMS», salon_time заведён, но не читается), что находка честно отражает (deliberate: true).
 
-### 2.23. [НЕЗНАЧИТЕЛЬНО] ✅ `app/masters/page.tsx:46`
-
-*Измерение: `rule:attribute-values`*
-
-**Суть:** fileUrl предпочитает previewLink вместо downloadLink и обращается к link.default[1] без учёта defaultPreview и без защиты — риск LQIP вместо фото и TypeError при не-default пресете
-
-**Детали:** fileUrl (стр. 40–47, идентичный дубль в app/booking/booking-data.ts:36–43): const link = first?.previewLink ?? first?.downloadLink; return link.default[1] ?? link.default[0]. По правилу previewLink — объект пресетов {[preset]: [base64-LQIP, previewURL]}, не рендер-URL (downloadLink — единственный URL для отображения; собственная документация проекта в components/utils.ts:249–257 говорит то же: второй элемент — ~16px LQIP, «not a display-ready thumbnail»). Сейчас у master_image админов previewLink отсутствует (проверено, admin id 13) — работает ветка downloadLink, видимого эффекта нет. Но при появлении previewLink фото мастеров деградируют до 16px-превью, а при пресете, отличном от 'default', link.default[1] бросит TypeError (обращение к undefined). Третья копия хелпера в components/layout/home/masters-feed/index.tsx:31 защищена (link.default?.[1]), что подчёркивает рассинхрон.
-
-**Рекомендация:** Возвращать first?.downloadLink как рендер-URL (previewLink использовать только для blurDataURL через пресет img?.defaultPreview || 'default' с optional chaining), либо переиспользовать getGalleryImageUrls из components/utils.ts. Синхронизировать все три копии fileUrl.
-
-> Проверка: Находка подтверждена по всем пунктам. (1) Правило attribute-values действительно требует заявленного: previewLink — объект пресетов {[preset]: [base64-LQIP, previewURL]}, пресет надо брать из img?.defaultPreview || 'default', а в связанном правиле performance-images (процитировано в футере attribute-values) — «downloadLink goes into <Image src>»; previewLink предназначен только для blurDataURL/превью. Цитата в находке точна. (2) Код по file:line подтверждается: app/masters/page.tsx:43 — `first?.previewLink ?? first?.downloadLink` (previewLink предпочтён), строка 46 — `link.default[1] ?? link.default[0]` без учёта defaultPreview и без optional chaining на `.default` → TypeError при пресете, отличном от 'default' (это серверный компонент — упадёт вся страница /masters). Идентичный незащищённый дубль в app/booking/booking-data.ts:36–43; третья копия в components/layout/home/masters-feed/index.tsx:31 защищена (`link.default?.[1]`) — рассинхрон реален. (3) Собственная документация проекта (components/utils.ts:249–256 и getGalleryImageUrls:274–285) прямо говорит: второй элемент пары — ~16px LQIP, «the full downloadLink is the only rendering URL» — т.е. в проекте уже есть правильный нормализатор, который эти два хелпера не используют. (4) Фактическое состояние CMS перепроверено живым скриптом (.claude/temp/inspect-master-image-preview.mjs): у всех 32 мастеров master_image содержит только строковый downloadLink, previewLink отсутствует (0/32) — сейчас работает строковая ветка, видимого эффекта нет, баг латентный. Обработки/фолбэка в другом месте нет: fileUrl — терминальная точка извлечения URL, дальше photo идёт как готовая строка. Severity minor адекватна латентному дефекту с потенциальным TypeError/деградацией фото при появлении previewLink у новых загрузок (utils.ts фиксирует, что новые загрузки в проекте его уже имеют).
-
-### 2.24. [НЕЗНАЧИТЕЛЬНО] ✅ `app/page.tsx:139`
-
-*Измерение: `rule:nextjs-pages`*
-
-**Суть:** При ошибке загрузки страницы 'home' главная рендерит отладочную строку «isError» вместо notFound() или дизайн-фолбэка.
-
-**Детали:** IndexPageLayout: if (isError || !page) { return <>isError</>; } — посетитель при недоступной CMS увидит на главной голый текст «isError». Правило предписывает паттерн isError → notFound(); осознанное отклонение проекта разрешает тихую деградацию (фолбэк/пустая секция) вместо notFound только для отсутствующих блоков/списков — но здесь отсутствует сама страница, и рендер отладочной строки не является ни notFound(), ни допустимым фолбэком. Для сравнения: root layout (app/layout.tsx:137–162) в аналогичной ситуации рендерит осмысленный экран «Site temporarily unavailable».
-
-**Рекомендация:** Заменить <>isError</> на notFound() либо на осмысленный фолбэк-экран в духе root layout (например, «Something went wrong»).
-
-> Проверка: Правило nextjs-pages действительно предписывает `if (isError(page)) notFound();` (цитата точная). В app/page.tsx:138-140 при `isError || !page` рендерится отладочная строка `<>isError</>` — строка 139 подтверждена. Обёртка getPageByUrl (app/api/server/pages/getPageByUrl.ts) только нормализует ответ, фолбэка не добавляет. Root layout (app/layout.tsx:137-162) перекрывает лишь сценарий падения собственного запроса меню («Site temporarily unavailable»); если меню отдаётся, а страница 'home' отсутствует/скрыта, посетитель реально увидит голый текст «isError» — сценарий достижим. Осознанное отклонение проекта (деградация вместо notFound) распространяется только на блоки/списки, не на саму страницу, и отладочная строка не является допустимым фолбэком. Severity minor адекватна: только ошибочный путь, но на главной странице.
-
-### 2.25. [НЕЗНАЧИТЕЛЬНО] ✅ `app/profile/page.tsx:16`
-
-*Измерение: `rule:nextjs-pages`*
-
-**Суть:** Три независимых фетча профиля (getDictionary, getPageByUrl('profile'), getAdminsInfo) выполняются последовательно вместо Promise.all.
-
-**Детали:** Строки 16–23: await getDictionary() → await getPageByUrl('profile') → await getAdminsInfo(...). Все три запроса независимы, но сериализованы — три последовательных round-trip'а на каждый рендер /profile. Все остальные страницы проекта (home, services, contacts, masters, offers, booking и т.д.) корректно используют Promise.all — profile единственная страница, выбивающаяся из паттерна правила.
-
-**Рекомендация:** Объединить: const [dictData, pageResult, adminsResult] = await Promise.all([getDictionary(), getPageByUrl('profile'), getAdminsInfo({ body: [], offset: 0, limit: 100 })]);
-
-> Проверка: Правило nextjs-pages действительно предписывает Promise.all для независимых запросов («Parallel requests — faster» + ссылка на performance.md «Promise.all for independent fetches») — цитата в находке точна. Файл app/profile/page.tsx, строки 16–23: три последовательных await (getDictionary → getPageByUrl('profile') → getAdminsInfo), между ними нет зависимостей по данным и нет условных ранних выходов — сериализация ничем не оправдана. Обёртки getPageByUrl/getAdminsInfo — тонкие, без кэша; единственная поправка — getDictionary идёт через in-process Map-кэш (getCachedData), поэтому «три round-trip'а на каждый рендер» — лёгкое преувеличение (на прогретом процессе словарь — cache hit, остаются 2 последовательных round-trip'а; на холодном старте/dev — все 3). Это не меняет сути и severity. Утверждение «все остальные страницы используют Promise.all» подтверждено grep'ом (home, booking, contacts, offers, gallery, services, masters, salons/[handle], [handle] и др.) — profile единственное исключение. Severity minor адекватна, рекомендация применима (ServerProvider('dict', …) спокойно оборачивает первый элемент деструктуризации).
-
 ### 2.26. [НЕЗНАЧИТЕЛЬНО] ✅ 🔧 `app/reviews/page.tsx:32`
 
 *Измерение: `rule:nextjs-pages`*
@@ -211,7 +150,9 @@
 
 > Проверка: Правило nextjs-pages действительно содержит секцию «DO NOT hardcode page content» (пример: хардкод <h1> запрещён, нужен page.localizeInfos?.title) — цитата точна. Код подтверждается полностью: app/reviews/page.tsx:32 рендерит тело только из <ReviewsPageContent/>, getPageByUrl('reviews') используется лишь в generateMetadata (строка 47); заголовок «Reviews» захардкожен в components/layout/reviews-page/index.tsx:135; отзывы берутся из локального мока components/layout/reviews-page/data.ts (REVIEWS/REVIEW_SALONS/MASTER_SALON/MASTER_CAT). Никакой обработки/фолбэка на CMS в другом месте нет (grep по app/ — ноль CMS-источников для тела /reviews). Состояние осознанное и задокументированное (JSDoc страницы, шапка data.ts, CLAUDE.md: reviews_carousel пуст), поэтому deliberate:true и severity minor корректны. Формальное нарушение правила реально — CONFIRMED.
 
-### 2.27. [НЕЗНАЧИТЕЛЬНО] ✅ `app/services/[handle]/page.tsx:75`
+### 2.27. [НЕЗНАЧИТЕЛЬНО] ✅ ИСПРАВЛЕНО (2026-07-18) `app/services/[handle]/page.tsx:75`
+
+> ✅ ИСПРАВЛЕНО (2026-07-18): имя провайдера в JSON-LD `Service` теперь берётся из словаря — `(dict?.site_name?.value as string) || 'Thalia Beauty Studio'` (тот же источник, что и Organization в root layout). Расхождение Service↔Organization устранено.
 
 *Измерение: `rule:nextjs-pages`*
 
@@ -223,7 +164,9 @@
 
 > Проверка: Находка подтверждается по всем пунктам. (1) Правило nextjs-pages действительно содержит секцию «DO NOT hardcode page content» — цитата точна. (2) app/services/[handle]/page.tsx:75 — точное совпадение: structuredData.provider.name = 'OneEntry Beauty' захардкожен безусловно (не фолбэк — обращения к словарю нет вообще), при этом dict уже загружается на этой странице в том же Promise.all (строка 38). (3) Утверждение про layout верно: app/layout.tsx:71–74 (getSiteName) читает dict?.site_name?.value с фолбэком 'Thalia Beauty Studio', и Organization JSON-LD в layout использует это имя — расхождение Service↔Organization реально. (4) Нормализации в другом месте нет: grep показывает, что в app/page.tsx 'OneEntry Beauty' используется как фолбэк после чтения CMS, а здесь — единственный безусловный хардкод. (5) Severity minor адекватна (SEO-несоответствие, не функциональный баг), рекомендация корректна и дешёва в реализации.
 
-### 2.28. [НЕЗНАЧИТЕЛЬНО] ✅ `app/services/catalog-data.ts:27`
+### 2.28. [НЕЗНАЧИТЕЛЬНО] ✅ ИСПРАВЛЕНО (2026-07-18) `app/services/catalog-data.ts:27`
+
+> ✅ ИСПРАВЛЕНО (2026-07-18): ad-hoc `Record<string, { value?: unknown }>` заменён на `const attrs: IAttributeValues = product.attributeValues ?? {}` (импорт из `oneentry/dist/base/utils`). Остальной код (`attrs.price?.value`, typeof-проверки) не изменился, `tsc` 0.
 
 *Измерение: `rule:typescript`*
 
@@ -235,7 +178,9 @@
 
 > Проверка: 1) Правило "typescript" (раздел «The rule applies to any SDK entity») дословно содержит этот ❌-пример: `const attrs = (product.attributeValues || {}) as Record<string, { value?: unknown; type?: string }>` с ✅-заменой на `IAttributeValues` из `oneentry/dist/base/utils` — ruleQuote находки точен. 2) Код d:\OneEntry\oneentry-next-beauty-v2\app\services\catalog-data.ts:27–30 делает ровно это: `const attrs = (product.attributeValues ?? {}) as Record<string, { value?: unknown } | undefined>`. 3) SDK: `IProductsEntity.attributeValues: IAttributeValues` (productsInterfaces.d.ts:505), `IAttributeValues = Record<string, IAttributeValue>`, `IAttributeValue.value: unknown` (base/utils.d.ts:212–226) — рекомендация находки компилируется без изменений остального кода: при `noUncheckedIndexedAccess` `attrs.price` даёт `IAttributeValue | undefined`, `attrs.price?.value` — `unknown`, typeof-проверки работают. 4) Исключение правила «narrowing unknown at the access point» не применимо: ретипизируется весь Record (дубль SDK-типа), а не одно значение. Нормализации/обёрток в другом месте нет. Severity minor корректна — функционального бага нет, чисто нарушение типизации.
 
-### 2.29. [НЕЗНАЧИТЕЛЬНО] ✅ `components/forms/ResetPasswordForm.tsx:17`
+### 2.29. [НЕЗНАЧИТЕЛЬНО] ✅ ИСПРАВЛЕНО (2026-07-18) `components/forms/ResetPasswordForm.tsx:17`
+
+> ✅ ИСПРАВЛЕНО (2026-07-18): форма грузит `reg` через `useGetFormByMarkerQuery`, берёт поле `isPassword` и поле-подтверждение (`isConfirmPasswordField`) из CMS и рендерит их динамически; markers/labels/validators теперь из админки. `changePassword` вызывается со значениями по этим маркерам. Синтезированные поля остались только как фолбэк, когда CMS-форма недоступна (деградация без ошибок).
 
 *Измерение: `rule:auth-provider`*
 
@@ -247,7 +192,9 @@
 
 > Проверка: Правило auth-provider реально содержит дословно процитированный запрет («NEVER hardcode <input name="password_reg">. Always load fields via getFormByMarker») в разделе MANDATORY PATTERN. Файл components/forms/ResetPasswordForm.tsx:17-34 действительно хардкодит массив resetPasswordFormFields с маркерами password_reg/password_confirm и рендерит их через FormInput — строка 17 точна. Обработки/фолбэка в другом месте нет: это единственная форма в проекте, не использующая useGetFormByMarkerQuery (SignIn/SignUp/ForgotPassword/UserForm/ContactUs — все грузят поля из CMS). Захардкоженный password_confirm даже не совпадает с реальным CMS-полем repeat_password, а лейблы захардкожены по-английски вместо localizeInfos из CMS. 7-й аргумент changePassword (repeatPassword) — легитимный опциональный параметр SDK, факт передачи из захардкоженного поля указан верно. Единственная мелкая неточность в details: при переименовании именно password_reg в админке сами поля пароля не сломаются (они локально самосогласованы через Redux), но сценарий тихой поломки реален через захардкоженные Redux-ключи email_reg/otp_code (строки 44/62), которые заполняет CMS-загружаемая ForgotPasswordForm — тот же класс проблемы. Severity minor корректна: форма сейчас работает, нарушение — соответствие обязательному паттерну правила и потеря локализации/валидаторов CMS.
 
-### 2.30. [НЕЗНАЧИТЕЛЬНО] ✅ `components/forms/SignInForm.tsx:173`
+### 2.30. [НЕЗНАЧИТЕЛЬНО] ✅ ИСПРАВЛЕНО (2026-07-18) `components/forms/SignInForm.tsx:173`
+
+> ✅ ИСПРАВЛЕНО (2026-07-18): поля signin отбираются по флагам `isLogin === true || isPassword === true` (не по имени маркера), рендерятся из `credentialFields`. `authData` строится из этих же полей и фильтрует пустые значения (`.filter((e) => e.value !== '')`) — пустая строка больше не уйдёт в API (400). Гард требует заполненности всех credential-полей.
 
 *Измерение: `rule:auth-provider`*
 
@@ -259,43 +206,9 @@
 
 > Проверка: Правило auth-provider дословно требует отбирать поля для signin по флагам isLogin/isPassword ("filter by flags, NOT by marker name") и фильтровать пустые значения в authData ("only { marker, value }, filter out empty"; "empty string → 400"). Код нарушает оба пункта: SignInForm.tsx:172-175 фильтрует по строковым маркерам `${tab}_reg`/'password_reg'; строки 107-112 собирают authData из захардкоженных email_reg/password_reg без фильтра пустых. Подтверждено, что FormInput.tsx (строки 32, 35, 61-70) при монтировании кладёт в Redux value:'' с хардкодом valid:true, поэтому guard на строке 94 пустые значения не отсекает — спасает только HTML required (requiredValidator у email_reg/password_reg в CMS есть). Компенсации в другом месте нет: getFormAttributes лишь нормализует массив/объект, флаговая маршрутизация есть только в SignUpForm. Детали про CMS тоже верны (email_reg isLogin, password_reg isPassword, phone_reg без флагов; провайдер phone не включён — активны google+email), что подтверждает severity minor: видимого эффекта на вкладке email нет, а вкладка phone нерабочая независимо от этого. file:line точны.
 
-### 2.31. [НЕЗНАЧИТЕЛЬНО] ✅ `components/forms/SignUpForm.tsx:99`
+### 2.34. [НЕЗНАЧИТЕЛЬНО] 🟡 ✅ ИСПРАВЛЕНО (2026-07-18) `components/forms/SignUpForm.tsx:247`
 
-*Измерение: `rule:auth-provider`*
-
-**Суть:** Видимость полей регистрации не учитывает isSignUpRequired — override только по isSignUp
-
-**Детали:** isPureNotification вычисляется как isNotif && !isLoginCredential(f) && f.isSignUp !== true — по правилу должно быть ещё && f.isSignUpRequired !== true, а видимость — !isPureNotification(f) || f.isSignUp === true || f.isSignUpRequired === true. Тип FormField (строки 33–40) вообще не объявляет isSignUpRequired, и грепом флаг в кодовой базе не встречается. Сейчас в форме reg нет notification-поля с isSignUpRequired: true (email_notification_reg имеет оба флага false и корректно скрыто), поэтому видимого эффекта нет, но обязательное при регистрации notification-поле (пример из правила — phone_reg с isNotificationPhonePush + isSignUpRequired) будет ошибочно скрыто.
-
-**Рекомендация:** Добавить isSignUpRequired в тип FormField и в условие: поле показывается, если оно не pure-notification ЛИБО f.isSignUp === true ЛИБО f.isSignUpRequired === true; в isPureNotification добавить f.isSignUpRequired !== true.
-
-> Проверка: Правило auth-provider (секция «Field visibility by modes» и эталонный isPureNotification) дословно требует учитывать isSignUpRequired: видимость = !isPureNotification(f) || f.isSignUp === true || f.isSignUpRequired === true, а в isPureNotification — f.isSignUpRequired !== true; ruleQuote подтверждена дословно. Код SignUpForm.tsx:99 содержит ровно `isNotif && !isLoginCredential(f) && f.isSignUp !== true;` — условия по isSignUpRequired нет; тип FormField (строки 33–40) флаг не объявляет, базовый IAttributes — тоже (только isSignUp). Греп по проекту: isSignUpRequired нигде в коде не обрабатывается (только упоминание в ONEENTRY-CONTENT-PLAN.md); getFormAttributes — чистый нормализатор, видимость решается только в visibleFields этой формы, фолбэков нет. Живая проверка CMS (inspect-reg-form.mjs): ни одно поле reg не сочетает notification-флаг с isSignUpRequired=1 (email_notification_reg: notifEmail=1, signUpReq=0 — корректно скрыто), т.е. эффект латентный — что находка сама указывает. Severity minor и file:line точны.
-
-### 2.32. [НЕЗНАЧИТЕЛЬНО] ✅ `components/forms/SignUpForm.tsx:33`
-
-*Измерение: `rule:typescript`*
-
-**Суть:** Локальный тип FormField = IAttributes & { isLogin?, isSignUp?, isPassword?, isNotification*? } вручную дублирует флаги, уже типизированные в SDK-типе IFormAttribute.
-
-**Детали:** SDK-тип IFormAttribute ('oneentry/dist/forms/formsInterfaces') уже содержит все эти поля как обязательные boolean (isLogin, isSignUp, isPassword, isNotificationEmail, isNotificationPhonePush, isNotificationPhoneSMS) плюс initialValue и типизированные additionalFields. Локальный тип объявляет их как 'boolean | null' — типы молча расходятся с SDK; при добавлении/переименовании флага в SDK локальная копия не заметит изменения. Это ровно тот случай, о котором правило говорит: соблазн написать trimmed-subset — сигнал импортировать SDK-тип.
-
-**Рекомендация:** Удалить локальный FormField, импортировать 'import type { IFormAttribute } from "oneentry/dist/forms/formsInterfaces"' и использовать getFormAttributes<IFormAttribute>(data); хелперы isPasswordField/isLoginCredential/isConfirmPasswordField перевести на IFormAttribute.
-
-> Проверка: Правило typescript подтверждено первоисточником: таблица типов предписывает IFormAttribute для полей формы (form.attributes[]) — «has flags isLogin, isSignUp, isNotification*, initialValue, and typed additionalFields» (ruleQuote совпадает дословно), а раздел «Do not duplicate SDK types as flat DTOs» прямо запрещает локальные trimmed-типы: «Import IFoo». file:line подтверждён — SignUpForm.tsx:33 объявляет FormField = IAttributes & {6 флагов как boolean | null} и использует его в getFormAttributes<FormField>(data). SDK-тип IFormAttribute (node_modules/oneentry/dist/forms/formsInterfaces.d.ts) содержит все 6 флагов как обязательные boolean + initialValue + типизированные additionalFields, и именно он — фактический тип данных (useGetFormByMarkerQuery → IFormsEntity.attributes: IFormAttribute[]). Обработки/нормализации типов в другом месте нет: getFormAttributes (components/utils.ts) — лишь каст массива, IFormAttribute в проекте не импортируется нигде. Исключение правила («форма truly diverges from SDK») не применимо: локальный тип не добавляет ни одного фронтового флага — все 6 есть в SDK. Мелкие нюансы не меняют сути: базовый IAttributes сам уже содержит 5 из 6 флагов (boolean?), так что «| null» в пересечении для них фактически стирается, дублирование двойное; фикс чуть сложнее рекомендации (FormInput типизирован через IAttributes, additionalFields/listTitles/validators у IFormAttribute структурно другие — прямой spread потребует правки FormInput). Severity minor точна: чисто типовая/поддерживаемостная проблема без runtime-бага.
-
-### 2.33. [НЕЗНАЧИТЕЛЬНО] ✅ `components/forms/SignUpForm.tsx:44`
-
-*Измерение: `rule:linting`*
-
-**Суть:** Единственные живые предупреждения ESLint в области аудита: jsdoc/require-param и jsdoc/require-returns
-
-**Детали:** npx eslint app components даёт 2 warning: JSDoc-блок на строках 44–49 (документация isConfirmPasswordField, строки 50–51) не содержит @param "f" и @returns. Правило требует прохождения ESLint «без ошибок и предупреждений» — это единственное место в app/ и components/, где линтер сейчас не чист.
-
-**Рекомендация:** Дополнить JSDoc-блок: @param {FormField} f — проверяемое поле формы; @returns {boolean} — признак confirm-password-поля (по образцу соседних хелперов isPasswordField/isLoginCredential выше).
-
-> Проверка: Правило "linting" дословно требует прохождения ESLint «without errors, warnings, and without the need for auto-formatting» — цитата в находке точна. Запуск `npx eslint app components` воспроизводит ровно 2 warning (0 errors), оба на components/forms/SignUpForm.tsx:44:1 — jsdoc/require-param (Missing @param "f") и jsdoc/require-returns; это единственные предупреждения в области аудита. JSDoc-блок строк 44–49 документирует isConfirmPasswordField (50–51) без @param/@returns. Подавления нет: eslint-disable на строке 1 гасит только jsdoc/no-undefined-types. Severity minor адекватна (стилистическое нарушение, 2 warning без влияния на рантайм). Единственная микронеточность — в recommendation образец указан неверно (у соседних isPasswordField/isLoginCredential своих @param/@returns нет; правильный образец — JSDoc компонента SignUpForm ниже), но на суть, file:line и severity это не влияет.
-
-### 2.34. [НЕЗНАЧИТЕЛЬНО] 🟡 `components/forms/SignUpForm.tsx:247`
+> ✅ ИСПРАВЛЕНО (2026-07-18): подавление `eslint-disable react-hooks/exhaustive-deps` у `onSignUp` убрано, недостающие зависимости добавлены в массив (`login, setOpen, setComponent, setAction`). `eslint` 0. (Флаг-хелперы вынесены в `components/forms/fieldFlags/*`, поэтому их стабильность ссылок больше не требует упоминания в deps.)
 
 *Измерение: `rule:linting`*
 
@@ -307,7 +220,9 @@
 
 > Проверка: Суть подтверждена: правило linting требует react-hooks/exhaustive-deps (активно в eslint.config.mjs через recommended-latest), а в SignUpForm.tsx:247 подавление стоит без комментария-обоснования; useCallback onSignUp (deps [fields, attributes, canSubmit]) реально использует login (стр. 224), setOpen (230/233), setComponent (234), setAction (235), не входящие в deps. Компенсации в другом месте нет; образец правильного оформления в AuthContext.tsx:231–233 существует. Однако деталь находки неточна: 'router' среди пропущенных зависимостей указан ошибочно — в SignUpForm.tsx нет ни router, ни useRouter (grep 0 совпадений). Severity minor корректна.
 
-### 2.35. [НЕЗНАЧИТЕЛЬНО] ✅ `components/forms/UserForm.tsx:57`
+### 2.35. [НЕЗНАЧИТЕЛЬНО] ✅ ИСПРАВЛЕНО (2026-07-18) `components/forms/UserForm.tsx:57`
+
+> ✅ ИСПРАВЛЕНО (2026-07-18): хвост доделан. Поля роутятся по флагам (общие хелперы `components/forms/fieldFlags/*`): `isLoginCredential` (isLogin/isPassword) → только `authData`; `isConfirmPasswordField` (repeat_password) не отправляется вовсе; остальное → `formData`. И `formData`, и `authData` фильтруют пустые значения (`value(marker)` тримит и отбрасывает `''`), паттерн `|| ''` устранён. Соответствует правилу auth-provider (login-креды только в authData) и зеркалит рабочий `SignUpForm`. `tsc`/`eslint` 0.
 
 *Измерение: `rule:auth-provider`*
 
@@ -333,19 +248,9 @@
 
 Единственная натяжка — правило формулирует требования для AuthProvider.signUp/auth, а не Users.updateUser, но находка это честно раскрывает («смежный API с той же схемой тела authData/formData/notificationData»), и схема тела действительно идентична. Severity minor точна и даже консервативна (фактическое поведение Users API на пустой authData не проверялось — мутационный тест сломал бы тестового юзера; в сохранённом formData тестового юзера утечки пароля нет, т.к. он регистрировался через корректный SignUpForm). Строка, описание, цитата правила и рекомендация — всё точно.
 
-### 2.37. [НЕЗНАЧИТЕЛЬНО] ✅ `components/layout/header/nav/user-menu/LogoutMenuItem.tsx:23`
+### 2.43. [НЕЗНАЧИТЕЛЬНО] ✅ ИСПРАВЛЕНО (2026-07-18) `components/layout/profile-page/components/getUserDisplayName.ts:34`
 
-*Измерение: `rule:auth-provider`*
-
-**Суть:** logout вызывается с захардкоженным маркером 'email' вместо сохранённого при логине localStorage['authProviderMarker']
-
-**Детали:** logOutUser({ marker: 'email' }) здесь и в components/layout/profile-page/components/SignOutButton.tsx:31. AuthContext.login() сохраняет authProviderMarker в localStorage (app/store/providers/AuthContext.tsx:172), logOutUser его удаляет (app/api/server/users/logOutUser.ts:31), но НИКТО его не читает — ключ мёртвый. В админке уже активен второй провайдер 'google' (проверено getAuthProviders): если появится OAuth-вход, серверный logout такого пользователя уйдёт с неверным маркером.
-
-**Рекомендация:** В обоих компонентах брать маркер из localStorage.getItem('authProviderMarker') с фолбэком 'email' и передавать его в logOutUser.
-
-> Проверка: Правило auth-provider действительно требует заявленного: после auth() — localStorage.setItem('authProviderMarker', marker), а эталонный logout в правиле снабжён именно процитированным комментарием «marker is taken from localStorage (saved during login)». Код нарушает: LogoutMenuItem.tsx:23 и SignOutButton.tsx:31 вызывают logOutUser({ marker: 'email' }) с захардкоженным маркером; AuthContext.login() (AuthContext.tsx:172) сохраняет authProviderMarker, logOutUser.ts:31 удаляет, но grep по проекту и node_modules/oneentry подтверждает — ключ никто не читает (write-only, SDK его тоже не использует). Нормализации/фолбэка в других местах нет: logOutUser передаёт marker напрямую в AuthProvider.logout(). Живая проверка getAuthProviders (inspect-auth-providers.mjs) подтвердила второй активный провайдер {"identifier":"google","type":"oauth","isActive":true}. Дополнительно SignInForm.tsx:113/123 передаёт динамический tab ('email'|'phone') — даже логин не гарантирует 'email'. Severity minor корректна: сейчас в UI есть только email-вход, поломка проявится лишь при добавлении OAuth. file:line, детали и рекомендация точны.
-
-### 2.43. [НЕЗНАЧИТЕЛЬНО] ✅ `components/layout/profile-page/components/getUserDisplayName.ts:34`
+> ✅ ИСПРАВЛЕНО (2026-07-18): ad-hoc `NameField` удалён; импортирован `FormDataType` (`oneentry/dist/forms-data/formsDataInterfaces`) + type guard `hasMarker(field): field is FormDataType & { marker: string; value: unknown }`. Итерация по `user.formData.filter(hasMarker)`, каста нет. `tsc` 0.
 
 *Измерение: `rule:typescript`*
 
@@ -357,7 +262,9 @@
 
 > Проверка: Все утверждения находки подтверждены первоисточниками. (1) Правило "typescript" (MCP oneentry get-rule) дословно содержит цитируемый ❌-пример: «Retyping user.formData into ad-hoc pair — duplicates FormDataType options» с кастом `user.formData as Array<{ marker: string; value: unknown }>`, и ✅-фикс: импорт `FormDataType` из `oneentry/dist/forms-data/formsDataInterfaces` + type guard `hasMarker` (вариант union `Record<string, unknown>` без marker). (2) Файл d:\OneEntry\oneentry-next-beauty-v2\components\layout\profile-page\components\getUserDisplayName.ts: строка 4 — `type NameField = { marker?: string; value?: unknown }` (комментарий сам признаёт «subset of the SDK's FormDataType union»), строка 34 — каст `(user.formData as NameField[])`. Указание file:line точное. (3) SDK установленной версии действительно экспортирует `FormDataType` (node_modules/oneentry/dist/forms-data/formsDataInterfaces.d.ts:305,597) и типизирует `IUserEntity.formData: FormDataType[]` (usersInterfaces.d.ts:249) — рекомендация реализуема как есть. (4) Обработки в другом месте нет: единственный вызывающий — ProfileCard.tsx:36, передаёт `user` из AuthContext напрямую; в components/utils.ts нормализации formData нет (getFormAttributes — про Forms.attributes, не про user.formData). Исключение правила «narrowing unknown at the access point» не применимо: formData типизирован SDK как FormDataType[], а не unknown, т.е. NameField — именно дубль SDK-типа. Смягчающие нюансы (тип не экспортируется, поля optional, код рантайм-безопасен) не выводят из-под запрета — правило прямо называет этот паттерн антипаттерном независимо от soundness. Severity minor корректна: рантайм-бага нет, чисто нарушение правила типизации.
 
-### 2.44. [НЕЗНАЧИТЕЛЬНО] ✅ `components/layout/profile-page/components/order-card/components/OrderProductTitle.tsx:3`
+### 2.44. [НЕЗНАЧИТЕЛЬНО] ✅ ИСПРАВЛЕНО (2026-07-18) `components/layout/profile-page/components/order-card/components/OrderProductTitle.tsx:3`
+
+> ✅ ИСПРАВЛЕНО (2026-07-18): локальные `interface Order/OrderProduct` удалены; проп типизирован как `order: IOrderByMarkerEntity` (импорт из `oneentry/dist/orders/ordersInterfaces`), как в соседних компонентах order-card. `order.products[0]?.title` работает (SDK `IOrderProducts.title: string`). `tsc` 0.
 
 *Измерение: `rule:typescript`*
 
@@ -368,18 +275,6 @@
 **Рекомендация:** Удалить локальные Order/OrderProduct и типизировать проп как 'order: IOrderByMarkerEntity' (import type из 'oneentry/dist/orders/ordersInterfaces'), как в соседних OrderDateTime/OrderButtonsGroup.
 
 > Проверка: Все утверждения находки подтверждаются. (1) Правило "typescript" действительно содержит дословную цитату «if you feel tempted to write `type FooField = { …trimmed subset of IFoo… }` — stop. Import `IFoo`» и явно называет IOrderByMarkerEntity в списке SDK-типов, которые нельзя дублировать «плоскими DTO» («The rule applies to any SDK entity»). (2) Файл OrderProductTitle.tsx, строки 3–11: локальные `interface OrderProduct { title: string }` и `interface Order { products: OrderProduct[] }` с комментариями «Add other product properties as needed» — точный обрезанный структурный дубль. (3) Вызывающий order-card/index.tsx строка 136 передаёт `order`, типизированный как IOrderByMarkerEntity (строка 58) — совпадает с описанием. (4) Все шесть соседних компонентов (OrderDateTime, OrderButtonsGroup, CancelOrderButton, SaveOrderButton, RepeatOrder, EditOrderButton) импортируют IOrderByMarkerEntity из 'oneentry/dist/orders/ordersInterfaces' — OrderProductTitle единственное исключение. (5) Рекомендация технически корректна: SDK-тип IOrderProducts (поле products у IOrderByMarkerEntity) содержит `title: string`, так что `order.products[0]?.title` работает без локального типа. Исключение правила («local type justified only if truly diverges from SDK») не применимо — здесь чистое подмножество без дивергенции. Обработки/нормализации в другом месте нет и быть не может — это чисто типизация пропа. Severity minor адекватна: нарушение стилевое/поддерживаемость, без runtime-бага.
-
-### 2.45. [НЕЗНАЧИТЕЛЬНО] ✅ `components/utils.ts:20`
-
-*Измерение: `rule:typescript`*
-
-**Суть:** getFormAttributes типизирует поля формы дефолтом T = IAttributes вместо IFormAttribute — все потребители форм получают неверный (обеднённый) тип поля.
-
-**Детали:** Правило требует для элементов form.attributes[] использовать IFormAttribute. IAttributes (из 'oneentry/dist/base/utils') не содержит isPassword и initialValue, а additionalFields типизирует как Record<string, IAttributes> вместо Record<string, IFormAttributeAdditionalField>. Из-за этого дефолта UserForm.tsx:52, ContactUsForm.tsx:42, SignInForm.tsx:76, ForgotPasswordForm.tsx:92 и ContactFormCard.tsx:97 работают с полями формы под неточным типом, а SignUpForm был вынужден изобрести локальный FormField (см. отдельную находку). Сама нормализация массив/объект — документированное осознанное поведение и не оспаривается; вопрос только в типе элемента.
-
-**Рекомендация:** Сменить дефолт дженерика на 'T = IFormAttribute' (импорт из 'oneentry/dist/forms/formsInterfaces') — сигнатура и все вызовы останутся совместимыми, а поля форм получат полный SDK-тип.
-
-> Проверка: Правило "typescript" действительно требует IFormAttribute для элементов form.attributes[] (цитата дословная; таблица типов и ✅-пример в разделе про DTO кастуют к IFormAttribute[]; в SDK IFormsEntity.attributes: IFormAttribute[]). Код components/utils.ts:20 подтверждён: дефолт дженерика T = IAttributes. Разница типов проверена по .d.ts SDK: IAttributes не содержит isPassword, isSignUpRequired, initialValue; additionalFields — Record<string, IAttributes> вместо Record<string, IFormAttributeAdditionalField>. Все перечисленные потребители (UserForm.tsx:52, ContactUsForm.tsx:42, SignInForm.tsx:76, ForgotPasswordForm.tsx:92, ContactFormCard.tsx:97) вызывают getFormAttributes без явного дженерика и получают обеднённый тип; IFormAttribute не импортируется нигде в проекте (grep — 0 совпадений), компенсации в обёртках/провайдерах нет. SignUpForm.tsx:33 подтверждает практический вред: локальный FormField = IAttributes & { isPassword?... } изобретён именно из-за отсутствия isPassword. Severity minor адекватна (типовая деградация без рантайм-бага), строка и описание точны.
 
 ### 2.46. [ИНФО] ✅ `app/api/api/api.ts:58`
 
@@ -392,18 +287,6 @@
 **Рекомендация:** Оставить с текущей документацией; при обновлениях SDK проверять, не появился ли публичный метод проверки сессии (например, isAuth/getAccessToken), и мигрировать на него.
 
 > Проверка: Факты подтверждены полностью. (1) file:line точны: каст `as unknown as { state?: { accessToken?: string } }` — app/api/api/api.ts:58, JSDoc-обоснование на строках 50-56. (2) Публичный тип SDK действительно не даёт доступа к полю: в authProviderApi.d.ts/asyncModules.d.ts оно объявлено как `protected state: StateModule` — извне без каста недоступно; при этом форма каста совпадает с реальным типом (StateModule.accessToken: string | undefined). (3) Публичной альтернативы нет: grep по всем .d.ts SDK не находит getAccessToken/isAuth/hasSession (getActiveSessionsByMarker — сетевой вызов, не локальная проверка), так что рекомендация «оставить и следить за обновлениями SDK» корректна. (4) Риск описан верно: двойной каст скроет переименование `state` на уровне типов, функция молча вернёт false (вызывающий AuthContext.onInit:144 просто сделает лишний reDefine — мягкая деградация, что подтверждает severity info). (5) Правило typescript запрещает `any` и DTO-дубли — здесь ни того, ни другого; цитируемое исключение («document this explicitly») в правиле буквально описывает обратный случай (тип требует поле, API его отвергает), так что привязка — интерпретация принципа «задокументированного отклонения», но находка и не заявляет нарушения (severity info, deliberate false), и её суть, строка и severity точны. Обработки/нормализации в другом месте нет — находка не устарела.
-
-### 2.47. [ИНФО] 🟡 `app/layout.tsx:134`
-
-*Измерение: `rule:nextjs-pages`*
-
-**Суть:** В корневом layout два независимых фетча (getDictionary и getMenuByMarker('main')) выполняются последовательно вместо Promise.all.
-
-**Детали:** Строка 134: await getDictionary(); строка 135: await getMenuByMarker('main'). Запросы независимы друг от друга, но сериализованы — root layout выполняется для каждого роута, т.е. каждый SSR-рендер получает лишний последовательный сетевой round-trip к OneEntry. Правило nextjs-pages в разделе «Getting page content» предписывает объединять независимые запросы в Promise.all.
-
-**Рекомендация:** const [dictData, menuResult] = await Promise.all([getDictionary(), getMenuByMarker('main')]); затем ServerProvider('dict', dictData).
-
-> Проверка: Правило nextjs-pages действительно предписывает Promise.all для независимых запросов (раздел «Getting page content»: «// Parallel requests — faster», плюс ссылка на performance.md «Promise.all for independent fetches») — цитата подтверждена. Код по file:line совпадает: app/layout.tsx:134-135 — два последовательных await независимых вызовов, ServerProvider принимает готовое значение, рефакторинг применим. НО заявленный импакт завышен: getDictionary идёт через getCachedData (app/api/utils/getCachedData.tsx) — module-scope Map без TTL, т.е. сетевой запрос словаря выполняется максимум один раз на процесс; на прогретом сервере await getDictionary() — мгновенный cache hit, и «лишний последовательный round-trip на каждый SSR-рендер» не возникает. Реальная цена — только холодный первый запрос процесса (dev-рестарт, serverless cold start), причём JSDoc в том же файле (строки 78-79) прямо документирует кэширование. Нарушение паттерна формально есть, поэтому не REFUTED, но детали неточны и severity следует понизить до info.
 
 ### 2.48. [ИНФО] ✅ `app/store/providers/AuthContext.tsx:171`
 
@@ -453,7 +336,7 @@
 
 > Проверка: Опровергнуть не удалось, все утверждения находки подтверждены первоисточниками. (1) Правило "typescript" содержит точную цитату "Do not declare unused variables and imports" и дополнительно раздел о запрете дублирования SDK-типов, где ILocalizeInfo прямо указан в таблице импортов из 'oneentry/dist/base/utils'. (2) file:line верны: declare type LocalizeInfo = { content; menuTitle; title } в app/types/global.d.ts:4-8. (3) Grep по всему проекту (вне node_modules/.next/static-html): единственное вхождение голого LocalizeInfo — само объявление; gallery-feed использует SDK-тип ILocalizeInfo напрямую, минуя ручной. (4) Форма действительно расходится: SDK ILocalizeInfo = { title, plainValue?, htmlValue?, htmlContent?, menuTitle? }, поля content нет. (5) Severity info адекватен (нет рантайм-эффекта), рекомендация корректно учитывает конвенцию проекта «ничего не удалять без явной просьбы».
 
-### 2.52. [ИНФО] ✅ `components/hooks/getImageSize.ts:64`
+### 2.52. [ИНФО] ✅ ИСПРАВЛЕНО (2026-07-18, файл удалён) `components/hooks/getImageSize.ts:64`
 
 *Измерение: `rule:linting`*
 
@@ -494,13 +377,14 @@
 Верификация завершена: **191/191** проверено адверсариально (✅ 129 подтверждено, 🟡 28 уточнено, ⛔ 8 опровергнуто, ✅ ✔️ 26 уже исправлено в текущем дереве).
 Метки: ✅ подтверждено · 🟡 суть верна, детали/severity уточнены · ⛔ опровергнуто · ✅ ✔️ИСПРАВЛЕНО — было верно на момент аудита, в текущем дереве уже устранено · 🔧 осознанное отклонение (disposition «оставить как есть» не меняется).
 
-### `rule:forms` — осталось: 2
+### `rule:forms` — осталось: 1
 
 - **[НЕЗНАЧИТЕЛЬНО]** ✅ 🟡 ЧАСТИЧНО ИСПРАВЛЕНО (сверено 2026-07-16) `components/forms/SignUpForm.tsx:84` — Поля формы не сортируются по position в SignUpForm, UserForm и ForgotPasswordForm.
   - *Сделано:* `SignUpForm.tsx:99` и `UserForm.tsx:56` используют `sortArrayByPosition(getFormAttributes(...))`. Остался только `ForgotPasswordForm.tsx:107` — там `filter` оставляет **единственное** поле `email_reg`, так что сортировать нечего и эффект строго нулевой; закрыть при следующей правке файла.
   - *Рек.:* Добавить .sort((a, b) => a.position - b.position) (или sortArrayByPosition из components/utils.ts) после getFormAttributes во всех трёх формах.
   > Проверка: Правило forms.md явно требует сортировку полей: «attributes: IFormAttribute[] — form fields for rendering. Sort by position». В текущем рабочем дереве SignUpForm.tsx:84 берёт getFormAttributes<FormField>(data) без .sort, дальше только filter → рендер в порядке API; UserForm.tsx:56 и :148 — то же самое; ForgotPasswordForm.tsx:92 тоже без сортировки (хотя там filter оставляет единственное поле email_reg, так что эффект нулевой). Компенсации в другом месте нет: getFormAttributes (components/utils.ts:20-25) возвращает shallow copy без сортировки (её JSDoc-пример прямо предлагает сортировать вызывающему), RTK-эндпоинт getFormByMarker (app/api/api/RTKApi.ts:269) и серверная обёртка app/api/server/forms/getFormByMarker.ts отдают ответ SDK как есть. Соседние SignInForm.tsx:80 и ContactUsForm.tsx:42 сортируют — конвенция проекта подтверждает требование. Незакоммиченные правки 14–15 июля затронули только SignInForm/VerificationForm/FormInput, три названные формы не исправлены. Severity minor адекватна: видимого эффекта сейчас нет (у формы reg в CMS attributes вообще пустой объект, а API обычно и так отдаёт поля по position), но нарушение правила реально.
-- **[НЕЗНАЧИТЕЛЬНО]** ✅ `components/layout/booking-page/useBookingSubmit.ts:120` — В formData заказа entity-ссылка на страницу салона передаётся строкой, типы полей захардкожены, timeInterval — Date-объекты вместо ISO-строк.
+- **[НЕЗНАЧИТЕЛЬНО]** ✅ ✔️ИСПРАВЛЕНО (2026-07-18) `components/layout/booking-page/useBookingSubmit.ts:120` — В formData заказа entity-ссылка на страницу салона передаётся строкой, типы полей захардкожены, timeInterval — Date-объекты вместо ISO-строк.
+  - *Сделано (сверка 2026-07-18):* салон теперь `value: [salonId]` числом (`salonId = Number(sel.salon?.id)`), interval — `value: [[start.toISOString(), end.toISOString()]]` ISO-строками (тот же коммит, что закрыл 2.12 UTC). Осталось только захардкоженные `type`-значения ('list'/'entity'/'timeInterval') — брать из attributes формы `order` физически неоткуда, пока у неё нет полей; закрыть при наполнении формы.
   - *Рек.:* Передавать value: [salonId] числом; interval — [[start.toISOString(), end.toISOString()]]; по мере наполнения формы order брать типы из её attributes.
   > Проверка: Правило forms требует: для entity-ссылок на страницы — числовые id («Pages — numeric ids: value: [25, 32, 24]»), тип поля брать из attributes формы («Take type from form attributes — do not guess!»), а timeInterval слать как [[startISO, endISO]] (ISO-строки). Код useBookingSubmit.ts нарушает все три пункта: строка 120 — value: [salonId.toString()] (строка вместо числа, причём salonId уже приведён к Number и обратно в строку), строки 111/119/125 — типы 'list'/'entity'/'timeInterval' захардкожены, строка 126 — value: [interval], где interval это [Date, Date] из toInterval (строка 34). Нормализации в другом месте нет: хук вызывает getApi().Orders.createOrder напрямую, серверной обёртки нет, а каст `as unknown as Parameters<...>[1]` (строки 134–136) глушит проверку типов. Файл не тронут правками 14–15 июля (git status/log чисты по нему). Смягчающие детали, подтверждающие именно minor: SDK сериализует тело через JSON.stringify (asyncModules.js:246), так что Date-объекты уходят на провод корректными ISO-строками; у формы order в CMS attributes = {} (полей нет), поэтому брать типы из attributes сейчас физически не из чего и видимого эффекта у нарушений нет — рекомендация находки это честно оговаривает («по мере наполнения формы order»). Severity minor адекватна.
 
@@ -557,7 +441,8 @@
 - **[НЕЗНАЧИТЕЛЬНО]** 🟡 `components/layout/booking-page/useBookingSubmit.ts:129` — Маркер storage 'orders', formIdentifier 'order' и маркеры полей формы ('master', 'order_salon', 'interval') захардкожены — рецепт предписывает брать formIdentifier из getAllOrdersStorage(), а поля из getFormByMarker
   - *Рек.:* Минимум — вынести маркеры в константы одного модуля; лучше — получать formIdentifier из Orders.getAllOrdersStorage() (или getOrdersStorageByMarker('orders'), эндпоинт уже есть в RTKApi:318) и сверять отправляемые маркеры полей с getFormByMarker(formIdentifier), когда форма 'order' будет наполнена полями в админке.
   > Проверка: Рецепт create-checkout прямо требует (Step 1, Step 5 п.2): «formIdentifier is taken from storage, NOT hardcoded», а поля формы — из getFormByMarker(formIdentifier). Код в useBookingSubmit.ts:129 хардкодит createOrder('orders', {formIdentifier:'order', paymentAccountIdentifier:'cash', ...}) и вручную собирает formData с маркерами 'master'/'order_salon'/'interval'. Факты находки точны: маркеры захардкожены, рецепт предписывает иное. Однако живой запрос к CMS (getAllOrdersStorage под тест-юзером + getFormByMarker('order')) показал: единственное хранилище имеет identifier='orders', но formIdentifier=null и paymentAccountIdentifiers=[]; форма 'order' (id=1) существует, но её attributes — пустой объект {} (0 полей). То есть буквальное следование рецепту сломало бы создание заказа (null formIdentifier), а деривация полей из формы вернула бы пустой список. Значит хардкод — это осознанный работающий обходной путь, а не латентный баг: сейчас приложение создаёт заказ корректно. Эффекта для пользователя нет, и рецептный «правильный» путь неприменим, поэтому severity 'minor' (нарушение без эффекта) завышен — это чистая рекомендация/улучшение уровня info (в лучшем случае вынести маркеры в константы одного модуля; сверку с getFormByMarker имеет смысл делать только когда форму 'order' наполнят полями). Суть находки верна, но severity неточна — PARTIAL с понижением до info. **Уточнение:** Маркеры 'orders'/'order' и поля 'master'/'order_salon'/'interval' действительно захардкожены, и рецепт create-checkout это не рекомендует. Но живая проверка CMS показала, что рецептный динамический путь СЕЙЧАС нежизнеспособен: storage.formIdentifier = null, а форма 'order' не имеет полей (attributes = {}). Взятие formIdentifier из getAllOrdersStorage() дало бы null и сломало заказ, а выборка полей из getFormByMarker('order') не дала бы ни одного маркера. Хардкод здесь — функционально верный и единственный работающий вариант; это скорее рекомендация по вынесению маркеров в константы (info), чем нарушение с эффектом. (severity → ИНФО)
-- **[НЕЗНАЧИТЕЛЬНО]** 🟡 `components/layout/booking-page/components/DateTimeStep.tsx:169` — Слоты времени — статический моковый массив TIMES, доступность слотов из timeInterval-атрибута формы не читается
+- **[НЕЗНАЧИТЕЛЬНО]** 🟡 ЧАСТИЧНО ИСПРАВЛЕНО (2026-07-18) `components/layout/booking-page/components/DateTimeStep.tsx:169` — Слоты времени — статический моковый массив TIMES, доступность слотов из timeInterval-атрибута формы не читается
+  - *Сделано (сверка 2026-07-18):* слоты теперь читаются из расписания сущностей — `master_schedule`/`salon_time` (timeInterval) разворачиваются через `daySlots` в `useBookingWizard`; `DateTimeStep` рендерит `hasSchedule ? slots : TIMES`, т.е. `TIMES` — только фолбэк при отсутствии расписания. Из формы `order` слоты по-прежнему не читаются (у формы нет полей), но функционально доступность уже schedule-driven.
   - *Рек.:* При наполнении формы 'order' атрибутом interval (timeInterval) читать слоты через getFormByMarker → `localizeInfos.intervals[*]` и разворачивать в конкретные `[start,end]` пары новым экспортом SDK **`expandTimeIntervals(schedule, { from, to })`** (oneentry ≥ 1.0.156), оставив TIMES как фолбэк на случай пустой формы. ⚠️ **Обновлено 2026-07-17:** прежний путь `…intervals[*].timeIntervals` больше не работает — в SDK 1.0.156 авто-поле `timeIntervals` **удалено** (breaking): оно материализовало год слотов в каждом ответе и раздувало кэш. Теперь слоты резолвятся по требованию: для атрибута сущности (`master_schedule`/`salon_time`) — `expandAttributeTimeIntervals(attr, { from, to })`, для schedule формы — `expandTimeIntervals`. Есть type guard `isTimeIntervalAttribute`. Наш код удалённое поле не использовал — обновление ничего не сломало (tsc 0).
   > Проверка: Скилл create-checkout (Step 3) действительно описывает, что слоты timeInterval берутся из формы: localizeInfos.intervals[*].timeIntervals, а не из хардкода. По коду DateTimeStep.tsx:169 слоты рендерятся из статического TIMES (constants.ts), busyTimes всегда []; нигде (ни в useBookingSubmit, ни в index.tsx, ни в utils) слоты из формы не читаются — фактическая часть находки верна. Однако живой запрос inspect-forms.mjs показал, что форма 'order' имеет attributes={} (полей нет вообще), т.е. timeInterval-атрибута в CMS не существует — читать доступность неоткуда, а сама рекомендация помечена условной ('при наполнении формы order атрибутом interval'). Submit при этом корректно собирает и отправляет поле interval (timeInterval) в createOrder, так что заказ создаётся. Видимого эффекта нет и не может быть, пока форму не наполнят, а фолбэк tileDisabled в скилле при пустых интервалах и так ничего не блокирует — это делает находку рекомендацией/улучшением (info), а не нарушением с эффектом (minor). Строка 169 указана точно. **Уточнение:** DateTimeStep рендерит статический массив TIMES вместо слотов из timeInterval-атрибута формы; но у формы 'order' в CMS сейчас НЕТ ни одного поля (live: attributes={}), timeInterval-атрибута нет — читать нечего. Это forward-looking улучшение (когда форму наполнят), а не текущий дефект → severity info. (severity → ИНФО)
 >

@@ -1,5 +1,11 @@
 'use client';
 
+/*
+  Fullscreen lightbox viewer: the stage image renders at its natural dimensions
+  bounded by the viewport (`max-h-[85vh] max-w-[85vw]`), which next/image can't
+  do without a fixed width/height or a sized `fill` box — so a raw <img> is the
+  right tool and the rule is disabled for this single-image viewer.
+*/
 /* eslint-disable @next/next/no-img-element */
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { JSX } from 'react';

@@ -16,6 +16,9 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { FormProps } from '@/app/types/global';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
+import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
+import { isLoginCredential } from '@/components/forms/fieldFlags/isLoginCredential';
+import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
 import { getFormAttributes, sortArrayByPosition } from '@/components/utils';
 
 import ErrorMessage from './inputs/ErrorMessage';
@@ -32,39 +35,6 @@ import SubmitButton from './inputs/FormSubmitButton';
  * duplicating the SDK.
  */
 type FormField = IFormAttribute;
-
-/**
- * Form-field flag helpers.
- *
- * Fields are routed into authData / formData / notificationData by the flags
- * configured in the OneEntry admin panel, NOT by hardcoded markers. Hoisted
- * to module scope so their reference is stable across renders (so hooks that
- * depend on them don't need to track them in their dependency arrays).
- */
-/**
- * isPasswordField — whether the CMS flagged the field as a password input.
- * @param   {FormField} f - The form field to check
- * @returns {boolean}     - True when `isPassword` is set on the field
- */
-const isPasswordField = (f: FormField): boolean => f.isPassword === true;
-/**
- * isLoginCredential — whether the field is a login or password credential and
- * therefore belongs in `authData` rather than `formData`.
- * @param   {FormField} f - The form field to check
- * @returns {boolean}     - True for login or password fields
- */
-const isLoginCredential = (f: FormField): boolean =>
-  f.isLogin === true || isPasswordField(f);
-/**
- * UI-only "repeat password" confirmation field: rendered masked by FormInput
- * (marker contains "password") but not flagged `isPassword` in the CMS. There
- * is no dedicated CMS flag for confirm fields, so the marker heuristic is the
- * only signal. Must never be submitted — it only guards against typos.
- * @param   {FormField} f - The form field to check
- * @returns {boolean}     - Whether the field is a confirmation password field
- */
-const isConfirmPasswordField = (f: FormField): boolean =>
-  !isPasswordField(f) && f.marker.toLowerCase().includes('password');
 
 /**
  * SignUp form component for user registration
@@ -266,8 +236,7 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
         setLoading(false);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [fields, attributes, canSubmit],
+    [fields, attributes, canSubmit, login, setOpen, setComponent, setAction],
   );
 
   /* Render the complete sign up form UI */

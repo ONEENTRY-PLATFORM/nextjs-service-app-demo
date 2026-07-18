@@ -160,7 +160,15 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       return;
     }
     if (!hasActiveSession()) {
-      await reDefine(refresh);
+      /**
+       * Restore with the provider the session was created with, so the SDK's
+       * proactive refresh hits `/marker/{providerMarker}/users/refresh` for the
+       * right provider. Falls back to `email` for sessions saved before the
+       * marker was persisted.
+       */
+      const providerMarker =
+        localStorage.getItem('authProviderMarker') || 'email';
+      await reDefine(refresh, providerMarker);
     }
     await checkToken();
   }, [checkToken]);

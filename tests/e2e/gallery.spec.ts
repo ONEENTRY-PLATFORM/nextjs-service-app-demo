@@ -25,4 +25,26 @@ test.describe('Gallery lightbox', () => {
     await page.keyboard.press('Escape');
     await expect(lightbox).toHaveCount(0);
   });
+
+  test('category deep-link renders CMS photos, not the local fallback', async ({
+    page,
+  }) => {
+    // Regression for MISMATCH-LOG 2.2: /gallery/[handle] used to render only the
+    // local hardcoded library (getLocalGalleryItems), unlike /gallery which is
+    // CMS-first. Now it shares the source, so the photos are served from the
+    // OneEntry CDN (oneentry.cloud) rather than a local /images path.
+    await page.goto('/gallery/gallery-hair');
+
+    const item = page
+      .getByTestId('gallery-page')
+      .getByTestId('gallery-item')
+      .first();
+    await expect(item).toBeAttached({ timeout: 30_000 });
+
+    const src = await item.locator('img').first().getAttribute('src');
+    // next/image proxies through /_next/image?url=<encoded CMS url> — the CMS
+    // host survives URL-encoding (dots are not escaped); the local fallback
+    // would instead carry an encoded `/images/…` path.
+    expect(src ?? '').toContain('oneentry.cloud');
+  });
 });

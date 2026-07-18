@@ -122,7 +122,11 @@ const PortfolioLightbox = ({
             boxShadow: '0 0 80px #ed21f122, 0 32px 64px rgba(0,0,0,0.7)',
           }}
         >
-          {/* Full-size portfolio image */}
+          {/*
+            Stage image at natural dimensions bounded by the viewport
+            (`max-h-[70vh]`); next/image needs a fixed width/height or a sized
+            `fill` box, so a raw <img> is the right tool for the lightbox.
+          */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={current.img}
@@ -160,6 +164,7 @@ const PortfolioLightbox = ({
                 transform: i === index ? 'scale(1.1)' : 'scale(1)',
               }}
             >
+              {/* On-demand overlay micro-thumbnail — raw <img>, see the stage note above. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={item.thumb} alt="" className="size-full object-cover" />
             </button>

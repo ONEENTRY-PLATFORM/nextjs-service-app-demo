@@ -3,28 +3,34 @@
 
 import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { FormEvent, JSX } from 'react';
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 
-import { getApi, isError as isSdkError } from '@/app/api';
+import {
+  getApi,
+  isError as isSdkError,
+  useGetFormByMarkerQuery,
+} from '@/app/api';
 import { useAppSelector } from '@/app/store/hooks';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { FormProps } from '@/app/types/global';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
+import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
+import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
+import { getFormAttributes, sortArrayByPosition } from '@/components/utils';
 
 import ErrorMessage from './inputs/ErrorMessage';
 import FormInput from './inputs/FormInput';
 import FormSubmitButton from './inputs/FormSubmitButton';
 
 /**
- * Fields of the reset-password step.
+ * Fallback fields for the reset-password step.
  *
- * Synthesized locally rather than read from the CMS: the reset step is reached
- * with only an OTP, so there is no user form to pull attributes from. They are
- * still shaped as real `IFormAttribute`s so `FormInput` treats them exactly like
- * CMS-authored fields — `isPassword` is what masks the input, and marking both
- * fields with it means the confirm field no longer relies on FormInput's
- * marker-name fallback.
+ * The step normally renders the password fields pulled from the CMS `reg` form
+ * (see the component below), so its markers/labels/validators stay in sync with
+ * the admin panel. These synthesized fields are only used when that form is
+ * unavailable — they are shaped as real `IFormAttribute`s so `FormInput` treats
+ * them exactly like CMS-authored fields (`isPassword` masks the input).
  *
  * `isSignUpRequired` is the flag FormInput actually reads. These fields used to
  * carry a plain `required: true`, which FormInput never looks at, so both inputs
@@ -71,8 +77,8 @@ export const resetPasswordFormFields = [
  */
 const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
   /** Get form field values from Redux store */
-  const { email_reg, password_reg, password_confirm, otp_code } =
-    useAppSelector((state) => state.formFieldsReducer.fields);
+  const fields = useAppSelector((state) => state.formFieldsReducer.fields);
+  const { email_reg, otp_code } = fields;
   /** Access drawer context to control component display and actions */
   const { setComponent, setAction } = useContext(OpenDrawerContext);
   /** State for managing loading status during form submission */
@@ -82,6 +88,28 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
   /** Extract localized text values from dictionary */
   const { new_password_desc, change_password_text } = dict;
 
+  /** Load the registration form so the password fields come from the CMS. */
+  const { data } = useGetFormByMarkerQuery({ marker: 'reg' });
+
+  /**
+   * The two password inputs of the reset step: the CMS password field
+   * (`isPassword`) and its confirmation field (`isConfirmPasswordField`), taken
+   * from the `reg` form so markers/labels/validators match the admin panel.
+   * Falls back to the synthesized fields when the CMS form is unavailable.
+   */
+  const passwordFields = useMemo(() => {
+    const attrs = sortArrayByPosition(getFormAttributes<IFormAttribute>(data));
+    const passwordAttr = attrs.find(isPasswordField);
+    const confirmAttr = attrs.find(isConfirmPasswordField);
+    return passwordAttr && confirmAttr
+      ? [passwordAttr, confirmAttr]
+      : resetPasswordFormFields;
+  }, [data]);
+
+  /** Markers of the new-password and confirm-password inputs. */
+  const passwordMarker = passwordFields[0]?.marker ?? 'password_reg';
+  const confirmMarker = passwordFields[1]?.marker ?? 'password_confirm';
+
   /**
    * Change password with API AuthProvider
    * @param {FormEvent<HTMLFormElement>} e FormEvent
@@ -89,7 +117,9 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
   const onResetSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     /** Validate required fields before submission */
-    if (!email_reg || !otp_code || !password_reg || !password_confirm) {
+    const newPassword = fields[passwordMarker]?.value;
+    const confirmPassword = fields[confirmMarker]?.value;
+    if (!email_reg || !otp_code || !newPassword || !confirmPassword) {
       return;
     }
     /** Set loading state to true during submission */
@@ -108,8 +138,8 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
         EVENT_PASSWORD_RESET,
         1,
         otp_code.value.toString(),
-        password_reg.value,
-        password_confirm.value,
+        newPassword,
+        confirmPassword,
       );
 
       if (isSdkError(result)) {
@@ -148,8 +178,8 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
         </div>
         {/** Render reset password form fields */}
         <div className="relative mb-8 box-border flex shrink-0 flex-col gap-4">
-          {resetPasswordFormFields.map((field, index) => (
-            <FormInput key={index} index={index} {...field} />
+          {passwordFields.map((field, index) => (
+            <FormInput key={field.marker} index={index} {...field} />
           ))}
         </div>
         {/** Display submit button for password reset */}

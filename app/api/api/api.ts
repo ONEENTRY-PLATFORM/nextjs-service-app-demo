@@ -99,11 +99,21 @@ export function clearSession(): void {
  *
  * This function is used to update API config with a refresh token.
  * It's typically called when a user session needs to be restored or refreshed.
- * @param   {string}        refreshToken - Refresh token from localStorage to reinitialize the API
- * @returns {Promise<void>}              Promise that resolves when the API is redefined
+ *
+ * The `providerMarker` must match the provider the session was created with:
+ * the SDK builds the proactive refresh URL as
+ * `/marker/{providerMarker}/users/refresh`, so restoring a non-`email` session
+ * (e.g. `phone`) with the default marker would refresh against the wrong
+ * provider and log the user out. Defaults to `'email'` (the SDK default).
+ * @param   {string}        refreshToken   - Refresh token from localStorage to reinitialize the API
+ * @param   {string}        providerMarker - Auth provider marker the session was created with
+ * @returns {Promise<void>}                Promise that resolves when the API is redefined
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
  */
-export async function reDefine(refreshToken: string): Promise<void> {
+export async function reDefine(
+  refreshToken: string,
+  providerMarker = 'email',
+): Promise<void> {
   if (!refreshToken) {
     return;
   }
@@ -113,6 +123,7 @@ export async function reDefine(refreshToken: string): Promise<void> {
     auth: {
       saveFunction,
       refreshToken,
+      providerMarker,
     },
   });
 }

@@ -73,6 +73,14 @@ export default async function ServicePageLayout({
       ? `${services.length} services · ${salons.length || 3} locations across Dubai`
       : undefined;
 
+  /**
+   * Provider name for the structured data — the site name from the CMS
+   * dictionary (same source as the Organization JSON-LD in the root layout),
+   * so Service and Organization markup agree. Falls back to the brand name.
+   */
+  const siteName =
+    (dict?.site_name?.value as string | undefined) || 'Thalia Beauty Studio';
+
   /** Generate structured data for service */
   const structuredData = {
     '@context': 'https://schema.org',
@@ -81,7 +89,7 @@ export default async function ServicePageLayout({
     description: getPagePlainContent(page) || page.localizeInfos?.title,
     provider: {
       '@type': 'Organization',
-      name: 'OneEntry Beauty',
+      name: siteName,
     },
     url: `${getSiteUrl()}/services/${handle}`,
   };

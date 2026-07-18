@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
@@ -68,17 +67,21 @@ const HomeCtaBanner = ({
       <div className="mx-auto w-full max-w-7xl px-3 md:px-8">
         <div className="relative w-full overflow-hidden rounded-3xl">
           {/*
-            Plain <img> with intrinsic sizing on purpose: the banner is whatever
-            the CMS holds, so its aspect ratio is not known up-front and cannot
-            be pinned down for next/image's fill layout.
+            Intrinsic-size <img> on purpose: the banner artwork is whatever the
+            CMS holds, so its aspect ratio is unknown up-front. next/image needs
+            either a fixed width/height or a sized `fill` box — neither renders an
+            image at its natural ratio with `h-auto`, so a raw <img> is the only
+            way to show it un-cropped. Two crops (mobile/desktop) toggled by CSS.
           */}
           {/* Mobile banner */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={mobile}
             alt={alt}
             className="h-auto w-full object-cover md:hidden"
           />
           {/* Desktop banner */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={desktop || mobile}
             alt={alt}

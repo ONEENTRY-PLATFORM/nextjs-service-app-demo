@@ -1,6 +1,10 @@
 'use client';
 
 import { useTransitionRouter } from 'next-transition-router';
+import type {
+  IOrderData,
+  IOrdersFormData,
+} from 'oneentry/dist/orders/ordersInterfaces';
 import { useContext, useState } from 'react';
 
 import { getApi, isError } from '@/app/api';
@@ -154,7 +158,7 @@ export const useBookingSubmit = ({
        * form listing and the set disagree; the set wins. Verify against a real
        * POST, not the listing, whenever this changes.
        */
-      const formData: { marker: string; type: string; value: unknown }[] = [];
+      const formData: IOrdersFormData[] = [];
       if (sel.master?.adminId) {
         formData.push({
           marker: 'master',
@@ -178,16 +182,15 @@ export const useBookingSubmit = ({
         value: [[start.toISOString(), end.toISOString()]],
       });
 
+      const body: IOrderData = {
+        formIdentifier: ORDERS_FORM_IDENTIFIER,
+        paymentAccountIdentifier: paymentAccount,
+        products: [{ productId: sel.service.productId, quantity: 1 }],
+        formData,
+      };
       const createdOrder = await getApi().Orders.createOrder(
         ORDERS_STORAGE_MARKER,
-        {
-          formIdentifier: ORDERS_FORM_IDENTIFIER,
-          paymentAccountIdentifier: paymentAccount,
-          products: [{ productId: sel.service.productId, quantity: 1 }],
-          formData,
-        } as unknown as Parameters<
-          ReturnType<typeof getApi>['Orders']['createOrder']
-        >[1],
+        body,
       );
 
       if (isError(createdOrder)) {

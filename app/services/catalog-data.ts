@@ -1,3 +1,4 @@
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
@@ -63,10 +64,7 @@ const toServiceItem = (
   category: IPagesEntity,
   subcategoryUrl: string | null,
 ): ServiceItem => {
-  const attrs = (product.attributeValues ?? {}) as Record<
-    string,
-    { value?: unknown } | undefined
-  >;
+  const attrs: IAttributeValues = product.attributeValues ?? {};
 
   /** Price: the top-level product price, or the `price` attribute */
   const attrPrice = attrs.price?.value;

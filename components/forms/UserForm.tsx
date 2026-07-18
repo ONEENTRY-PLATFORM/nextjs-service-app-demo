@@ -15,6 +15,8 @@ import {
 import { useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import type { FormProps } from '@/app/types/global';
+import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
+import { isLoginCredential } from '@/components/forms/fieldFlags/isLoginCredential';
 import { getFormAttributes, sortArrayByPosition } from '@/components/utils';
 
 import AuthError from '../pages/AuthError';
@@ -61,22 +63,38 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
   const fields = useAppSelector((state) => state.formFieldsReducer.fields);
 
   /** Form fields sorted by position for a deterministic order. */
-  const sortedFields = sortArrayByPosition(getFormAttributes(data));
+  const sortedFields = sortArrayByPosition(
+    getFormAttributes<IFormAttribute>(data),
+  );
 
   /**
-   * Prepare profile form data for update. Password fields are excluded here —
-   * they belong in `authData` — and the value type comes from the CMS field
-   * (`field.type`) rather than a hardcoded 'string'.
+   * Current trimmed value of a form field from the Redux store.
+   * @param   {string} marker - Field marker
+   * @returns {string}        Trimmed value, or an empty string when unset
+   */
+  const value = (marker: string): string =>
+    fields[marker as keyof typeof fields]?.value?.toString().trim() || '';
+
+  /**
+   * Prepare profile form data for update. Fields are routed by their CMS flags,
+   * NOT by marker name (mirrors SignUpForm):
+   * - login/password credentials  → `authData` ONLY (never `formData`)
+   * - repeat-password confirm      → not submitted at all
+   * - notification-email field     → carried in `notificationData.email`
+   * - everything else              → `formData`, empty values filtered out
+   * (FormInput seeds Redux with `''`, which the API would reject as a 400).
    */
   const formData = sortedFields
     .filter(
-      (field: IFormAttribute) =>
+      (field) =>
         field.marker !== 'email_notification_reg' &&
-        !field.marker.includes('password'),
+        !isLoginCredential(field) &&
+        !isConfirmPasswordField(field),
     )
-    .map((field: IFormAttribute) => ({
+    .filter((field) => value(field.marker))
+    .map((field) => ({
       marker: field.marker,
-      value: fields[field.marker as keyof typeof fields]?.value || '',
+      value: value(field.marker),
       type: field.type || 'string',
     })) as IAuthFormData[];
 
@@ -100,18 +118,19 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
       setLoading(true);
 
       /**
-       * Only send a password when the user actually typed a new one, so an
-       * empty field does not overwrite the existing password.
+       * Login credentials go into `authData` (routed by CMS flags, not marker
+       * names). Empty values are filtered out, so an untouched password field
+       * is simply omitted — meaning "keep the current password" — instead of
+       * overwriting it with an empty string (which the API rejects as a 400).
        */
-      const authData: IAuthFormData[] = fields.password_reg?.value
-        ? [
-            {
-              marker: 'password_reg',
-              value: fields.password_reg.value,
-              type: 'string',
-            },
-          ]
-        : [];
+      const authData: IAuthFormData[] = sortedFields
+        .filter(isLoginCredential)
+        .filter((field) => value(field.marker))
+        .map((field) => ({
+          marker: field.marker,
+          value: value(field.marker),
+          type: field.type || 'string',
+        }));
 
       /** Update user information via API if form identifier exists */
       if (user?.formIdentifier) {

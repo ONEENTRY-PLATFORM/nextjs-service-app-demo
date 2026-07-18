@@ -1,6 +1,6 @@
 'use client';
 
-/* eslint-disable @next/next/no-img-element */
+import NextImage from 'next/image';
 import type { JSX, UIEvent } from 'react';
 import { useState } from 'react';
 
@@ -63,10 +63,12 @@ const SalonPhotoGallery = ({
               onClick={() => onOpen(i)}
               className="relative aspect-5/4 w-[86%] shrink-0 snap-center overflow-hidden rounded-2xl"
             >
-              <img
+              <NextImage
                 src={url}
                 alt=""
-                className="absolute inset-0 size-full object-cover"
+                fill
+                sizes="86vw"
+                className="object-cover"
               />
             </button>
           ))}
@@ -92,10 +94,12 @@ const SalonPhotoGallery = ({
             onClick={() => onOpen(0)}
             className="group relative aspect-5/4 overflow-hidden rounded-2xl lg:aspect-auto lg:h-full lg:min-h-100"
           >
-            <img
+            <NextImage
               src={hero}
               alt=""
-              className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
+              fill
+              sizes="(min-width: 1024px) 40vw, 86vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div
               className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
@@ -116,10 +120,12 @@ const SalonPhotoGallery = ({
                 onClick={() => onOpen(i + 1)}
                 className="group relative aspect-5/4 overflow-hidden rounded-2xl"
               >
-                <img
+                <NextImage
                   src={url}
                   alt=""
-                  className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  fill
+                  sizes="(min-width: 1024px) 20vw, 86vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 {isLastWithMore && (
                   <div
