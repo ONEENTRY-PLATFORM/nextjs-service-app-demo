@@ -222,6 +222,7 @@ const BookingSummary = ({
             <button
               onClick={onBook}
               disabled={!ready || isLoading}
+              data-testid="booking-confirm"
               className="w-full rounded-xl py-3.5 text-base font-bold tracking-wider uppercase transition-all enabled:hover:scale-102 enabled:active:scale-98"
               style={{
                 background: ready ? BRAND_GRADIENT : '#f7f7fb',

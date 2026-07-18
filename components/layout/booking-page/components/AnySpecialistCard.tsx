@@ -43,6 +43,7 @@ const AnySpecialistCard = ({
     {/* MOBILE compact "Any specialist" card — circular avatar + info row */}
     <div
       onClick={onSelect}
+      data-testid="booking-any-specialist"
       className="cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 active:scale-99 md:hidden"
       style={{
         borderColor: active ? PINK : '#e8e8f0',
@@ -112,6 +113,7 @@ const AnySpecialistCard = ({
     {/* DESKTOP "Any specialist" card — group photo + card body */}
     <div
       onClick={onSelect}
+      data-testid="booking-any-specialist"
       className="hidden h-full cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 hover:-translate-y-0.5 md:flex md:flex-col"
       style={{
         borderColor: active ? PINK : '#e8e8f0',

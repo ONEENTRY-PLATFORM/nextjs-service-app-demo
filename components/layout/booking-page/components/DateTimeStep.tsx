@@ -106,7 +106,7 @@ const DateTimeStep = ({
     : -1;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-testid="booking-step-datetime">
       <h3 className="text-lg font-light" style={{ color: DARK }}>
         Pick date &amp; time
       </h3>
@@ -123,6 +123,7 @@ const DateTimeStep = ({
                 return { year: y, month: m };
               })
             }
+            data-testid="booking-cal-prev"
             className="rounded-lg p-1.5 transition-colors hover:bg-gray-100"
           >
             <ChevronLeft size={18} color={MUTED} />
@@ -138,6 +139,7 @@ const DateTimeStep = ({
                 return { year: y, month: m };
               })
             }
+            data-testid="booking-cal-next"
             className="rounded-lg p-1.5 transition-colors hover:bg-gray-100"
           >
             <ChevronRight size={18} color={MUTED} />
@@ -168,6 +170,9 @@ const DateTimeStep = ({
                 key={key}
                 disabled={isPast}
                 onClick={() => onDate(key)}
+                data-testid="booking-day"
+                data-day={day}
+                data-past={isPast ? 'true' : 'false'}
                 className="relative mx-auto flex size-8 items-center justify-center rounded-lg text-sm transition-all duration-150"
                 style={{
                   background: isSelected
@@ -219,6 +224,8 @@ const DateTimeStep = ({
                     key={t}
                     disabled={unavailable}
                     onClick={() => onTime(t)}
+                    data-testid="booking-slot"
+                    data-slot={t}
                     className="rounded-xl py-2 text-sm font-medium transition-all duration-150"
                     style={{
                       background: active

@@ -23,6 +23,7 @@ const ResetPasswordButton = ({ title }: { title: string }): JSX.Element => {
         setComponent('ForgotPasswordForm');
       }}
       type="button"
+      data-testid="auth-reset-password"
       className="w-auto text-lg font-bold text-cyan-400 underline"
     >
       {title}

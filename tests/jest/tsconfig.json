@@ -1,0 +1,10 @@
+{
+  "//": "Jest unit tests type-check under their OWN program, separate from the app tsconfig. Next.js 16's generated `.next/types` route files (included by the root tsconfig for typed-route safety) collide with @types/jest's global `it`/`test`/`describe`, making them non-callable (TS2348) whenever both live in one program. Keeping .next types out of this config resolves it. Run via `npm run tsc:jest`.",
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "baseUrl": "../..",
+    "paths": { "@/*": ["./*"] }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "../../jest.setup.ts"]
+}

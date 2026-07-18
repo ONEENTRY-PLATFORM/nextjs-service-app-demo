@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "tsc": "npx tsc --noEmit --watch false",
+    "tsc:jest": "tsc -p tests/jest/tsconfig.json",
+    "typecheck": "npm run tsc && npm run tsc:jest",
     "lint-fix": "eslint --fix .",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -36,6 +38,7 @@
     "react-toastify": "^11.1.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "@gsap/react": "^2.1.2",
     "@next/bundle-analyzer": "^16.2.10",
     "@next/env": "^16.2.10",
