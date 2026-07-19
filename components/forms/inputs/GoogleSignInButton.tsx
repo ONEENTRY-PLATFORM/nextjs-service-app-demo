@@ -72,7 +72,7 @@ const GoogleSignInButton = ({
       data-testid="google-login-button"
       onClick={handleGoogleLogin}
       disabled={loading}
-      className="flex w-full items-center justify-center gap-3 rounded-xl border border-solid border-slate-150 bg-white px-10 py-3 text-base font-medium text-slate-400 transition-transform duration-150 hover:scale-[1.02] hover:border-fuchsia-300 focus-visible:outline-fuchsia-500 active:scale-[0.97] disabled:opacity-60"
+      className="flex w-full items-center justify-center gap-3 rounded-xl border border-solid border-slate-150 bg-white px-10 py-3 text-base font-medium text-slate-400 transition-transform duration-150 hover:scale-102 hover:border-fuchsia-300 focus-visible:outline-fuchsia-500 active:scale-97 disabled:opacity-60"
     >
       <GoogleIcon size={20} />
       {title}

@@ -39,6 +39,7 @@ const CallbackClient = (): JSX.Element => {
     const errorParam = searchParams.get('error');
 
     if (errorParam || !code) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setError(
         errorParam ? 'Authorization was canceled' : 'No authorization code',
       );

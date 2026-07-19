@@ -29,7 +29,7 @@ const FormSubmitButton = ({
         data-testid="form-submit"
         disabled={isLoading}
         type="submit"
-        className="relative flex min-h-14 w-full items-center justify-center rounded-xl bg-gradient-brand px-10 py-3.5 text-base font-bold tracking-widest text-white uppercase shadow-[0_8px_24px_#ed21f144] transition-transform duration-150 hover:scale-[1.02] focus-visible:outline-fuchsia-600 active:scale-[0.97] disabled:bg-none disabled:bg-slate-50 disabled:text-neutral-300 disabled:shadow-none"
+        className="relative flex min-h-14 w-full items-center justify-center rounded-xl bg-gradient-brand px-10 py-3.5 text-base font-bold tracking-widest text-white uppercase shadow-[0_8px_24px_#ed21f144] transition-transform duration-150 hover:scale-102 focus-visible:outline-fuchsia-600 active:scale-97 disabled:bg-slate-50 disabled:bg-none disabled:text-neutral-300 disabled:shadow-none"
       >
         {isLoading ? <Spinner /> : title}
       </button>

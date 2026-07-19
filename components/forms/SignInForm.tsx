@@ -190,8 +190,7 @@ const SignInForm = ({
         className="relative mx-auto mt-2 mb-6 box-border flex shrink-0 flex-col gap-3"
         onSubmit={onSignIn}
       >
-        {/**
-         * Provider tabs only make sense with more than one credential
+        {/* Provider tabs only make sense with more than one credential
          * provider. With a single provider (the current CMS `email`) they add
          * a lone dead button — the static-html AuthModal has no tabs — so hide
          * the row and drive `auth()` with the single `tab` value.
@@ -239,9 +238,9 @@ const SignInForm = ({
         {/** Render forgot password section with reset button */}
         <FormFieldAnimations
           index={7}
-          className="mx-auto mb-10 flex justify-between gap-5"
+          className="mx-auto mb-4 flex justify-between gap-5"
         >
-          <div className="w-auto basis-auto text-lg text-gray-400 transition-colors duration-300 hover:text-cyan-400">
+          <div className="w-auto basis-auto text-md text-gray-400 transition-colors duration-300 hover:text-cyan-400">
             {forgot_password_text?.value as string | undefined}
           </div>
           <ResetPasswordButton

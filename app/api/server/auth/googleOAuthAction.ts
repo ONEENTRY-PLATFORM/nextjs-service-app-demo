@@ -13,24 +13,24 @@ import { isError, LANG_CODE } from '@/app/api';
  * runs here on the server. Two OneEntry specifics are handled:
  *
  * 1. A **per-request** SDK instance is created with `defineOneEntry(url,
- *    { token, deviceMetadata })` rather than mutating the shared `getApi()`
- *    singleton — its auth state is shared across all visitors, and
- *    `setDeviceMetadata()` on it would race between concurrent OAuth callbacks.
+ * { token, deviceMetadata })` rather than mutating the shared `getApi()`
+ * singleton — its auth state is shared across all visitors, and
+ * `setDeviceMetadata()` on it would race between concurrent OAuth callbacks.
  * 2. The API binds the refresh token to the `x-device-metadata` fingerprint
- *    (SDK >= 1.0.155). The browser fingerprint is captured on the callback page
- *    via `getApi().AuthProvider.getDeviceMetadata()` and passed in here, so the
- *    issued refresh token stays refreshable from that browser. Without it the
- *    token would bind to the server's Node fingerprint and every proactive
- *    `/refresh` from the browser would 400 → log the user out.
+ * (SDK >= 1.0.155). The browser fingerprint is captured on the callback page
+ * via `getApi().AuthProvider.getDeviceMetadata()` and passed in here, so the
+ * issued refresh token stays refreshable from that browser. Without it the
+ * token would bind to the server's Node fingerprint and every proactive
+ * `/refresh` from the browser would 400 → log the user out.
  *
  * `redirectUri` is passed from the client so it matches, byte for byte, the
  * `redirect_uri` used in the initial redirect (OAuth requires the two to be
  * identical). The callback page derives it from `window.location.origin`, which
  * keeps dev (`http://localhost:3700`) and prod working from one code path.
- * @param   {string} code           - Authorization code returned by Google
- * @param   {string} deviceMetadata - Browser fingerprint string from the callback page
- * @param   {string} redirectUri    - The exact redirect URI used to obtain the code
- * @returns {Promise<object>}       Envelope: `{ isError, error?, token? }`
+ * @param   {string}          code           - Authorization code returned by Google
+ * @param   {string}          deviceMetadata - Browser fingerprint string from the callback page
+ * @param   {string}          redirectUri    - The exact redirect URI used to obtain the code
+ * @returns {Promise<object>}                Envelope: `{ isError, error?, token? }`
  */
 export async function googleOAuthAction(
   code: string,

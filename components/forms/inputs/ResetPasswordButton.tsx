@@ -13,8 +13,7 @@ import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
  */
 const ResetPasswordButton = ({ title }: { title: string }): JSX.Element => {
   /** Access drawer context to control open state and component display */
-  const { setOpen, setComponent, setDirection } =
-    useContext(OpenDrawerContext);
+  const { setOpen, setComponent, setDirection } = useContext(OpenDrawerContext);
 
   /** Render reset password button with click handler to open drawer */
   return (

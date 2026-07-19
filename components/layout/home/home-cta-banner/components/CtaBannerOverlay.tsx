@@ -35,7 +35,7 @@ const CtaBannerOverlay = ({
         mobile, md and lg font sizes alike. */}
     {title && (
       <h2
-        className="max-w-[4.8em] text-4xl leading-[0.95] text-white md:absolute md:top-1/2 md:left-[42%] md:-translate-y-1/2 md:text-5xl lg:text-6xl"
+        className="leading-0.95 max-w-[4.8em] text-4xl text-white md:absolute md:top-1/2 md:left-[42%] md:-translate-y-1/2 md:text-5xl lg:text-6xl"
         style={{ fontFamily: 'var(--font-league-gothic)' }}
       >
         {title}
