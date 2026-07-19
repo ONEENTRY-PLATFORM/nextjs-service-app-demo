@@ -25,9 +25,11 @@ import { isLoginCredential } from '@/components/forms/fieldFlags/isLoginCredenti
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
 import { getFormAttributes, sortArrayByPosition } from '@/components/utils';
 
+import AuthDivider from './inputs/AuthDivider';
 import ErrorMessage from './inputs/ErrorMessage';
 import FormInput from './inputs/FormInput';
 import SubmitButton from './inputs/FormSubmitButton';
+import GoogleSignInButton from './inputs/GoogleSignInButton';
 
 /**
  * A single form field, as the SDK's forms API describes it.
@@ -59,7 +61,8 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
   /** Access authentication context to manage user authentication state */
   const { login } = useContext(AuthContext);
   /** Access drawer context to control drawer state and component display */
-  const { setOpen, setComponent, setAction } = useContext(OpenDrawerContext);
+  const { setOpen, setComponent, setAction, setDirection } =
+    useContext(OpenDrawerContext);
 
   /** Extract localized text values from dictionary */
   const { sign_up_text, sign_in_text, create_account_desc } = dict;
@@ -281,9 +284,12 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
         {/** Display sign in link and account creation description */}
         <div className="relative box-border flex shrink-0 flex-col gap-2.5">
           <p className="text-xs text-gray-400 max-md:max-w-full">
-            {/** Button to switch to sign in form */}
+            {/** Button to switch to sign in form (backward step: slide from left) */}
             <button
-              onClick={() => setComponent('SignInForm')}
+              onClick={() => {
+                setDirection('backward');
+                setComponent('SignInForm');
+              }}
               className="underline"
             >
               {sign_in_text?.value}
@@ -305,6 +311,11 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
           isLoading={loading || isLoading}
           index={10}
         />
+        {/** OAuth alternative: divider + Google sign-in (works for sign-up too) */}
+        <div className="flex w-full flex-col gap-3">
+          <AuthDivider />
+          <GoogleSignInButton />
+        </div>
         {/** Display error message if present */}
         {error && <ErrorMessage error={error} />}
       </form>

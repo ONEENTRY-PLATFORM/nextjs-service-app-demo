@@ -18,7 +18,8 @@ import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
  */
 const SignInButton = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
   /** These functions control the state of the drawer and which component is displayed */
-  const { setOpen, setComponent } = useContext(OpenDrawerContext);
+  const { setOpen, setComponent, setDirection } =
+    useContext(OpenDrawerContext);
 
   /** This allows the button text to be displayed in the user's preferred language */
   const { log_in_text } = dict;
@@ -26,6 +27,8 @@ const SignInButton = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
   return (
     <button
       onClick={() => {
+        /** Sign In opens as the "base" step — slide in from the left. */
+        setDirection('backward');
         setOpen(true);
         setComponent('SignInForm');
       }}

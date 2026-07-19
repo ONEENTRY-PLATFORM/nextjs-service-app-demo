@@ -20,10 +20,12 @@ import FormAnimations from '@/components/forms/animations/FormAnimations';
 import FormFieldAnimations from '@/components/forms/animations/FormFieldAnimations';
 import { getFormAttributes } from '@/components/utils';
 
+import AuthDivider from './inputs/AuthDivider';
 import CreateAccountButton from './inputs/CreateAccountButton';
 import ErrorMessage from './inputs/ErrorMessage';
 import FormInput from './inputs/FormInput';
 import FormSubmitButton from './inputs/FormSubmitButton';
+import GoogleSignInButton from './inputs/GoogleSignInButton';
 import ResetPasswordButton from './inputs/ResetPasswordButton';
 
 /**
@@ -188,24 +190,31 @@ const SignInForm = ({
         className="relative mx-auto mt-2 mb-6 box-border flex shrink-0 flex-col gap-3"
         onSubmit={onSignIn}
       >
-        {/** Render tab buttons for email and phone authentication */}
-        <div className="relative box-border flex shrink-0 flex-col gap-2.5">
-          <FormFieldAnimations
-            index={1}
-            className="max-w-full text-xs text-gray-400"
-          >
-            {tabs.map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setTab(type)}
-                className={tab === type ? 'font-bold' : ''}
-              >
-                {(dict[`${type}_text`]?.value as string | undefined) ?? type}
-              </button>
-            ))}
-          </FormFieldAnimations>
-        </div>
+        {/**
+         * Provider tabs only make sense with more than one credential
+         * provider. With a single provider (the current CMS `email`) they add
+         * a lone dead button — the static-html AuthModal has no tabs — so hide
+         * the row and drive `auth()` with the single `tab` value.
+         */}
+        {tabs.length > 1 && (
+          <div className="relative box-border flex shrink-0 flex-col gap-2.5">
+            <FormFieldAnimations
+              index={1}
+              className="max-w-full text-xs text-gray-400"
+            >
+              {tabs.map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setTab(type)}
+                  className={tab === type ? 'font-bold' : ''}
+                >
+                  {(dict[`${type}_text`]?.value as string | undefined) ?? type}
+                </button>
+              ))}
+            </FormFieldAnimations>
+          </div>
+        )}
 
         {/** Render the flagged credential fields (login + password) */}
         <div className="relative mb-4 box-border flex shrink-0 flex-col gap-4">
@@ -221,9 +230,15 @@ const SignInForm = ({
           isLoading={loading}
         />
 
+        {/** OAuth alternative: divider + Google sign-in (full-page redirect) */}
+        <FormFieldAnimations index={6} className="flex w-full flex-col gap-3">
+          <AuthDivider />
+          <GoogleSignInButton />
+        </FormFieldAnimations>
+
         {/** Render forgot password section with reset button */}
         <FormFieldAnimations
-          index={6}
+          index={7}
           className="mx-auto mb-10 flex justify-between gap-5"
         >
           <div className="w-auto basis-auto text-lg text-gray-400 transition-colors duration-300 hover:text-cyan-400">
@@ -235,7 +250,7 @@ const SignInForm = ({
         </FormFieldAnimations>
 
         {/** Render create account button */}
-        <FormFieldAnimations index={7} className="w-full">
+        <FormFieldAnimations index={8} className="w-full">
           <CreateAccountButton
             title={(create_account_text?.value as string | undefined) ?? ''}
           />

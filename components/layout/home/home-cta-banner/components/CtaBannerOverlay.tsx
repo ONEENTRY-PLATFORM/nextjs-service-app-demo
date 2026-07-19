@@ -8,11 +8,13 @@ import type { JSX } from 'react';
  *
  * Copy is the headline only — the static-html discount banner carries no
  * supporting line or phone, so neither is rendered here even when the CMS block
- * holds them. Layout mirrors that design: the headline is centered on the banner
- * and the button sits apart from it — bottom-center with the button beneath it
- * on mobile, centered on the wide banner with the button pinned to the right on
- * desktop. Headline and button are separate blocks (not one column) precisely so
- * the button can detach to the right on desktop while the headline stays centered.
+ * holds them. Layout mirrors the Figma banner: the headline is left-aligned in
+ * both viewports. On the wide desktop banner it sits in the right half (over the
+ * gradient), vertically centered, with the button pinned to the far right; on
+ * mobile the headline and the button stack in a bottom-left column so the button
+ * sits below the headline. Headline and button are absolutely positioned on
+ * desktop precisely so the button can detach to the right while the headline
+ * stays put.
  * @param   {object}      props            - Component properties
  * @param   {string}      props.title      - Banner headline (`title`)
  * @param   {string}      props.buttonText - Booking button label (`button_text`)
@@ -25,30 +27,26 @@ const CtaBannerOverlay = ({
   title: string;
   buttonText: string;
 }): JSX.Element => (
-  <div className="absolute inset-0 flex flex-col items-center justify-end gap-3 px-6 pb-[12%] text-center md:block md:p-0">
-    {/* Headline: bottom-center on mobile, centered on desktop. The wider right
-        pad keeps a long headline clear of the right-pinned button and nudges the
-        centering slightly left, matching the artwork whose subject sits left. */}
-    <div className="flex flex-col items-center md:absolute md:inset-0 md:justify-center md:pr-[20%] md:pl-[8%]">
-      {title && (
-        <h2
-          className="text-3xl leading-none text-white md:text-5xl lg:text-6xl"
-          style={{ fontFamily: 'var(--font-league-gothic)' }}
-        >
-          {title}
-        </h2>
-      )}
-    </div>
-    {/* Button: beneath the headline on mobile, pinned right-of-center on desktop */}
+  <div className="absolute inset-0 flex flex-col items-start justify-end gap-10 px-[13%] pb-[11%] text-left md:block md:p-0">
+    {/* Headline: bottom-left on mobile, vertically centered in the right half on
+        desktop (left-42% clears the photo). Left-aligned in both, matching the
+        artwork. The em-based max-width tracks the font at every breakpoint so the
+        headline keeps its two-line break (dash starting the second line) at the
+        mobile, md and lg font sizes alike. */}
+    {title && (
+      <h2
+        className="max-w-[4.8em] text-4xl leading-[0.95] text-white md:absolute md:top-1/2 md:left-[42%] md:-translate-y-1/2 md:text-5xl lg:text-6xl"
+        style={{ fontFamily: 'var(--font-league-gothic)' }}
+      >
+        {title}
+      </h2>
+    )}
+    {/* Button: beneath the headline on mobile, pinned right-of-center on desktop.
+        Frosted translucent fill with a light outline, as in the Figma. */}
     {buttonText && (
       <Link
         href="/booking"
-        className="relative mt-3 shrink-0 rounded-xl px-8 py-3.5 text-base font-black tracking-wider text-white uppercase transition-transform duration-200 hover:scale-105 active:scale-95 md:absolute md:top-1/2 md:right-[6%] md:mt-0 md:-translate-y-1/2"
-        style={{
-          background: 'rgba(255,255,255,0.22)',
-          border: '2px solid rgba(255,255,255,0.5)',
-          backdropFilter: 'blur(8px)',
-        }}
+        className="inline-flex items-center justify-center rounded-xl border border-white/60 bg-white/12 px-12 py-4 text-base font-medium tracking-[0.2em] text-white uppercase backdrop-blur-md transition-colors hover:bg-white/25 md:absolute md:top-1/2 md:right-[4%] md:-translate-y-1/2 md:px-9 md:py-3 md:text-sm"
       >
         {buttonText}
       </Link>

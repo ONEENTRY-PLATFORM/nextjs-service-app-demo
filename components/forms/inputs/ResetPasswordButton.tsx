@@ -13,18 +13,21 @@ import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
  */
 const ResetPasswordButton = ({ title }: { title: string }): JSX.Element => {
   /** Access drawer context to control open state and component display */
-  const { setOpen, setComponent } = useContext(OpenDrawerContext);
+  const { setOpen, setComponent, setDirection } =
+    useContext(OpenDrawerContext);
 
   /** Render reset password button with click handler to open drawer */
   return (
     <button
       onClick={() => {
+        /** Sign In → Reset is a forward step: slide in from the right. */
+        setDirection('forward');
         setOpen(true);
         setComponent('ForgotPasswordForm');
       }}
       type="button"
       data-testid="auth-reset-password"
-      className="w-auto text-lg font-bold text-cyan-400 underline"
+      className="w-auto text-sm font-semibold text-accent-cyan underline"
     >
       {title}
     </button>

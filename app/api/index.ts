@@ -30,6 +30,7 @@ export { useCreateOrder } from './hooks/useCreateOrder';
 export { useSearchProducts } from './hooks/useSearchProducts';
 export { useSetForm } from './hooks/useSetForm';
 export { getAdminsInfo } from './server/admins/getAdminsInfo';
+export { googleOAuthAction } from './server/auth/googleOAuthAction';
 export { getSingleAttributeByMarkerSet } from './server/attributes/getSingleAttributeByMarkerSet';
 export { getBlockByMarker } from './server/blocks/getBlockByMarker';
 export { getBlocks } from './server/blocks/getBlocks';

@@ -145,28 +145,38 @@ const Modal = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
     return <></>;
   }
 
-  /** Render modal with form component and backdrop */
+  /**
+   * Render modal with form component and backdrop.
+   *
+   * The centering wrapper owns the `-translate-1/2` transform; the inner card
+   * (`#modalBody`) is what `ModalAnimations` scales/rises on open. Keeping them
+   * separate stops GSAP's `scale`/`y` from overwriting the centering transform
+   * (GSAP manages `transform` wholesale and does not know about the Tailwind
+   * translate).
+   */
   return (
     <ModalAnimations component={component}>
-      <div
-        ref={dialogRef}
-        id="modalBody"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modalTitle"
-        className="fixed top-1/2 left-1/2 z-500 flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-sm -translate-1/2 flex-col overflow-hidden rounded-3xl bg-white shadow-[0_32px_80px_rgba(180,40,220,0.30)]"
-      >
-        <header
-          className="flex items-center justify-between gap-4 rounded-t-3xl px-8 pt-8 pb-7 text-white"
-          style={{ background: 'linear-gradient(135deg,#9B4FB2,#ed21f1)' }}
+      <div className="fixed top-1/2 left-1/2 z-500 w-[calc(100%-2rem)] max-w-sm -translate-1/2">
+        <div
+          ref={dialogRef}
+          id="modalBody"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modalTitle"
+          className="flex max-h-[90dvh] w-full flex-col overflow-hidden rounded-3xl bg-white shadow-[0_32px_80px_rgba(180,40,220,0.30)]"
         >
-          <div id="modalTitle" className="text-[2rem] font-light">
-            {title}
+          <header
+            className="flex items-center justify-between gap-4 rounded-t-3xl px-8 pt-8 pb-7 text-white"
+            style={{ background: 'linear-gradient(135deg,#9B4FB2,#ed21f1)' }}
+          >
+            <div id="modalTitle" className="text-[2rem] font-light">
+              {title}
+            </div>
+            <CloseModal />
+          </header>
+          <div className="overflow-auto px-8 pt-6 pb-4">
+            <Form className={''} dict={dict} isActive={true} />
           </div>
-          <CloseModal />
-        </header>
-        <div className="overflow-auto px-8 pt-6 pb-4">
-          <Form className={''} dict={dict} isActive={true} />
         </div>
       </div>
       <ModalBackdrop />

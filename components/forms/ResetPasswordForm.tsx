@@ -80,7 +80,8 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
   const fields = useAppSelector((state) => state.formFieldsReducer.fields);
   const { email_reg, otp_code } = fields;
   /** Access drawer context to control component display and actions */
-  const { setComponent, setAction } = useContext(OpenDrawerContext);
+  const { setComponent, setAction, setDirection } =
+    useContext(OpenDrawerContext);
   /** State for managing loading status during form submission */
   const [isLoading, setLoading] = useState(false);
   const [isError, setError] = useState('');
@@ -148,6 +149,8 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
       }
       /** Redirect to sign in form only on a confirmed success */
       if (result === true) {
+        /** Reset → Sign In is a backward step: slide in from the left. */
+        setDirection('backward');
         setComponent('SignInForm');
         setAction('');
       } else {

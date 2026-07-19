@@ -9,29 +9,35 @@ import { createContext, useState } from 'react';
  * @param open          - open state.
  * @param action        - action to perform.
  * @param transition    - transition type.
+ * @param direction     - step-switch direction ('forward' | 'backward') driving the horizontal slide.
  * @param setComponent  - set component to open.
  * @param setOpen       - set open state.
  * @param setAction     - set action to perform.
  * @param setTransition - set transition type.
+ * @param setDirection  - set the step-switch slide direction.
  */
 export const OpenDrawerContext = createContext<{
   component: string;
   open: boolean;
   action: string;
   transition: string;
+  direction: string;
   setComponent: Dispatch<string>;
   setOpen: Dispatch<boolean>;
   setAction: Dispatch<string>;
   setTransition: Dispatch<string>;
+  setDirection: Dispatch<string>;
 }>({
   open: false,
   component: '',
   action: '',
   transition: '',
+  direction: 'forward',
   setOpen(): void {},
   setComponent(): void {},
   setAction(): void {},
   setTransition(): void {},
+  setDirection(): void {},
 });
 
 /**
@@ -49,6 +55,13 @@ export const OpenDrawerProvider = ({
   const [component, setComponent] = useState<string>('');
   const [action, setAction] = useState<string>('');
   const [transition, setTransition] = useState<string>('');
+  /**
+   * Direction the next form-step swap slides in from. Set by the in-modal
+   * navigation buttons right before `setComponent` so `FormAnimations` can
+   * play a `forward` (→) or `backward` (←) horizontal slide, mirroring the
+   * static-html AuthModal step transitions.
+   */
+  const [direction, setDirection] = useState<string>('forward');
 
   return (
     <OpenDrawerContext.Provider
@@ -61,6 +74,8 @@ export const OpenDrawerProvider = ({
         setAction,
         transition,
         setTransition,
+        direction,
+        setDirection,
       }}
     >
       {children}

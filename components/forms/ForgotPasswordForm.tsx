@@ -35,7 +35,8 @@ export const ForgotPasswordForm = ({
   dict: IAttributeValues;
 }): JSX.Element => {
   /** Access drawer context to control component display and actions */
-  const { setComponent, setAction } = useContext(OpenDrawerContext);
+  const { setComponent, setAction, setDirection } =
+    useContext(OpenDrawerContext);
   /** State for handling error messages */
   const [isError, setError] = useState<string>('');
 
@@ -57,6 +58,8 @@ export const ForgotPasswordForm = ({
       return;
     }
     setError('');
+    /** Forgot → Verification is a forward step: slide in from the right. */
+    setDirection('forward');
     try {
       /**
        * Generate the reset code. `generateCode` returns `boolean | IError` — an

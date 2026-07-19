@@ -36,7 +36,8 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
   /** Authentication context for managing user authentication state */
   const { login } = useContext(AuthContext);
   /** Context for managing the open drawer and its components */
-  const { setOpen, setComponent, action } = useContext(OpenDrawerContext);
+  const { setOpen, setComponent, setDirection, action } =
+    useContext(OpenDrawerContext);
 
   /** State variables for managing form state */
   const [isLoading, setLoading] = useState(false);
@@ -108,6 +109,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
           throw new Error('Invalid verification code');
         }
         /** Switch to reset password form so the user can set a new password */
+        setDirection('forward');
         setComponent('ResetPasswordForm');
       }
       // Handle user activation flow (when a new user is registering)
@@ -173,6 +175,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
     login,
     router,
     setComponent,
+    setDirection,
     setOpen,
   ]);
 

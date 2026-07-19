@@ -30,10 +30,10 @@ const FormAnimations = ({
   className: string;
   isActive: boolean;
 }): JSX.Element => {
-  const { open, transition, setTransition } = useContext(OpenDrawerContext);
+  const { open, transition, direction } = useContext(OpenDrawerContext);
   const ref = useRef(null);
 
-  /** Form transition animations */
+  /** Form step-enter animation (horizontal slide + fade) */
   useGSAP(
     () => {
       /**
@@ -46,49 +46,35 @@ const FormAnimations = ({
       }
 
       /**
-       * Create GSAP timeline for form animations
-       * Handles both forward and reverse animations with cleanup callbacks
-       */
-      const tl = gsap.timeline({
-        paused: true,
-        onComplete: () => {
-          setTransition('');
-        },
-        onReverseComplete: () => {
-          setTransition('');
-        },
-      });
-
-      /**
-       * Define animation sequence:
-       * 1. Fade out the form element
-       * 2. Fade in the form element
-       */
-      tl.from(ref.current, {
-        autoAlpha: 0,
-      }).to(ref.current, {
-        autoAlpha: 1,
-      });
-
-      /**
-       * Play or reverse animation based on transition state
-       * 'close' transition reverses the animation, otherwise plays forward
+       * On close the whole modal animates out via `ModalAnimations`; the form
+       * just holds still, so there is nothing to play here.
        */
       if (transition === 'close') {
-        tl.reverse(0.5);
-      } else {
-        tl.play();
+        return;
       }
 
       /**
-       * Cleanup function to kill timeline on unmount
+       * Each form step is a fresh mount (the modal swaps `component`), so we
+       * only play the ENTER: slide in from the right on a forward step
+       * (Sign In → Sign Up / Reset) or from the left on a backward step
+       * (Sign Up → Sign In), matching the static-html AuthModal step slide.
+       */
+      const dx = direction === 'backward' ? -1 : 1;
+      const tween = gsap.fromTo(
+        ref.current,
+        { autoAlpha: 0, x: dx * 32 },
+        { autoAlpha: 1, x: 0, duration: 0.28, ease: 'power2.out' },
+      );
+
+      /**
+       * Cleanup function to kill the tween on unmount
        * Prevents memory leaks and ensures clean animation state
        */
       return () => {
-        tl.kill();
+        tween.kill();
       };
     },
-    { dependencies: [transition, open, isLoading], scope: ref },
+    { dependencies: [transition, open, isLoading, direction], scope: ref },
   );
 
   return (

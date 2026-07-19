@@ -13,18 +13,21 @@ import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
  */
 const CreateAccountButton = ({ title }: { title: string }): JSX.Element => {
   /** Access drawer context to control open state and component display */
-  const { setOpen, setComponent } = useContext(OpenDrawerContext);
+  const { setOpen, setComponent, setDirection } =
+    useContext(OpenDrawerContext);
 
   /** Render create account button with click handler to open drawer */
   return (
     <button
       onClick={() => {
+        /** Sign In → Sign Up is a forward step: slide in from the right. */
+        setDirection('forward');
         setOpen(true);
         setComponent('SignUpForm');
       }}
       type="button"
       data-testid="auth-create-account"
-      className="w-full items-center justify-center rounded-card border border-solid border-fuchsia-500 bg-transparent px-10 py-4 text-xl font-bold tracking-wide text-fuchsia-500 uppercase transition-colors duration-300 hover:border-fuchsia-600 hover:text-fuchsia-600 focus-visible:text-fuchsia-600 focus-visible:outline-fuchsia-600 disabled:border-neutral-300 disabled:text-neutral-300 max-sm:px-5"
+      className="w-full rounded-xl border-2 border-solid border-fuchsia-500 bg-white px-10 py-3.5 text-base font-bold tracking-widest text-fuchsia-500 uppercase transition-transform duration-150 hover:scale-[1.02] focus-visible:outline-fuchsia-600 active:scale-[0.97] disabled:border-neutral-300 disabled:text-neutral-300 max-sm:px-5"
     >
       {title}
     </button>

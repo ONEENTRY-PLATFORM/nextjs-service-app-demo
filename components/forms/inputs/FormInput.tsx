@@ -106,9 +106,9 @@ const FormInput = (
   return (
     <FormFieldAnimations
       index={field.index}
-      className="relative box-border flex shrink-0 flex-col"
+      className="relative box-border flex shrink-0 flex-col gap-1"
     >
-      <label htmlFor={field.marker} className="text-xl text-gray-400">
+      <label htmlFor={field.marker} className="text-base text-neutral-300">
         {localizeInfos?.title}{' '}
         {required && <span className="text-red-500">*</span>}
       </label>
@@ -117,7 +117,7 @@ const FormInput = (
         <select
           id={field.marker}
           data-testid={`form-field-${field.marker}`}
-          className="border-b border-none border-b-slate-300 py-3 text-xl text-zinc-600"
+          className="border-b border-none border-b-slate-240 py-2 text-base text-slate-400"
           required={required}
           value={value}
           onChange={(val) => setValue(val.currentTarget.value)}
@@ -137,7 +137,7 @@ const FormInput = (
           id={field.marker}
           data-testid={`form-field-${field.marker}`}
           placeholder={placeholder}
-          className="border-b border-none border-b-slate-300 py-3 text-xl text-zinc-600"
+          className="border-b border-none border-b-slate-240 py-2 text-base text-slate-400"
           required={required}
           onChange={(val) => setValue(val.currentTarget.value)}
           value={value}
@@ -150,7 +150,7 @@ const FormInput = (
           id={field.marker}
           data-testid={`form-field-${field.marker}`}
           placeholder={placeholder}
-          className="relative border-b border-none border-b-slate-300 py-3 text-xl text-zinc-600"
+          className="relative border-b border-none border-b-slate-240 py-2 text-base text-slate-400"
           required={required}
           onChange={(val) => setValue(val.currentTarget.value)}
           autoComplete={fieldType === 'password' ? 'password' : ''}
@@ -170,7 +170,7 @@ const FormInput = (
               setType('password');
             }
           }}
-          className="absolute right-2 bottom-3 flex size-6 items-center"
+          className="absolute right-0 bottom-2 flex size-5 items-center"
         >
           {type === 'password' ? <EyeIcon /> : <EyeOpenIcon />}
         </button>
