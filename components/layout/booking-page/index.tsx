@@ -3,6 +3,8 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { JSX } from 'react';
 
+import RevealAnimations from '@/app/animations/RevealAnimations';
+
 import BookingSummary from './components/BookingSummary';
 import DateTimeStep from './components/DateTimeStep';
 import EntryScreen from './components/EntryScreen';
@@ -102,7 +104,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
               className="-mx-3 flex h-full flex-col rounded-none bg-white px-4 py-6 md:mx-0 md:rounded-3xl md:p-8"
               style={{ boxShadow: '0 4px 40px rgba(237,33,241,0.08)' }}
             >
-              <div
+              <RevealAnimations
                 className="flex-1"
                 key={flow ? `${flow}-${currentStepKey}` : 'entry'}
               >
@@ -146,7 +148,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                     hasSchedule={hasSchedule}
                   />
                 )}
-              </div>
+              </RevealAnimations>
               {flow && (
                 <div className="mt-auto flex items-stretch gap-3 pt-8">
                   <button

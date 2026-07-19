@@ -5,6 +5,19 @@ const PROJECT_URL = process.env.NEXT_PUBLIC_ONEENTRY_URL as string;
 const APP_TOKEN = process.env.NEXT_PUBLIC_ONEENTRY_TOKEN as string;
 
 /**
+ * Fail fast when the CMS credentials are missing. Without this, `as string`
+ * masks the `undefined` and `defineOneEntry` silently initializes with an
+ * invalid URL/token — every SDK call then fails with an opaque network error
+ * far from the real cause. A clear throw at module load points straight at the
+ * misconfigured `.env` (`NEXT_PUBLIC_ONEENTRY_URL` / `NEXT_PUBLIC_ONEENTRY_TOKEN`).
+ */
+if (!PROJECT_URL || !APP_TOKEN) {
+  throw new Error(
+    'OneEntry SDK misconfigured: set NEXT_PUBLIC_ONEENTRY_URL and NEXT_PUBLIC_ONEENTRY_TOKEN in .env',
+  );
+}
+
+/**
  * Default language code for the SDK. Set once here for a monolingual project
  * DO NOT pass langCode explicitly to SDK calls, rely on this default.
  */

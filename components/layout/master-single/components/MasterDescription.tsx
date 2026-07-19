@@ -17,8 +17,9 @@ const MasterDescription = ({
   master: IAdminEntity;
 }): JSX.Element => {
   /** Extract master description HTML from attribute values */
-  const descArr = master.attributeValues.master_description?.value as
+  const descArr = (master.attributeValues || {}).master_description?.value as
     Array<{ htmlValue?: string }> | undefined;
+
   const descriptionHtml = descArr?.[0]?.htmlValue;
 
   /** Render master description with parsed HTML content */

@@ -30,13 +30,18 @@ const ensureScrollToPlugin = (): Promise<void> => {
   return loading;
 };
 
+/** Duration of the smooth scroll-to-top tween, in seconds. */
+const SCROLL_DURATION = 0.6;
+
 /**
- * scrollToTop — reset the window scroll as part of a route-transition timeline.
+ * scrollToTop — smoothly reset the window scroll as part of a route-transition
+ * timeline.
  *
  * ScrollToPlugin is only needed while navigating, so it is loaded on demand
  * rather than registered eagerly at app start. The very first navigation may
  * happen before the chunk resolves — that case falls back to a native
- * `window.scrollTo`, and subsequent navigations use the GSAP tween.
+ * `window.scrollTo({ behavior: 'smooth' })`, and subsequent navigations use the
+ * GSAP tween (eased, and kept in sync with the transition timeline).
  * @param {gsap.core.Timeline} timeline - Transition timeline to attach the scroll to.
  */
 export const scrollToTop = (timeline: gsap.core.Timeline): void => {
@@ -44,8 +49,12 @@ export const scrollToTop = (timeline: gsap.core.Timeline): void => {
   void ensureScrollToPlugin();
 
   if (registered) {
-    timeline.set(window, { scrollTo: 0 });
+    timeline.to(
+      window,
+      { scrollTo: 0, duration: SCROLL_DURATION, ease: 'power2.inOut' },
+      0,
+    );
   } else {
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 };

@@ -12,16 +12,18 @@
 
 ## 1. Открытые нитпики (INFO / minor, без видимого эффекта)
 
-- ✅ `app/api/server/users/logOutUser.ts:13` (wrappers-contract) — не возвращает конверт `{isError,error?}`, отдаёт `{data}`/`{error}` и никогда не бросает → try/catch у потребителей (`SignOutButton:30`, `LogoutMenuItem:21`) мёртв. *Рек.:* привести к контракту или задокументировать «не бросает, деградирует в finally».
-- ✅ `app/api/api/api.ts:4` (env-config) — нет fail-fast при пустых env: `as string` маскирует undefined, SDK молча инициализируется с undefined URL/token. *Рек.:* явный throw при пустых `NEXT_PUBLIC_ONEENTRY_URL/TOKEN`.
-- ✅ `app/store/providers/AuthContext.tsx:171` (tokens / auth-provider) — `login()` дублирует `localStorage.setItem('refresh-token')` + `syncTokens` после `auth()` (SDK уже делает это через saveFunction). Идемпотентно, вреда нет. *Рек.:* оставить только сохранение `authProviderMarker` + `setIsAuth` + `checkToken`.
-- ✅ `app/api/api/RTKApi.ts:176` (wrappers) — guard `return { error: null }` — неидиоматичный «skip», третий формат конверта ошибки. *Рек.:* skip задавать `skipToken` на вызове, error-ветку — только для настоящих `IError`. (guard `getProductsByPageUrl` — мёртвый код.)
-- ✅ `app/api/server/users/updateUserState.ts:24` (wrappers-contract) — `updateUserState`/`clearUserState` возвращают boolean вместо конверта (задокументировано в JSDoc, хук `useUpdateUserStateMutation` нигде не используется). *Рек.:* оставить как задокументированное исключение для мутаций `user.state`.
-- ✅ `app/api/server/pages/getPageByUrl.ts:42` (wrappers-contract) — payload обёрток лежит под доменным ключом (`page`/`block`/`products`/…), а не под `data`. *Рек.:* только уточнить формулировку контракта в CLAUDE.md (`{isError, error?, <domain-payload>?, [total]}`); код не менять.
-- ✅ `app/types/global.d.ts:4` (typescript) — неиспользуемый тип `LocalizeInfo` (ручной дубль SDK `ILocalizeInfo`, форма расходится). *Рек.:* удалить (с согласия — конвенция «ничего не удалять»).
-- ✅ `app/types/env.d.ts:2` (env-config) — мёртвая ambient-декларация `'@env'` с именами v1 (`PROJECT_URL`/`APP_TOKEN`), нигде не импортируется. *Рек.:* удалить.
-- ✅ `app/profile/page.tsx:15` (revalidation) — приватный `/profile` без серверного гейта (только клиентский; данные заказов защищены токеном, серверной утечки нет). *Рек.:* middleware-редирект гостя (потребует cookie-сессию) либо зафиксировать клиент-центричность в CLAUDE.md.
-- 🟡 `components/layout/portfolio-grid/index.tsx:48` (attribute-values) — доступ к `attributeValues` без `|| {}` (живые места — `portfolio-grid/index.tsx:48/66`, `master-single/components/MasterDescription.tsx:20`; ещё 5 упомянутых мест — мёртвый код). *Рек.:* `const attrs = entity.attributeValues || {}`.
+**Все ✅/🟡 из этого раздела закрыты 2026-07-19** (см. пометки ниже). Осталось только два 🔧/info «следить при обновлении SDK».
+
+- ✔ `app/api/server/users/logOutUser.ts` (wrappers-contract) — *закрыто 2026-07-19:* в JSDoc явно зафиксирован контракт «NEVER THROWS, деградирует в finally, try/catch не нужен»; продублировано в CLAUDE.md (исключения из конверта). Код не менялся, try/catch у потребителей оставлен как безвредная защита.
+- ✔ `app/api/api/api.ts` (env-config) — *закрыто 2026-07-19:* добавлен fail-fast `throw` при пустых `NEXT_PUBLIC_ONEENTRY_URL/TOKEN` до `defineOneEntry`.
+- ✔ `app/store/providers/AuthContext.tsx` (tokens / auth-provider) — *закрыто 2026-07-19 (документированием, не удалением):* `syncTokens` НЕ убран — он нужен против гонки 401-on-first-request; `localStorage.setItem('refresh-token')` оставлен как явная страховка поверх `saveFunction`. Перекрытие помечено комментарием в `login()`. Осознанное отклонение (в фрагильной auth-подсистеме правку-удаление не делаем).
+- ✔ `app/api/api/RTKApi.ts` (wrappers) — *закрыто 2026-07-19:* удалены мёртвые guard'ы `return { error: null }` в `getProductById`/`getPageById` (все вызовы уже гейтят falsy-id через `{ skip: !id }`); error-ветка теперь только для настоящих `IError`. Помечено в JSDoc `getPageById`.
+- ✔ `app/api/server/users/updateUserState.ts` (wrappers-contract) — *закрыто 2026-07-19:* оставлено как задокументированное исключение (`boolean` для мутаций `user.state`); зафиксировано в CLAUDE.md.
+- ✔ `app/api/server/pages/getPageByUrl.ts` (wrappers-contract) — *закрыто 2026-07-19:* формулировка контракта в CLAUDE.md уточнена до `{ isError, error?, <доменный-payload>?, [total] }` (payload под доменным ключом `page`/`block`/…); код не менялся.
+- ✔ `app/types/global.d.ts` (typescript) — *закрыто 2026-07-19:* неиспользуемый тип `LocalizeInfo` удалён (с согласия пользователя).
+- ✔ `app/types/env.d.ts` (env-config) — *закрыто 2026-07-19:* мёртвый файл с ambient `'@env'` (имена v1) удалён (`git rm`).
+- ✔ `app/profile/page.tsx` (revalidation) — *закрыто 2026-07-19:* клиент-центричность приватного `/profile` зафиксирована в CLAUDE.md (серверный гейт требует cookie-сессии, которой нет — токены в `localStorage`). Серверной утечки нет.
+- ✔ `components/layout/portfolio-grid/index.tsx` + `master-single/components/MasterDescription.tsx` (attribute-values) — *закрыто 2026-07-19:* доступ к `attributeValues` защищён `|| {}` (в portfolio-grid введена `masterAttrs`, переиспользована для caption'а лайтбокса).
 - 🔧/info `app/api/api/api.ts:58` (typescript) — `hasActiveSession` читает `AuthProvider.state` через `as unknown as` (публичного геттера в SDK нет). Задокументировано; *следить* при обновлении SDK за появлением `isAuth`/`getAccessToken`.
 - 🔧/info `components/layout/home/home-hero/index.tsx:41` (typescript) — каст `slide.attributeValues` (API слайдов отдаёт сырые значения без обёртки `{value}` — расхождение SDK-типа и поведения). Задокументировано; *перепроверять* форму ответа `getSlides` при обновлении `oneentry`.
 

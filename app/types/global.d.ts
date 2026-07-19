@@ -1,12 +1,6 @@
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { IFilterParams } from 'oneentry/dist/products/productsInterfaces';
 
-declare type LocalizeInfo = {
-  content: string;
-  menuTitle: string;
-  title: string;
-};
-
 declare type PageProps = Promise<{
   params: { page: string; handle: string };
   searchParams?: {

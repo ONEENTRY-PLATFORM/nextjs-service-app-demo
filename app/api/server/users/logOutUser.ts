@@ -17,9 +17,13 @@ type LogOutProps = { marker: string; token?: string };
  *
  * User-authorized SDK methods must run on the client anyway: the API ties the
  * refresh token to the browser fingerprint (rules/auth-provider.md).
+ *
+ * NEVER THROWS — the SDK error is caught and returned as `{ error }`, and the
+ * local session is always dropped in `finally` (even on failure). Callers do
+ * not need a `try/catch` around it; a rejection is not a possible outcome.
  * @param   {LogOutProps}     props        - Function parameters
  * @param   {string}          props.marker - Auth-provider marker the user signed in with (e.g. `'email'`)
- * @returns {Promise<object>}              `{ data }` on success, `{ error }` with the message on failure
+ * @returns {Promise<object>}              `{ data }` on success, `{ error }` with the message on failure — always resolves
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
  */
 export const logOutUser = async ({ marker }: LogOutProps): Promise<object> => {

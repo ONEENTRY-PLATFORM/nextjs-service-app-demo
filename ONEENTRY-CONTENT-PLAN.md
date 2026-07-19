@@ -16,6 +16,7 @@
 - **Блоки:** 7 блоков главной привязаны к `home`; `home_discounts` заполнен (набор 19); `system_content` (34 UI-текста). `home_hero` — 4 слайда.
 - **Меню:** `main`, `services`, `about_us`, `user_menu`.
 - **Формы/заказы:** `reg` и `order` заполнены; заказы создаются и отменяются (сквозь UI); auth `google`+`email`; события заведены; оплата `cash`+`stripe` активна и привязана к storage; **выбор оплаты и онлайн-оплата Stripe работают**.
+- **Форма `contact_us`:** работает end-to-end (проверено живым сабмитом 2026-07-19). Поля `name`/`phone`/`email`/`contact_text`(text)/`spam`/`button`; reCAPTCHA v3 **Enterprise** (ключ в `spam.settings.captcha.key`, значение атрибута `spam` = объект `{event:{token,siteKey}}`); привязан module config `content`/`contacts` (id 2). Код — `ContactFormCard` + `components/forms/inputs/FormReCaptcha.tsx`; грабли и рецепт — в памяти (`oneentry-spam-captcha-mechanics`) и скиле `.claude/temp/create-captcha.md`. reCAPTCHA не проходится из headless (ботоскор) — e2e проверяет только рендер.
 - **Бронирование:** покрытие `master_services` — **77/77 услуг, 0 тупиковых пар**; слоты берутся из расписания (`master_schedule`/`salon_time` через `expandAttributeTimeIntervals`), прошедшие слоты дизейблятся.
 
 > **Грабли (детали — в памяти проекта и CLAUDE.md), чтобы не наступить снова:**
@@ -34,11 +35,7 @@
 
 Блока `opening_time` в CMS нет (404) — код читает этот маркер и деградирует на фолбэк; часы работы и карточки контактов идут из мока `components/data.js` (`openingHoursData`/`contactInfoData`). **Отложено пользователем (2026-07-14).** В верстке все дни одинаковые: Monday–Sunday `10:00–22:00`.
 
-### 2. Форма `contact_us` — без полей
-
-`attributes = {}` (0 полей) — нужен site key reCAPTCHA для поля `spam`. **Отложено (2026-07-14).** Живая форма — `ContactFormCard` на `/contacts`, она деградирует без полей (не отправляет). Поля из верстки: Your name (text), Phone (text), E-mail (text), Message (textarea) + `spam` + `button`.
-
-### 3. Отзывы (требует решения)
+### 2. Отзывы (требует решения)
 
 В шаблоне отзывы захардкожены (`components/data.js` `reviewsData`, `components/layout/reviews-page/data.ts` — 17 отзывов с маппингами мастер→салон/категория), в верстке — полноценный раздел с фильтрами и модалкой «Leave a review».
 

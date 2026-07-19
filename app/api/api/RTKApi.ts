@@ -224,9 +224,6 @@ export const RTKApi = createApi({
      */
     getProductById: build.query<IProductsEntity, { id: number }>({
       queryFn: async ({ id }) => {
-        if (!id) {
-          return { error: null };
-        }
         const result = await getApi().Products.getProductById(id);
         if (isError(result)) {
           return { error: result };
@@ -239,14 +236,16 @@ export const RTKApi = createApi({
     /**
      * Get page by ID.
      * Fetches a single page by its ID.
+     *
+     * Callers gate a falsy/absent id with RTK's `{ skip: !id }` at the hook
+     * (see `OfferCard`, `OfferDetailCard`, `ProductRow`) rather than an in-query
+     * short-circuit — so this `queryFn` only ever runs for a real id and returns
+     * either `{ data }` or a genuine `{ error: IError }`.
      * @param id - ID of the page to fetch
      * @returns  Page entity
      */
     getPageById: build.query<IPagesEntity, { id: number }>({
       queryFn: async ({ id }) => {
-        if (!id) {
-          return { error: null };
-        }
         const result = await getApi().Pages.getPageById(id);
 
         if (isError(result)) {

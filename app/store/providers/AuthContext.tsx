@@ -203,6 +203,14 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     refreshToken: string;
     authProviderMarker: string;
   }): void => {
+    /**
+     * The refresh token is also persisted by the SDK's `saveFunction` during
+     * `auth()`; setting it here again is a harmless, explicit belt-and-suspenders
+     * (the marker is ours to persist regardless). `syncTokens()` is NOT
+     * redundant — it writes the access token straight into the live SDK instance
+     * to avoid the 401-on-first-request race that a `reDefine()` would cause
+     * (see `api.ts` → `syncTokens`).
+     */
     localStorage.setItem('refresh-token', refreshToken);
     localStorage.setItem('authProviderMarker', authProviderMarker);
     syncTokens(accessToken, refreshToken);

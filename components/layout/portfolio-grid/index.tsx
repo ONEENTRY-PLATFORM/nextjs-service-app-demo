@@ -38,6 +38,9 @@ const PortfolioGridLayout = async ({
     return <></>;
   }
 
+  /** Guard the attribute bag: `attributeValues` can be absent on a bare entity. */
+  const masterAttrs = master.attributeValues || {};
+
   /**
    * `master_portfolio` is an `entity` list of the master's gallery photo pages:
    * `[{ value: { id: <photoPageId>, parentId: <category page id> } }]`.
@@ -47,7 +50,7 @@ const PortfolioGridLayout = async ({
    * `gallery_category`, so filtering here would hide everything).
    */
   const masterPortfolio =
-    (master.attributeValues.master_portfolio?.value as
+    (masterAttrs.master_portfolio?.value as
       Array<{ value?: { id?: number } }> | undefined) || [];
   /** Extract photo-page IDs from portfolio items */
   const ids = masterPortfolio
@@ -60,8 +63,10 @@ const PortfolioGridLayout = async ({
   /**
    * Flatten every gallery photo across the master's photo pages.
    * `groupOfImages` items carry `downloadLink` (full URL) and `previewLink`
-   * — an object keyed by preset: `{ [preset]: [base64-LQIP, previewURL] }`.
-   * The base64 LQIP is inline, so no extra fetch is needed for the blur.
+   * — an object keyed by preset: `{ [preset]: [base64-LQIP, lqipURL] }`.
+   * Both preview variants are tiny LQIP blurs (`[1]` is a ~20×20 URL, not a
+   * display thumbnail), so the grid renders the full `downloadLink` and only
+   * uses `[0]` as the inline blur placeholder — mirroring the gallery page.
    */
   const portfolioImages =
     childPages?.flatMap((page) => {
@@ -77,7 +82,7 @@ const PortfolioGridLayout = async ({
         const pv = imgSrc.previewLink?.[preset];
         return {
           img: imgSrc.downloadLink,
-          thumb: pv?.[1] || imgSrc.downloadLink,
+          thumb: imgSrc.downloadLink,
           preview: pv?.[0] || '',
           /** TODO: Add proper alt text for accessibility */
           alt: '...',
@@ -91,10 +96,10 @@ const PortfolioGridLayout = async ({
   }
 
   /** Caption data for the lightbox. */
-  const attrs = master.attributeValues ?? {};
-  const masterName = (attrs.master_name?.value as string | undefined) ?? '';
+  const masterName =
+    (masterAttrs.master_name?.value as string | undefined) ?? '';
   const role =
-    (attrs.master_short_description?.value as string | undefined) ?? '';
+    (masterAttrs.master_short_description?.value as string | undefined) ?? '';
 
   /** Render portfolio heading + gallery with lightbox */
   return (
