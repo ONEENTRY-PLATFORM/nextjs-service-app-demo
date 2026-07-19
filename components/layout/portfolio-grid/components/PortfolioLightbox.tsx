@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Share2, X } from 'lucide-react';
 import type { JSX } from 'react';
 import { useEffect } from 'react';
 
@@ -142,17 +142,30 @@ const PortfolioLightbox = ({
           />
         </div>
 
-        {/* Caption */}
-        <div className="w-full px-1">
-          <p className="truncate text-lg font-black text-white">{masterName}</p>
-          {role ? (
+        {/* Caption + share — mock: service line (role fallback: the CMS has no
+            per-photo service name), then "name · role" with the role in PINK. */}
+        <div className="flex w-full items-center justify-between gap-4 px-1">
+          <div className="min-w-0">
+            <p className="truncate text-lg font-black text-white">
+              {role || masterName}
+            </p>
             <p
               className="mt-0.5 truncate text-base"
-              style={{ color: '#ed21f1' }}
+              style={{ color: '#a8a9b5' }}
             >
-              {role}
+              {masterName}
+              {role ? (
+                <span style={{ color: '#ed21f1' }}> · {role}</span>
+              ) : null}
             </p>
-          ) : null}
+          </div>
+          <button
+            className="flex size-9 shrink-0 items-center justify-center rounded-xl transition-colors hover:bg-white/10"
+            style={{ border: '1.5px solid rgba(255,255,255,0.14)' }}
+            aria-label="Share"
+          >
+            <Share2 size={14} color="#fff" />
+          </button>
         </div>
 
         {/* Thumbnail strip */}

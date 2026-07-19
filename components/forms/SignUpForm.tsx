@@ -57,6 +57,8 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
   const [loading, setLoading] = useState(false);
   /** State for storing error messages during form submission */
   const [error, setError] = useState('');
+  /** Terms & Privacy consent (mock's required checkbox) */
+  const [agree, setAgree] = useState(false);
 
   /** Access authentication context to manage user authentication state */
   const { login } = useContext(AuthContext);
@@ -115,11 +117,26 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
     [attributes],
   );
 
-  /** Determine if form can be submitted based on field validation */
+  /** Determine if form can be submitted based on field validation + consent */
   const canSubmit = useMemo(
-    () => visibleFields.every((f) => fields[f.marker]?.valid),
-    [fields, visibleFields],
+    () => agree && visibleFields.every((f) => fields[f.marker]?.valid),
+    [agree, fields, visibleFields],
   );
+
+  /**
+   * First/last-name field pair for the mock's two-column row
+   * (`grid lg:grid-cols-2`). Only adjacent fields are paired so the CMS field
+   * order stays authoritative; any other layout renders single-column.
+   */
+  const namePair = useMemo(() => {
+    const nameIdx = visibleFields.findIndex((f) =>
+      /^(first_?)?name/i.test(f.marker),
+    );
+    const surnameIdx = visibleFields.findIndex((f) =>
+      /^(sur|last_?)name/i.test(f.marker),
+    );
+    return nameIdx >= 0 && surnameIdx === nameIdx + 1 ? nameIdx : -1;
+  }, [visibleFields]);
 
   /** Handle sign up form submission with authentication flow */
   const onSignUp = useCallback(
@@ -281,30 +298,52 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
         data-testid="auth-form-sign-up"
         className="mx-auto flex min-h-full w-full max-w-107.5 flex-col gap-4 text-xl leading-5"
       >
-        {/** Display sign in link and account creation description */}
-        <div className="relative box-border flex shrink-0 flex-col gap-2.5">
-          <p className="text-xs text-gray-400 max-md:max-w-full">
-            {/** Button to switch to sign in form (backward step: slide from left) */}
-            <button
-              onClick={() => {
-                setDirection('backward');
-                setComponent('SignInForm');
-              }}
-              className="underline"
-            >
-              {sign_in_text?.value}
-            </button>{' '}
-            {/** Account creation description text */}
-            {create_account_desc?.value}
-          </p>
-        </div>
-
-        {/** Render dynamic form fields (visible per flag routing above). */}
+        {/**
+            Render dynamic form fields (visible per flag routing above);
+            first/last name share a two-column row on lg, as in the mock.
+          */}
         <div className="relative mb-4 box-border flex shrink-0 flex-col gap-4">
-          {visibleFields.map((field, index) => (
-            <FormInput key={field.marker} index={index} {...field} />
-          ))}
+          {visibleFields.map((field, index) => {
+            if (namePair >= 0 && index === namePair + 1) {
+              /** Rendered inside the pair row below */
+              return null;
+            }
+            if (namePair >= 0 && index === namePair) {
+              const surnameField = visibleFields[index + 1];
+              return (
+                <div
+                  key={field.marker}
+                  className="grid grid-cols-1 gap-4 lg:grid-cols-2"
+                >
+                  <FormInput index={index} {...field} />
+                  {surnameField && (
+                    <FormInput index={index + 1} {...surnameField} />
+                  )}
+                </div>
+              );
+            }
+            return <FormInput key={field.marker} index={index} {...field} />;
+          })}
         </div>
+        {/** Terms & Privacy consent — required, as in the mock */}
+        <label className="flex cursor-pointer items-start gap-2.5 select-none">
+          <input
+            type="checkbox"
+            checked={agree}
+            onChange={(e) => setAgree(e.target.checked)}
+            className="mt-0.5 size-4 shrink-0 cursor-pointer rounded accent-fuchsia-500"
+          />
+          <span className="text-sm leading-relaxed text-neutral-300">
+            I agree to the{' '}
+            <span className="font-semibold text-fuchsia-500 underline">
+              Terms
+            </span>
+            {' & '}
+            <span className="font-semibold text-fuchsia-500 underline">
+              Privacy Policy
+            </span>
+          </span>
+        </label>
         {/** Render submit button for form submission */}
         <SubmitButton
           title={sign_up_text?.value}
@@ -316,6 +355,21 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
           <AuthDivider />
           <GoogleSignInButton />
         </div>
+        {/** Switch back to sign-in — at the bottom of the form, as in the mock */}
+        <p className="w-full text-center text-sm text-neutral-300">
+          {(create_account_desc?.value as string | undefined) ||
+            'Already have an account?'}{' '}
+          {/** Button to switch to sign in form (backward step: slide from left) */}
+          <button
+            onClick={() => {
+              setDirection('backward');
+              setComponent('SignInForm');
+            }}
+            className="font-semibold text-fuchsia-500"
+          >
+            {(sign_in_text?.value as string | undefined) || 'Sign In'}
+          </button>
+        </p>
         {/** Display error message if present */}
         {error && <ErrorMessage error={error} />}
       </form>

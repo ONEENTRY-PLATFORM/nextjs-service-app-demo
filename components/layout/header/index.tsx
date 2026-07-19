@@ -4,8 +4,12 @@ import type { ReactElement } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import NavigationMenu from '@/components/layout/header/main-menu';
+import { normalizeMenuPages } from '@/components/normalizeMenuPages';
+import { flatMenuToNested } from '@/components/utils';
 
 import Logo from './Logo';
+import BookOnlineLink from './nav/BookOnlineLink';
+import MobileNavPanel from './nav/MobileNavPanel';
 import NavGroup from './nav/NavGroup';
 import SearchModal from './search/SearchModal';
 
@@ -28,6 +32,14 @@ const Header = async ({
   const [dict] = ServerProvider<IAttributeValues>('dict');
   const { search_placeholder } = dict;
 
+  /** Main menu links for the inline mobile panel (same hrefs as desktop nav) */
+  const panelItems = (
+    menu?.pages ? flatMenuToNested(normalizeMenuPages(menu.pages), null) : []
+  ).map((item) => ({
+    label: item.localizeInfos?.menuTitle || item.localizeInfos?.title || '',
+    href: `/${item.pageUrl && item.pageUrl !== 'home' ? item.pageUrl : ''}`,
+  }));
+
   return (
     <div id="header">
       <header className="flex flex-col items-center bg-white shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
@@ -36,6 +48,7 @@ const Header = async ({
             <Logo />
           </div>
           <NavigationMenu menu={menu} />
+          <BookOnlineLink variant="mobile" />
           <div className="flex items-center gap-3">
             <div className="fade-in">
               <SearchModal
@@ -48,6 +61,7 @@ const Header = async ({
             <NavGroup />
           </div>
         </section>
+        <MobileNavPanel items={panelItems} />
       </header>
     </div>
   );

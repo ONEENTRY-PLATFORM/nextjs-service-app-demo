@@ -24,6 +24,8 @@ export type GalleryItem = {
   title: string;
   /** Specialist name decoded from the folder name */
   master: string;
+  /** Admin id of the linked master (CMS `master_id`), for the profile link */
+  masterId?: number | undefined;
   /** Salon name: Downtown | Marina | JBR */
   salon: string;
   /** Specialist role line, e.g. `Stylist · Downtown` */

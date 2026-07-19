@@ -98,7 +98,7 @@ const OfferCard = ({
   return (
     <CardAnimations
       index={index}
-      className="relative flex h-full min-h-100 cursor-pointer flex-col overflow-hidden rounded-3xl transition-transform duration-300 hover:-translate-y-1"
+      className={`relative flex h-full min-h-100 cursor-pointer flex-col overflow-hidden rounded-3xl transition-transform duration-300 ${featured ? 'hover:-translate-y-1.5' : 'hover:-translate-y-1'}`}
       style={
         featured
           ? {

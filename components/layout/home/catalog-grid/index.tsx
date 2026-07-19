@@ -48,11 +48,11 @@ const CatalogSection = ({
         </div>
       </div>
       {/* section-bg */}
-      <BgAnimations className="section-bg text-center text-[clamp(6rem,13vw,13rem)] leading-none text-[#e1e5ef]/30 uppercase xl:text-[clamp(6rem,13vw,13rem)] md:text-[clamp(7rem,17vw,13rem)]">
-        <div id="beauty_bg" className="font-bold">
+      <BgAnimations className="section-bg leading-1.05 text-center text-[clamp(6rem,13vw,13rem)] text-[#e1e5ef]/30 uppercase xl:text-[clamp(6rem,13vw,13rem)] md:text-[clamp(7rem,17vw,13rem)]">
+        <div id="beauty_bg" className="font-black">
           {parse(title1)}
         </div>
-        <div id="salon_bg" className="font-light">
+        <div id="salon_bg" className="font-thin">
           {parse(title2)}
         </div>
       </BgAnimations>

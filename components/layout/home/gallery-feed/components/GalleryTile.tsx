@@ -4,7 +4,7 @@ import type { JSX } from 'react';
 
 import CardAnimations from '@/app/animations/CardAnimations';
 
-/** A single gallery tile — image plus its target service-category link */
+/** A single gallery tile — image plus its Gallery-page (category-filtered) link */
 export type GalleryGridCard = {
   name: string;
   link: string;
@@ -13,8 +13,8 @@ export type GalleryGridCard = {
 
 /**
  * GalleryTile — one tile of the home GALLERY strip: an edge-to-edge `4/5` photo
- * with a subtle hover zoom and magenta tint, linking to its matching service
- * category (static-html mock, `HomePage.tsx` → GALLERY STRIP).
+ * with a subtle hover zoom and magenta tint, opening the Gallery page filtered
+ * to its category (static-html mock, `HomePage.tsx` → GALLERY STRIP).
  *
  * The {@link CardAnimations} wrapper gives the tile the same behaviour as the
  * catalog and offer cards: it fades and scales in once it scrolls into view,

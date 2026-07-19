@@ -59,7 +59,7 @@ const GalleryFeed = async ({
   /** Render gallery feed section with title and photo grid */
   return (
     <section
-      className="flex w-full flex-col justify-center py-5"
+      className="flex w-full flex-col justify-center pt-0 pb-3 xl:pb-10 md:pb-4"
       data-testid="home-gallery"
     >
       <div className="flex w-full flex-col">
@@ -74,8 +74,9 @@ const GalleryFeed = async ({
 /**
  * Build gallery feed cards from the local photo library
  * (`public/images/Beauty content/Gallery/`) — the demo fallback used while the
- * CMS gallery tree is empty. Each card links to the matching service category
- * (`/services/hair`), mirroring the static-html home GALLERY strip.
+ * CMS gallery tree is empty. Each card opens the Gallery page filtered to its
+ * main category (`/gallery?category=HAIR`), mirroring the static-html home
+ * GALLERY strip (`onGalleryClick(category, sub)`).
  * @returns {Promise<FeedCard[]>} Demo gallery cards
  */
 async function getLocalGalleryFeed(): Promise<FeedCard[]> {
@@ -84,7 +85,7 @@ async function getLocalGalleryFeed(): Promise<FeedCard[]> {
     const main = SUB_TO_MAIN[item.category];
     return {
       name: item.master,
-      link: main ? `/services/${main.toLowerCase()}` : '/gallery',
+      link: main ? `/gallery?category=${main.toUpperCase()}` : '/gallery',
       img: item.url,
       thumb: item.url,
       preview: null,
@@ -153,12 +154,14 @@ function extractPhotosFromPage(
       (page?.attributeValues?.gallery_photos?.value as
         OneEntryImageFile[] | undefined) || [];
     /**
-     * Link to the matching service category, like the static-html home gallery.
-     * The gallery category pageUrl mirrors the service pageUrl with a `gallery-`
-     * prefix (`gallery-hair` → `/services/hair`).
+     * Open the Gallery page filtered to the tile's main category, like the
+     * static-html home gallery (`onGalleryClick`). The gallery category
+     * pageUrl carries a `gallery-` prefix (`gallery-hair` → `?category=HAIR`).
      */
     const categoryUrl = parentPage.pageUrl.replace(/^gallery-/, '');
-    const link = categoryUrl ? `/services/${categoryUrl}` : '';
+    const link = categoryUrl
+      ? `/gallery?category=${categoryUrl.toUpperCase()}`
+      : '/gallery';
     /** Map through photos to create photo objects with preview data */
     return photos.map(async (photo) => {
       /** Normalize inconsistent `previewLink` shapes into plain URL strings */

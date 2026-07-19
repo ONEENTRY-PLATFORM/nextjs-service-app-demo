@@ -184,7 +184,7 @@ const HeroSlider = ({
           <div className="flex items-end justify-start pl-2.75 md:justify-end md:pl-0">
             <Link
               href={current.buttonLink || '/offers'}
-              className="pointer-events-auto inline-flex min-w-50 items-center justify-center rounded-xl bg-white px-7 py-3.5 text-base font-normal tracking-[0.2em] text-ink uppercase transition-colors hover:bg-gray-50"
+              className="pointer-events-auto inline-flex min-w-50 items-center justify-center rounded-xl bg-white px-7 py-3.5 text-base font-normal tracking-[0.2em] text-charcoal uppercase transition-colors hover:bg-gray-50"
             >
               {current.buttonText || 'Discover More'}
             </Link>

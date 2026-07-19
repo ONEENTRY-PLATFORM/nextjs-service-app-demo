@@ -1,5 +1,14 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
+import { offerAccentGradientsData } from '@/components/data';
+
+/**
+ * Brand accent pairs from the static-html mock (`data/offers.ts`): each known
+ * accent color maps to its light→dark gradient (`#26D2E6→#109AA9` etc.).
+ * Unknown accents fall back to a same-colour gradient.
+ */
+const ACCENT_GRADIENTS: Record<string, string> = offerAccentGradientsData;
+
 /** Per-category accent fallback while `offer_type` is still a category entity */
 const CATEGORY_ACCENT: Record<string, string> = {
   Hair: '#ed21f1',
@@ -95,7 +104,9 @@ export const parseOffer = (product: IProductsEntity): OfferView => {
       ? CATEGORY_ACCENT[offerType.title]
       : '') ||
     '#ed21f1';
-  const accentGrad = `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)`;
+  const accentGrad =
+    ACCENT_GRADIENTS[accentColor.toLowerCase()] ??
+    `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)`;
 
   return {
     name,

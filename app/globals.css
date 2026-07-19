@@ -54,6 +54,7 @@
   --color-blue-350: #0edefb;
   /* headings/dark text */
   --color-ink: #414253;
+  --color-charcoal: #292a2c;
 
   /* api-test dev dashboard (dark UI): light "paper" text on dark panels,
      brand accent matches the site's fuchsia */

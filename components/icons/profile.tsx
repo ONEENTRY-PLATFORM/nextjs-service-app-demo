@@ -12,8 +12,8 @@ const ProfileIcon = (props?: { active?: boolean }): JSX.Element => {
     <UserCircle
       strokeWidth={2}
       className={
-        'size-full transition-colors duration-300 group-hover:text-fuchsia-500 ' +
-        (props?.active ? 'text-fuchsia-500' : 'text-slate-400')
+        'size-full transition-colors duration-300 ' +
+        (props?.active ? 'text-fuchsia-500' : 'text-neutral-300')
       }
     />
   );

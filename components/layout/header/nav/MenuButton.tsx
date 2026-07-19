@@ -1,45 +1,44 @@
 'use client';
 
+import { Menu, X } from 'lucide-react';
 import type { JSX } from 'react';
 import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
-import { prefetchPopup } from '@/components/layout/prefetchPopup';
 
 /**
  * Mobile menu trigger button component.
  *
- * This component renders a hamburger-style menu button that is visible only on
- * mobile devices (lg breakpoint and below). When clicked, it opens the mobile
- * menu by updating the OpenDrawerContext state.
- *
- * The button consists of three horizontal lines (hamburger icon) and uses the
- * OpenDrawerContext to manage the mobile menu state. It sets the drawer to open
- * and specifies that the 'MobileMenu' component should be displayed.
+ * Renders the lucide `Menu` icon (22px, DARK) that switches to `X` while the
+ * inline mobile panel is open — exactly as in the static-html mock header.
+ * Visible on <lg only; toggles the panel through {@link OpenDrawerContext}.
  * @returns {JSX.Element} JSX.Element representing a mobile menu trigger button
  */
 const MobileMenuTrigger = (): JSX.Element => {
-  /** Get context functions to control drawer state and component */
-  const { setOpen, setComponent } = useContext(OpenDrawerContext);
+  /** Get context functions to control the mobile panel state */
+  const { open, setOpen, component, setComponent } =
+    useContext(OpenDrawerContext);
+  const isOpen = open && component === 'MobileMenu';
 
-  /** Handle click event to open mobile menu drawer */
+  /** Toggle the inline mobile navigation panel */
   const handleClick = () => {
-    setOpen(true);
-    setComponent('MobileMenu');
+    if (isOpen) {
+      setOpen(false);
+    } else {
+      setOpen(true);
+      setComponent('MobileMenu');
+    }
   };
 
-  /* Render mobile menu trigger button with hamburger icon */
+  /* Render mobile menu trigger button with Menu/X icon */
   return (
     <button
       onClick={handleClick}
-      onPointerEnter={() => prefetchPopup('MobileMenu')}
-      onFocus={() => prefetchPopup('MobileMenu')}
-      aria-label="Open menu"
-      className="flex size-10 flex-col items-center justify-center gap-1 rounded-md transition-colors lg:hidden"
+      aria-label={isOpen ? 'Close menu' : 'Open menu'}
+      aria-expanded={isOpen}
+      className="p-2 text-slate-400 lg:hidden"
     >
-      {[...Array(3)].map((_, index) => (
-        <span key={index} className="block h-0.5 w-8 bg-gray-600"></span>
-      ))}
+      {isOpen ? <X size={22} /> : <Menu size={22} />}
     </button>
   );
 };

@@ -42,11 +42,12 @@ const CtaBannerOverlay = ({
       </h2>
     )}
     {/* Button: beneath the headline on mobile, pinned right-of-center on desktop.
-        Frosted translucent fill with a light outline, as in the Figma. */}
+        Glassmorphic style straight from the mock's "Book Now" (bg white/22,
+        2px white/50 border, blur 8px, font-black). */}
     {buttonText && (
       <Link
         href="/booking"
-        className="inline-flex items-center justify-center rounded-xl border border-white/60 bg-white/12 px-12 py-4 text-base font-medium tracking-[0.2em] text-white uppercase backdrop-blur-md transition-colors hover:bg-white/25 md:absolute md:top-1/2 md:right-[4%] md:-translate-y-1/2 md:px-9 md:py-3 md:text-sm"
+        className="inline-flex items-center justify-center rounded-xl border-2 border-white/50 bg-white/22 px-8 py-3.5 text-base font-black tracking-wider text-white uppercase backdrop-blur-sm transition-transform hover:scale-105 active:scale-96 md:absolute md:top-1/2 md:right-[4%] md:-translate-y-1/2"
       >
         {buttonText}
       </Link>

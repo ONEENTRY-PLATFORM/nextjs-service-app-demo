@@ -4,10 +4,14 @@ import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces
 import type { JSX } from 'react';
 import { useState } from 'react';
 
-import { ORDERS_STATUS_UPCOMING } from '@/app/store/orderMarkers';
+import {
+  ORDERS_STATUS_COMPLETED,
+  ORDERS_STATUS_UPCOMING,
+} from '@/app/store/orderMarkers';
 
 import CancelOrderButton from './CancelOrderButton';
 import EditOrderButton from './EditOrderButton';
+import LeaveReviewButton from './LeaveReviewButton';
 import RepeatOrder from './RepeatOrder';
 import SaveOrderButton from './SaveOrderButton';
 
@@ -22,6 +26,7 @@ import SaveOrderButton from './SaveOrderButton';
 const OrderButtonsGroup = ({
   dict,
   order,
+  master,
 }: {
   dict: IAttributeValues; // Dictionary containing localized strings
   order: IOrderByMarkerEntity; // Order information to display
@@ -56,10 +61,16 @@ const OrderButtonsGroup = ({
             />
           )}
           {/* Always show cancel button for upcoming orders */}
-          <CancelOrderButton dict={dict} orderData={order} />
+          <CancelOrderButton dict={dict} orderData={order} master={master} />
+        </>
+      ) : statusIdentifier === ORDERS_STATUS_COMPLETED ? (
+        /** Completed visits: book again + leave a review (mock pair) */
+        <>
+          <RepeatOrder dict={dict} orderData={order} />
+          <LeaveReviewButton />
         </>
       ) : (
-        /** For completed / canceled orders, offer to book again */
+        /** Canceled orders: only offer to book again */
         <RepeatOrder dict={dict} orderData={order} />
       )}
     </div>

@@ -84,19 +84,34 @@ const ServicesCatalog = ({
     setSubCat(next?.subcategories[0]?.url ?? null);
   };
 
+  /** Subcategory url → lowercase display title, for the search predicate */
+  const subTitleByUrl = useMemo(() => {
+    const map = new Map<string, string>();
+    categories.forEach((category) =>
+      category.subcategories.forEach((sub) =>
+        map.set(sub.url, sub.title.toLowerCase()),
+      ),
+    );
+    return map;
+  }, [categories]);
+
   /**
    * A non-empty search query overrides the category/subcategory tabs and
-   * matches services by name or description across the entire catalogue.
+   * matches services by name or subcategory title across the entire
+   * catalogue, like the static-html mock (`name` OR `subcategory`).
    */
   const searching = query.trim().length > 0;
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (q) {
-      return services.filter(
-        (s) =>
-          s.title.toLowerCase().includes(q) ||
-          s.description.toLowerCase().includes(q),
-      );
+      return services.filter((s) => {
+        const subTitle = s.subcategoryUrl
+          ? subTitleByUrl.get(s.subcategoryUrl)
+          : undefined;
+        return (
+          s.title.toLowerCase().includes(q) || (subTitle?.includes(q) ?? false)
+        );
+      });
     }
     if (!mainCat) {
       return services;
@@ -106,7 +121,7 @@ const ServicesCatalog = ({
         s.categoryUrl === mainCat &&
         (subCat === null || s.subcategoryUrl === subCat),
     );
-  }, [services, mainCat, subCat, query]);
+  }, [services, mainCat, subCat, query, subTitleByUrl]);
 
   /**
    * Switching the category/subcategory/search remounts the card grid and changes

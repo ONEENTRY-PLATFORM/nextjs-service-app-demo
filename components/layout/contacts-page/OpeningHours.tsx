@@ -78,8 +78,10 @@ const OpeningHours = (): JSX.Element => {
                 >
                   {row.day.slice(0, 3)}
                 </p>
+                {/* `nowrap` collapses the injected newlines into spaces, so the
+                    hours render on one line — exactly like the mock's markup. */}
                 <p
-                  className={`text-base leading-tight font-normal whitespace-pre-line ${
+                  className={`text-base leading-tight font-normal whitespace-nowrap ${
                     isToday ? 'text-white' : 'text-slate-400'
                   }`}
                 >

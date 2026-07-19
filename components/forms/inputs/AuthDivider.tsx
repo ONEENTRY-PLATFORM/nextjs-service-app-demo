@@ -2,8 +2,9 @@ import type { JSX } from 'react';
 
 /**
  * "or continue with" hairline divider between the credential form and the
- * social (Google) sign-in button. Mirrors the static-html reference: two thin
- * rules with muted centered text.
+ * social (Google) sign-in button: two thin rules with muted centered text.
+ * A template addition — the static-html mock has no social sign-in at all;
+ * kept because Google OAuth is wired through the CMS auth providers.
  * @param   {object}      props      - Component props
  * @param   {string}      props.text - Divider label (default "or continue with")
  * @returns {JSX.Element}            The divider row

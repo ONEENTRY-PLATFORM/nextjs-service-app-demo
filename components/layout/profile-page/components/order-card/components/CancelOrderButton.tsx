@@ -1,10 +1,13 @@
+'use client';
+
+import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type {
   IOrderByMarkerEntity,
   IOrderData,
 } from 'oneentry/dist/orders/ordersInterfaces';
 import type { JSX } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { useUpdateOrderMutation } from '@/app/api/api/RTKApi';
@@ -13,8 +16,14 @@ import {
   ORDERS_STORAGE_MARKER,
 } from '@/app/store/orderMarkers';
 
+import CancelConfirmModal from './CancelConfirmModal';
+import CancelSuccessModal from './CancelSuccessModal';
+
 /**
- * Cancel order button
+ * Cancel order button — the "Cancel booking" flow from the static-html mock:
+ * the button opens a confirmation dialog ("Cancel this appointment?" with
+ * "Keep appointment" / "Yes, cancel"), and a successful cancellation shows the
+ * "Appointment cancelled" dialog instead of a toast.
  *
  * Writes through the `updateOrder` mutation, which declares
  * `invalidatesTags: ['Orders']` — the history list re-reads itself, so no
@@ -22,18 +31,23 @@ import {
  * @param   {object}               props           - Component props
  * @param   {IAttributeValues}     props.dict      - The dictionary object containing translations
  * @param   {IOrderByMarkerEntity} props.orderData - The order data to be cancelled
+ * @param   {IAdminEntity}         [props.master]  - Master associated with the order (confirm-dialog line)
  * @returns {JSX.Element}                          JSX.Element
  */
 const CancelOrderButton = ({
   dict,
   orderData,
+  master,
 }: {
   dict: IAttributeValues;
   orderData?: IOrderByMarkerEntity;
+  master?: IAdminEntity | undefined;
 }): JSX.Element => {
   const [updateOrder] = useUpdateOrderMutation();
   /** Destructure cancel text from dictionary */
   const { cancel_text } = dict;
+  /** Dialog stage: confirmation → success (null = no dialog) */
+  const [stage, setStage] = useState<'confirm' | 'done' | null>(null);
 
   /** Memoized function to handle order cancellation */
   const cancelOrderHandle = useCallback(async () => {
@@ -75,22 +89,60 @@ const CancelOrderButton = ({
         (e as { message?: string } | undefined)?.message ??
         'Could not cancel the order';
       toast.error(message);
+      setStage(null);
       return;
     }
 
-    /** The list refreshes itself — the mutation invalidates the `Orders` tag */
-    toast('Order canceled!');
+    /** The list refreshes itself — show the mock's success dialog. */
+    setStage('done');
   }, [orderData, updateOrder]);
 
-  /** Render the cancel button */
+  /**
+   * Confirm-dialog visit line, mock format: "Master · DD.MM.YYYY at HH:MM".
+   * Both parts are optional — missing data just shortens the line.
+   */
+  const masterName =
+    (master?.attributeValues?.master_name?.value as string | undefined) ?? '';
+  const intervalField = orderData?.formData.find(
+    (el: { marker: string }) => el.marker === 'interval',
+  );
+  const startTime = (intervalField?.value as string[][] | undefined)?.[0]?.[0];
+  const startDate = startTime ? new Date(startTime) : null;
+  const dateLine =
+    startDate && !Number.isNaN(startDate.getTime())
+      ? `${startDate.getUTCDate().toString().padStart(2, '0')}.${(
+          startDate.getUTCMonth() + 1
+        )
+          .toString()
+          .padStart(2, '0')}.${startDate.getUTCFullYear()} at ${startDate
+          .getUTCHours()
+          .toString()
+          .padStart(2, '0')}:${startDate
+          .getUTCMinutes()
+          .toString()
+          .padStart(2, '0')}`
+      : '';
+  const subtitle = [masterName, dateLine].filter(Boolean).join(' · ');
+
+  /* Render the cancel button and its dialogs */
   return (
-    <button
-      onClick={cancelOrderHandle}
-      type="button"
-      className="flex-1 rounded-lg border border-slate-150 py-2 text-base font-medium text-neutral-300 transition-all hover:bg-gray-50"
-    >
-      {(cancel_text?.value as string | undefined) || 'Cancel'}
-    </button>
+    <>
+      <button
+        onClick={() => setStage('confirm')}
+        type="button"
+        className="flex-1 rounded-lg border border-slate-150 py-2 text-base font-medium text-neutral-300 transition-all hover:bg-gray-50"
+      >
+        {(cancel_text?.value as string | undefined) || 'Cancel booking'}
+      </button>
+      {stage === 'confirm' && (
+        <CancelConfirmModal
+          subtitle={subtitle}
+          onKeep={() => setStage(null)}
+          onConfirm={cancelOrderHandle}
+        />
+      )}
+      {stage === 'done' && <CancelSuccessModal onDone={() => setStage(null)} />}
+    </>
   );
 };
 

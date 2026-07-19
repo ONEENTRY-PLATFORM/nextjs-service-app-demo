@@ -72,7 +72,7 @@ const ReviewsCarousel = (): JSX.Element => {
           type="button"
           onClick={prev}
           aria-label="Previous review"
-          className="arrow absolute top-1/2 left-0 hidden -translate-y-1/2 text-accent-pink transition-opacity hover:opacity-70 md:block"
+          className="arrow absolute top-1/2 left-4 hidden -translate-y-1/2 text-accent-pink transition-opacity hover:opacity-70 md:block"
         >
           <svg width="22" height="42" viewBox="0 0 25.6872 44.5" fill="none">
             <path
@@ -127,7 +127,7 @@ const ReviewsCarousel = (): JSX.Element => {
           type="button"
           onClick={next}
           aria-label="Next review"
-          className="arrow absolute top-1/2 right-0 hidden -translate-y-1/2 rotate-180 text-accent-pink transition-opacity hover:opacity-70 md:block"
+          className="arrow absolute top-1/2 right-4 hidden -translate-y-1/2 rotate-180 text-accent-pink transition-opacity hover:opacity-70 md:block"
         >
           <svg width="22" height="42" viewBox="0 0 25.6872 44.5" fill="none">
             <path

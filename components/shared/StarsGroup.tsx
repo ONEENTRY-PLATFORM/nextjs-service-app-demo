@@ -29,7 +29,7 @@ const StarsGroup = ({
 
   return (
     <div
-      className="flex gap-0.5"
+      className="flex gap-1"
       aria-label={`Rating of ${rating} out of ${totalRating}`}
     >
       {Array.from({ length: totalRating }, (_, index) => {
@@ -40,7 +40,11 @@ const StarsGroup = ({
             {...(color !== undefined ? { color } : {})}
           />
         ) : (
-          <StarOpenIcon key={index} size={size} />
+          <StarOpenIcon
+            key={index}
+            size={size}
+            {...(color !== undefined ? { color } : {})}
+          />
         );
       })}
     </div>

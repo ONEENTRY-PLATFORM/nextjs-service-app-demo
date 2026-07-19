@@ -12,16 +12,22 @@ import type { JSX } from 'react';
  * @param   {string}      props.className - CSS classes to apply to the SVG element
  * @param   {string}      props.fill      - Fill color for the SVG paths
  * @param   {string}      props.stroke    - Stroke color for the SVG paths
+ * @param   {number}      [props.width]   - Rendered width in px (default 110)
+ * @param   {number}      [props.height]  - Rendered height in px (default 70)
  * @returns {JSX.Element}                 Logo icon as an SVG element
  */
 const LogoIcon = ({
   className,
   fill,
   stroke,
+  width = 110,
+  height = 70,
 }: {
   className: string;
   fill: string;
   stroke: string;
+  width?: number | undefined;
+  height?: number | undefined;
 }): JSX.Element => {
   // Brand accent dots stay pink when the logo is rendered filled;
   // in draw mode (fill="none") they follow the stroke like other paths.
@@ -30,8 +36,8 @@ const LogoIcon = ({
 
   return (
     <svg
-      width="110"
-      height="70"
+      width={width}
+      height={height}
       viewBox="0 0 159 101"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

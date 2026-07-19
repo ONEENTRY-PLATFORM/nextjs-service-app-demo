@@ -40,7 +40,7 @@ const CategoryTabs = ({
     <>
       {/* Main category chips — mobile: scrollable row. Desktop: centered */}
       <div
-        className="-mx-3 mb-3 flex gap-2 overflow-x-auto px-3 md:mx-0 md:mb-0 md:flex-wrap md:justify-center md:px-0 [&::-webkit-scrollbar]:hidden"
+        className="-mx-3 mb-3 flex gap-2 overflow-x-auto px-3 md:mx-0 md:flex-wrap md:justify-center md:px-0 [&::-webkit-scrollbar]:hidden"
         style={{ scrollbarWidth: 'none' }}
       >
         {categories.map((c) => {

@@ -45,10 +45,10 @@ const NavItemProfile = ({
         onClick={handleSignInClick}
         onPointerEnter={() => prefetchPopup('SignInForm')}
         onFocus={() => prefetchPopup('SignInForm')}
-        className="group relative my-auto box-border flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-[#d0d0dc] transition-colors duration-200 hover:border-fuchsia-500"
+        className="group relative my-auto box-border flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-[#d0d0dc] transition-transform duration-200 hover:scale-108 active:scale-94"
         aria-label="Sign In"
       >
-        <span className="flex size-5">
+        <span className="flex size-4.75">
           <ProfileIcon />
         </span>
       </button>
@@ -65,10 +65,10 @@ const NavItemProfile = ({
     <Link
       prefetch={false}
       href="/profile"
-      className="group relative my-auto box-border flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-fuchsia-500 bg-fuchsia-500/5 shadow-[0_0_12px_rgba(237,33,241,0.27)]"
+      className="group relative my-auto box-border flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-fuchsia-500 bg-fuchsia-500/6 shadow-[0_0_12px_rgba(237,33,241,0.27)] transition-transform duration-200 hover:scale-108 active:scale-94"
       aria-label="Profile"
     >
-      <span className="flex size-5">
+      <span className="flex size-4.75">
         <ProfileIcon active />
       </span>
     </Link>

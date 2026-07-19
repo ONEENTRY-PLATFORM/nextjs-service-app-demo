@@ -38,7 +38,7 @@ const OffersFeedBlock = ({
 
   return (
     <section
-      className="flex w-full justify-center bg-white py-10 pb-4"
+      className="flex w-full justify-center bg-white py-4 xl:py-10 md:py-6"
       data-testid="home-offers"
     >
       <div className="mx-auto mb-6 w-full max-w-7xl flex-col px-3 md:px-8">

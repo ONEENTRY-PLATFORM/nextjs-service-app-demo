@@ -7,6 +7,7 @@ import { type JSX, memo } from 'react';
 import { getPageById, getPagesByIds } from '@/app/api';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { REVIEWS } from '@/components/layout/reviews-page/data';
 
 import MasterAnimations from './animations/MasterAnimations';
 import BackLink from './components/BackLink';
@@ -111,20 +112,34 @@ const MasterSingleLayout = async ({
   const service = serviceRes.page;
   const role = shortDescription || service?.localizeInfos?.title || '';
 
-  /** Map salon page id → address for chip enrichment. */
-  const addressById = new Map<number, string>();
+  /** Map salon page id → address/pageUrl for chip enrichment and links. */
+  const salonPageById = new Map<number, { address: string; url: string }>();
   salonRes.pages?.forEach((page: IPagesEntity) => {
     const address =
       (page.attributeValues?.salon_address?.value as string | undefined) ?? '';
-    addressById.set(page.id, address);
+    salonPageById.set(page.id, { address, url: page.pageUrl });
   });
   const salonChips = salonEntities
     .map((entry) => {
       const id = entry.value?.id;
-      const address = typeof id === 'number' ? addressById.get(id) : undefined;
-      return { title: entry.title ?? '', address: address || undefined };
+      const salonPage =
+        typeof id === 'number' ? salonPageById.get(id) : undefined;
+      return {
+        title: entry.title ?? '',
+        address: salonPage?.address || undefined,
+        href: salonPage?.url ? `/salons/${salonPage.url}` : undefined,
+      };
     })
     .filter((chip) => chip.title);
+
+  /**
+   * Review count for the header cluster — the reviews page runs on the local
+   * mock dataset while the CMS reviews storage is empty, so the count comes
+   * from the same source the "Reviews" link leads to.
+   */
+  const reviewsCount = REVIEWS.filter(
+    (review) => review.master === name,
+  ).length;
 
   return (
     <section className="bg-white" data-testid="master-page">
@@ -152,6 +167,7 @@ const MasterSingleLayout = async ({
                     key={index}
                     title={chip.title}
                     address={chip.address}
+                    href={chip.href}
                   />
                 ))}
               </div>
@@ -162,7 +178,11 @@ const MasterSingleLayout = async ({
           <div className="flex flex-col">
             <div className="item mb-1 flex flex-wrap items-start justify-between gap-4">
               <MasterName name={name} role={role} />
-              <RatingCluster rating={rating} />
+              <RatingCluster
+                rating={rating}
+                reviewsCount={reviewsCount}
+                masterName={name}
+              />
             </div>
             <MasterExperience experience={experience} />
             <MasterDescription master={master} />

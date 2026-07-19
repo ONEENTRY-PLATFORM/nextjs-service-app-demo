@@ -107,6 +107,7 @@ const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
     category: GalleryMainCategory;
     title: string;
     master: string;
+    masterId: number | undefined;
     role: string;
   };
   const raw: RawPhoto[] = [];
@@ -120,6 +121,12 @@ const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
 
     for (const photoPage of photoPages) {
       const master = masterName(photoPage, mastersById);
+      /** Linked master admin id (`master_id` list) → "Check a profile" target */
+      const linked = photoPage.attributeValues?.master_id?.value as
+        Array<{ value?: number | string }> | undefined;
+      const linkedId = Number(linked?.[0]?.value);
+      const masterId =
+        Number.isFinite(linkedId) && linkedId > 0 ? linkedId : undefined;
       const images =
         (photoPage.attributeValues?.gallery_photos?.value as
           OneEntryImageFile[] | undefined) ?? [];
@@ -135,6 +142,7 @@ const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
           category: main,
           title: categoryLabel,
           master,
+          masterId,
           role,
         });
       }
@@ -159,6 +167,7 @@ const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
         category: photo.category,
         title: photo.title,
         master: photo.master,
+        masterId: photo.masterId,
         salon: '',
         role: photo.role,
       })),

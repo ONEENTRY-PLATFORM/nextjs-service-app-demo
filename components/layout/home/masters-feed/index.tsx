@@ -80,7 +80,7 @@ const MastersFeed = async ({
 
   return (
     <section
-      className="flex w-full flex-col justify-center py-5"
+      className="flex w-full flex-col justify-center py-4 xl:py-10 md:py-6"
       data-testid="home-masters"
     >
       <div className="flex w-full flex-col bg-white">

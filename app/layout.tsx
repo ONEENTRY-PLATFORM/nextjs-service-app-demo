@@ -217,7 +217,7 @@ export default async function RootLayout({
               </TransitionProvider>
               <BottomMenu />
               {/* Mounts (and downloads) only the popup that is actually open. */}
-              <PopupRoot dict={dict} menu={safeMenu} />
+              <PopupRoot dict={dict} />
             </OpenDrawerProvider>
           </AuthProvider>
           <IntroAnimations />

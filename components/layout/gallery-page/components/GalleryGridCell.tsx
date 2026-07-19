@@ -14,8 +14,8 @@ import type { GalleryItem } from '../taxonomy';
  * zoom-on-hover, a purple gradient hover overlay with the master name, role
  * and a "Check a profile" link, plus a like heart.
  *
- * The profile link leads to the specialists list page — individual master
- * profiles will be linkable once masters exist in the CMS.
+ * The profile link opens the linked master's profile (`/masters/{id}`) when
+ * the photo carries a CMS `master_id`, degrading to the specialists list.
  * @param   {object}               props        - Component properties
  * @param   {GalleryItem}          props.item   - Gallery photo item
  * @param   {boolean}              props.liked  - Whether the photo is liked
@@ -82,9 +82,9 @@ const GalleryGridCell = ({
           </p>
           <p className="text-base font-medium text-white/75">{item.role}</p>
 
-          {/* "Check a profile" link → specialists page */}
+          {/* "Check a profile" link → the master's profile (list fallback) */}
           <Link
-            href="/masters"
+            href={item.masterId ? `/masters/${item.masterId}` : '/masters'}
             onClick={(e) => e.stopPropagation()}
             className="mt-2 flex w-fit items-center gap-1 text-base font-semibold text-white underline decoration-white/50 underline-offset-2 transition-all hover:decoration-white"
           >

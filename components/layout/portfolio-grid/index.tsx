@@ -103,6 +103,9 @@ const PortfolioGridLayout = async ({
     return <></>;
   }
 
+  /** The mock shows at most 10 portfolio photos (`portfolio.slice(0, 10)`). */
+  const shownImages = portfolioImages.slice(0, 10);
+
   /** Render portfolio heading + gallery with lightbox */
   return (
     <section className="bg-white pb-4" data-testid="portfolio">
@@ -110,7 +113,7 @@ const PortfolioGridLayout = async ({
         <SectionHeading>Portfolio</SectionHeading>
       </div>
       <PortfolioGallery
-        images={portfolioImages}
+        images={shownImages}
         masterName={masterName}
         role={role}
       />
