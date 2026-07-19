@@ -1,6 +1,10 @@
 import { expect, test } from '@playwright/test';
 
-import { hasCreds, signInTestUser, walkBookingToDateTime } from './fixtures/helpers';
+import {
+  hasCreds,
+  signInTestUser,
+  walkBookingToDateTime,
+} from './fixtures/helpers';
 
 // The cash booking flow end-to-end — WITHOUT writing to the CMS. The OneEntry
 // `createOrder` POST is intercepted and fulfilled with a fake order, so the UI

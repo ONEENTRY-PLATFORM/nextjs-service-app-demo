@@ -38,7 +38,9 @@ test.describe('SEO metadata', () => {
     page,
   }) => {
     const resp = await page.goto('/definitely-missing-seo-xyz-404');
-    await expect(page.getByTestId('not-found')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('not-found')).toBeVisible({
+      timeout: 30_000,
+    });
     expect(resp?.status() ?? 0).toBeLessThan(500);
   });
 });

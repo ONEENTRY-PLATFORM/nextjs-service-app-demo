@@ -33,6 +33,15 @@ const eslintConfig = defineConfig([
     'static-html/**',
     // Служебные скрипты Claude (инспекция/наполнение CMS) — не рабочий код проекта
     '.claude/**',
+    // Сгенерированные артефакты тестов Playwright (минифицированные бандлы отчёта
+    // весом 500KB+). ESLint flat config НЕ читает .gitignore, поэтому эти каталоги
+    // надо гасить явно — иначе type-aware парсинг + tailwindcss/prettier по бандлам
+    // подвешивают линт на минуты.
+    'playwright-report/**',
+    'test-results/**',
+    'blob-report/**',
+    'playwright/.cache/**',
+    'coverage/**',
   ]),
 
   // Main ruleset for JS/TS/JSX/TSX

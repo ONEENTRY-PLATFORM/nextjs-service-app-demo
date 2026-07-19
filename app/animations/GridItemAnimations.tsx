@@ -15,11 +15,11 @@ import { useAppSelector } from '@/app/store/hooks';
  * home-page rows the global `CardAnimations` targets:
  *
  * 1. Scroll-triggered entrance — each item fades, scales and slides up as it
- *    enters the viewport. The stagger is per-column (`index % columns`) rather
- *    than cumulative on `index`, so items deep in the list still appear promptly
- *    instead of waiting out an ever-growing delay.
+ * enters the viewport. The stagger is per-column (`index % columns`) rather
+ * than cumulative on `index`, so items deep in the list still appear promptly
+ * instead of waiting out an ever-growing delay.
  * 2. Page-transition exit — on the `next-transition-router` `leaving` stage the
- *    visible items fade and scale away.
+ * visible items fade and scale away.
  *
  * When the grid re-mounts on a filter change the same entrance replays, reading
  * as an intentional reveal of the new results. Pair it with a parent-level

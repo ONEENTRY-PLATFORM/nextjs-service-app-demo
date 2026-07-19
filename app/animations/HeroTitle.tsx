@@ -5,12 +5,7 @@ import type { CSSProperties, JSX, ReactNode } from 'react';
 import { useHeroRef } from './HeroAnimations';
 
 /**
- * HeroTitle — leaf wrapper for the hero heading. Registers itself with the
- * enclosing {@link HeroAnimations} via {@link useHeroRef} so the enter/leave and
- * parallax timelines drive it by reference. `testId` and extra `className` are
- * passed through so callers can keep their existing test hooks (e.g. the
- * contacts hero title) and page-level animation classes (e.g. booking's
- * `title`).
+ * HeroTitle — leaf wrapper for the hero heading.
  * @param   {object}        props             - Component properties
  * @param   {ReactNode}     props.children    - Title text
  * @param   {string}        [props.className] - CSS classes for the heading

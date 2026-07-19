@@ -4,7 +4,13 @@ import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { useTransitionState } from 'next-transition-router';
 import type { JSX, ReactNode } from 'react';
-import { createContext, useCallback, useContext, useRef, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
 
 import { useAppSelector } from '@/app/store/hooks';
 

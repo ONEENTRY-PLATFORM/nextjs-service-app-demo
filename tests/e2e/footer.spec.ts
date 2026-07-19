@@ -7,7 +7,9 @@ test.describe('Footer', () => {
   // open, rather than behind the mobile accordions
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  test('renders the CMS menus and a footer link navigates', async ({ page }) => {
+  test('renders the CMS menus and a footer link navigates', async ({
+    page,
+  }) => {
     await page.goto('/');
 
     const footer = page.getByTestId('footer');

@@ -22,25 +22,25 @@ import SummaryRow from './SummaryRow';
  * a gradient header with a Reset link, the picked studio / service /
  * specialist / date rows, the total and the confirm button (its label walks
  * through "Step x of y" → "Sign in to book" / "Book Appointment").
- * @param   {object}                     props                        - Component properties
- * @param   {BookingFlow | null}         props.flow                   - Active flow (`null` on the entry screen)
- * @param   {BookingSalon | undefined}   props.salon                  - Picked salon
- * @param   {BookingService[]}           props.services               - Picked services (one appointment can bundle several)
- * @param   {BookingMaster | undefined}  props.master                 - Picked specialist
- * @param   {boolean}                    props.masterAny              - "Any specialist" picked
- * @param   {string}                     props.date                   - Picked date key `y-m-d`
- * @param   {string}                     props.time                   - Picked time `HH:MM`
- * @param   {number}                     props.currentIdx             - Index of the active step
- * @param   {number}                     props.totalSteps             - Step count of the flow
- * @param   {() => void}                 props.onBook                 - Confirm the booking
- * @param   {boolean}                    props.isLoggedIn             - Whether the client is signed in
- * @param   {boolean}                    props.isLoading              - Order request in flight
- * @param   {string}                     props.error                  - Order error message (`''` when none)
- * @param   {IAccountsEntity[]}          props.paymentAccounts        - Payment accounts offered for these orders
- * @param   {string}                     props.paymentAccount         - Identifier of the chosen payment account
- * @param   {(id: string) => void}       props.onSelectPaymentAccount - Choose a payment account
- * @param   {() => void}                 props.onReset                - Reset the whole wizard
- * @returns {JSX.Element}                                             Booking summary card
+ * @param   {object}                    props                        - Component properties
+ * @param   {BookingFlow | null}        props.flow                   - Active flow (`null` on the entry screen)
+ * @param   {BookingSalon | undefined}  props.salon                  - Picked salon
+ * @param   {BookingService[]}          props.services               - Picked services (one appointment can bundle several)
+ * @param   {BookingMaster | undefined} props.master                 - Picked specialist
+ * @param   {boolean}                   props.masterAny              - "Any specialist" picked
+ * @param   {string}                    props.date                   - Picked date key `y-m-d`
+ * @param   {string}                    props.time                   - Picked time `HH:MM`
+ * @param   {number}                    props.currentIdx             - Index of the active step
+ * @param   {number}                    props.totalSteps             - Step count of the flow
+ * @param   {() => void}                props.onBook                 - Confirm the booking
+ * @param   {boolean}                   props.isLoggedIn             - Whether the client is signed in
+ * @param   {boolean}                   props.isLoading              - Order request in flight
+ * @param   {string}                    props.error                  - Order error message (`''` when none)
+ * @param   {IAccountsEntity[]}         props.paymentAccounts        - Payment accounts offered for these orders
+ * @param   {string}                    props.paymentAccount         - Identifier of the chosen payment account
+ * @param   {(id: string) => void}      props.onSelectPaymentAccount - Choose a payment account
+ * @param   {() => void}                props.onReset                - Reset the whole wizard
+ * @returns {JSX.Element}                                            Booking summary card
  */
 const BookingSummary = ({
   flow,

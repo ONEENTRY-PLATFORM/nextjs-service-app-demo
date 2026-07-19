@@ -60,7 +60,10 @@ test.describe('Services catalog', () => {
 
     // Selection moved to the clicked tab (still single-select)
     await expect(activeTab).toHaveCount(1);
-    await expect(activeTab).toHaveAttribute('data-cat-url', targetUrl as string);
+    await expect(activeTab).toHaveAttribute(
+      'data-cat-url',
+      targetUrl as string,
+    );
 
     // The grid actually re-filtered: a different first card, or the empty state
     // for a category that holds only offers

@@ -6,9 +6,6 @@ import { useHeroRef } from './HeroAnimations';
 
 /**
  * HeroDescription — leaf wrapper for the hero subtitle line under the title.
- * Registers itself with the enclosing {@link HeroAnimations} via
- * {@link useHeroRef} so it reveals and parallaxes in sync with the hero title,
- * by reference rather than by CSS class.
  * @param   {object}      props             - Component properties
  * @param   {ReactNode}   props.children    - Subtitle text
  * @param   {string}      [props.className] - CSS classes for the paragraph

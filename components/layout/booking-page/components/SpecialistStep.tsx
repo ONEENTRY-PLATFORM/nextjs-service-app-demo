@@ -27,19 +27,19 @@ const ANY_LABEL: Record<string, string> = {
  * rows on mobile, photo cards on desktop). The desktop grid is capped at two
  * rows and scrolls beyond that. The card bodies live in {@link AnySpecialistCard}
  * and {@link MasterCard}.
- * @param   {object}                     props                  - Component properties
- * @param   {BookingMaster[]}            props.masters          - Specialists after the wizard's cross-filters
- * @param   {string}                     props.selected         - Chosen specialist id (`''`, id or `__any__`)
- * @param   {(id: string) => void}       props.onSelect         - Select a specialist by id
- * @param   {boolean}                    props.allowAny         - Offer the "Any specialist" card
- * @param   {BookingService[]}           props.services         - The already chosen services (salon-first flow)
- * @param   {() => void}                 props.onClearService   - Clear the chosen services ("Change")
- * @param   {string[]}                   props.categories       - Category pill labels (with "All")
- * @param   {string}                     props.categoryFilter   - Active category pill
- * @param   {(cat: string) => void}      props.onCategoryChange - Activate a category pill
- * @param   {BookingSalon[]}             props.salons           - All salons (chips of the cards)
- * @param   {BookingSalon | undefined}   props.selectedSalon    - Chosen salon (team photo of the any-card)
- * @returns {JSX.Element}                                       Specialist step
+ * @param   {object}                   props                  - Component properties
+ * @param   {BookingMaster[]}          props.masters          - Specialists after the wizard's cross-filters
+ * @param   {string}                   props.selected         - Chosen specialist id (`''`, id or `__any__`)
+ * @param   {(id: string) => void}     props.onSelect         - Select a specialist by id
+ * @param   {boolean}                  props.allowAny         - Offer the "Any specialist" card
+ * @param   {BookingService[]}         props.services         - The already chosen services (salon-first flow)
+ * @param   {() => void}               props.onClearService   - Clear the chosen services ("Change")
+ * @param   {string[]}                 props.categories       - Category pill labels (with "All")
+ * @param   {string}                   props.categoryFilter   - Active category pill
+ * @param   {(cat: string) => void}    props.onCategoryChange - Activate a category pill
+ * @param   {BookingSalon[]}           props.salons           - All salons (chips of the cards)
+ * @param   {BookingSalon | undefined} props.selectedSalon    - Chosen salon (team photo of the any-card)
+ * @returns {JSX.Element}                                     Specialist step
  */
 const SpecialistStep = ({
   masters,
@@ -136,8 +136,8 @@ const SpecialistStep = ({
   /**
    * Price to show on a specialist card: the picked-services total when any were
    * chosen (and priced), otherwise that specialist's own "from" price.
-   * @param   {BookingMaster}   m - Specialist of the card
-   * @returns {number | null}      Price to display
+   * @param   {BookingMaster} m - Specialist of the card
+   * @returns {number | null}   Price to display
    */
   const cardPrice = (m: BookingMaster): number | null =>
     hasServices && servicesTotal !== null ? servicesTotal : m.price;
@@ -199,7 +199,9 @@ const SpecialistStep = ({
               className="truncate text-base font-semibold"
               style={{ color: DARK }}
             >
-              {services.length === 1 ? services[0]?.name : `${services.length} services`}
+              {services.length === 1
+                ? services[0]?.name
+                : `${services.length} services`}
             </span>
             <span
               className="text-sm whitespace-nowrap"
@@ -208,8 +210,7 @@ const SpecialistStep = ({
               {services.length === 1 && services[0]?.duration && (
                 <>· {services[0].duration} </>
               )}
-              ·{' '}
-              <Price amount={servicesTotal} currency={servicesCurrency} />
+              · <Price amount={servicesTotal} currency={servicesCurrency} />
             </span>
           </div>
           <button

@@ -1,6 +1,10 @@
 import { expect, test } from '@playwright/test';
 
-import { hasCreds, signInTestUser, walkBookingToDateTime } from './fixtures/helpers';
+import {
+  hasCreds,
+  signInTestUser,
+  walkBookingToDateTime,
+} from './fixtures/helpers';
 
 /**
  * booking-stripe.spec.ts — live Stripe checkout for the booking flow.
@@ -20,7 +24,7 @@ import { hasCreds, signInTestUser, walkBookingToDateTime } from './fixtures/help
  * total, so this relies on the first catalog service having a whole-number price.
  * Clean up created orders with `.claude/temp/cancel-test-orders.mjs`.
  *
- *   E2E_STRIPE=1 npx playwright test booking-stripe --project=chromium
+ * E2E_STRIPE=1 npx playwright test booking-stripe --project=chromium
  */
 const RUN = !!process.env.E2E_STRIPE;
 const STRIPE_CHECKOUT_RE = /checkout\.stripe\.com/;

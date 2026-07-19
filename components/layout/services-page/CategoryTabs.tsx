@@ -61,7 +61,9 @@ const CategoryTabs = ({
                 boxShadow: active
                   ? `0 6px 20px ${PINK}44`
                   : '0 2px 8px rgba(0,0,0,0.06)',
-                border: active ? '1.5px solid transparent' : '1.5px solid #e8e8f0',
+                border: active
+                  ? '1.5px solid transparent'
+                  : '1.5px solid #e8e8f0',
               }}
               onMouseEnter={(e) => {
                 if (active) {

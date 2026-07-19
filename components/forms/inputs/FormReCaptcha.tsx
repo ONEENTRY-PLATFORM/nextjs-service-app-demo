@@ -8,10 +8,7 @@ declare global {
     grecaptcha?: {
       enterprise: {
         ready: (cb: () => void) => void;
-        execute: (
-          siteKey: string,
-          opts: { action: string },
-        ) => Promise<string>;
+        execute: (siteKey: string, opts: { action: string }) => Promise<string>;
       };
     };
   }
@@ -34,7 +31,7 @@ declare global {
  * @param   {object}                            props            - Component properties
  * @param   {string}                            props.siteKey    - reCAPTCHA Enterprise site key
  * @param   {Dispatch<SetStateAction<boolean>>} props.setIsReady - Flipped `true` once the reCAPTCHA library is ready
- * @returns {JSX.Element}                                         Empty fragment (no visible output)
+ * @returns {JSX.Element}                                        Empty fragment (no visible output)
  */
 const FormReCaptcha = ({
   siteKey,

@@ -329,10 +329,7 @@ const ContactFormCard = (): JSX.Element => {
             degrades to the local success state (see `handleSubmit`).
           */}
           {spamSiteKey && (
-            <FormReCaptcha
-              siteKey={spamSiteKey}
-              setIsReady={setCaptchaReady}
-            />
+            <FormReCaptcha siteKey={spamSiteKey} setIsReady={setCaptchaReady} />
           )}
 
           {error && <ErrorMessage error={error} />}

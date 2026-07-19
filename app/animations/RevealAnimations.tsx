@@ -13,10 +13,10 @@ import { useAppSelector } from '@/app/store/hooks';
  * animation kinds a page section usually needs:
  *
  * 1. Scroll-triggered entrance ("in") — the block fades (and, unless
- *    `fade` is set, slides up by `distance`) as it enters the viewport, and
- *    reverses once it has scrolled fully past the top.
+ * `fade` is set, slides up by `distance`) as it enters the viewport, and
+ * reverses once it has scrolled fully past the top.
  * 2. Page-transition exit ("out") — on the `next-transition-router` `leaving`
- *    stage the block fades (and slides) away.
+ * stage the block fades (and slides) away.
  *
  * The `fade` mode animates opacity only, leaving `transform` untouched — use it
  * for blocks that contain `position: fixed`/`absolute` descendants (e.g. a

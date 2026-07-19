@@ -23,9 +23,9 @@ test.describe('Home page sections', () => {
     // library when the CMS gallery tree is empty
     const gallery = page.getByTestId('home-gallery');
     await expect(gallery).toBeAttached({ timeout: 30_000 });
-    await expect(gallery.getByTestId('gallery-strip-item').first()).toBeAttached(
-      { timeout: 30_000 },
-    );
+    await expect(
+      gallery.getByTestId('gallery-strip-item').first(),
+    ).toBeAttached({ timeout: 30_000 });
   });
 
   test('specialists strip renders master cards linking to profiles', async ({

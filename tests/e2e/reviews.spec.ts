@@ -16,9 +16,7 @@ test.describe('Reviews page', () => {
 
     // The card grid is populated from the local dataset
     await expect(reviews.getByTestId('review-card').first()).toBeVisible();
-    expect(
-      await reviews.getByTestId('review-card').count(),
-    ).toBeGreaterThan(0);
+    expect(await reviews.getByTestId('review-card').count()).toBeGreaterThan(0);
   });
 
   test('applying a filter narrows the cards without emptying the grid', async ({

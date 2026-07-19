@@ -30,11 +30,15 @@ test.describe('Authentication', () => {
     await form
       .getByTestId('form-field-email_reg')
       .fill('no-such-user-9421@example.com');
-    await form.getByTestId('form-field-password_reg').fill('definitely-wrong-pw');
+    await form
+      .getByTestId('form-field-password_reg')
+      .fill('definitely-wrong-pw');
     await form.getByTestId('form-submit').click();
 
     // The live auth endpoint rejects the credentials → the shared error primitive
-    await expect(form.getByTestId('form-error')).toBeVisible({ timeout: 30_000 });
+    await expect(form.getByTestId('form-error')).toBeVisible({
+      timeout: 30_000,
+    });
     // Still signed out — the account view never renders
     await expect(page.getByTestId('profile-page')).toHaveCount(0);
   });
@@ -50,7 +54,9 @@ test.describe('Authentication', () => {
     const form = await openSignIn(page);
 
     await form.getByTestId('form-field-email_reg').fill(credentials.email);
-    await form.getByTestId('form-field-password_reg').fill(credentials.password);
+    await form
+      .getByTestId('form-field-password_reg')
+      .fill(credentials.password);
     await form.getByTestId('form-submit').click();
 
     // Login updates the auth context → the account view replaces the 401 wall
@@ -100,11 +106,17 @@ test.describe('Sign-up', () => {
     await form.getByTestId('form-field-email_reg').fill(credentials.email);
     await form.getByTestId('form-field-name_reg').fill('E2E Duplicate');
     await form.getByTestId('form-field-phone_reg').fill('+971500000000');
-    await form.getByTestId('form-field-password_reg').fill(credentials.password);
-    await form.getByTestId('form-field-repeat_password').fill(credentials.password);
+    await form
+      .getByTestId('form-field-password_reg')
+      .fill(credentials.password);
+    await form
+      .getByTestId('form-field-repeat_password')
+      .fill(credentials.password);
     await form.getByTestId('form-submit').click();
 
-    await expect(form.getByTestId('form-error')).toBeVisible({ timeout: 30_000 });
+    await expect(form.getByTestId('form-error')).toBeVisible({
+      timeout: 30_000,
+    });
     await expect(page.getByTestId('profile-page')).toHaveCount(0);
   });
 

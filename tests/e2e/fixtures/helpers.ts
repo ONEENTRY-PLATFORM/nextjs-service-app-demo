@@ -14,8 +14,8 @@ export const hasCreds = (): boolean =>
  * Sign the test user in through the /profile auth wall (drawer `SignInForm`).
  * Leaves the browser on /profile with the authenticated account view rendered;
  * the session persists in localStorage, so a later full navigation keeps it.
- * @param   {Page}           page - Playwright page
- * @returns {Promise<void>}       Resolves once the profile view is visible
+ * @param   {Page}          page - Playwright page
+ * @returns {Promise<void>}      Resolves once the profile view is visible
  */
 export const signInTestUser = async (page: Page): Promise<void> => {
   await page.goto('/profile');
@@ -37,8 +37,8 @@ export const signInTestUser = async (page: Page): Promise<void> => {
  *
  * The date is chosen in the NEXT month (every day is future, so no slot is greyed
  * out as past) on the 15th — a day that exists in every month.
- * @param   {Page}           page - Playwright page (already on /booking)
- * @returns {Promise<void>}       Resolves once a slot is selected
+ * @param   {Page}          page - Playwright page (already on /booking)
+ * @returns {Promise<void>}      Resolves once a slot is selected
  */
 export const walkBookingToDateTime = async (page: Page): Promise<void> => {
   const wizard = page.getByTestId('booking-page');
