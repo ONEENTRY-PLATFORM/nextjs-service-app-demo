@@ -10,23 +10,6 @@
 
 Метки: ✅ открыто (info/minor, эффекта нет) · 🟡 суть верна, детали уточнены · 🔧 осознанное отклонение (оставлено, задокументировано) · ⛔ опровергнуто (правка неверна/вредна) · 🟨 отклонено по замеру (цена > выгоды).
 
-## 1. Открытые нитпики (INFO / minor, без видимого эффекта)
-
-**Все ✅/🟡 из этого раздела закрыты 2026-07-19** (см. пометки ниже). Осталось только два 🔧/info «следить при обновлении SDK».
-
-- ✔ `app/api/server/users/logOutUser.ts` (wrappers-contract) — *закрыто 2026-07-19:* в JSDoc явно зафиксирован контракт «NEVER THROWS, деградирует в finally, try/catch не нужен»; продублировано в CLAUDE.md (исключения из конверта). Код не менялся, try/catch у потребителей оставлен как безвредная защита.
-- ✔ `app/api/api/api.ts` (env-config) — *закрыто 2026-07-19:* добавлен fail-fast `throw` при пустых `NEXT_PUBLIC_ONEENTRY_URL/TOKEN` до `defineOneEntry`.
-- ✔ `app/store/providers/AuthContext.tsx` (tokens / auth-provider) — *закрыто 2026-07-19 (документированием, не удалением):* `syncTokens` НЕ убран — он нужен против гонки 401-on-first-request; `localStorage.setItem('refresh-token')` оставлен как явная страховка поверх `saveFunction`. Перекрытие помечено комментарием в `login()`. Осознанное отклонение (в фрагильной auth-подсистеме правку-удаление не делаем).
-- ✔ `app/api/api/RTKApi.ts` (wrappers) — *закрыто 2026-07-19:* удалены мёртвые guard'ы `return { error: null }` в `getProductById`/`getPageById` (все вызовы уже гейтят falsy-id через `{ skip: !id }`); error-ветка теперь только для настоящих `IError`. Помечено в JSDoc `getPageById`.
-- ✔ `app/api/server/users/updateUserState.ts` (wrappers-contract) — *закрыто 2026-07-19:* оставлено как задокументированное исключение (`boolean` для мутаций `user.state`); зафиксировано в CLAUDE.md.
-- ✔ `app/api/server/pages/getPageByUrl.ts` (wrappers-contract) — *закрыто 2026-07-19:* формулировка контракта в CLAUDE.md уточнена до `{ isError, error?, <доменный-payload>?, [total] }` (payload под доменным ключом `page`/`block`/…); код не менялся.
-- ✔ `app/types/global.d.ts` (typescript) — *закрыто 2026-07-19:* неиспользуемый тип `LocalizeInfo` удалён (с согласия пользователя).
-- ✔ `app/types/env.d.ts` (env-config) — *закрыто 2026-07-19:* мёртвый файл с ambient `'@env'` (имена v1) удалён (`git rm`).
-- ✔ `app/profile/page.tsx` (revalidation) — *закрыто 2026-07-19:* клиент-центричность приватного `/profile` зафиксирована в CLAUDE.md (серверный гейт требует cookie-сессии, которой нет — токены в `localStorage`). Серверной утечки нет.
-- ✔ `components/layout/portfolio-grid/index.tsx` + `master-single/components/MasterDescription.tsx` (attribute-values) — *закрыто 2026-07-19:* доступ к `attributeValues` защищён `|| {}` (в portfolio-grid введена `masterAttrs`, переиспользована для caption'а лайтбокса).
-- 🔧/info `app/api/api/api.ts:58` (typescript) — `hasActiveSession` читает `AuthProvider.state` через `as unknown as` (публичного геттера в SDK нет). Задокументировано; *следить* при обновлении SDK за появлением `isAuth`/`getAccessToken`.
-- 🔧/info `components/layout/home/home-hero/index.tsx:41` (typescript) — каст `slide.attributeValues` (API слайдов отдаёт сырые значения без обёртки `{value}` — расхождение SDK-типа и поведения). Задокументировано; *перепроверять* форму ответа `getSlides` при обновлении `oneentry`.
-
 ## 2. 🔧 Осознанные отклонения (оставлены, задокументированы)
 
 - `app/reviews/page.tsx` — тело `/reviews` из локального мока (`reviews_carousel` в CMS пуст). Переходное состояние до наполнения CMS.
@@ -69,5 +52,3 @@
 13. **Права NEXT_PUBLIC-токена** — `NEXT_PUBLIC_ONEENTRY_TOKEN` в клиентском бандле; какие операции (заказы/пользователи/формы) он разрешает произвольному посетителю — не аудировано.
 14. **Мутабельный синглтон SDK на сервере** — `app/api/api/api.ts` держит module-level `apiInstance`, `reDefine()`/`clearSession()` его подменяют → риск протечки сессии между параллельными серверными запросами.
 15. **Наполняющий контур admin API** — `.claude/temp/masters-common.mjs` + `fill-*.mjs` (Playwright-логин, `OE_ADMIN_LOGIN/PASSWORD`, перезапись `listTitles`) — часть интеграции, вне правил/скиллов.
-
-*Прочее (закрыто):* события CMS заведены и проверены живым прогоном (`reset_password`/`otp` — маркеры отличаются от дефолтов правила `auth-provider`, приведены в `components/forms/authEventMarkers.ts`). `Events.getAllEvents()` = 401 по токену проекта — маркеры пробником не проверить (список — через admin API `.claude/temp/list-events.mjs`).

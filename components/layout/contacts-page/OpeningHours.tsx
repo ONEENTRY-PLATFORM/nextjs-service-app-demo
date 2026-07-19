@@ -38,9 +38,7 @@ const OpeningHours = (): JSX.Element => {
   return (
     <section className="bg-slate-50 py-6 md:py-10">
       <div className="mx-auto max-w-7xl px-3 md:px-8">
-        <div className="mb-6 text-center md:mb-10">
-          <SectionHeading size="lg">Opening Hours</SectionHeading>
-        </div>
+        <SectionHeading className="mb-6 md:mb-10">Opening Hours</SectionHeading>
 
         {/* Mobile + tablet: a single card for the whole week */}
         <div className="lg:hidden">

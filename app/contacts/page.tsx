@@ -124,9 +124,7 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
       {/* Get in touch */}
       <section className="bg-white pt-2 pb-6 md:pt-6 md:pb-10">
         <div className="mx-auto max-w-7xl px-3 md:px-8">
-          <RevealAnimations className="mb-6 text-center md:mb-10">
-            <SectionHeading size="lg">Get in Touch</SectionHeading>
-          </RevealAnimations>
+          <SectionHeading className="mb-6 md:mb-10">Get in Touch</SectionHeading>
           <RevealAnimations className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-5">
             <div className="lg:col-span-3">
               <ContactFormCard />

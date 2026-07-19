@@ -52,9 +52,7 @@ const SalonLocations = ({
       style={{ background: 'linear-gradient(180deg,#f7f7fb 0%,#fff 60%)' }}
     >
       <div className="mx-auto max-w-7xl px-3 md:px-8">
-        <RevealAnimations className="mb-6 text-center md:mb-10">
-          <SectionHeading size="lg">Our Locations</SectionHeading>
-        </RevealAnimations>
+        <SectionHeading className="mb-6 md:mb-10">Our Locations</SectionHeading>
 
         {salons.length === 0 ? (
           <p

@@ -10,7 +10,6 @@ import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import PromoBanner from '@/components/layout/services-page/PromoBanner';
 import ServicesCatalog from '@/components/layout/services-page/ServicesCatalog';
 import ServicesHero from '@/components/layout/services-page/ServicesHero';
-import StatsStrip from '@/components/layout/services-page/StatsStrip';
 
 import { getServicesCatalogData } from '../catalog-data';
 
@@ -72,6 +71,15 @@ export default async function ServicePageLayout({
     services.length > 0
       ? `${services.length} services · ${salons.length || 3} locations across Dubai`
       : undefined;
+  /** Counter pairs for the hero strip — only when the CMS has services */
+  const stats: Array<[string | number, string]> | undefined =
+    services.length > 0
+      ? [
+          [services.length, 'Services'],
+          [salons.length, 'Locations'],
+          [categories.length, 'Categories'],
+        ]
+      : undefined;
 
   /**
    * Provider name for the structured data — the site name from the CMS
@@ -102,16 +110,7 @@ export default async function ServicePageLayout({
           __html: JSON.stringify(structuredData),
         }}
       />
-      <ServicesHero title={title} subtitle={subtitle} />
-      {services.length > 0 && (
-        <StatsStrip
-          stats={[
-            [services.length, 'Services'],
-            [salons.length, 'Locations'],
-            [categories.length, 'Categories'],
-          ]}
-        />
-      )}
+      <ServicesHero title={title} subtitle={subtitle} stats={stats} />
       <ServicesCatalog
         key={handle}
         categories={categories}
