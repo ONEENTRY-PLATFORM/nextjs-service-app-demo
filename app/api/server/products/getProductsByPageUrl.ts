@@ -6,6 +6,7 @@ import { cache } from 'react';
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
 import getSearchParams from '@/app/api/utils/getSearchParams';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Get all products with pagination for the selected category.
@@ -61,16 +62,20 @@ const getProductsByPageUrlImpl = unstable_cache(
       : [];
 
     try {
-      const data = await getApi().Products.getProductsByPageUrl(
-        handle,
-        expandedFilters,
-        undefined,
-        {
-          sortOrder: 'DESC',
-          sortKey: 'date',
-          offset: offset,
-          limit: limit,
-        },
+      const data = await withTimeout(
+        getApi().Products.getProductsByPageUrl(
+          handle,
+          expandedFilters,
+          undefined,
+          {
+            sortOrder: 'DESC',
+            sortKey: 'date',
+            offset: offset,
+            limit: limit,
+          },
+        ),
+        10_000,
+        'getProductsByPageUrl',
       );
 
       if (isError(data)) {

@@ -8,6 +8,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch blocks of a type from OneEntry, cached across requests (private helper).
@@ -26,7 +27,11 @@ const getBlocksImpl = unstable_cache(
     blocks?: IBlocksResponse;
   }> => {
     try {
-      const data = await getApi().Blocks.getBlocks(type);
+      const data = await withTimeout(
+        getApi().Blocks.getBlocks(type),
+        10_000,
+        'getBlocks',
+      );
 
       if (isError(data)) {
         return { isError: true, error: data };

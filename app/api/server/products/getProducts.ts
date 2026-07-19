@@ -6,6 +6,7 @@ import { cache } from 'react';
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
 import getSearchParams from '@/app/api/utils/getSearchParams';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch products from OneEntry, cached across requests (private helper).
@@ -35,10 +36,8 @@ const getProductsImpl = unstable_cache(
     const expandedFilters = getSearchParams({ search, in_stock: inStock });
 
     try {
-      const data = await getApi().Products.getProducts(
-        expandedFilters,
-        undefined,
-        {
+      const data = await withTimeout(
+        getApi().Products.getProducts(expandedFilters, undefined, {
           /**
            * Same order as `getProductsByPageUrl` — the two wrappers used to sort
            * the same catalog in OPPOSITE directions (ASC here, DESC there),
@@ -52,7 +51,9 @@ const getProductsImpl = unstable_cache(
           sortKey: 'date',
           offset: offset,
           limit: limit,
-        },
+        }),
+        10_000,
+        'getProducts',
       );
       if (isError(data)) {
         return { isError: true, error: data, total: 0 };

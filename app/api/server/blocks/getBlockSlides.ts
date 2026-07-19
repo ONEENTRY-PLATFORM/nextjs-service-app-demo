@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError as isSdkError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch a slider block's slides from OneEntry, cached across requests (private
@@ -24,7 +25,11 @@ const getBlockSlidesImpl = unstable_cache(
     slides?: IBlockSlidesResponse;
   }> => {
     try {
-      const data = await getApi().Blocks.getSlides(marker);
+      const data = await withTimeout(
+        getApi().Blocks.getSlides(marker),
+        10_000,
+        'getBlockSlides',
+      );
 
       if (isSdkError(data)) {
         return { isError: true, error: data };

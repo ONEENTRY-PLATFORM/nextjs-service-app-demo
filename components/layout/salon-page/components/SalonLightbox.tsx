@@ -11,6 +11,8 @@ import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { JSX } from 'react';
 import { useEffect } from 'react';
 
+import { useDialogA11y } from '@/components/shared/useDialogA11y';
+
 /**
  * SalonLightbox — full-screen photo viewer for the salon gallery, ported from
  * the static-html mock (`SalonPage.tsx`): dark blurred backdrop, `x / N`
@@ -41,20 +43,27 @@ const SalonLightbox = ({
   const prev = () => onSelect((index - 1 + total) % total);
   const next = () => onSelect((index + 1) % total);
 
+  /** Arrow-key navigation (Escape / focus-trap / scroll-lock handled by useDialogA11y). */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft') onSelect((index - 1 + total) % total);
       if (e.key === 'ArrowRight') onSelect((index + 1) % total);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [index, total, onClose, onSelect]);
+  }, [index, total, onSelect]);
+
+  /** Dialog a11y: focus trap, focus restore, scroll lock and Escape-to-close. */
+  const dialogRef = useDialogA11y({ isOpen: true, onClose });
 
   const src = photos[index];
 
   return (
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Salon photo viewer"
       className="fixed inset-0 z-150 flex items-center justify-center p-4"
       style={{ background: 'rgba(6,0,14,0.94)', backdropFilter: 'blur(16px)' }}
       onClick={(e) => e.target === e.currentTarget && onClose()}

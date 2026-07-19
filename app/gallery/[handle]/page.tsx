@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
+import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import GalleryPageContent from '@/components/layout/gallery-page';
 import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
 import { GALLERY_MAIN_CATS } from '@/components/layout/gallery-page/taxonomy';
@@ -83,7 +84,7 @@ export default async function GallerySingleLayout({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
+          __html: serializeJsonLd(structuredData),
         }}
       />
       {/* Gradient accent strip */}

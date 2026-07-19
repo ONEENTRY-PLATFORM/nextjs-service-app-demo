@@ -1,10 +1,12 @@
 {
   "//": "Jest unit tests type-check under their OWN program, separate from the app tsconfig. Next.js 16's generated `.next/types` route files (included by the root tsconfig for typed-route safety) collide with @types/jest's global `it`/`test`/`describe`, making them non-callable (TS2348) whenever both live in one program. Keeping .next types out of this config resolves it. Run via `npm run tsc:jest`.",
+  "//exclude": "MUST declare an explicit `exclude`: `extends` inherits the root config's `exclude` (which lists `tests/jest`) when this file omits its own, so the inherited `../../tests/jest` cancels our `include` and NO test file is type-checked — `tsc:jest` silently becomes a 1-file no-op, and editors/ESLint treat every test as 'not in any project'.",
   "extends": "../../tsconfig.json",
+  "//paths": "No `baseUrl` (deprecated, gone in TS 7.0) — `paths` resolve relative to THIS config's dir, so `@/*` maps to the repo root two levels up (`../../*`).",
   "compilerOptions": {
     "incremental": false,
-    "baseUrl": "../..",
-    "paths": { "@/*": ["./*"] }
+    "paths": { "@/*": ["../../*"] }
   },
-  "include": ["**/*.ts", "**/*.tsx", "../../jest.setup.ts"]
+  "include": ["**/*.ts", "**/*.tsx", "../../jest.setup.ts"],
+  "exclude": ["node_modules"]
 }

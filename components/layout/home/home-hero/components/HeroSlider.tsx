@@ -52,20 +52,38 @@ const HeroSlider = ({
   /** Registers the slides layer as the hero `bg` for the parallax timeline */
   const bgRef = useHeroRef('bg');
 
-  /** Auto-advance the carousel, paused on hover */
+  /**
+   * Respect `prefers-reduced-motion`: users who ask for less motion get a
+   * static hero (no auto-advance). The arrows and dots still let them step
+   * through the slides manually (WCAG 2.2.2 / 2.3.3).
+   */
+  const [reduceMotion, setReduceMotion] = useState(false);
   useEffect(() => {
-    if (paused || count < 2) {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const sync = (): void => setReduceMotion(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  /** Auto-advance the carousel, paused on hover / keyboard focus / reduced-motion */
+  useEffect(() => {
+    if (paused || reduceMotion || count < 2) {
       return;
     }
     const timer = setInterval(() => setIdx((i) => (i + 1) % count), intervalMs);
     return () => clearInterval(timer);
-  }, [paused, count, intervalMs]);
+  }, [paused, reduceMotion, count, intervalMs]);
 
   return (
     <section
       className="relative aspect-390/535 w-full overflow-hidden bg-[linear-gradient(90deg,#49268b_3%,#ed21f1_90%)] select-none md:aspect-1920/600"
+      aria-roledescription="carousel"
+      aria-label="Promotions"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
     >
       {/* Slides — crossfade; each carries its optional CMS text overlay
           (sale badge, title, subtitle) on the left. */}
@@ -73,6 +91,13 @@ const HeroSlider = ({
         {slides.map((slide, i) => (
           <div
             key={i}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${count}`}
+            // Hide off-screen slides from assistive tech: without this every
+            // slide's overlay text — including its <h1> — is exposed, so a
+            // multi-slide hero would announce several <h1>s at once.
+            aria-hidden={i !== idx}
             className={
               'absolute inset-0 transition-opacity duration-700 ' +
               (i === idx ? 'opacity-100' : 'pointer-events-none opacity-0')

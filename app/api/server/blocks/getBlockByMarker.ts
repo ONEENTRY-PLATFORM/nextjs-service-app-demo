@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError as isSdkError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch a block from OneEntry, cached across requests (private helper).
@@ -23,7 +24,11 @@ const getBlockByMarkerImpl = unstable_cache(
     block?: IBlockEntity;
   }> => {
     try {
-      const data = await getApi().Blocks.getBlockByMarker(marker);
+      const data = await withTimeout(
+        getApi().Blocks.getBlockByMarker(marker),
+        10_000,
+        'getBlockByMarker',
+      );
 
       if (isSdkError(data)) {
         return { isError: true, error: data };

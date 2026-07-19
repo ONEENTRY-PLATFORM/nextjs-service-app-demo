@@ -33,7 +33,7 @@
 - 🟨 SDK в клиентском бандле — **562 КБ raw / 121 КБ gzip (28% JS)**, на каждом роуте. Решение пользователя: **не чинить** («150кб фигня»); ленивый SDK превращает синхронный `login()` в fire-and-forget в самой хрупкой подсистеме. Рецепт (вынести `isError` в свой модуль, SDK через `await import()` в 2 путях) — в git-истории.
 - 🟨 Картинки карточек мастеров не гейтятся по вьюпорту — закадровые ≈ **52 КБ**. **Не чинить**: 52 КБ шум, `sizes`/`loading="lazy"`/blur уже на месте. *Пересмотреть,* если карточек станет заметно больше.
 
-## 4. Непокрытые аудитом области (гипотезы охвата — проверять отдельно)
+## 4. Непокрытые аудитом области (гипотезы охвата) — ✅ разобрано 2026-07-19 (статусы в §5)
 
 Разбиение 22 правила + 20 скиллов покрывает «внутренность» интеграции OneEntry, но упускает «обвязку» Next.js вокруг CMS и прод-поверхности:
 
@@ -52,3 +52,25 @@
 13. **Права NEXT_PUBLIC-токена** — `NEXT_PUBLIC_ONEENTRY_TOKEN` в клиентском бандле; какие операции (заказы/пользователи/формы) он разрешает произвольному посетителю — не аудировано.
 14. **Мутабельный синглтон SDK на сервере** — `app/api/api/api.ts` держит module-level `apiInstance`, `reDefine()`/`clearSession()` его подменяют → риск протечки сессии между параллельными серверными запросами.
 15. **Наполняющий контур admin API** — `.claude/temp/masters-common.mjs` + `fill-*.mjs` (Playwright-логин, `OE_ADMIN_LOGIN/PASSWORD`, перезапись `listTitles`) — часть интеграции, вне правил/скиллов.
+
+## 5. Разбор обвязки Next.js вокруг CMS (сессия 2026-07-19)
+
+Все 15 гипотез §4 разобраны: 9 исправлено кодом, 4 проверены (уже в порядке), 2 — отчёт/инструкция. Проверено: `npm run typecheck` = 0, jest 138/138, Playwright (dialog-слой, hero, метаданные) на dev:3700.
+
+Метки: ✅ исправлено · ☑️ проверено, правки не нужны · 📋 отчёт/инструкция · 🔧 решение пользователя.
+
+1. ☑️ **SEO-роуты** — `sitemap.xml`/`robots.txt` уже строят базу через `getSiteUrl()` (`NEXT_PUBLIC_SITE_URL || NEXT_PUBLIC_VERCEL_URL`, не CMS-хост). Запись §4 устарела.
+2. ✅ **metadataBase** — `new URL(siteUrl)` в корневом `generateMetadata` (`app/layout.tsx`); наследуется всеми страницами, относительные OG/canonical резолвятся на домен сайта.
+3. ✅ **Границы ошибок** — добавлены `app/error.tsx` (сегмент) и `app/global-error.tsx` (автономный, inline-стили).
+4. ✅ **XSS** — сырой CMS-`htmlContent` через `dangerouslySetInnerHTML` **нигде не рендерится** (только stripped `plainContent`). Из 6 usages: 5 = JSON-LD (см. п.5), 1 = статичный локальный SVG (`CategoryTile`, безопасен).
+5. ✅ **JSON-LD** — общий `serializeJsonLd()` (экранирует `<`/`>`/`&`) во всех 5 эмиттерах (layout + home + 3×`[handle]`); `</script>`-breakout закрыт (проверено). Починён битый `logo` (`/logo.png`→`/icons/thalia_logo.svg`).
+6. ☑️ **Прод-диагностика** — `api/test-connection` и `api-test` уже отдают 404/`notFound()` при `NODE_ENV==='production'`.
+7. ✅/🔧 **next.config** — убраны битый rewrite `/fonts/*→/api/fonts/*` и мёртвый header `/fonts` (шрифты через `next/font`). CSP — **решение: пропустить** (HSTS/XFO/nosniff/Referrer/Permissions на месте; nonce-CSP для Next+OAuth — отдельный проект). `staleTimes` и `remotePatterns` (`**.oneentry.cloud/cloud-static/**`) адекватны.
+8. 📋 **jest-моки** — нормализаторы квирков (`getFormAttributes`, `flatMenuToNested`, `parseOfferDetail`, `normalizeMenuPages`, `productCurrency`) покрыты хорошо и достоверно; добавлен тест `parseOffer` (был непокрытый близнец). Не покрыты: 18 server-обёрток, ~23 RTK-эндпоинта, 4 хука — envelope/shape-допущения без юнит-сети (крупная отдельная работа).
+9. ✅/📋 **Типы SDK↔CMS** — HIGH исправлен: единственный негардированный `.attributeValues` (`portfolio-grid/index.tsx`) → `?.`. ~15 `.value as Array<>`-кастов гардятся в рантайме (`?? []`/`?.[0]`/`Array.isArray`); TS их не проверяет, но деградируют, не падают.
+10. ✅/🔧 **A11y** — контейнерные: реальный alt портфолио, клавиатура ячейки галереи, aria-label кнопок салона, hero (`prefers-reduced-motion` + пауза по фокусу + `aria-hidden` неактивных слайдов). Общий dialog-слой `components/shared/useDialogA11y.ts` (`role=dialog`+`aria-modal`, focus-trap, возврат фокуса, scroll-lock, Escape) — подключён к auth-модалке, mobile-menu и 3 лайтбоксам (проверено Playwright).
+11. ☑️/📋 **payment_success/canceled** — ПОПРАВКА к §4 п.11: страницы **уже существуют** в CMS (`payment_success` id 120, `payment_canceled` id 121, оба visible; проверено `inspect-payment-pages.mjs` 2026-07-19) → `app/[handle]` их рендерит, `notFound()` НЕ происходит. Посылка «страниц нет» устарела. Реальная (латентная) проблема — Stripe `successUrl`/`cancelUrl` аккаунта = CMS-хост `beauty.oneentry.cloud`; код их в `createSession(id,'session')` не передаёт (берутся из настроек аккаунта) → после онлайн-оплаты возврат на CMS-хост, не на страницы сайта. Чинить в настройках Stripe-аккаунта (админка), когда включат онлайн-оплату (сейчас бронь = cash).
+12. ✅ **Сетевая устойчивость** — `withTimeout` (`app/api/utils/withTimeout.ts`, 10с; 20с для `getAdminsInfo`) обёрнут вокруг всех 18 server-обёрток; медленный/полуоткрытый CMS → быстрый фолбэк через существующий try/catch-конверт. Недоступность CMS уже деградировала штатно.
+13. ☑️ **Права NEXT_PUBLIC-токена** — публичный delivery-токен (дизайн OneEntry): аноним читает только уже-публичный контент; данные юзера/заказы — user-токен с привязкой к device-fingerprint; спам форм/регистраций — reCAPTCHA Enterprise. Не переповышен.
+14. ☑️ **Синглтон SDK** — мутаторы (`reDefine/clearSession/syncTokens`) все `'use client'`; сервер только читает через `getApi()` → протечки сессии между серверными запросами нет. Инвариант задокументирован в `api.ts` (серверная сессия при нужде — per-request инстанс).
+15. 📋 **Наполняющий контур admin API** — `.claude/temp/*` (Playwright-логин, `OE_ADMIN_*`, перезапись `listTitles`) документирован в CLAUDE.md + памяти (`admin-api-fill-mechanics`), идемпотентен, `DRY_RUN`-совместим. Вне правил/скиллов сознательно (внутренний REST админки, не публичный SDK) — фиксируется как есть.

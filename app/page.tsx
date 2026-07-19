@@ -11,6 +11,7 @@ import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
+import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import { sortArrayByPosition } from '@/components/utils';
 
 /**
@@ -172,7 +173,7 @@ const IndexPageLayout = async (): Promise<JSX.Element> => {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
+            __html: serializeJsonLd(structuredData),
           }}
         />
       )}

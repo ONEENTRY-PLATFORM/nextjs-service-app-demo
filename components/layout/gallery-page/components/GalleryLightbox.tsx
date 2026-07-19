@@ -12,6 +12,8 @@ import { ChevronLeft, ChevronRight, Share2, X } from 'lucide-react';
 import type { JSX } from 'react';
 import { useEffect } from 'react';
 
+import { useDialogA11y } from '@/components/shared/useDialogA11y';
+
 import type { GalleryItem } from '../taxonomy';
 
 /**
@@ -45,16 +47,18 @@ const GalleryLightbox = ({
 }): JSX.Element => {
   const item = items[index];
 
-  /** Keyboard navigation: Escape closes, arrows switch photos */
+  /** Arrow-key navigation (Escape / focus-trap / scroll-lock handled by useDialogA11y). */
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft') onPrev();
       if (e.key === 'ArrowRight') onNext();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [onClose, onPrev, onNext]);
+  }, [onPrev, onNext]);
+
+  /** Dialog a11y: focus trap, focus restore, scroll lock and Escape-to-close. */
+  const dialogRef = useDialogA11y({ isOpen: true, onClose });
 
   if (!item) {
     return <></>;
@@ -62,7 +66,11 @@ const GalleryLightbox = ({
 
   return (
     <div
+      ref={dialogRef}
       data-testid="gallery-lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label={item.title ? `Photo: ${item.title}` : 'Photo viewer'}
       className="fixed inset-0 z-300 flex items-center justify-center backdrop-blur-2xl"
       style={{ background: 'rgba(6,0,14,0.94)' }}
       onClick={(e) => e.target === e.currentTarget && onClose()}

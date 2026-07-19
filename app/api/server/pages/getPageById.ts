@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch a page by id from OneEntry, cached across requests (private helper).
@@ -23,7 +24,11 @@ const getPageByIdImpl = unstable_cache(
     page?: IPagesEntity;
   }> => {
     try {
-      const data = await getApi().Pages.getPageById(id);
+      const data = await withTimeout(
+        getApi().Pages.getPageById(id),
+        10_000,
+        'getPageById',
+      );
 
       if (isError(data)) {
         return { isError: true, error: data };

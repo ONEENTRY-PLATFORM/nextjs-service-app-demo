@@ -3,6 +3,7 @@ import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Getting all orders from the orders storage object created by the user.
@@ -28,11 +29,10 @@ export const getAllOrdersByMarker = async ({
   total: number;
 }> => {
   try {
-    const data = await getApi().Orders.getAllOrdersByMarker(
-      marker,
-      undefined,
-      offset,
-      limit,
+    const data = await withTimeout(
+      getApi().Orders.getAllOrdersByMarker(marker, undefined, offset, limit),
+      10_000,
+      'getAllOrdersByMarker',
     );
 
     if (isError(data)) {

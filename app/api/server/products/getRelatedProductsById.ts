@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch a product's related products from OneEntry, cached across requests
@@ -25,7 +26,11 @@ const getRelatedProductsByIdImpl = unstable_cache(
     total: number;
   }> => {
     try {
-      const data = await getApi().Products.getRelatedProductsById(id);
+      const data = await withTimeout(
+        getApi().Products.getRelatedProductsById(id),
+        10_000,
+        'getRelatedProductsById',
+      );
 
       if (isError(data)) {
         return { isError: true, error: data, total: 0 };

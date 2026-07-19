@@ -61,6 +61,7 @@ const SalonPhotoGallery = ({
             <button
               key={i}
               onClick={() => onOpen(i)}
+              aria-label={`Open salon photo ${i + 1}`}
               className="relative aspect-5/4 w-[86%] shrink-0 snap-center overflow-hidden rounded-2xl"
             >
               <NextImage
@@ -92,6 +93,7 @@ const SalonPhotoGallery = ({
         {hero && (
           <button
             onClick={() => onOpen(0)}
+            aria-label="Open salon photo 1"
             className="group relative aspect-5/4 overflow-hidden rounded-2xl lg:aspect-auto lg:h-full lg:min-h-100"
           >
             <NextImage
@@ -118,6 +120,11 @@ const SalonPhotoGallery = ({
               <button
                 key={i}
                 onClick={() => onOpen(i + 1)}
+                aria-label={
+                  isLastWithMore
+                    ? `View ${moreCount} more salon photos`
+                    : `Open salon photo ${i + 2}`
+                }
                 className="group relative aspect-5/4 overflow-hidden rounded-2xl"
               >
                 <NextImage

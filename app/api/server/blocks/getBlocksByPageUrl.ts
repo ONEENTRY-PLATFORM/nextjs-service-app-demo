@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Result envelope of {@link getBlocksByPageUrl}.
@@ -27,7 +28,11 @@ type BlocksResult = {
 const getBlocksByPageUrlImpl = unstable_cache(
   async (pageUrl: string): Promise<BlocksResult> => {
     try {
-      const data = await getApi().Pages.getBlocksByPageUrl(pageUrl);
+      const data = await withTimeout(
+        getApi().Pages.getBlocksByPageUrl(pageUrl),
+        10_000,
+        'getBlocksByPageUrl',
+      );
       if (isError(data)) {
         return { isError: true, error: data };
       }

@@ -52,15 +52,6 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
-      {
-        source: '/fonts/:all*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
       // NOTE: do NOT set Cache-Control for `/_next/static/:path*` — Next.js
       // already serves those assets with `public, max-age=31536000, immutable`
       // and warns when user config overrides the built-in headers.
@@ -88,14 +79,6 @@ const nextConfig: NextConfig = {
         source: '/password',
         destination: '/',
         permanent: true,
-      },
-    ];
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/fonts/:path*',
-        destination: '/api/fonts/:path*',
       },
     ];
   },

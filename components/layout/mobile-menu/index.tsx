@@ -8,6 +8,7 @@ import { useContext, useEffect, useRef } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { normalizeMenuPages } from '@/components/normalizeMenuPages';
+import { useDialogA11y } from '@/components/shared/useDialogA11y';
 import { flatMenuToNested } from '@/components/utils';
 
 import ModalBackdrop from '../modal/components/ModalBackdrop';
@@ -25,7 +26,8 @@ const OffscreenModal = ({ menu }: { menu: IMenusEntity }): JSX.Element => {
   /** Get current pathname for route change detection */
   const pathname = usePathname();
   /** Get modal state and control functions from context */
-  const { open, setOpen, component } = useContext(OpenDrawerContext);
+  const { open, setOpen, component, setTransition } =
+    useContext(OpenDrawerContext);
 
   /** Convert flat menu structure to nested structure for rendering */
   const mainMenu = flatMenuToNested(normalizeMenuPages(menu.pages), null);
@@ -59,6 +61,12 @@ const OffscreenModal = ({ menu }: { menu: IMenusEntity }): JSX.Element => {
     setOpen(false);
   }, [pathname, setOpen]);
 
+  /** Dialog a11y: focus trap/restore, scroll lock and Escape → close animation. */
+  const dialogRef = useDialogA11y({
+    isOpen: open && component === 'MobileMenu',
+    onClose: () => setTransition('close'),
+  });
+
   /** Don't render if menu is not open or component is not MobileMenu */
   if (!open || component !== 'MobileMenu') {
     return <></>;
@@ -70,7 +78,13 @@ const OffscreenModal = ({ menu }: { menu: IMenusEntity }): JSX.Element => {
       id="modalBody"
       className="fixed z-450 flex size-full flex-col overflow-auto p-6 pt-12 shadow-xl md:overflow-hidden md:rounded-3xl lg:h-auto lg:w-90 lg:p-10"
     >
-      <div className="fixed inset-0 z-50 flex size-full max-w-90 flex-col bg-white pb-6">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        className="fixed inset-0 z-50 flex size-full max-w-90 flex-col bg-white pb-6"
+      >
         <div className="p-6">
           <CloseModal />
           <div className="mb-4 w-full">

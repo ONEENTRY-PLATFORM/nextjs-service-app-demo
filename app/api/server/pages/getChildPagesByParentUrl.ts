@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch child pages from OneEntry, cached across requests (private helper).
@@ -23,7 +24,11 @@ const getChildPagesByParentUrlImpl = unstable_cache(
     pages?: IPagesEntity[];
   }> => {
     try {
-      const data = await getApi().Pages.getChildPagesByParentUrl(url);
+      const data = await withTimeout(
+        getApi().Pages.getChildPagesByParentUrl(url),
+        10_000,
+        'getChildPagesByParentUrl',
+      );
       if (isError(data)) {
         return { isError: true, error: data };
       }

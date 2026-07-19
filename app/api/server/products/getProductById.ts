@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch a product from OneEntry, cached across requests (private helper).
@@ -23,7 +24,11 @@ const getProductByIdImpl = unstable_cache(
     product?: IProductsEntity;
   }> => {
     try {
-      const data = await getApi().Products.getProductById(id);
+      const data = await withTimeout(
+        getApi().Products.getProductById(id),
+        10_000,
+        'getProductById',
+      );
 
       if (isError(data)) {
         return { isError: true, error: data };

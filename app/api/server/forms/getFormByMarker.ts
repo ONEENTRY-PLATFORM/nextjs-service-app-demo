@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch a form from OneEntry, cached across requests (private helper).
@@ -23,7 +24,11 @@ const getFormByMarkerImpl = unstable_cache(
     form?: IFormsEntity;
   }> => {
     try {
-      const data = await getApi().Forms.getFormByMarker(marker);
+      const data = await withTimeout(
+        getApi().Forms.getFormByMarker(marker),
+        10_000,
+        'getFormByMarker',
+      );
 
       if (isError(data)) {
         return { isError: true, error: data };

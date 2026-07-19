@@ -9,6 +9,7 @@ import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
+import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import MasterSingleLayout from '@/components/layout/master-single';
 import MasterLoader from '@/components/layout/master-single/components/MasterLoader';
 import PortfolioGridLayout from '@/components/layout/portfolio-grid';
@@ -64,7 +65,7 @@ export default async function MasterPageLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
+            __html: serializeJsonLd(structuredData),
           }}
         />
       )}

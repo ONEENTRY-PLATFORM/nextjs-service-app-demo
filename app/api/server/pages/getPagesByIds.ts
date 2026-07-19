@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch several pages by id from OneEntry, cached across requests (private
@@ -30,7 +31,9 @@ const getPagesByIdsImpl = unstable_cache(
       .map((id) => Number(id));
     try {
       const data = await Promise.all(
-        ids.map((id: number) => getApi().Pages.getPageById(id)),
+        ids.map((id: number) =>
+          withTimeout(getApi().Pages.getPageById(id), 10_000, 'getPageById'),
+        ),
       );
 
       /**

@@ -4,6 +4,7 @@ import type { IFilterParams } from 'oneentry/dist/products/productsInterfaces';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Get administrators information from the API
@@ -38,11 +39,10 @@ export const getAdminsInfo = async ({
   admins?: IAdminEntity[];
 }> => {
   try {
-    const data = await getApi().Admins.getAdminsInfo(
-      body,
-      undefined,
-      offset,
-      limit,
+    const data = await withTimeout(
+      getApi().Admins.getAdminsInfo(body, undefined, offset, limit),
+      20_000,
+      'getAdminsInfo',
     );
     if (isError(data)) {
       return { isError: true, error: data };

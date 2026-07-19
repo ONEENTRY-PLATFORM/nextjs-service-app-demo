@@ -4,6 +4,8 @@ import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { JSX } from 'react';
 import { useEffect } from 'react';
 
+import { useDialogA11y } from '@/components/shared/useDialogA11y';
+
 /** A single portfolio image with its full/thumbnail/preview sources. */
 type PortfolioImage = {
   img: string;
@@ -46,15 +48,13 @@ const PortfolioLightbox = ({
   const count = images.length;
   const current = images[index];
 
-  /** Keyboard navigation: Esc closes, arrows move between photos. */
+  /** Arrow-key navigation (Escape / focus-trap / scroll-lock handled by useDialogA11y). */
   useEffect(() => {
     if (count === 0) {
       return;
     }
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      } else if (e.key === 'ArrowLeft') {
+      if (e.key === 'ArrowLeft') {
         onSelect((index - 1 + count) % count);
       } else if (e.key === 'ArrowRight') {
         onSelect((index + 1) % count);
@@ -62,7 +62,10 @@ const PortfolioLightbox = ({
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [index, count, onClose, onSelect]);
+  }, [index, count, onSelect]);
+
+  /** Dialog a11y: focus trap, focus restore, scroll lock and Escape-to-close. */
+  const dialogRef = useDialogA11y({ isOpen: true, onClose });
 
   /** Out-of-range guard (noUncheckedIndexedAccess). */
   if (!current) {
@@ -71,6 +74,10 @@ const PortfolioLightbox = ({
 
   return (
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={masterName ? `${masterName} — portfolio` : 'Portfolio viewer'}
       className="fixed inset-0 z-300 flex items-center justify-center"
       style={{ background: 'rgba(8,0,14,0.92)', backdropFilter: 'blur(12px)' }}
       onClick={(e) => {

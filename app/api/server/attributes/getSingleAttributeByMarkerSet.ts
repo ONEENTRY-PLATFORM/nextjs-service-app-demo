@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch a single attribute of a set from OneEntry, cached across requests
@@ -34,11 +35,14 @@ const getSingleAttributeByMarkerSetImpl = unstable_cache(
        * `.d.ts` declares the arguments in the opposite order, so pass them
        * positionally in the runtime order, not the way the types suggest.
        */
-      const attribute =
-        await getApi().AttributesSets.getSingleAttributeByMarkerSet(
+      const attribute = await withTimeout(
+        getApi().AttributesSets.getSingleAttributeByMarkerSet(
           setMarker,
           attributeMarker,
-        );
+        ),
+        10_000,
+        'getSingleAttributeByMarkerSet',
+      );
 
       if (isError(attribute)) {
         return { isError: true, error: attribute };

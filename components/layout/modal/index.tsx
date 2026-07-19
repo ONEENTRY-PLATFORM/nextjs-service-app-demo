@@ -7,6 +7,7 @@ import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import ModalAnimations from '@/components/layout/modal/animations/ModalAnimations';
+import { useDialogA11y } from '@/components/shared/useDialogA11y';
 
 import CloseModal from './components/CloseModal';
 import ModalBackdrop from './components/ModalBackdrop';
@@ -115,13 +116,23 @@ const useTitleData = ({
  * @returns {JSX.Element}                 Modal with form component or null if form component is not found
  */
 const Modal = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
-  const { open, component } = useContext(OpenDrawerContext);
+  const { open, component, setTransition } = useContext(OpenDrawerContext);
 
   /** Dynamically select form component by component name */
   const Form = formsMap[component];
 
   /** Get title data based on current component and dictionary */
   const title = useTitleData({ dict, component });
+
+  /**
+   * Dialog a11y: focus trap/restore, background scroll lock and Escape. Escape
+   * triggers the same `transition: 'close'` path as the close button and
+   * backdrop, so the closing animation still plays.
+   */
+  const dialogRef = useDialogA11y({
+    isOpen: open,
+    onClose: () => setTransition('close'),
+  });
 
   /**
    * Gate on `open` here, not only inside `ModalAnimations`, so the popup owns
@@ -138,14 +149,20 @@ const Modal = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
   return (
     <ModalAnimations component={component}>
       <div
+        ref={dialogRef}
         id="modalBody"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
         className="fixed top-1/2 left-1/2 z-500 flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-sm -translate-1/2 flex-col overflow-hidden rounded-3xl bg-white shadow-[0_32px_80px_rgba(180,40,220,0.30)]"
       >
         <header
           className="flex items-center justify-between gap-4 rounded-t-3xl px-8 pt-8 pb-7 text-white"
           style={{ background: 'linear-gradient(135deg,#9B4FB2,#ed21f1)' }}
         >
-          <div className="text-[2rem] font-light">{title}</div>
+          <div id="modalTitle" className="text-[2rem] font-light">
+            {title}
+          </div>
           <CloseModal />
         </header>
         <div className="overflow-auto px-8 pt-6 pb-4">

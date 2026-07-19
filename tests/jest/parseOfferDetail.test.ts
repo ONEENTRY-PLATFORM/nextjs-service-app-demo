@@ -6,9 +6,12 @@ import { parseOfferDetail } from '@/components/layout/offers-page/parseOfferDeta
 /**
  * Build an `offer` product stub. Only the fields `parseOfferDetail` reads are
  * set; the deep SDK type is bypassed with a cast, which is the point here.
- * @param   {object}          attributeValues - Raw `attributeValues` map
- * @param   {object}          [extra]         - `title` / `price` / `plainValue`
- * @returns {IProductsEntity}                 Offer product stub
+ * @param   {object}          attributeValues    - Raw `attributeValues` map
+ * @param   {object}          [extra]            - Optional top-level overrides
+ * @param   {string}          [extra.title]      - `localizeInfos.title`
+ * @param   {number}          [extra.price]      - Top-level product `price`
+ * @param   {string}          [extra.plainValue] - `localizeInfos.plainValue`
+ * @returns {IProductsEntity}                    Offer product stub
  */
 const makeOffer = (
   attributeValues: Record<string, { value: unknown }>,
@@ -119,14 +122,18 @@ describe('parseOfferDetail', () => {
     it('uses the CMS offer_image downloadLink (object or array shape)', () => {
       expect(
         parseOfferDetail(
-          makeOffer({ offer_image: { value: { downloadLink: 'https://cdn/a.jpg' } } }),
+          makeOffer({
+            offer_image: { value: { downloadLink: 'https://cdn/a.jpg' } },
+          }),
           0,
         ).image,
       ).toBe('https://cdn/a.jpg');
 
       expect(
         parseOfferDetail(
-          makeOffer({ offer_image: { value: [{ downloadLink: 'https://cdn/b.jpg' }] } }),
+          makeOffer({
+            offer_image: { value: [{ downloadLink: 'https://cdn/b.jpg' }] },
+          }),
           0,
         ).image,
       ).toBe('https://cdn/b.jpg');

@@ -155,6 +155,22 @@ const eslintConfig = defineConfig([
       'jsdoc/check-line-alignment': ['warn', 'always'],
     },
   },
+
+  // Jest unit tests type-check under their OWN program (`tests/jest/tsconfig.json`,
+  // which keeps Next's `.next/types` out to avoid the @types/jest global clash — see
+  // that file's header). Point the type-aware parser at it for these files, otherwise
+  // ESLint fails every test with "file was not found in any of the provided project(s)"
+  // (the root tsconfig excludes `tests/jest`). This is also what makes the editor lint
+  // them with the jest globals and the `@/*` alias in scope.
+  {
+    files: ['tests/jest/**/*.ts', 'tests/jest/**/*.tsx'],
+    languageOptions: {
+      parserOptions: {
+        project: './tests/jest/tsconfig.json',
+        tsconfigRootDir: __dirname,
+      },
+    },
+  },
 ]);
 
 export default eslintConfig;

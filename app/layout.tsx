@@ -13,6 +13,7 @@ import { OpenDrawerProvider } from '@/app/store/providers/OpenDrawerContext';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import StoreProvider from '@/app/store/providers/StoreProvider';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
+import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import BottomMenu from '@/components/layout/bottom-menu';
 import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/header';
@@ -85,6 +86,12 @@ const getSiteName = async (): Promise<string> => {
 export async function generateMetadata(): Promise<Metadata> {
   const siteName = await getSiteName();
   return {
+    // Absolute base for every relative URL in metadata (OG images, canonical,
+    // alternates) across all pages — child `generateMetadata` inherits it, so
+    // relative paths resolve against THIS site's origin instead of being
+    // emitted relative (which crawlers reject). Also silences Next's
+    // "metadataBase is not set" build warning.
+    metadataBase: new URL(siteUrl),
     title: {
       default: siteName,
       template: `%s | ${siteName}`,
@@ -113,7 +120,7 @@ const generateStructuredData = (siteName: string): object => {
     '@type': 'Organization',
     name: siteName,
     url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
+    logo: `${siteUrl}/icons/thalia_logo.svg`,
     sameAs: [
       'https://www.facebook.com/OneEntry',
       'https://twitter.com/OneEntry',
@@ -183,7 +190,7 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(
+            __html: serializeJsonLd(
               generateStructuredData(
                 (dict?.site_name?.value as string | undefined) ||
                   SITE_NAME_FALLBACK,

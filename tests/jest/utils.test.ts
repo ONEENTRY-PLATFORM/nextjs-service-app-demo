@@ -253,7 +253,9 @@ describe('getGalleryImageUrls / fileBlurDataUrl', () => {
   const withObjectPreview: OneEntryImageFile = {
     downloadLink: 'https://cdn/full.jpg',
     defaultPreview: 'default',
-    previewLink: { default: ['data:image/webp;base64,BLUR', 'https://cdn/lqip'] },
+    previewLink: {
+      default: ['data:image/webp;base64,BLUR', 'https://cdn/lqip'],
+    },
   };
 
   it('uses downloadLink for full/thumb and previewLink pair[0] for blur', () => {

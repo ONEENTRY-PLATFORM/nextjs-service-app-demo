@@ -6,6 +6,7 @@ import type {
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Getting all orders from the orders storage object created by the user
@@ -30,10 +31,10 @@ export const updateOrderByMarkerAndId = async ({
   order?: IBaseOrdersEntity;
 }> => {
   try {
-    const orderData = await getApi().Orders.updateOrderByMarkerAndId(
-      marker,
-      id,
-      data,
+    const orderData = await withTimeout(
+      getApi().Orders.updateOrderByMarkerAndId(marker, id, data),
+      10_000,
+      'updateOrderByMarkerAndId',
     );
 
     if (isError(orderData)) {

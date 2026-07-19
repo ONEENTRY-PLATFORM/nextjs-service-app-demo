@@ -40,7 +40,19 @@ const saveFunction = async (refreshToken: string): Promise<void> => {
 };
 
 /**
- * Internal SDK instance. Mutated by {@link reDefine}; accessed everywhere via {@link getApi}.
+ * Internal SDK instance. Accessed everywhere via {@link getApi}; its auth state
+ * is mutated by {@link reDefine} / {@link clearSession} / {@link syncTokens}.
+ *
+ * SERVER-SAFETY INVARIANT — those three mutators run **only in the browser**:
+ * every caller is a Client Component or client-only helper (`AuthContext`,
+ * `SignUpForm`, `VerificationForm`, `logOutUser`, all `'use client'`). Server
+ * Components only ever *read* through `getApi()`, so on the server this
+ * module-level singleton always holds the anonymous app-token instance and auth
+ * state cannot leak between concurrent server requests. Keep it that way:
+ * user-authorized calls (auth/oauth/getUser/orders) must stay on the client —
+ * the OneEntry API binds the refresh token to the browser device fingerprint
+ * anyway (rules/tokens.md). If a server-side user session is ever required,
+ * create a **per-request** SDK instance rather than mutating this one.
  */
 let apiInstance = defineOneEntry(PROJECT_URL, {
   token: APP_TOKEN,

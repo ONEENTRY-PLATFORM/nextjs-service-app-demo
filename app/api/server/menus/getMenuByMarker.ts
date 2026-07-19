@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { getApi } from '@/app/api';
 import { isError } from '@/app/api';
+import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch a menu from OneEntry, cached across requests (private helper).
@@ -24,7 +25,11 @@ const getMenuByMarkerImpl = unstable_cache(
     menu?: IMenusEntity;
   }> => {
     try {
-      const data = await getApi().Menus.getMenusByMarker(marker);
+      const data = await withTimeout(
+        getApi().Menus.getMenusByMarker(marker),
+        10_000,
+        'getMenuByMarker',
+      );
 
       if (isError(data)) {
         return { isError: true, error: data };

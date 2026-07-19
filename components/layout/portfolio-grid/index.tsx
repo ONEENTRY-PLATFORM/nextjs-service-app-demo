@@ -41,6 +41,12 @@ const PortfolioGridLayout = async ({
   /** Guard the attribute bag: `attributeValues` can be absent on a bare entity. */
   const masterAttrs = master.attributeValues || {};
 
+  /** Caption data for the lightbox and the portfolio images' alt text. */
+  const masterName =
+    (masterAttrs.master_name?.value as string | undefined) ?? '';
+  const role =
+    (masterAttrs.master_short_description?.value as string | undefined) ?? '';
+
   /**
    * `master_portfolio` is an `entity` list of the master's gallery photo pages:
    * `[{ value: { id: <photoPageId>, parentId: <category page id> } }]`.
@@ -70,7 +76,7 @@ const PortfolioGridLayout = async ({
    */
   const portfolioImages =
     childPages?.flatMap((page) => {
-      const photos = page.attributeValues.gallery_photos?.value as
+      const photos = page.attributeValues?.gallery_photos?.value as
         | Array<{
             downloadLink: string;
             defaultPreview?: string;
@@ -84,8 +90,10 @@ const PortfolioGridLayout = async ({
           img: imgSrc.downloadLink,
           thumb: imgSrc.downloadLink,
           preview: pv?.[0] || '',
-          /** TODO: Add proper alt text for accessibility */
-          alt: '...',
+          /** CMS portfolio photos carry no caption — name the specialist. */
+          alt: masterName
+            ? `Portfolio work by ${masterName}`
+            : 'Specialist portfolio work',
         };
       });
     }) || [];
@@ -94,12 +102,6 @@ const PortfolioGridLayout = async ({
   if (portfolioImages.length === 0) {
     return <></>;
   }
-
-  /** Caption data for the lightbox. */
-  const masterName =
-    (masterAttrs.master_name?.value as string | undefined) ?? '';
-  const role =
-    (masterAttrs.master_short_description?.value as string | undefined) ?? '';
 
   /** Render portfolio heading + gallery with lightbox */
   return (
