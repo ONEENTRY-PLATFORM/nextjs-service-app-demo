@@ -23,8 +23,8 @@ export default defineConfig({
   timeout: 60_000,
   expect: { timeout: 15_000 },
   use: {
-    // Dedicated port: 3000 is often occupied by dev servers of OTHER projects,
-    // and reuseExistingServer would silently run tests against a foreign app
+    // Dedicated port for an isolated production build (see webServer): keeps the
+    // tests off the local `next dev` server on 3700 and its live-edited state
     baseURL: 'http://localhost:3010',
     trace: 'on-first-retry',
     actionTimeout: 15_000,
@@ -37,10 +37,13 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev -- -p 3010',
+    // Build once into a separate distDir (.next-e2e) and serve the production
+    // output on 3010 — fully isolated from the dev server on 3700. Locally an
+    // already-running instance on 3010 is reused, so no rebuild between runs
+    command: 'npm run test:e2e:server',
     url: 'http://localhost:3010',
     reuseExistingServer: !process.env.CI,
-    // Next.js cold start can be long
-    timeout: 120_000,
+    // `next build` + cold start can be long
+    timeout: 300_000,
   },
 });

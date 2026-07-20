@@ -96,3 +96,29 @@
 - `ReviewModal` textarea-плейсхолдер — осмысленный текст вместо lorem-заглушки Figma; сабмит client-only (тост), как в верстке — CMS-хранилище отзывов пусто.
 - «Call us» на мобильной карточке салона звонит (`tel:`), а не открывает карту — в верстке это баг макета.
 - `cancel_text` в `system_content` может отдавать «Cancel» — фолбэк кода теперь «Cancel booking» (по верстке); при желании поменять значение в админке.
+
+## 7. Пробелы покрытия e2e (кандидаты в тесты, 2026-07-20)
+
+Аудит `tests/e2e/` (21 spec, project `chromium` desktop). Ниже — что **не покрыто** и стоит добавить. Многим кандидатам сперва нужны `data-testid` (помечено «нет testid → добавить»), т.к. `header/nav` и кнопки карточки заказа в профиле их не несут. Мутации к CMS перехватывать через `page.route` (образец — `booking-order.spec.ts`), auth-гейт — `test.skip(!hasCreds())`.
+
+Приоритет проставлен в начале каждого пункта: 🔴 HIGH (публичные, высокая ценность) · 🟠 MED (auth-gated или глубже) · ⚪ LOW / структурные · ⛔ не автоматизируется (зафиксировано).
+
+1. 🔴 **Мобильная навигация** (`components/layout/header/nav/MobileNavPanel.tsx`) — гамбургер (`Menu`/`X`) на 390px: открыть панель → перейти по ссылке → навигация + панель закрылась; Escape/клик вне закрывают. Весь мобильный `useDialogA11y`-слой (focus-trap, scroll-lock, возврат фокуса) непокрыт. **Нет testid → добавить** (`mobile-nav-open`, `mobile-nav-panel`, `mobile-nav-link`).
+2. 🔴 **Валидность JSON-LD** — распарсить каждый `<script type="application/ld+json">` как JSON, проверить `@type` и отсутствие `</script>`-breakout. Прямо стережёт фикс §5.5 (`serializeJsonLd`). testid не нужен, дёшево.
+3. 🔴 **Booking — второй входной поток** (specialist/master-first) — `booking-flow-*` кроме `salon-first` не гоняется (`EntryScreen` предлагает выбор потока). Пройти альтернативный поток до сводки.
+4. 🔴 **Offer → booking deep-link** — `offer-book` (`OfferDetailPanel`) ведёт в бронь с предвыбранным составом; мультивыбор нескольких услуг оффера (осознанное отклонение §6) вообще непокрыт — проверить, что чип/сводка несут все услуги.
+5. 🔴 **Header «Book Online» CTA** (`BookOnlineLink`) → `/booking`, десктоп + мобильный центрированный вариант. **Нет testid → добавить.**
+6. 🟠 **Профиль — авторизованные потоки заказов** (`profile-page/components/order-card/*`): рендер списка визитов (`VisitGroups`/`VisitSection`), отмена брони (`CancelOrderButton`→`CancelConfirmModal`→`CancelSuccessModal`), inline Edit/Save (`EditOrderButton`/`SaveOrderButton`), «Leave a review» (`LeaveReviewButton`), Repeat/Reschedule. Кнопки **без testid → добавить**; мутации перехватывать. Сейчас signed-in профиль доходит только до рендера (`auth.spec`).
+7. 🟠 **Logout** (`LogoutMenuItem`/`UserProfileMenu`) — вход → выход → снова auth-wall + очистка `localStorage`. **Нет testid → добавить.**
+8. 🟠 **Gallery lightbox — клавиатура** — стрелки next/prev меняют счётчик «n / total» (сейчас только Escape).
+9. 🟠 **Master profile depth** (`master-single`) — портфолио-лайтбокс (`portfolio-grid`, подпись «имя · роль» + Share), клик по салон-чипу → `/salons/{url}`, `ReviewModal` «Leave a review», кнопка брони с профиля. Сейчас только открытие профиля из грида (`masters.spec`).
+10. 🟠 **Hero-карусель главной** — авто-смена, prev/next, пауза по фокусу, `aria-hidden` неактивных слайдов, `prefers-reduced-motion` (a11y-работа §5.10 тестом не закрыта).
+11. 🟠 **Search — пустой результат** (`search-empty`) для запроса без совпадений; закрытие модалки поиска (сейчас только успешный путь с «hair»).
+12. 🟠 **Opening Hours** — рендер часов в футере (`OpeningTime`) и секции на контактах (`parseOpeningTime`) при заполненном `opening_time`; сейчас не проверяется (пустой разбор просто скрывает блок).
+13. ⚪ **Dynamic `[handle]` notFound** — `/services/xxx`, `/masters/999999`, `/salons/xxx`, `/gallery/xxx` → not-found UI (сейчас только top-level `/definitely-missing`).
+14. ⚪ **SEO глубже** — canonical/OG/`metadataBase` (фикс §5.2), не только непустой `<title>`.
+15. ⚪ **Error boundary** (`app/error.tsx`/`global-error.tsx`, фикс §5.3) — форсировать сбой через `route.abort` критичного OneEntry-запроса → граница вместо белого экрана.
+16. ⚪ **Сетевая деградация** (инвариант §5.12 + CLAUDE.md «деградировать без ошибок») — `route.abort`/`fulfill 500` на CMS-запросы → страница отдаёт пустую секцию/фолбэк, а не падает.
+17. ⚪ **Мобильный Playwright-проект** — сейчас один `chromium` desktop; мобайл только точечным `test.use({viewport})`. Компоненты `MobileNavPanel`/`MobileSpecialistList`/mobile-салон «Call us» (`tel:`) идут только на 390 — добавить project `Mobile Chrome` (Pixel 5).
+18. ⛔ **Contact-form submit** — reCAPTCHA Enterprise v3, Playwright → 400 (память `oneentry-spam-captcha-mechanics`). Покрыт только рендер формы; сабмит не автоматизировать.
+19. ⛔ **Password-reset / signup completion** — OTP приходит out-of-band (email) → полный проход не автоматизировать (только до шага кода). Завершение signup — за `E2E_ALLOW_SIGNUP=1` (пишет реального юзера, delete-эндпоинта нет).

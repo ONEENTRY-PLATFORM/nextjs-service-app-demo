@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -20,7 +24,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     },
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -44,7 +50,14 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "tailwind.config.js",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    ".next-e2e/types/**/*.ts",
+    ".next-e2e/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "static-html", ".claude", "tests/jest"]
+  "exclude": [
+    "node_modules",
+    "static-html",
+    ".claude",
+    "tests/jest"
+  ]
 }

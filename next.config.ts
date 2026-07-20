@@ -11,6 +11,9 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 const nextConfig: NextConfig = {
+  // E2E builds use a separate output dir so `next build` for tests never
+  // clobbers the `.next` folder the local `next dev` server is serving from.
+  distDir: process.env.E2E_BUILD === '1' ? '.next-e2e' : '.next',
   experimental: {
     staleTimes: {
       dynamic: 30,
