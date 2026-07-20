@@ -72,10 +72,17 @@ const ProfileHistory = ({
    * runs a mutation that invalidates that tag, so the list refreshes itself —
    * this used to be a manual `useEffect` plus a `refetch` boolean drilled down
    * through VisitGroups → OrderCard → Cancel/SaveOrderButton.
+   *
+   * `refetchOnMountOrArgChange` is what makes a fresh booking / reschedule show
+   * up on arrival: those happen on `/booking`, where this query has no active
+   * subscriber, so the tag invalidation only MARKS the cache — it does not
+   * refetch a query nobody is watching. Re-fetching every time the profile
+   * mounts (i.e. on the redirect back here) turns that mark into an actual
+   * reload instead of the stale list that used to need a manual page refresh.
    */
   const { data: orders = [] } = useGetAllOrdersByMarkerQuery(
     { marker: ORDERS_STORAGE_MARKER },
-    { skip: !isAuth },
+    { skip: !isAuth, refetchOnMountOrArgChange: true },
   );
 
   /**

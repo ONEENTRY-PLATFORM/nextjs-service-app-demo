@@ -5,23 +5,19 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
 import type { JSX } from 'react';
 
-import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
-import {
-  addServiceToCart,
-  selectActiveItemId,
-} from '@/app/store/reducers/CartSlice';
-
 /**
  * RescheduleOrderButton — the primary action of an upcoming visit, as in the
  * static-html mock (`AccountPage.tsx` → "Reschedule"): it reopens the booking
- * wizard for the SAME specialist, studio and service, so only a new date and
+ * wizard for the SAME specialist, studio and services, so only a new date and
  * time have to be picked.
  *
- * The prefill goes through the booking cart: with both a master and a service
- * known, `useBookingWizard` treats it as a repeat/reschedule and jumps straight
- * to the Date & Time step. The existing appointment is deliberately left alone
- * — the client cancels it themselves once the new slot is confirmed, so a
- * half-finished reschedule never loses the original booking.
+ * The order id travels in the query (`?reschedule={id}`), where
+ * `useReschedulePrefill` re-reads the appointment: the wizard preselects it,
+ * jumps straight to Date & Time and confirms into an UPDATE of this very order.
+ * It is deliberately NOT routed through the booking cart — the cart holds a
+ * single product (a bundled visit would silently lose services) and it would
+ * outlive this navigation, so a later, unrelated booking could overwrite the
+ * appointment. Until the new slot is confirmed the original visit is untouched.
  * @param   {object}               props           - Component props
  * @param   {IAttributeValues}     props.dict      - Dictionary containing localized strings
  * @param   {IOrderByMarkerEntity} props.orderData - Order to reschedule
@@ -34,36 +30,11 @@ const RescheduleOrderButton = ({
   dict: IAttributeValues;
   orderData: IOrderByMarkerEntity;
 }): JSX.Element => {
-  const dispatch = useAppDispatch();
   const router = useTransitionRouter();
-  /** Active cart row index */
-  const activeId = useAppSelector(selectActiveItemId);
 
-  /**
-   * Copy the appointment into the booking cart and open the wizard.
-   * Markers are the ones the CMS `order` form declares (`salon`, `master`);
-   * both values are plain arrays of ids.
-   */
+  /** Open the wizard on this appointment. */
   const rescheduleHandle = () => {
-    const salonEntity = orderData.formData.find((f) => f.marker === 'salon');
-    const salonId = (salonEntity?.value as number[] | undefined)?.[0];
-    const masterEntity = orderData.formData.find((f) => f.marker === 'master');
-    /** `master` is a `list` field, so its value arrives as a string id */
-    const masterId = Number(
-      (masterEntity?.value as (string | number)[] | undefined)?.[0],
-    );
-    const productId = orderData.products[0]?.id;
-
-    dispatch(
-      addServiceToCart({
-        id: activeId,
-        salonId: salonId ?? null,
-        productId: productId ?? null,
-        serviceId: null,
-        masterId: Number.isNaN(masterId) ? null : masterId,
-      }),
-    );
-    router.push('/booking');
+    router.push(`/booking?reschedule=${orderData.id}`);
   };
 
   return (

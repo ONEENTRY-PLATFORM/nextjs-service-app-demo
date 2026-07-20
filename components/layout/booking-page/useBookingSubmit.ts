@@ -8,6 +8,7 @@ import type {
 import { useContext, useState } from 'react';
 
 import { getApi, isError } from '@/app/api';
+import { RTKApi, useUpdateOrderMutation } from '@/app/api/api/RTKApi';
 import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
@@ -78,14 +79,22 @@ const toInterval = (sel: BookingSelection): [Date, Date] => {
  * Payment splits the tail: an offline account (pay at the salon) ends on the
  * success modal, an online one creates a payment session and hands the client
  * over to the gateway.
- * @param   {object} props                - Hook parameters
- * @param   {string} props.paymentAccount - Identifier of the chosen payment account
- * @returns {object}                      `submit`, `booked` flag, `closeSuccess`, `isLoading`, `error`
+ *
+ * A RESCHEDULE (`rescheduleOrderId`, see {@link useReschedulePrefill}) takes a
+ * fourth branch: the existing appointment is updated in place — no second order
+ * is created and no payment is taken again, since the client already paid (or
+ * agreed to pay) for this very visit.
+ * @param   {object} props                     - Hook parameters
+ * @param   {string} props.paymentAccount      - Identifier of the chosen payment account
+ * @param   {number} props.rescheduleOrderId   - Order being moved; `null` for a new booking
+ * @returns {object}                           `submit`, `booked` flag, `closeSuccess`, `isLoading`, `error`
  */
 export const useBookingSubmit = ({
   paymentAccount,
+  rescheduleOrderId,
 }: {
   paymentAccount: string;
+  rescheduleOrderId: number | null;
 }): {
   submit: (sel: BookingSelection) => Promise<void>;
   booked: boolean;
@@ -99,6 +108,7 @@ export const useBookingSubmit = ({
   const { isAuth } = useContext(AuthContext);
   const { setOpen, setComponent } = useContext(OpenDrawerContext);
   const activeId = useAppSelector(selectActiveItemId);
+  const [updateOrder] = useUpdateOrderMutation();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -202,6 +212,44 @@ export const useBookingSubmit = ({
         value: [[start.toISOString(), end.toISOString()]],
       });
 
+      /**
+       * Reschedule — move the EXISTING appointment instead of booking a second
+       * one. The order is re-read first and the update is sent as the whole
+       * entity with only `formData` / `products` swapped, the same shape the
+       * cancel action posts (verified live, `CancelOrderButton`): a minimal body
+       * would drop the fields the server does not merge — status included, which
+       * would kick the visit out of "Upcoming".
+       *
+       * Payment is deliberately skipped: this order already has its payment
+       * account and (for online providers) its session, so re-running checkout
+       * would charge the client twice for one visit.
+       */
+      if (rescheduleOrderId) {
+        const current = await getApi().Orders.getOrderByMarkerAndId(
+          ORDERS_STORAGE_MARKER,
+          rescheduleOrderId,
+        );
+        if (isError(current)) {
+          setError(current.message);
+          return;
+        }
+        const updateBody = {
+          ...current,
+          products,
+          formData,
+        } as unknown as IOrderData;
+        await updateOrder({
+          marker: ORDERS_STORAGE_MARKER,
+          id: rescheduleOrderId,
+          body: updateBody,
+        }).unwrap();
+
+        dispatch(removeAllServices());
+        setRealOrder(true);
+        setBooked(true);
+        return;
+      }
+
       const body: IOrderData = {
         formIdentifier: ORDERS_FORM_IDENTIFIER,
         paymentAccountIdentifier: paymentAccount,
@@ -218,6 +266,14 @@ export const useBookingSubmit = ({
         return;
       }
 
+      /**
+       * `createOrder` is a raw SDK call, not an RTK mutation, so it carries no
+       * `invalidatesTags` — invalidate `Orders` by hand so the profile's order
+       * list refetches on arrival (the cancel/save mutations do this for free).
+       * Without it the redirect lands on a cached list and the new appointment
+       * only shows after a manual reload.
+       */
+      dispatch(RTKApi.util.invalidateTags(['Orders']));
       dispatch(removeAllServices());
 
       /**

@@ -33,6 +33,7 @@ import type {
   StepKey,
 } from './types';
 import { useBookingSubmit } from './useBookingSubmit';
+import { useReschedulePrefill } from './useReschedulePrefill';
 
 /** Everything render needs from the controller hook. */
 export interface BookingWizardState {
@@ -182,16 +183,34 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     paymentAccounts[0]?.identifier ||
     PAYMENT_ACCOUNT_CASH;
 
-  const { submit, booked, closeSuccess, isAuth, isLoading, error } =
-    useBookingSubmit({ paymentAccount: activePaymentAccount });
+  /**
+   * `?reschedule={orderId}` — the wizard is moving an existing appointment, so
+   * it preselects from that order and confirms into an UPDATE of it.
+   */
+  const reschedule = useReschedulePrefill();
 
-  /** ── Preselection from the booking cart ──────────────────────────────── */
+  const { submit, booked, closeSuccess, isAuth, isLoading, error } =
+    useBookingSubmit({
+      paymentAccount: activePaymentAccount,
+      rescheduleOrderId: reschedule.orderId,
+    });
+
+  /** ── Preselection from the reschedule query / the booking cart ───────── */
   const activeId = useAppSelector(selectActiveItemId);
   const cartItems = useAppSelector(selectCartData);
   const cartItem = cartItems.find((item) => item.id === activeId);
-  const cartMasterId = cartItem?.masterId;
-  const cartProductId = cartItem?.productId;
-  const cartSalonId = cartItem?.salonId;
+  /**
+   * A reschedule wins over the cart: it names the appointment being moved, and
+   * unlike the cart it can carry every service of a bundled visit.
+   */
+  const cartMasterId = reschedule.masterId ?? cartItem?.masterId;
+  const cartSalonId = reschedule.salonId ?? cartItem?.salonId;
+  const preProductIds =
+    reschedule.productIds.length > 0
+      ? reschedule.productIds
+      : cartItem?.productId
+        ? [cartItem.productId]
+        : [];
   /** The user's own interaction wins over a late cart rehydration */
   const [touched, setTouched] = useState(false);
 
@@ -212,7 +231,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
    * over a flow the user has already started themselves.
    */
   const cartKey = hydrated
-    ? `${cartMasterId ?? ''}:${cartProductId ?? ''}:${cartSalonId ?? ''}`
+    ? `${cartMasterId ?? ''}:${preProductIds.join(',')}:${cartSalonId ?? ''}`
     : '';
   const [appliedCartKey, setAppliedCartKey] = useState('');
   if (cartKey !== appliedCartKey) {
@@ -220,12 +239,18 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     const preMaster = cartMasterId
       ? masters.find((m) => m.adminId === cartMasterId)
       : undefined;
-    const preService = cartProductId
-      ? services.find((s) => s.productId === cartProductId)
-      : undefined;
+    /** Every preselected service — a rescheduled visit may bundle several */
+    const preServices = preProductIds
+      .map((pid) => services.find((s) => s.productId === pid))
+      .filter((s): s is BookingService => Boolean(s));
+    const preService = preServices[0];
     const preSalon = cartSalonId
       ? salons.find((s) => s.id === String(cartSalonId))
       : undefined;
+    /** Single shared category → that pill, a mixed bundle → All */
+    const preCategories = [...new Set(preServices.map((s) => s.category))];
+    const preCategory =
+      preCategories.length === 1 ? (preCategories[0] ?? 'All') : 'All';
 
     if (touched) {
       /** Skip — the user is already in a flow of their own */
@@ -233,9 +258,9 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
       /** Repeat/reschedule: everything known → jump to Date & Time */
       setFlow('specialist-first');
       setMaster(preMaster.id);
-      setServiceIds([preService.id]);
+      setServiceIds(preServices.map((s) => s.id));
       setSalon(preSalon?.id ?? preMaster.salonIds[0] ?? '');
-      setCategoryFilter(preService.category);
+      setCategoryFilter(preCategory);
       setPendingDateTime(true);
     } else if (preMaster) {
       /** From a specialist profile → specialist-first, land on the next step */
@@ -248,9 +273,9 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     } else if (preService) {
       /** From Services & Prices / an offer → salon-first, service locked */
       setFlow('salon-first');
-      setServiceIds([preService.id]);
+      setServiceIds(preServices.map((s) => s.id));
       setServiceLocked(true);
-      setCategoryFilter(preService.category);
+      setCategoryFilter(preCategory);
       setStepIdx(0);
     }
   }

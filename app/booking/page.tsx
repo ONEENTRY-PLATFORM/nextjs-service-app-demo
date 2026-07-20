@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { JSX } from 'react';
+import { Suspense } from 'react';
 
 import { getPageByUrl } from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
@@ -55,7 +56,13 @@ const BookingPageLayout = async (): Promise<JSX.Element> => {
   return (
     <BookingAnimations className="flex min-h-screen w-full flex-col bg-white">
       <BookingHero title={title} subtitle={subtitle} />
-      <BookingWizard data={data} />
+      {/* The wizard reads `?reschedule={orderId}` (`useSearchParams`), which on
+          a prerendered route is only known on the client — Next requires the
+          boundary. The fallback never reaches the user: the wizard itself is
+          client-rendered, so the suspense resolves in the same commit. */}
+      <Suspense fallback={null}>
+        <BookingWizard data={data} />
+      </Suspense>
     </BookingAnimations>
   );
 };
