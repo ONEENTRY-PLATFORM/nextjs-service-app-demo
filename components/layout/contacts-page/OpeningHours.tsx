@@ -3,8 +3,11 @@
 import type { JSX } from 'react';
 import { useSyncExternalStore } from 'react';
 
-import { openingHoursData } from '@/components/data';
+import type { OpeningHoursRow } from '@/app/utils/parseOpeningTime';
+import summarizeOpeningHours from '@/app/utils/summarizeOpeningHours';
 import SectionHeading from '@/components/shared/SectionHeading';
+
+import OpeningHoursDayCard from './OpeningHoursDayCard';
 
 /**
  * No-op subscription — the value only needs a client/server split.
@@ -27,13 +30,27 @@ const getTodayIdx = (): number => {
  * OpeningHours component — the "Opening Hours" section of the contacts page
  * as in the static-html mock (`ContactsPage.tsx` → OpeningHours): a single
  * Mon–Sun gradient card on mobile/tablet and per-day cards with a highlighted
- * "Today" on desktop. The schedule comes from `components/data.js` until the
- * `opening_time` block is filled in the CMS.
- * @returns {JSX.Element} Opening hours section
+ * "Today" on desktop. The schedule comes from the CMS `opening_time` block.
+ *
+ * The mobile card collapses the week into one line only while every day shares
+ * the same hours; once they differ it falls back to the per-day list so no day
+ * is misrepresented.
+ * @param   {object}            props      - Component properties
+ * @param   {OpeningHoursRow[]} props.rows - Weekday rows, Monday first
+ * @returns {JSX.Element}                  Opening hours section
  */
-const OpeningHours = (): JSX.Element => {
+const OpeningHours = ({ rows }: { rows: OpeningHoursRow[] }): JSX.Element => {
   /** -1 on the server, the real weekday after hydration — no SSR mismatch */
   const todayIdx = useSyncExternalStore(subscribeNever, getTodayIdx, () => -1);
+
+  const summary = summarizeOpeningHours(rows);
+  /** Mock notation for the compact card: three-letter days (`Mon – Sun`). */
+  const summaryRange =
+    summary === null
+      ? ''
+      : summary.from === summary.to
+        ? summary.from.slice(0, 3)
+        : `${summary.from.slice(0, 3)} – ${summary.to.slice(0, 3)}`;
 
   return (
     <section className="bg-slate-50 py-6 md:py-10">
@@ -42,62 +59,38 @@ const OpeningHours = (): JSX.Element => {
 
         {/* Mobile + tablet: a single card for the whole week */}
         <div className="lg:hidden">
-          <div
-            className="flex flex-col items-center gap-2 rounded-2xl bg-gradient-brand p-5 text-center"
-            style={{ boxShadow: '0 8px 24px #ed21f144' }}
-          >
-            <p className="text-sm font-black tracking-wider text-white/80 uppercase">
-              Mon – Sun
-            </p>
-            <p className="text-base font-bold text-white">10:00 – 22:00</p>
-          </div>
+          {summary ? (
+            <div
+              className="flex flex-col items-center gap-2 rounded-2xl bg-gradient-brand p-5 text-center"
+              style={{ boxShadow: '0 8px 24px #ed21f144' }}
+            >
+              <p className="text-sm font-black tracking-wider text-white/80 uppercase">
+                {summaryRange}
+              </p>
+              <p className="text-base font-bold text-white">{summary.hours}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {rows.map((row, i) => (
+                <OpeningHoursDayCard
+                  key={row.day}
+                  row={row}
+                  isToday={i === todayIdx}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Desktop: per-day cards with the highlighted today */}
         <div className="hidden gap-3 lg:grid lg:grid-cols-7">
-          {openingHoursData.map((row, i) => {
-            const isToday = i === todayIdx;
-            return (
-              <div
-                key={row.day}
-                className={`flex flex-col items-center gap-2 rounded-2xl p-4 text-center transition-all duration-300 ${
-                  isToday
-                    ? 'scale-105 bg-gradient-brand'
-                    : 'border-[1.5px] border-slate-150 bg-white'
-                }`}
-                style={{
-                  boxShadow: isToday
-                    ? '0 8px 24px #ed21f144'
-                    : '0 2px 12px rgba(0,0,0,0.05)',
-                }}
-              >
-                <p
-                  className={`text-xs font-black tracking-wider uppercase ${
-                    isToday ? 'text-white/75' : 'text-neutral-300'
-                  }`}
-                >
-                  {row.day.slice(0, 3)}
-                </p>
-                {/* `nowrap` collapses the injected newlines into spaces, so the
-                    hours render on one line — exactly like the mock's markup. */}
-                <p
-                  className={`text-base leading-tight font-normal whitespace-nowrap ${
-                    isToday ? 'text-white' : 'text-slate-400'
-                  }`}
-                >
-                  {row.hours.replace(' – ', '\n–\n')}
-                </p>
-                {isToday && (
-                  <span
-                    className="rounded-full px-2 py-0.5 text-[10px] font-black tracking-widest text-white uppercase"
-                    style={{ background: 'rgba(255,255,255,0.25)' }}
-                  >
-                    Today
-                  </span>
-                )}
-              </div>
-            );
-          })}
+          {rows.map((row, i) => (
+            <OpeningHoursDayCard
+              key={row.day}
+              row={row}
+              isToday={i === todayIdx}
+            />
+          ))}
         </div>
       </div>
     </section>

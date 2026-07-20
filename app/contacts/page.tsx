@@ -4,10 +4,16 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
-import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
+import {
+  getBlockByMarker,
+  getChildPagesByParentUrl,
+  getPageByUrl,
+} from '@/app/api';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
+import parseOpeningTime from '@/app/utils/parseOpeningTime';
+import summarizeOpeningHours from '@/app/utils/summarizeOpeningHours';
 import BookCtaBanner from '@/components/layout/contacts-page/BookCtaBanner';
 import ContactFormCard from '@/components/layout/contacts-page/ContactFormCard';
 import ContactInfoCard from '@/components/layout/contacts-page/ContactInfoCard';
@@ -31,8 +37,7 @@ const SALON_COLORS = ['#ed21f1', '#109aa9', '#9b4fb2'];
 
 /**
  * Map a CMS salon page onto the location card shape. A salon without the
- * `salon_address` attribute is unusable for the design and is dropped — when
- * every salon is dropped the page falls back to the mock's demo studios.
+ * `salon_address` attribute is unusable for the design and is dropped.
  * @param   {IPagesEntity}        page  - CMS salon child page
  * @param   {number}              index - Position in the list (accent color cycling)
  * @returns {ContactSalon | null}       Normalized salon or `null` when the address is empty
@@ -77,12 +82,14 @@ const toContactSalon = (
  * @see {@link https://nextjs.org/docs/app/api-reference/file-conventions/page Next.js docs}
  */
 const ContactsPageLayout = async (): Promise<JSX.Element> => {
-  /** All three fetches are independent — run in parallel. */
-  const [dict, { page, isError }, salonsResult] = await Promise.all([
-    getDictionary(),
-    getPageByUrl('contacts'),
-    getChildPagesByParentUrl('salons'),
-  ]);
+  /** All four fetches are independent — run in parallel. */
+  const [dict, { page, isError }, salonsResult, openingResult] =
+    await Promise.all([
+      getDictionary(),
+      getPageByUrl('contacts'),
+      getChildPagesByParentUrl('salons'),
+      getBlockByMarker('opening_time'),
+    ]);
   ServerProvider('dict', dict);
 
   if (!page || isError) {
@@ -93,6 +100,13 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
   const salons: ContactSalon[] = (salonsResult.pages ?? [])
     .map(toContactSalon)
     .filter((salon): salon is ContactSalon => salon !== null);
+
+  /** CMS schedule — an empty week hides the "Opening Hours" section. */
+  const openingRows = parseOpeningTime(
+    openingResult.block?.attributeValues?.opening_time?.value,
+  );
+  /** Counters strip: the hours cell only works while the week is uniform. */
+  const openingSummary = summarizeOpeningHours(openingRows);
 
   const title = page.localizeInfos?.title ?? 'Contacts';
 
@@ -112,7 +126,9 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
         <StatsStrip
           stats={[
             [salons.length, 'Locations'],
-            ['Daily', '10:00–22:00'],
+            ...(openingSummary
+              ? ([['Daily', openingSummary.hours]] as Array<[string, string]>)
+              : []),
             ['Dubai', 'UAE'],
           ]}
         />
@@ -139,9 +155,11 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
       </section>
 
       {/* Opening hours */}
-      <RevealAnimations>
-        <OpeningHours />
-      </RevealAnimations>
+      {openingRows.length > 0 && (
+        <RevealAnimations>
+          <OpeningHours rows={openingRows} />
+        </RevealAnimations>
+      )}
 
       {/* Book CTA banner */}
       <RevealAnimations>

@@ -1,6 +1,6 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
-import { offerAccentGradientsData, offerBannersData } from '@/components/data';
+import { offerAccentGradientsData } from '@/components/data';
 
 /**
  * Brand accent pairs from the static-html mock (`components/data.js`): each
@@ -8,13 +8,6 @@ import { offerAccentGradientsData, offerBannersData } from '@/components/data';
  * back to a same-color gradient like the home page `OfferCard`.
  */
 const ACCENT_GRADIENTS: Record<string, string> = offerAccentGradientsData;
-
-/**
- * Local offer banners (mock data from `components/data.js`) used while offer
- * products in the CMS have no photo attribute filled — cycled by card index
- * in the mock's order.
- */
-const FALLBACK_IMAGES: string[] = offerBannersData;
 
 /** Per-category accent fallback while `offer_type` is still a category entity */
 const CATEGORY_ACCENT: Record<string, string> = {
@@ -42,7 +35,7 @@ export interface OfferDetailView {
   accentColor: string;
   /** Accent gradient (known pair or same-colour fallback) */
   accentGrad: string;
-  /** Offer photo (`offer_image` attribute or a cycled mock banner) */
+  /** Offer photo (`offer_image` attribute, `''` when the CMS has none) */
   image: string;
   /** Appointment duration line (`offer_time`, `''` hides the pill) */
   duration: string;
@@ -53,15 +46,11 @@ export interface OfferDetailView {
 /**
  * parseOfferDetail — build the {@link OfferDetailView} of a full-width offer
  * card from a CMS `offer` product. Pure: all UI-shaping (accent gradient,
- * fallback banner by index, duration formatting) lives here.
+ * duration formatting) lives here.
  * @param   {IProductsEntity} product - Product entity representing the special offer
- * @param   {number}          index   - Card index (fallback photo + animation stagger)
  * @returns {OfferDetailView}         Parsed offer view-model
  */
-export const parseOfferDetail = (
-  product: IProductsEntity,
-  index: number,
-): OfferDetailView => {
+export const parseOfferDetail = (product: IProductsEntity): OfferDetailView => {
   const name = product.localizeInfos?.title ?? '';
 
   /** `offer_description` is a plain `string` attribute; `plainValue` is a fallback */
@@ -121,16 +110,15 @@ export const parseOfferDetail = (
 
   /**
    * Offer photo: `offer_image` (an `image` attribute — its value is a single
-   * file object `{ downloadLink }`, tolerating an array too) or a local mock
-   * banner cycled by index.
+   * file object `{ downloadLink }`, tolerating an array too). Empty when the
+   * CMS holds no photo — the card then renders its accent pane without one.
    */
   const imageVal = product.attributeValues?.offer_image?.value as
     { downloadLink?: string } | Array<{ downloadLink?: string }> | undefined;
-  const cmsImage = Array.isArray(imageVal)
-    ? imageVal[0]?.downloadLink
-    : imageVal?.downloadLink;
   const image =
-    cmsImage || (FALLBACK_IMAGES[index % FALLBACK_IMAGES.length] as string);
+    (Array.isArray(imageVal)
+      ? imageVal[0]?.downloadLink
+      : imageVal?.downloadLink) ?? '';
 
   /** Appointment time line: `offer_time` string (e.g. "2 hours") */
   const rawDuration = product.attributeValues?.offer_time?.value;

@@ -5,8 +5,8 @@ import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 import ProfileIcon from '@/components/icons/profile';
-import { normalizeMenuPages } from '@/components/normalizeMenuPages';
 
 import ProfileMenuAnimations from '../../animations/ProfileMenuAnimations';
 import LogoutMenuItem from './LogoutMenuItem';

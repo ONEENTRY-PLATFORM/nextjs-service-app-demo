@@ -3,8 +3,8 @@ import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { ReactElement } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 import NavigationMenu from '@/components/layout/header/main-menu';
-import { normalizeMenuPages } from '@/components/normalizeMenuPages';
 import { flatMenuToNested } from '@/components/utils';
 
 import Logo from './Logo';

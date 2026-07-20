@@ -14,6 +14,9 @@ import {
   PINK,
   TIMES,
 } from '../constants';
+import formatMinutes from '../formatMinutes';
+import slotFits from '../slotFits';
+import slotMinutes from '../slotMinutes';
 
 /**
  * Days in a month.
@@ -46,14 +49,20 @@ const getFirstDayOfMonth = (y: number, m: number): number => {
  * schedule the static {@link TIMES} grid stands in (demo / unpopulated CMS);
  * with a schedule but no slots that day, the specialist simply does not work
  * then, so an explicit "no times" message shows instead of a misleading grid.
- * @param   {object}              props              - Component properties
- * @param   {string}              props.selectedDate - Chosen date key `y-m-d` (`''` when none)
- * @param   {string}              props.selectedTime - Chosen time `HH:MM` (`''` when none)
- * @param   {(d: string) => void} props.onDate       - Pick a date
- * @param   {(t: string) => void} props.onTime       - Pick a time
- * @param   {string[]}            props.slots        - `HH:MM` slots for the chosen day from the schedule
- * @param   {boolean}             props.hasSchedule  - Whether a CMS schedule drives the slots
- * @returns {JSX.Element}                            Date & time step
+ *
+ * Slots are also cut off at the end of the day by the length of the visit: the
+ * whole appointment has to be served before closing, so a 90-minute booking in
+ * a studio open until 22:00 cannot start later than 20:30.
+ * @param   {object}              props                 - Component properties
+ * @param   {string}              props.selectedDate    - Chosen date key `y-m-d` (`''` when none)
+ * @param   {string}              props.selectedTime    - Chosen time `HH:MM` (`''` when none)
+ * @param   {(d: string) => void} props.onDate          - Pick a date
+ * @param   {(t: string) => void} props.onTime          - Pick a time
+ * @param   {string[]}            props.slots           - `HH:MM` slots for the chosen day from the schedule
+ * @param   {boolean}             props.hasSchedule     - Whether a CMS schedule drives the slots
+ * @param   {number}              props.durationMinutes - Total length of the chosen services (`0` when none)
+ * @param   {number|null}         props.closeMinutes    - Closing time in minutes since midnight (`null` when unknown)
+ * @returns {JSX.Element}                               Date & time step
  */
 const DateTimeStep = ({
   selectedDate,
@@ -62,6 +71,8 @@ const DateTimeStep = ({
   onTime,
   slots,
   hasSchedule,
+  durationMinutes,
+  closeMinutes,
 }: {
   selectedDate: string;
   selectedTime: string;
@@ -69,6 +80,8 @@ const DateTimeStep = ({
   onTime: (t: string) => void;
   slots: string[];
   hasSchedule: boolean;
+  durationMinutes: number;
+  closeMinutes: number | null;
 }): JSX.Element => {
   const today = new Date();
   const [view, setView] = useState({
@@ -92,6 +105,25 @@ const DateTimeStep = ({
 
   /** Schedule-driven slots when the CMS has a schedule; the static grid otherwise */
   const times = hasSchedule ? slots : TIMES;
+
+  /** Starts the visit is too long for — the tail the length of the visit cuts off */
+  const tooLate = times.filter(
+    (t) => !slotFits(t, durationMinutes, closeMinutes),
+  );
+
+  /**
+   * The day is open but the visit is too long for ANY of its starts — a struck
+   * through grid alone would read as "fully booked", so it is replaced by an
+   * explanation of what to do about it.
+   */
+  const noSlotFits = times.length > 0 && tooLate.length === times.length;
+
+  /**
+   * The length hint only earns its place when the length actually took slots
+   * away; with the whole day still open it is noise, and when nothing fits the
+   * message below says it all.
+   */
+  const showDurationHint = tooLate.length > 0 && !noSlotFits;
 
   /**
    * Minutes-since-midnight now, used to disable slots already past on the
@@ -200,9 +232,21 @@ const DateTimeStep = ({
 
       {selectedDate && (
         <div className="space-y-3">
-          <p className="text-sm font-medium" style={{ color: DARK }}>
-            Available times
-          </p>
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+            <p className="text-sm font-medium" style={{ color: DARK }}>
+              Available times
+            </p>
+            {showDurationHint && (
+              <p
+                className="text-xs"
+                style={{ color: MUTED }}
+                data-testid="booking-duration-hint"
+              >
+                Your visit takes {formatMinutes(durationMinutes)} — later starts
+                are unavailable
+              </p>
+            )}
+          </div>
           {times.length === 0 ? (
             <p
               className="rounded-xl p-4 text-sm"
@@ -211,13 +255,27 @@ const DateTimeStep = ({
             >
               No available times on this day. Please pick another date.
             </p>
+          ) : noSlotFits ? (
+            <p
+              className="rounded-xl p-4 text-sm"
+              style={{ background: `${PINK}08`, color: MUTED }}
+              data-testid="booking-no-fitting-slots"
+            >
+              No start on this day leaves enough time for the whole{' '}
+              {formatMinutes(durationMinutes)} visit before closing. Please pick
+              another date or fewer services.
+            </p>
           ) : (
             <div className="grid grid-cols-4 gap-2">
               {times.map((t) => {
-                const [hh = 0, mm = 0] = t.split(':').map(Number);
-                /** Past on the current day, or booked — either way not pickable */
+                /**
+                 * Past on the current day, booked, or too late for the visit to
+                 * end before closing — either way not pickable.
+                 */
                 const unavailable =
-                  busyTimes.includes(t) || hh * 60 + mm <= nowMinutes;
+                  busyTimes.includes(t) ||
+                  slotMinutes(t) <= nowMinutes ||
+                  !slotFits(t, durationMinutes, closeMinutes);
                 const active = selectedTime === t;
                 return (
                   <button

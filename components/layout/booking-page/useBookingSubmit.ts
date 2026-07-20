@@ -25,6 +25,7 @@ import {
   selectActiveItemId,
 } from '@/app/store/reducers/CartSlice';
 
+import totalServiceMinutes from './totalServiceMinutes';
 import type { BookingMaster, BookingSalon, BookingService } from './types';
 
 /** Everything the wizard has picked by the time of the confirm click. */
@@ -56,11 +57,7 @@ const toInterval = (sel: BookingSelection): [Date, Date] => {
    * by the client's offset.
    */
   const start = new Date(Date.UTC(y, m, d, hh, mm));
-  const minutes =
-    sel.services.reduce(
-      (sum, sv) => sum + (Number.parseInt(sv.duration, 10) || 60),
-      0,
-    ) || 60;
+  const minutes = totalServiceMinutes(sel.services) || 60;
   const end = new Date(start.getTime() + minutes * 60_000);
   return [start, end];
 };

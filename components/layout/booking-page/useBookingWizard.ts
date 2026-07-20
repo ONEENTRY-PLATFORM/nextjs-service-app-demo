@@ -14,8 +14,16 @@ import {
 } from '@/app/store/reducers/CartSlice';
 import { useHydrated } from '@/app/store/useHydrated';
 
-import { ANY_MASTER, CATEGORY_ORDER, FLOWS } from './constants';
+import {
+  ANY_MASTER,
+  CATEGORY_ORDER,
+  FALLBACK_CLOSE_MINUTES,
+  FLOWS,
+} from './constants';
+import dayCloseMinutes from './dayCloseMinutes';
 import daySlots from './daySlots';
+import slotFits from './slotFits';
+import totalServiceMinutes from './totalServiceMinutes';
 import type {
   BookingData,
   BookingFlow,
@@ -66,6 +74,10 @@ export interface BookingWizardState {
   slots: string[];
   /** Whether a CMS schedule drives the slots (else the step falls back to the static grid) */
   hasSchedule: boolean;
+  /** Total length of the chosen services in minutes (`0` when none are chosen) */
+  durationMinutes: number;
+  /** Closing time of the chosen day, minutes since midnight; `null` when unknown */
+  closeMinutes: number | null;
   /** Resolved chosen salon */
   salonObj: BookingSalon | undefined;
   /** Resolved chosen services (order matches {@link selectedServiceIds}) */
@@ -275,6 +287,37 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     () => (date && daySchedule ? daySlots(daySchedule, date) : []),
     [date, daySchedule],
   );
+
+  /**
+   * How long the visit runs and when the studio shuts — together they cut the
+   * tail off the time grid: a 90-minute visit cannot start an hour before
+   * closing. Without a CMS schedule the static grid stands in, so its own
+   * closing time does too.
+   */
+  const durationMinutes = useMemo(
+    () => totalServiceMinutes(serviceObjs),
+    [serviceObjs],
+  );
+  const closeMinutes = useMemo(
+    () =>
+      hasSchedule
+        ? date
+          ? dayCloseMinutes(daySchedule, date)
+          : null
+        : FALLBACK_CLOSE_MINUTES,
+    [hasSchedule, daySchedule, date],
+  );
+
+  /**
+   * Drop a time that stopped fitting — the services can be changed after the
+   * slot was picked (step bar, "Change"), and a longer visit must not silently
+   * keep a start that now runs past closing. Adjusted while rendering (React's
+   * "derive state during render" pattern), so the step never paints a selected
+   * slot that its own grid shows as disabled.
+   */
+  if (time && !slotFits(time, durationMinutes, closeMinutes)) {
+    setTime('');
+  }
 
   /** Category pills: All + the categories the services actually cover */
   const categories = useMemo(() => {
@@ -581,6 +624,8 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     time,
     slots,
     hasSchedule,
+    durationMinutes,
+    closeMinutes,
     salonObj,
     serviceObjs,
     masterObj,

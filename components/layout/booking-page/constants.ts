@@ -34,6 +34,14 @@ export const TIMES = [
   '20:00',
 ];
 
+/**
+ * Closing time of the fallback {@link TIMES} grid, in minutes since midnight
+ * (21:00 — one hour after its last 20:00 slot). Only used when no CMS schedule
+ * drives the day; a real schedule carries its own closing time
+ * (`dayCloseMinutes`).
+ */
+export const FALLBACK_CLOSE_MINUTES = 21 * 60;
+
 /** Weekday headers of the calendar, Monday first (mock `DAYS`) */
 export const DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 

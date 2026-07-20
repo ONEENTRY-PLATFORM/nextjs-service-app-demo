@@ -1,6 +1,6 @@
 import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
 
-import { normalizeMenuPages } from '@/components/normalizeMenuPages';
+import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 
 const page = (id: number): IMenusPages => ({ id }) as IMenusPages;
 

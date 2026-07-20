@@ -47,7 +47,7 @@
 8. **Полнота jest-моков** SDK-обёрток и слайсов (только правило `playwright-e2e` про тесты).
 9. **Консистентность типов SDK↔CMS** — 205 импортов `oneentry/dist/*` в 127 файлах; фактическая форма ответов (price, attributes формы = массив ИЛИ объект) системно не сверяется.
 10. **A11y CMS-контента** — alt у image-атрибутов, aria/клавиатура hero-карусели и модалок, семантика вставляемого `htmlContent` — нет ни в одном измерении.
-11. **Сверка код↔живая CMS** — `PaymentSuccess`/`PaymentCanceled` роутятся через `app/[handle]`, но страниц `payment_success`/`payment_canceled` в CMS нет → пост-оплатный редирект Stripe уйдёт в `notFound()`; `opening_time` 404; `reviews_carousel` пуст. Ловится только скриптами `.claude/temp/audit-content-plan.mjs`.
+11. **Сверка код↔живая CMS** — `PaymentSuccess`/`PaymentCanceled` роутятся через `app/[handle]`, но страниц `payment_success`/`payment_canceled` в CMS нет → пост-оплатный редирект Stripe уйдёт в `notFound()`; `reviews_carousel` пуст. Ловится только скриптами `.claude/temp/audit-content-plan.mjs`.
 12. **Сетевая устойчивость** обёрток — таймауты, ретраи, `AbortSignal`, поведение при недоступности `beauty.oneentry.cloud`.
 13. **Права NEXT_PUBLIC-токена** — `NEXT_PUBLIC_ONEENTRY_TOKEN` в клиентском бандле; какие операции (заказы/пользователи/формы) он разрешает произвольному посетителю — не аудировано.
 14. **Мутабельный синглтон SDK на сервере** — `app/api/api/api.ts` держит module-level `apiInstance`, `reDefine()`/`clearSession()` его подменяют → риск протечки сессии между параллельными серверными запросами.

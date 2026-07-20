@@ -3,7 +3,7 @@ import type { JSX } from 'react';
 import { type Key } from 'react';
 
 import { getMenuByMarker } from '@/app/api';
-import { normalizeMenuPages } from '@/components/normalizeMenuPages';
+import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 
 import NavItemBooking from './components/NavItemBooking';
 import NavItemCalendar from './components/NavItemCalendar';

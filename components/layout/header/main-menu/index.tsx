@@ -1,7 +1,7 @@
 import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 
-import { normalizeMenuPages } from '@/components/normalizeMenuPages';
+import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 import { flatMenuToNested } from '@/components/utils';
 
 import MainMenuLoader from './components/MenuLoader';

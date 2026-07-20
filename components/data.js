@@ -64,15 +64,6 @@ export const offerAccentGradientsData = {
   '#9b4fb2': 'linear-gradient(135deg,#7e63ae,#9b4fb2)',
 };
 
-// Local offer banners (copied from the static-html mock) used while offer
-// products in the CMS have no photo attribute filled — cycled by card index.
-export const offerBannersData = [
-  '/images/Offer/banner_01.jpeg',
-  '/images/Offer/banner_main.jpeg',
-  '/images/Offer/banner_02.jpeg',
-  '/images/Offer/banner_04.jpeg',
-];
-
 // "Reach out" cards of the contacts page — the mock's hardcoded studio
 // contacts (`ContactsPage.tsx` → ContactInfo) until they move to the CMS.
 export const contactInfoData = [
@@ -106,19 +97,6 @@ export const contactInfoData = [
   },
 ];
 
-// Weekly schedule of the contacts page ("Opening Hours" section) — mock data
-// (`ContactsPage.tsx` → HOURS) until the `opening_time` block is filled in
-// the CMS.
-export const openingHoursData = [
-  { day: 'Monday', hours: '10:00 – 22:00' },
-  { day: 'Tuesday', hours: '10:00 – 22:00' },
-  { day: 'Wednesday', hours: '10:00 – 22:00' },
-  { day: 'Thursday', hours: '10:00 – 22:00' },
-  { day: 'Friday', hours: '10:00 – 22:00' },
-  { day: 'Saturday', hours: '10:00 – 22:00' },
-  { day: 'Sunday', hours: '10:00 – 22:00' },
-];
-
 // "Any specialist" team photo per demo salon id (mock `BookingPage.tsx` →
 // ANY_GROUP); the booking wizard falls back to Downtown when no salon chosen.
 export const anySpecialistPhotosData = {
@@ -126,18 +104,3 @@ export const anySpecialistPhotosData = {
   marina: '/images/Any_specialist/Marina_group.jpg',
   jbr: '/images/Any_specialist/JBR_group.jpg',
 };
-
-export const orderStates = [
-  {
-    title: 'Upcoming',
-    value: 'upcoming',
-  },
-  {
-    title: 'Canceled',
-    value: 'canceled',
-  },
-  {
-    title: 'Completed',
-    value: 'completed',
-  },
-];

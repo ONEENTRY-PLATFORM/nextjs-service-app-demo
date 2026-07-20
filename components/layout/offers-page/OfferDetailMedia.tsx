@@ -6,9 +6,10 @@ import CurrencySymbol from '@/components/shared/CurrencySymbol';
 /**
  * OfferDetailMedia — the left photo pane of an offer detail card: a full-bleed
  * image with a discount badge and a price overlay (current price + crossed-out
- * original) at the bottom.
+ * original) at the bottom. An offer without a photo in the CMS keeps the pane
+ * as a flat accent block — badge and price still render.
  * @param   {object}      props             - Component properties
- * @param   {string}      props.image       - Photo URL
+ * @param   {string}      props.image       - Photo URL, `''` when the CMS holds none
  * @param   {string}      props.name        - Offer name (alt text)
  * @param   {number}      props.discount    - Discount percent (`0` hides the badge)
  * @param   {string}      props.accentColor - Accent colour hex (badge)
@@ -34,14 +35,16 @@ const OfferDetailMedia = ({
   original: number;
   currency?: string | undefined;
 }): JSX.Element => (
-  <div className="relative min-h-60">
-    <Image
-      src={image}
-      alt={name}
-      fill
-      sizes="(max-width: 768px) 100vw, 320px"
-      className="object-cover"
-    />
+  <div className="relative min-h-60" style={{ background: accentColor }}>
+    {image && (
+      <Image
+        src={image}
+        alt={name}
+        fill
+        sizes="(max-width: 768px) 100vw, 320px"
+        className="object-cover"
+      />
+    )}
     {discount > 0 && (
       <span
         className="absolute top-4 left-4 rounded-full px-4 py-1.5 text-base font-black text-white"

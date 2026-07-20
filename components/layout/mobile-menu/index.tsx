@@ -7,7 +7,7 @@ import type { JSX } from 'react';
 import { useContext, useEffect, useRef } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
-import { normalizeMenuPages } from '@/components/normalizeMenuPages';
+import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 import { flatMenuToNested } from '@/components/utils';
 

@@ -1,8 +1,6 @@
-import parse from 'html-react-parser';
-import type { JSX, Key } from 'react';
+import type { JSX } from 'react';
 
-/** A single opening-time row from the `opening_time` block attribute. */
-export type OpeningTimeRow = { header: string; htmlValue: string };
+import type { OpeningHoursRow } from '@/app/utils/parseOpeningTime';
 
 /**
  * OpeningTime component to display opening hours (presentational).
@@ -10,27 +8,25 @@ export type OpeningTimeRow = { header: string; htmlValue: string };
  * Two variants matching the static-html footer mock: `column` — the desktop
  * 4th column (day and hours as stacked lines), `row` — the mobile collapse
  * (day and hours justified in one row).
- * @param   {object}           props           - Component properties
- * @param   {OpeningTimeRow[]} props.rows      - Opening time rows from the CMS block
- * @param   {'column' | 'row'} [props.variant] - Layout variant (default `column`)
- * @returns {JSX.Element}                      JSX.Element representing the opening time rows
+ * @param   {object}            props           - Component properties
+ * @param   {OpeningHoursRow[]} props.rows      - Weekday rows parsed from the `opening_time` block
+ * @param   {'column' | 'row'}  [props.variant] - Layout variant (default `column`)
+ * @returns {JSX.Element}                       JSX.Element representing the opening time rows
  */
 const OpeningTime = ({
   rows,
   variant = 'column',
 }: {
-  rows: OpeningTimeRow[];
+  rows: OpeningHoursRow[];
   variant?: 'column' | 'row';
 }): JSX.Element => {
   if (variant === 'row') {
     return (
       <>
-        {rows.map((time, i: Key) => (
-          <div key={i} className="flex justify-between gap-8 text-sm">
-            <span className="font-medium">{time.header}</span>
-            <span className="opacity-90">
-              {time.htmlValue && parse(time.htmlValue)}
-            </span>
+        {rows.map((row) => (
+          <div key={row.day} className="flex justify-between gap-8 text-sm">
+            <span className="font-medium">{row.day}</span>
+            <span className="opacity-90">{row.hours}</span>
           </div>
         ))}
       </>
@@ -39,12 +35,10 @@ const OpeningTime = ({
 
   return (
     <>
-      {rows.map((time, i: Key) => (
-        <div key={i}>
-          <p className="mb-2 text-sm opacity-90">{time.header}</p>
-          <div className="mb-2 text-sm opacity-90">
-            {time.htmlValue && parse(time.htmlValue)}
-          </div>
+      {rows.map((row) => (
+        <div key={row.day}>
+          <p className="mb-2 text-sm opacity-90">{row.day}</p>
+          <div className="mb-2 text-sm opacity-90">{row.hours}</div>
         </div>
       ))}
     </>

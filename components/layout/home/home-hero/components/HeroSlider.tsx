@@ -75,9 +75,13 @@ const HeroSlider = ({
     return () => clearInterval(timer);
   }, [paused, reduceMotion, count, intervalMs]);
 
+  // The aspect ratios keep the hero proportional as the viewport grows; the
+  // min-heights are the floor below which the artwork and overlay text get
+  // cramped (narrow phones, and desktops under ~1920px where 1920/600 would
+  // otherwise compute well under 600px).
   return (
     <section
-      className="relative aspect-390/535 w-full overflow-hidden bg-[linear-gradient(90deg,#49268b_3%,#ed21f1_90%)] select-none md:aspect-1920/600"
+      className="relative aspect-390/535 min-h-133.75 w-full overflow-hidden bg-[linear-gradient(90deg,#49268b_3%,#ed21f1_90%)] select-none md:aspect-1920/600 md:min-h-150"
       aria-roledescription="carousel"
       aria-label="Promotions"
       onMouseEnter={() => setPaused(true)}
@@ -149,10 +153,16 @@ const HeroSlider = ({
                     promo artwork. Hence the per-element `fontFamily` instead of
                     one on this wrapper, which would inherit down to all three. */}
                 {slide.sale && (
-                  <div className="flex aspect-square w-64 items-center justify-center rounded-full border border-white/40 bg-fuchsia-500/35 backdrop-blur-md md:w-[12vw] md:max-w-44">
+                  <div className="flex aspect-square w-35 items-center justify-center rounded-full border border-white/40 bg-fuchsia-500/35 backdrop-blur-md md:w-65">
                     <span
-                      className="px-2 text-center text-[clamp(8rem,3vw,8rem)] leading-none text-nowrap text-white"
-                      style={{ fontFamily: 'var(--font-league-gothic)' }}
+                      className="px-2 text-center text-[88px] text-nowrap text-white [text-box:trim-both_cap_alphabetic] md:text-[163px]"
+                      // `lineHeight` is inline rather than a `leading-*` class:
+                      // Tailwind emits no rule for a fractional ratio here, so
+                      // the class silently degrades to the inherited 1.5.
+                      style={{
+                        fontFamily: 'var(--font-league-gothic)',
+                        lineHeight: 0.915,
+                      }}
                     >
                       <SaleText text={slide.sale} />
                     </span>

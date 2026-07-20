@@ -31,7 +31,7 @@ import { parseOfferDetail } from './parseOfferDetail';
  * page — same flow as the home page `OfferCard`.
  * @param   {object}          props         - Component properties
  * @param   {IProductsEntity} props.product - Product entity representing the special offer (`offer`)
- * @param   {number}          props.index   - Card index — used for animation stagger and the fallback photo
+ * @param   {number}          props.index   - Card index — used for the animation stagger
  * @returns {JSX.Element}                   Special-offer detail card
  */
 const OfferDetailCard = ({
@@ -58,7 +58,7 @@ const OfferDetailCard = ({
     image,
     duration,
     firstServiceParentId,
-  } = parseOfferDetail(product, index);
+  } = parseOfferDetail(product);
 
   /** Category page of the first bundled service — needed for the booking cart */
   const { data: service } = useGetPageByIdQuery(

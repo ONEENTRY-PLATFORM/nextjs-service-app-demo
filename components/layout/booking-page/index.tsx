@@ -54,6 +54,8 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
     time,
     slots,
     hasSchedule,
+    durationMinutes,
+    closeMinutes,
     salonObj,
     serviceObjs,
     masterObj,
@@ -146,6 +148,8 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                     onTime={onTime}
                     slots={slots}
                     hasSchedule={hasSchedule}
+                    durationMinutes={durationMinutes}
+                    closeMinutes={closeMinutes}
                   />
                 )}
               </RevealAnimations>

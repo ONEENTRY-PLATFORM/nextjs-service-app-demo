@@ -30,14 +30,6 @@ const HomeHero = async ({
   const heroSlides: HeroSlide[] = (slides?.items ?? [])
     .filter((slide) => slide.visible)
     .map((slide) => {
-      /**
-       * Slide attributes are raw values, unlike page/block attributes: file
-       * markers hold an array of files, string markers hold the string itself.
-       * Slide markers are the generic `image_id*` / `string_id*`; their admin
-       * names are image (`image_id1`), image mobile (`image_id2`), title
-       * (`string_id3`), text (`string_id4`), sale (`string_id5`), button text
-       * (`string_id6`) and button link (`string_id7`).
-       */
       const attrs = slide.attributeValues as unknown as
         Record<string, unknown> | undefined;
       /**

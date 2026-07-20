@@ -1,6 +1,6 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
-import { offerAccentGradientsData, offerBannersData } from '@/components/data';
+import { offerAccentGradientsData } from '@/components/data';
 import { parseOfferDetail } from '@/components/layout/offers-page/parseOfferDetail';
 
 /**
@@ -37,7 +37,6 @@ describe('parseOfferDetail', () => {
           ],
         },
       }),
-      0,
     );
 
     expect(view.name).toBe('Glow Package');
@@ -51,7 +50,6 @@ describe('parseOfferDetail', () => {
         offer_sale: { value: '150' },
         offer_price: { value: '200' },
       }),
-      0,
     );
 
     expect(view.price).toBe(150);
@@ -65,14 +63,13 @@ describe('parseOfferDetail', () => {
         offer_sale: { value: '200' },
         offer_price: { value: '150' },
       }),
-      0,
     );
 
     expect(view.discount).toBe(0);
   });
 
   it('falls back to product.price when offer_sale is unset', () => {
-    const view = parseOfferDetail(makeOffer({}, { price: 370 }), 0);
+    const view = parseOfferDetail(makeOffer({}, { price: 370 }));
     expect(view.price).toBe(370);
   });
 
@@ -80,12 +77,11 @@ describe('parseOfferDetail', () => {
     expect(
       parseOfferDetail(
         makeOffer({ offer_description: { value: 'Pamper yourself' } }),
-        0,
       ).description,
     ).toBe('Pamper yourself');
 
     expect(
-      parseOfferDetail(makeOffer({}, { plainValue: 'From the page' }), 0)
+      parseOfferDetail(makeOffer({}, { plainValue: 'From the page' }))
         .description,
     ).toBe('From the page');
   });
@@ -94,7 +90,6 @@ describe('parseOfferDetail', () => {
     it('maps a category title to its brand accent and gradient', () => {
       const view = parseOfferDetail(
         makeOffer({ offer_type: { value: [{ title: 'Hair' }] } }),
-        0,
       );
 
       expect(view.accentColor).toBe('#ed21f1');
@@ -104,7 +99,6 @@ describe('parseOfferDetail', () => {
     it('accepts a raw hex and builds a same-colour gradient when unmapped', () => {
       const view = parseOfferDetail(
         makeOffer({ offer_type: { value: [{ value: '#123456' }] } }),
-        0,
       );
 
       expect(view.accentColor).toBe('#123456');
@@ -114,7 +108,7 @@ describe('parseOfferDetail', () => {
     });
 
     it('defaults to pink when offer_type is absent', () => {
-      expect(parseOfferDetail(makeOffer({}), 0).accentColor).toBe('#ed21f1');
+      expect(parseOfferDetail(makeOffer({})).accentColor).toBe('#ed21f1');
     });
   });
 
@@ -125,7 +119,6 @@ describe('parseOfferDetail', () => {
           makeOffer({
             offer_image: { value: { downloadLink: 'https://cdn/a.jpg' } },
           }),
-          0,
         ).image,
       ).toBe('https://cdn/a.jpg');
 
@@ -134,33 +127,31 @@ describe('parseOfferDetail', () => {
           makeOffer({
             offer_image: { value: [{ downloadLink: 'https://cdn/b.jpg' }] },
           }),
-          0,
         ).image,
       ).toBe('https://cdn/b.jpg');
     });
 
-    it('cycles a local fallback banner by card index when no photo is set', () => {
-      const view = parseOfferDetail(makeOffer({}), 1);
-      expect(view.image).toBe(offerBannersData[1 % offerBannersData.length]);
+    it('is empty when the CMS holds no photo (the card drops the image)', () => {
+      expect(parseOfferDetail(makeOffer({})).image).toBe('');
     });
   });
 
   describe('duration', () => {
     it('passes a string offer_time through', () => {
       expect(
-        parseOfferDetail(makeOffer({ offer_time: { value: '2 hours' } }), 0)
+        parseOfferDetail(makeOffer({ offer_time: { value: '2 hours' } }))
           .duration,
       ).toBe('2 hours');
     });
 
     it('appends " min" to a numeric offer_time', () => {
       expect(
-        parseOfferDetail(makeOffer({ offer_time: { value: 90 } }), 0).duration,
+        parseOfferDetail(makeOffer({ offer_time: { value: 90 } })).duration,
       ).toBe('90 min');
     });
 
     it('is empty when offer_time is unset (hides the pill)', () => {
-      expect(parseOfferDetail(makeOffer({}), 0).duration).toBe('');
+      expect(parseOfferDetail(makeOffer({})).duration).toBe('');
     });
   });
 });

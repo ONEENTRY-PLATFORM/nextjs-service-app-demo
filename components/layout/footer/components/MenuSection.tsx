@@ -3,7 +3,10 @@ import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 
 import { getBlockByMarker, getMenuByMarker } from '@/app/api';
-import { normalizeMenuPages } from '@/components/normalizeMenuPages';
+import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
+import type { OpeningHoursRow } from '@/app/utils/parseOpeningTime';
+import parseOpeningTime from '@/app/utils/parseOpeningTime';
+import summarizeOpeningHours from '@/app/utils/summarizeOpeningHours';
 import { flatMenuToNested } from '@/components/utils';
 
 import Copyrights from './Copyrights';
@@ -11,9 +14,37 @@ import FollowUs from './FollowUs';
 import FooterCollapse from './FooterCollapse';
 import type { FooterMenuItem } from './FooterServicesMenu';
 import FooterServicesMenu from './FooterServicesMenu';
-import type { OpeningTimeRow } from './OpeningTime';
 import OpeningTime from './OpeningTime';
 import SalonsGrid from './SalonsGrid';
+
+/**
+ * Footer hours notation from the static-html mock: `10.00-22.00` instead of
+ * the canonical `10:00 – 22:00` used elsewhere.
+ * @param   {string} hours - Canonical hours of one weekday
+ * @returns {string}       Hours in the footer's dotted notation
+ */
+const toFooterHours = (hours: string): string =>
+  hours.replaceAll(':', '.').replaceAll(' – ', '-');
+
+/**
+ * Collapse the week the way the footer shows it (mock: a single
+ * `Monday – Sunday` / `10.00-22.00` line). When the days do not share the same
+ * hours the summary is impossible, so every weekday is listed instead.
+ * @param   {OpeningHoursRow[]} rows - Weekday rows, Monday first
+ * @returns {OpeningHoursRow[]}      One summary row, or the per-day rows
+ */
+const toFooterRows = (rows: OpeningHoursRow[]): OpeningHoursRow[] => {
+  const summary = summarizeOpeningHours(rows);
+  if (!summary) {
+    return rows.map((row) => ({ ...row, hours: toFooterHours(row.hours) }));
+  }
+
+  const day =
+    summary.from === summary.to
+      ? summary.from
+      : `${summary.from} – ${summary.to}`;
+  return [{ day, hours: toFooterHours(summary.hours) }];
+};
 
 /**
  * Convert a CMS menu to plain footer menu items (nested one level).
@@ -74,9 +105,10 @@ const MenuSection = async ({
 
   const servicesItems = toFooterItems(servicesResult.menu, 'services');
   const aboutItems = toFooterItems(aboutResult.menu, '');
-  const openingRows =
-    (openingResult.block?.attributeValues?.opening_time?.value as
-      OpeningTimeRow[] | undefined) ?? [];
+  /** CMS schedule — an empty week simply hides the Opening Time column. */
+  const openingRows = toFooterRows(
+    parseOpeningTime(openingResult.block?.attributeValues?.opening_time?.value),
+  );
 
   const servicesTitle = servicesResult.menu?.localizeInfos?.title ?? 'Services';
   const aboutTitle = aboutResult.menu?.localizeInfos?.title ?? 'About us';
@@ -88,15 +120,17 @@ const MenuSection = async ({
   return (
     <div className="mx-auto w-full max-w-7xl px-3 py-6 text-black md:px-8 md:pt-12">
       {/* Salons + Opening Time (desktop 4th column) */}
-      <div className="grid grid-cols-1 gap-x-4 gap-y-0 xl:grid-cols-[1fr_1fr_1fr_9rem] sm:grid-cols-3 sm:gap-y-6">
+      <div className="grid grid-cols-1 gap-x-4 gap-y-0 xl:grid-cols-[1fr_1fr_1fr_9rem] sm:grid-cols-4 sm:gap-y-6">
         <SalonsGrid />
 
-        <div className="hidden min-w-0 xl:block xl:border-l xl:border-black/80 xl:pl-4">
-          <p className="mb-3 text-sm font-bold tracking-wide uppercase">
-            {openingTitle}
-          </p>
-          <OpeningTime rows={openingRows} />
-        </div>
+        {openingRows.length > 0 && (
+          <div className="hidden min-w-0 xl:block xl:border-l xl:border-black/80 xl:pl-4">
+            <p className="mb-3 text-sm font-bold tracking-wide uppercase">
+              {openingTitle}
+            </p>
+            <OpeningTime rows={openingRows} />
+          </div>
+        )}
       </div>
 
       {/* Mobile/tablet divider between the salons and Opening Time */}

@@ -13,7 +13,7 @@
 - **Фундамент:** локаль `en_US`; наборы атрибутов (`salon`, `gallery`, `offer`, `master`, `service`); медиа залиты (32 портрета, галерея — 32 фото-страницы/228 фото, баннеры офферов).
 - **Страницы:** системные + `salons` + `reviews` + `payment_success/canceled`; текст `404` (встроенное поле страницы). Категории услуг (4 главные + 15 подкатегорий). Салоны (адрес/телефон/`salon_time` у всех трёх).
 - **Каталог:** 77 услуг-продуктов (`price` числом, `currency`, `duration`, `specialist_grade`, `description`) + 4 оффера `offer`.
-- **Блоки:** 7 блоков главной привязаны к `home`; `home_discounts` заполнен (набор 19); `system_content` (34 UI-текста). `home_hero` — 4 слайда.
+- **Блоки:** 7 блоков главной привязаны к `home`; `home_discounts` заполнен (набор 19); `system_content` (34 UI-текста). `home_hero` — 4 слайда. **`opening_time`** (2026-07-20) — `common_block`, ни к какой странице не привязан (читается по маркеру), атрибут `opening_time` (**timeInterval**), 7 групп Пн–Вс 10:00–22:00; фронт разбирает его через `app/utils/parseOpeningTime.ts` (футер + «Opening Hours» на контактах); мок-фолбэка нет — без блока эти секции просто не рендерятся.
 - **Меню:** `main`, `services`, `about_us`, `user_menu`.
 - **Формы/заказы:** `reg` и `order` заполнены; заказы создаются и отменяются (сквозь UI); auth `google`+`email`; события заведены; оплата `cash`+`stripe` активна и привязана к storage; **выбор оплаты и онлайн-оплата Stripe работают**.
 - **Форма `contact_us`:** работает end-to-end (проверено живым сабмитом 2026-07-19). Поля `name`/`phone`/`email`/`contact_text`(text)/`spam`/`button`; reCAPTCHA v3 **Enterprise** (ключ в `spam.settings.captcha.key`, значение атрибута `spam` = объект `{event:{token,siteKey}}`); привязан module config `content`/`contacts` (id 2). Код — `ContactFormCard` + `components/forms/inputs/FormReCaptcha.tsx`; грабли и рецепт — в памяти (`oneentry-spam-captcha-mechanics`) и скиле `.claude/temp/create-captcha.md`. reCAPTCHA не проходится из headless (ботоскор) — e2e проверяет только рендер.
@@ -31,9 +31,9 @@
 
 ## ❌ Осталось
 
-### 1. `opening_time` — часы работы
+### 1. Карточки контактов (`contactInfoData`)
 
-Блока `opening_time` в CMS нет (404) — код читает этот маркер и деградирует на фолбэк; часы работы и карточки контактов идут из мока `components/data.js` (`openingHoursData`/`contactInfoData`). **Отложено пользователем (2026-07-14).** В верстке все дни одинаковые: Monday–Sunday `10:00–22:00`.
+Часы работы ✅ переехали в CMS (см. ниже). Остаётся мок `contactInfoData` в `components/data.js` — карточки контактной информации на странице контактов (телефон/почта/адрес общего вида) пока не читаются из CMS.
 
 ### 2. Отзывы (требует решения)
 

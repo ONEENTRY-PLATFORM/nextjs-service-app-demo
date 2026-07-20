@@ -9,8 +9,9 @@ import { useRef } from 'react';
  * Form field animations component with GSAP timeline animation.
  *
  * This component handles the entrance animation for form fields with a staggered effect.
- * Each field animates from zero width and opacity to full width and opacity,
- * creating a sequential reveal effect based on the index.
+ * Each field simply fades in, one after another, with the delay derived from
+ * its index — no width, transform or clipping is involved, so nothing inside
+ * the field (chevrons, hints, password toggles) is cut off while animating.
  * @param   {object}      props           - Component properties
  * @param   {ReactNode}   props.children  - Child elements to be animated (typically form fields)
  * @param   {string}      props.className - CSS class name to apply to the container div
@@ -47,38 +48,27 @@ const FormFieldAnimations = ({
       }
 
       /**
-       * Set initial transform properties for smooth animation
-       * Establishes the origin point and prevents content overflow during animation
-       */
-      gsap.set(ref.current, {
-        transformOrigin: '0 0',
-        overflow: 'hidden',
-      });
-
-      /**
        * Create the main timeline for form field animation
-       * This timeline controls the width and opacity transitions
+       * This timeline controls the opacity transition
        */
       const triggerTl = gsap.timeline({
         paused: true,
       });
 
       /**
-       * Define the animation sequence:
-       * - Start with zero width and opacity
-       * - Animate to full width and full opacity
-       * - Apply staggered delay based on field index for sequential appearance
+       * Fade the field in, staggered by its index so the fields appear one
+       * after another.
        */
       triggerTl.fromTo(
         ref.current,
         {
-          width: 0,
           opacity: 0,
         },
         {
-          width: '100%',
           opacity: 1,
-          delay: index / 10 + 0.35,
+          duration: 0.4,
+          ease: 'power2.out',
+          delay: index * 0.06 + 0.1,
         },
       );
 
