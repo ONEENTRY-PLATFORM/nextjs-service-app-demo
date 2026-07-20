@@ -3,9 +3,8 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IBlockSlidesResponse } from 'oneentry/dist/blocks/blocksInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError as isSdkError } from '@/app/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { getApi, isError as isSdkError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Fetch a slider block's slides from OneEntry, cached across requests (private
@@ -24,24 +23,21 @@ const getBlockSlidesImpl = unstable_cache(
     error?: IError;
     slides?: IBlockSlidesResponse;
   }> => {
-    try {
-      const data = await withTimeout(
-        getApi().Blocks.getSlides(marker),
-        10_000,
-        'getBlockSlides',
-      );
-
-      if (isSdkError(data)) {
-        return { isError: true, error: data };
-      }
-      return { isError: false, slides: data };
-    } catch (e) {
-      return { isError: true, error: e as IError };
+    const data = await fetchCmsData(
+      () => getApi().Blocks.getSlides(marker),
+      'getBlockSlides',
+    );
+    if (isSdkError(data)) {
+      return { isError: true, error: data };
     }
+    return { isError: false, slides: data };
   },
   ['oneentry-block-slides'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-blocks'] },
 );
+
+/** Request-level dedupe over the cross-request cache. */
+const getBlockSlidesCached = cache(getBlockSlidesImpl);
 
 /**
  * Get slides of a slider block by its marker (`slider_block` type only).
@@ -54,4 +50,18 @@ const getBlockSlidesImpl = unstable_cache(
  * @param   {string}          marker - Marker of the slider block to fetch slides for
  * @returns {Promise<object>}        Promise that resolves to an object containing the slides data or error information
  */
-export const getBlockSlides = cache(getBlockSlidesImpl);
+export const getBlockSlides = async (
+  marker: string,
+): Promise<{
+  isError: boolean;
+  error?: IError;
+  slides?: IBlockSlidesResponse;
+}> => {
+  try {
+    return await getBlockSlidesCached(marker);
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError };
+  }
+};

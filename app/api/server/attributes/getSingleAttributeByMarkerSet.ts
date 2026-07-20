@@ -3,9 +3,8 @@ import type { IAttributesSetsEntity } from 'oneentry/dist/attribute-sets/attribu
 import type { IError } from 'oneentry/dist/base/utils';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { getApi, isError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Fetch a single attribute of a set from OneEntry, cached across requests
@@ -28,29 +27,24 @@ const getSingleAttributeByMarkerSetImpl = unstable_cache(
     error?: IError;
     attribute?: IAttributesSetsEntity;
   }> => {
-    try {
-      /**
-       * SDK signature is `(setMarker, attributeMarker, langCode)` — the URL is
-       * built as `/${setMarker}/attributes/${attributeMarker}`. The SDK's own
-       * `.d.ts` declares the arguments in the opposite order, so pass them
-       * positionally in the runtime order, not the way the types suggest.
-       */
-      const attribute = await withTimeout(
+    /**
+     * SDK signature is `(setMarker, attributeMarker, langCode)` — the URL is
+     * built as `/${setMarker}/attributes/${attributeMarker}`. The SDK's own
+     * `.d.ts` declares the arguments in the opposite order, so pass them
+     * positionally in the runtime order, not the way the types suggest.
+     */
+    const attribute = await fetchCmsData(
+      () =>
         getApi().AttributesSets.getSingleAttributeByMarkerSet(
           setMarker,
           attributeMarker,
         ),
-        10_000,
-        'getSingleAttributeByMarkerSet',
-      );
-
-      if (isError(attribute)) {
-        return { isError: true, error: attribute };
-      }
-      return { isError: false, attribute };
-    } catch (e) {
-      return { isError: true, error: e as IError };
+      'getSingleAttributeByMarkerSet',
+    );
+    if (isError(attribute)) {
+      return { isError: true, error: attribute };
     }
+    return { isError: false, attribute };
   },
   ['oneentry-single-attribute-by-marker-set'],
   { revalidate: 300, tags: ['oneentry', 'oneentry-attributes'] },
@@ -79,4 +73,15 @@ export const getSingleAttributeByMarkerSet = async ({
   isError: boolean;
   error?: IError;
   attribute?: IAttributesSetsEntity;
-}> => await getSingleAttributeByMarkerSetCached(attributeMarker, setMarker);
+}> => {
+  try {
+    return await getSingleAttributeByMarkerSetCached(
+      attributeMarker,
+      setMarker,
+    );
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError };
+  }
+};

@@ -28,6 +28,8 @@ const BookOnlineLink = ({
   return (
     <Link
       href="/booking/"
+      data-testid="book-online-link"
+      data-variant={variant}
       className={
         'rounded-xl bg-gradient-brand font-bold tracking-wide whitespace-nowrap text-white uppercase transition-transform duration-200 outline-none focus:outline-none active:scale-97 ' +
         (variant === 'mobile'

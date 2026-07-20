@@ -17,10 +17,10 @@ import HeroTitle from '@/app/animations/HeroTitle';
  * Wrapped in {@link HeroAnimations} so the header plays the same loader-reveal
  * mask overlay and page-transition/parallax animations as the home hero; the
  * background, kicker, title and subtitle register their refs through the leaf
- * wrappers. The title keeps its `title` class as well — the page-level
- * `BookingAnimations` still targets `.title` / `.mx-auto` for its own fade, and
- * both animations drive the title to the same state (visible on enter, hidden
- * on leave).
+ * wrappers. The kicker/title/subtitle lines therefore animate identically to
+ * the services and contacts heroes — the page-level `BookingAnimations` fades
+ * only the wizard body (`.mx-auto`) and no longer touches the hero title, so
+ * the header is driven by a single timeline.
  * @param   {object}      props            - Component properties
  * @param   {string}      props.title      - Page title from the CMS (e.g. "Book Online")
  * @param   {string}      [props.subtitle] - Line under the title; hidden when not provided
@@ -53,7 +53,7 @@ const BookingHero = ({
           Online booking
         </HeroKicker>
         <HeroTitle
-          className="title font-black tracking-widest text-white uppercase drop-shadow-lg"
+          className="font-black tracking-widest text-white uppercase drop-shadow-lg"
           style={{
             fontSize: 'clamp(2rem,5vw,3.5rem)',
             textShadow: '0 0 40px #ed21f188',

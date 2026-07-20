@@ -37,7 +37,11 @@ const MobileNavPanel = ({
         isOpen ? 'grid-rows-[1fr] border-t' : 'grid-rows-[0fr]',
       )}
     >
-      <nav aria-label="Mobile menu" className="min-h-0 overflow-hidden">
+      <nav
+        aria-label="Mobile menu"
+        data-testid="mobile-nav-panel"
+        className="min-h-0 overflow-hidden"
+      >
         <div className="space-y-3 px-6 py-4">
           {items.map((item) => (
             <Link
@@ -45,6 +49,7 @@ const MobileNavPanel = ({
               prefetch={false}
               href={item.href}
               onClick={() => setOpen(false)}
+              data-testid="mobile-nav-link"
               className={clsx(
                 'block py-1.5 text-base font-medium',
                 pathname === item.href ? 'text-fuchsia-500' : 'text-slate-400',

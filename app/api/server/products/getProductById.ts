@@ -3,9 +3,8 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { getApi, isError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Fetch a product from OneEntry, cached across requests (private helper).
@@ -23,24 +22,21 @@ const getProductByIdImpl = unstable_cache(
     error?: IError;
     product?: IProductsEntity;
   }> => {
-    try {
-      const data = await withTimeout(
-        getApi().Products.getProductById(id),
-        10_000,
-        'getProductById',
-      );
-
-      if (isError(data)) {
-        return { isError: true, error: data };
-      }
-      return { isError: false, product: data };
-    } catch (e) {
-      return { isError: true, error: e as IError };
+    const data = await fetchCmsData(
+      () => getApi().Products.getProductById(id),
+      'getProductById',
+    );
+    if (isError(data)) {
+      return { isError: true, error: data };
     }
+    return { isError: false, product: data };
   },
   ['oneentry-product-by-id'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-products'] },
 );
+
+/** Request-level dedupe over the cross-request cache. */
+const getProductByIdCached = cache(getProductByIdImpl);
 
 /**
  * Get product by ID from the OneEntry API
@@ -53,4 +49,14 @@ const getProductByIdImpl = unstable_cache(
  * @returns {Promise<object>}    Promise that resolves to an object containing the product data or error information
  * @see {@link https://oneentry.cloud/instructions/npm|OneEntry docs}
  */
-export const getProductById = cache(getProductByIdImpl);
+export const getProductById = async (
+  id: number,
+): Promise<{ isError: boolean; error?: IError; product?: IProductsEntity }> => {
+  try {
+    return await getProductByIdCached(id);
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError };
+  }
+};

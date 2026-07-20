@@ -3,9 +3,8 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { getApi, isError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Result envelope of {@link getBlocksByPageUrl}.
@@ -27,19 +26,14 @@ type BlocksResult = {
  */
 const getBlocksByPageUrlImpl = unstable_cache(
   async (pageUrl: string): Promise<BlocksResult> => {
-    try {
-      const data = await withTimeout(
-        getApi().Pages.getBlocksByPageUrl(pageUrl),
-        10_000,
-        'getBlocksByPageUrl',
-      );
-      if (isError(data)) {
-        return { isError: true, error: data };
-      }
-      return { isError: false, blocks: data };
-    } catch (e) {
-      return { isError: true, error: e as IError };
+    const data = await fetchCmsData(
+      () => getApi().Pages.getBlocksByPageUrl(pageUrl),
+      'getBlocksByPageUrl',
+    );
+    if (isError(data)) {
+      return { isError: true, error: data };
     }
+    return { isError: false, blocks: data };
   },
   ['oneentry-blocks-by-page-url'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-blocks'] },
@@ -59,4 +53,12 @@ export const getBlocksByPageUrl = async ({
   pageUrl,
 }: {
   pageUrl: string;
-}): Promise<BlocksResult> => await getBlocksByPageUrlCached(pageUrl);
+}): Promise<BlocksResult> => {
+  try {
+    return await getBlocksByPageUrlCached(pageUrl);
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError };
+  }
+};

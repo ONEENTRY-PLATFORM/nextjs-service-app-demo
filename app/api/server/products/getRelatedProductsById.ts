@@ -3,9 +3,8 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { getApi, isError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Fetch a product's related products from OneEntry, cached across requests
@@ -25,28 +24,25 @@ const getRelatedProductsByIdImpl = unstable_cache(
     products?: IProductsEntity[];
     total: number;
   }> => {
-    try {
-      const data = await withTimeout(
-        getApi().Products.getRelatedProductsById(id),
-        10_000,
-        'getRelatedProductsById',
-      );
-
-      if (isError(data)) {
-        return { isError: true, error: data, total: 0 };
-      }
-      return {
-        isError: false,
-        products: data.items,
-        total: data.total,
-      };
-    } catch (e) {
-      return { isError: true, error: e as IError, total: 0 };
+    const data = await fetchCmsData(
+      () => getApi().Products.getRelatedProductsById(id),
+      'getRelatedProductsById',
+    );
+    if (isError(data)) {
+      return { isError: true, error: data, total: 0 };
     }
+    return {
+      isError: false,
+      products: data.items,
+      total: data.total,
+    };
   },
   ['oneentry-related-products-by-id'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-products'] },
 );
+
+/** Request-level dedupe over the cross-request cache. */
+const getRelatedProductsByIdCached = cache(getRelatedProductsByIdImpl);
 
 /**
  * Get all related product page objects with API.Products
@@ -56,4 +52,19 @@ const getRelatedProductsByIdImpl = unstable_cache(
  * @returns {Promise<object>}    Promise that resolves to an object containing products, error status, and total count
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
  */
-export const getRelatedProductsById = cache(getRelatedProductsByIdImpl);
+export const getRelatedProductsById = async (
+  id: number,
+): Promise<{
+  isError: boolean;
+  error?: IError;
+  products?: IProductsEntity[];
+  total: number;
+}> => {
+  try {
+    return await getRelatedProductsByIdCached(id);
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError, total: 0 };
+  }
+};

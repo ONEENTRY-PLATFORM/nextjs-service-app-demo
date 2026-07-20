@@ -84,10 +84,10 @@ const toInterval = (sel: BookingSelection): [Date, Date] => {
  * fourth branch: the existing appointment is updated in place — no second order
  * is created and no payment is taken again, since the client already paid (or
  * agreed to pay) for this very visit.
- * @param   {object} props                     - Hook parameters
- * @param   {string} props.paymentAccount      - Identifier of the chosen payment account
- * @param   {number} props.rescheduleOrderId   - Order being moved; `null` for a new booking
- * @returns {object}                           `submit`, `booked` flag, `closeSuccess`, `isLoading`, `error`
+ * @param   {object} props                   - Hook parameters
+ * @param   {string} props.paymentAccount    - Identifier of the chosen payment account
+ * @param   {number} props.rescheduleOrderId - Order being moved; `null` for a new booking
+ * @returns {object}                         `submit`, `booked` flag, `closeSuccess`, `isLoading`, `error`
  */
 export const useBookingSubmit = ({
   paymentAccount,

@@ -5,8 +5,7 @@ import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces
 import type { JSX } from 'react';
 import { useEffect, useState } from 'react';
 
-import { getPageById } from '@/app/api';
-import { isError } from '@/app/api';
+import { getPageById, isError } from '@/app/api';
 import {
   ORDERS_STATUS_CANCELED,
   ORDERS_STATUS_COMPLETED,

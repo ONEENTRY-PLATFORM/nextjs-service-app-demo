@@ -1,6 +1,7 @@
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
+import RevealAnimations from '@/app/animations/RevealAnimations';
 import type { OneEntryImageFile } from '@/components/utils';
 import { getGalleryImageUrls, plainTextFromTextAttr } from '@/components/utils';
 
@@ -36,6 +37,10 @@ const attrText = (value: unknown): string =>
  * overlaid from the block attributes, so nothing is baked into the artwork and
  * a banner swap needs no code change. Without a CMS image there is no banner —
  * the section is skipped rather than falling back to a bundled asset.
+ *
+ * Wrapped in {@link RevealAnimations} so the banner slides up and fades in as it
+ * scrolls into view and fades away on page transitions, matching the other
+ * home-page cards.
  * @param   {object}             props         - Component properties
  * @param   {IBlockEntity}       [props.block] - The `home_discounts` block
  * @returns {JSX.Element | null}               CTA banner section, or `null` while the CMS holds no artwork
@@ -64,15 +69,8 @@ const HomeCtaBanner = ({
 
   return (
     <section className="bg-white py-4 xl:py-10 md:py-6">
-      <div className="mx-auto w-full max-w-7xl px-3 md:px-8">
+      <RevealAnimations className="mx-auto w-full max-w-7xl px-3 md:px-8">
         <div className="relative w-full overflow-hidden rounded-3xl">
-          {/*
-            Intrinsic-size <img> on purpose: the banner artwork is whatever the
-            CMS holds, so its aspect ratio is unknown up-front. next/image needs
-            either a fixed width/height or a sized `fill` box — neither renders an
-            image at its natural ratio with `h-auto`, so a raw <img> is the only
-            way to show it un-cropped. Two crops (mobile/desktop) toggled by CSS.
-          */}
           {/* Mobile banner */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -92,7 +90,7 @@ const HomeCtaBanner = ({
             buttonText={attrText(attrs.button_text?.value)}
           />
         </div>
-      </div>
+      </RevealAnimations>
     </section>
   );
 };

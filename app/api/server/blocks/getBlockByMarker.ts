@@ -3,9 +3,8 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError as isSdkError } from '@/app/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { getApi, isError as isSdkError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Fetch a block from OneEntry, cached across requests (private helper).
@@ -23,24 +22,21 @@ const getBlockByMarkerImpl = unstable_cache(
     error?: IError;
     block?: IBlockEntity;
   }> => {
-    try {
-      const data = await withTimeout(
-        getApi().Blocks.getBlockByMarker(marker),
-        10_000,
-        'getBlockByMarker',
-      );
-
-      if (isSdkError(data)) {
-        return { isError: true, error: data };
-      }
-      return { isError: false, block: data };
-    } catch (e) {
-      return { isError: true, error: e as IError };
+    const data = await fetchCmsData(
+      () => getApi().Blocks.getBlockByMarker(marker),
+      'getBlockByMarker',
+    );
+    if (isSdkError(data)) {
+      return { isError: true, error: data };
     }
+    return { isError: false, block: data };
   },
   ['oneentry-block-by-marker'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-blocks'] },
 );
+
+/** Request-level dedupe over the cross-request cache. */
+const getBlockByMarkerCached = cache(getBlockByMarkerImpl);
 
 /**
  * Get block by marker from the OneEntry API
@@ -64,4 +60,14 @@ const getBlockByMarkerImpl = unstable_cache(
  * }
  * ```
  */
-export const getBlockByMarker = cache(getBlockByMarkerImpl);
+export const getBlockByMarker = async (
+  marker: string,
+): Promise<{ isError: boolean; error?: IError; block?: IBlockEntity }> => {
+  try {
+    return await getBlockByMarkerCached(marker);
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError };
+  }
+};

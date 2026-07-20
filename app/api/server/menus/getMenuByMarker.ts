@@ -3,9 +3,8 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { getApi, isError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Fetch a menu from OneEntry, cached across requests (private helper).
@@ -24,24 +23,21 @@ const getMenuByMarkerImpl = unstable_cache(
     error?: IError;
     menu?: IMenusEntity;
   }> => {
-    try {
-      const data = await withTimeout(
-        getApi().Menus.getMenusByMarker(marker),
-        10_000,
-        'getMenuByMarker',
-      );
-
-      if (isError(data)) {
-        return { isError: true, error: data };
-      }
-      return { isError: false, menu: data };
-    } catch (e) {
-      return { isError: true, error: e as IError };
+    const data = await fetchCmsData(
+      () => getApi().Menus.getMenusByMarker(marker),
+      'getMenuByMarker',
+    );
+    if (isError(data)) {
+      return { isError: true, error: data };
     }
+    return { isError: false, menu: data };
   },
   ['oneentry-menu-by-marker'],
   { revalidate: 300, tags: ['oneentry', 'oneentry-menus'] },
 );
+
+/** Request-level dedupe over the cross-request cache. */
+const getMenuByMarkerCached = cache(getMenuByMarkerImpl);
 
 /**
  * Get menu by marker.
@@ -52,4 +48,14 @@ const getMenuByMarkerImpl = unstable_cache(
  * @returns {Promise<object>}        Menu object
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
  */
-export const getMenuByMarker = cache(getMenuByMarkerImpl);
+export const getMenuByMarker = async (
+  marker: string,
+): Promise<{ isError: boolean; error?: IError; menu?: IMenusEntity }> => {
+  try {
+    return await getMenuByMarkerCached(marker);
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError };
+  }
+};

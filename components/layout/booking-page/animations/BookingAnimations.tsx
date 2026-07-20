@@ -10,6 +10,11 @@ import { useAppSelector } from '@/app/store/hooks';
 
 /**
  * BookingAnimations animations.
+ *
+ * Fades the wizard body (`.mx-auto`) in and out across page transitions. The
+ * hero header is intentionally left alone — {@link HeroAnimations} inside
+ * `BookingHero` fully drives the kicker/title/subtitle, so the booking header
+ * animates identically to the services and contacts heroes.
  * @param   {object}      props           - BookingAnimations props.
  * @param   {ReactNode}   props.children  - children ReactNode.
  * @param   {string}      props.className - card wrapper className.
@@ -38,13 +43,12 @@ const BookingAnimations = ({
     () => {
       /** Create timeline for stage transitions */
       const stageTl = gsap.timeline();
-      /** Get container and title elements for animation */
+      /** Fade the wizard body only — the hero is driven by HeroAnimations */
       const container = ref.current?.querySelectorAll('.mx-auto') || '';
-      const title = ref.current?.querySelectorAll('.title') || '';
 
       /** Set initial state to hidden except for specific leaving transition */
       if (!(stage === 'leaving' && prevStage === 'none')) {
-        stageTl.set([container, title], {
+        stageTl.set(container, {
           autoAlpha: 0,
         });
       }
@@ -57,13 +61,13 @@ const BookingAnimations = ({
           (stage === 'none' && prevStage === 'entering') ||
           (stage === 'none' && prevStage === 'none')
         ) {
-          stageTl.to([container, title], {
+          stageTl.to(container, {
             autoAlpha: 1,
           });
           /** Animate elements fading in */
         } else if (stage === 'leaving' && prevStage === 'none') {
           /** Handle leaving animation */
-          stageTl.to([title, container], {
+          stageTl.to(container, {
             autoAlpha: 0,
             delay: 0.15,
           });

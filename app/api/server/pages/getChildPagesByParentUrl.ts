@@ -3,9 +3,8 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { getApi, isError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Fetch child pages from OneEntry, cached across requests (private helper).
@@ -23,23 +22,21 @@ const getChildPagesByParentUrlImpl = unstable_cache(
     error?: IError;
     pages?: IPagesEntity[];
   }> => {
-    try {
-      const data = await withTimeout(
-        getApi().Pages.getChildPagesByParentUrl(url),
-        10_000,
-        'getChildPagesByParentUrl',
-      );
-      if (isError(data)) {
-        return { isError: true, error: data };
-      }
-      return { isError: false, pages: data };
-    } catch (e) {
-      return { isError: true, error: e as IError };
+    const data = await fetchCmsData(
+      () => getApi().Pages.getChildPagesByParentUrl(url),
+      'getChildPagesByParentUrl',
+    );
+    if (isError(data)) {
+      return { isError: true, error: data };
     }
+    return { isError: false, pages: data };
   },
   ['oneentry-child-pages-by-parent-url'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-pages'] },
 );
+
+/** Request-level dedupe over the cross-request cache. */
+const getChildPagesByParentUrlCached = cache(getChildPagesByParentUrlImpl);
 
 /**
  * Get child pages object with information as an array.
@@ -49,4 +46,14 @@ const getChildPagesByParentUrlImpl = unstable_cache(
  * @returns {Promise<object>}     Returns all created pages as an array of PageEntity objects or an empty array [] (if there is no data) for the selected parent
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
  */
-export const getChildPagesByParentUrl = cache(getChildPagesByParentUrlImpl);
+export const getChildPagesByParentUrl = async (
+  url: string,
+): Promise<{ isError: boolean; error?: IError; pages?: IPagesEntity[] }> => {
+  try {
+    return await getChildPagesByParentUrlCached(url);
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError };
+  }
+};

@@ -6,9 +6,8 @@ import type {
 } from 'oneentry/dist/blocks/blocksInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { getApi, isError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Fetch blocks of a type from OneEntry, cached across requests (private helper).
@@ -26,20 +25,14 @@ const getBlocksImpl = unstable_cache(
     error?: IError;
     blocks?: IBlocksResponse;
   }> => {
-    try {
-      const data = await withTimeout(
-        getApi().Blocks.getBlocks(type),
-        10_000,
-        'getBlocks',
-      );
-
-      if (isError(data)) {
-        return { isError: true, error: data };
-      }
-      return { isError: false, blocks: data };
-    } catch (e) {
-      return { isError: true, error: e as IError };
+    const data = await fetchCmsData(
+      () => getApi().Blocks.getBlocks(type),
+      'getBlocks',
+    );
+    if (isError(data)) {
+      return { isError: true, error: data };
     }
+    return { isError: false, blocks: data };
   },
   ['oneentry-blocks-by-type'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-blocks'] },
@@ -63,4 +56,12 @@ export const getBlocks = async ({
   isError: boolean;
   error?: IError;
   blocks?: IBlocksResponse;
-}> => await getBlocksCached(type);
+}> => {
+  try {
+    return await getBlocksCached(type);
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError };
+  }
+};

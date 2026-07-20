@@ -2,8 +2,7 @@ import type { IAuthFormData } from 'oneentry/dist/auth-provider/authProvidersInt
 import type { IError } from 'oneentry/dist/base/utils';
 import type { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
+import { getApi, isError } from '@/app/api';
 
 type Cart = Record<string, number> | object;
 

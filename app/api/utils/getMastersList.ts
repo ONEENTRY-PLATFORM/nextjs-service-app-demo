@@ -7,10 +7,11 @@ import { getAdminsInfo } from '@/app/api';
 /**
  * getMastersList — shared, request-deduped fetch of the full masters (admins) list.
  *
- * `getAdminsInfo` is a POST request, which Next.js does not memoize on its own,
- * while the master route needs the same list in `generateMetadata`, the page
- * body, `MasterSingleLayout` and `PortfolioGridLayout`. React's `cache()`
- * collapses those into a single request per render.
+ * `getAdminsInfo` already layers React `cache()` over a cross-request
+ * `unstable_cache`, but the master route needs the same list in
+ * `generateMetadata`, the page body, `MasterSingleLayout` and
+ * `PortfolioGridLayout`. This shared thunk keeps the call arguments identical
+ * across all of them so they collapse onto that one cached entry.
  * @returns {ReturnType<typeof getAdminsInfo>} Promise resolving to the admins envelope
  */
 export const getMastersList = cache(() =>

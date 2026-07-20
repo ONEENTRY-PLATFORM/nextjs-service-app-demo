@@ -1,6 +1,5 @@
 import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
-import type { JSX } from 'react';
-import { type Key } from 'react';
+import type { JSX, Key } from 'react';
 
 import { getMenuByMarker } from '@/app/api';
 import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';

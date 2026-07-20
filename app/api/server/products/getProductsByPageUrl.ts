@@ -3,10 +3,9 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
+import { getApi, isError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 import getSearchParams from '@/app/api/utils/getSearchParams';
-import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Get all products with pagination for the selected category.
@@ -61,8 +60,8 @@ const getProductsByPageUrlImpl = unstable_cache(
       ? getSearchParams({ search, in_stock: inStock })
       : [];
 
-    try {
-      const data = await withTimeout(
+    const data = await fetchCmsData(
+      () =>
         getApi().Products.getProductsByPageUrl(
           handle,
           expandedFilters,
@@ -74,17 +73,12 @@ const getProductsByPageUrlImpl = unstable_cache(
             limit: limit,
           },
         ),
-        10_000,
-        'getProductsByPageUrl',
-      );
-
-      if (isError(data)) {
-        return { isError: true, error: data, total: 0 };
-      }
-      return { isError: false, products: data.items, total: data.total };
-    } catch (e) {
-      return { isError: true, error: e as IError, total: 0 };
+      'getProductsByPageUrl',
+    );
+    if (isError(data)) {
+      return { isError: true, error: data, total: 0 };
     }
+    return { isError: false, products: data.items, total: data.total };
   },
   ['oneentry-products-by-page-url'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-products'] },
@@ -111,12 +105,18 @@ export const getProductsByPageUrl = async (props: {
   total: number;
 }> => {
   const { limit, offset, servicesOnly = true, params } = props;
-  return await getProductsByPageUrlCached(
-    params.handle,
-    limit,
-    offset,
-    servicesOnly,
-    params.searchParams?.search ?? '',
-    params.searchParams?.in_stock ?? '',
-  );
+  try {
+    return await getProductsByPageUrlCached(
+      params.handle,
+      limit,
+      offset,
+      servicesOnly,
+      params.searchParams?.search ?? '',
+      params.searchParams?.in_stock ?? '',
+    );
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError, total: 0 };
+  }
 };

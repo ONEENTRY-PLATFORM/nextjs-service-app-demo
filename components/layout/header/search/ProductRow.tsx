@@ -3,8 +3,7 @@
 import { ArrowUpRight, Scissors } from 'lucide-react';
 import Link from 'next/link';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
-import type { JSX } from 'react';
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, JSX, SetStateAction } from 'react';
 
 import { useGetPageByIdQuery } from '@/app/api';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';

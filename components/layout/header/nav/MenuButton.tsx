@@ -36,6 +36,7 @@ const MobileMenuTrigger = (): JSX.Element => {
       onClick={handleClick}
       aria-label={isOpen ? 'Close menu' : 'Open menu'}
       aria-expanded={isOpen}
+      data-testid="mobile-nav-toggle"
       className="p-2 text-slate-400 lg:hidden"
     >
       {isOpen ? <X size={22} /> : <Menu size={22} />}

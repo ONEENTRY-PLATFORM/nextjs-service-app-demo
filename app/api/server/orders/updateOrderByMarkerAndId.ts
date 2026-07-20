@@ -4,8 +4,7 @@ import type {
   IOrderData,
 } from 'oneentry/dist/orders/ordersInterfaces';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
+import { getApi, isError } from '@/app/api';
 import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**

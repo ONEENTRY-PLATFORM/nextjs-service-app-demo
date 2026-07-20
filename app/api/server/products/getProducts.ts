@@ -3,10 +3,9 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
+import { getApi, isError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 import getSearchParams from '@/app/api/utils/getSearchParams';
-import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Fetch products from OneEntry, cached across requests (private helper).
@@ -35,8 +34,8 @@ const getProductsImpl = unstable_cache(
   }> => {
     const expandedFilters = getSearchParams({ search, in_stock: inStock });
 
-    try {
-      const data = await withTimeout(
+    const data = await fetchCmsData(
+      () =>
         getApi().Products.getProducts(expandedFilters, undefined, {
           /**
            * Same order as `getProductsByPageUrl` — the two wrappers used to sort
@@ -52,24 +51,16 @@ const getProductsImpl = unstable_cache(
           offset: offset,
           limit: limit,
         }),
-        10_000,
-        'getProducts',
-      );
-      if (isError(data)) {
-        return { isError: true, error: data, total: 0 };
-      }
-      return {
-        isError: false,
-        products: data.items,
-        total: data.total,
-      };
-    } catch (e) {
-      return {
-        isError: true,
-        error: e as IError,
-        total: 0,
-      };
+      'getProducts',
+    );
+    if (isError(data)) {
+      return { isError: true, error: data, total: 0 };
     }
+    return {
+      isError: false,
+      products: data.items,
+      total: data.total,
+    };
   },
   ['oneentry-products'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-products'] },
@@ -109,10 +100,16 @@ export const getProducts = async (props: {
   total: number;
 }> => {
   const { limit, offset, params } = props;
-  return await getProductsCached(
-    limit,
-    offset,
-    params?.searchParams?.search ?? '',
-    params?.searchParams?.in_stock ?? '',
-  );
+  try {
+    return await getProductsCached(
+      limit,
+      offset,
+      params?.searchParams?.search ?? '',
+      params?.searchParams?.in_stock ?? '',
+    );
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError, total: 0 };
+  }
 };

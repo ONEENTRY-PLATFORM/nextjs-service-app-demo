@@ -3,9 +3,8 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { getApi, isError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Fetch several pages by id from OneEntry, cached across requests (private
@@ -29,27 +28,23 @@ const getPagesByIdsImpl = unstable_cache(
       .split(',')
       .filter(Boolean)
       .map((id) => Number(id));
-    try {
-      const data = await Promise.all(
-        ids.map((id: number) =>
-          withTimeout(getApi().Pages.getPageById(id), 10_000, 'getPageById'),
-        ),
-      );
+    const data = await Promise.all(
+      ids.map((id: number) =>
+        fetchCmsData(() => getApi().Pages.getPageById(id), 'getPageById'),
+      ),
+    );
 
-      /**
-       * `data` is the array of per-id results, so `isError(data)` would never
-       * fire (an array has no `statusCode`). Check the elements: each
-       * `getPageById` may itself return an `IError`, which must not be cast to
-       * a page.
-       */
-      const failed = data.find((page): page is IError => isError(page));
-      if (failed) {
-        return { isError: true, error: failed };
-      }
-      return { isError: false, pages: data as IPagesEntity[] };
-    } catch (e) {
-      return { isError: true, error: e as IError };
+    /**
+     * `data` is the array of per-id results, so `isError(data)` would never
+     * fire (an array has no `statusCode`). Check the elements: each
+     * `getPageById` may itself return an `IError`, which must not be cast to
+     * a page.
+     */
+    const failed = data.find((page): page is IError => isError(page));
+    if (failed) {
+      return { isError: true, error: failed };
     }
+    return { isError: false, pages: data as IPagesEntity[] };
   },
   ['oneentry-pages-by-ids'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-pages'] },
@@ -70,4 +65,12 @@ export const getPagesByIds = async (
   isError: boolean;
   error?: IError;
   pages?: IPagesEntity[];
-}> => await getPagesByIdsCached(ids.join(','));
+}> => {
+  try {
+    return await getPagesByIdsCached(ids.join(','));
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError };
+  }
+};

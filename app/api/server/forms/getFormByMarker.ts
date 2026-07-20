@@ -3,9 +3,8 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IFormsEntity } from 'oneentry/dist/forms/formsInterfaces';
 import { cache } from 'react';
 
-import { getApi } from '@/app/api';
-import { isError } from '@/app/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { getApi, isError } from '@/app/api';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Fetch a form from OneEntry, cached across requests (private helper).
@@ -23,24 +22,21 @@ const getFormByMarkerImpl = unstable_cache(
     error?: IError;
     form?: IFormsEntity;
   }> => {
-    try {
-      const data = await withTimeout(
-        getApi().Forms.getFormByMarker(marker),
-        10_000,
-        'getFormByMarker',
-      );
-
-      if (isError(data)) {
-        return { isError: true, error: data };
-      }
-      return { isError: false, form: data };
-    } catch (e) {
-      return { isError: true, error: e as IError };
+    const data = await fetchCmsData(
+      () => getApi().Forms.getFormByMarker(marker),
+      'getFormByMarker',
+    );
+    if (isError(data)) {
+      return { isError: true, error: data };
     }
+    return { isError: false, form: data };
   },
   ['oneentry-form-by-marker'],
   { revalidate: 300, tags: ['oneentry', 'oneentry-forms'] },
 );
+
+/** Request-level dedupe over the cross-request cache. */
+const getFormByMarkerCached = cache(getFormByMarkerImpl);
 
 /**
  * Get form by marker.
@@ -50,4 +46,14 @@ const getFormByMarkerImpl = unstable_cache(
  * @returns {Promise<object>}        a single form object
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
  */
-export const getFormByMarker = cache(getFormByMarkerImpl);
+export const getFormByMarker = async (
+  marker: string,
+): Promise<{ isError: boolean; error?: IError; form?: IFormsEntity }> => {
+  try {
+    return await getFormByMarkerCached(marker);
+  } catch (e) {
+    // Transient CMS failure — not cached by unstable_cache; degrade for this
+    // request only instead of caching a poisoned result.
+    return { isError: true, error: e as IError };
+  }
+};

@@ -21,7 +21,6 @@ import ContactsHero from '@/components/layout/contacts-page/ContactsHero';
 import OpeningHours from '@/components/layout/contacts-page/OpeningHours';
 import type { ContactSalon } from '@/components/layout/contacts-page/SalonLocations';
 import SalonLocations from '@/components/layout/contacts-page/SalonLocations';
-import StatsStrip from '@/components/layout/services-page/StatsStrip';
 import SectionHeading from '@/components/shared/SectionHeading';
 import { formatUaePhone } from '@/components/utils';
 
@@ -115,24 +114,18 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
       {/* Mobile: thin gradient strip instead of the hero */}
       <div className="h-1.25 bg-gradient-stats md:hidden" />
 
-      {/* Hero (desktop only) */}
+      {/* Hero + stats strip (desktop only) — revealed together as one header */}
       <ContactsHero
         title={title}
         subtitle={`${salons.length} locations · Always happy to see you`}
+        stats={[
+          [salons.length, 'Locations'],
+          ...(openingSummary
+            ? ([['Daily', openingSummary.hours]] as Array<[string, string]>)
+            : []),
+          ['Dubai', 'UAE'],
+        ]}
       />
-
-      {/* Stats strip (desktop only) */}
-      <div className="hidden md:block">
-        <StatsStrip
-          stats={[
-            [salons.length, 'Locations'],
-            ...(openingSummary
-              ? ([['Daily', openingSummary.hours]] as Array<[string, string]>)
-              : []),
-            ['Dubai', 'UAE'],
-          ]}
-        />
-      </div>
 
       {/* Location cards */}
       <SalonLocations salons={salons} />

@@ -18,6 +18,7 @@ const MasterSummaryCard = ({
   master: BookingMaster;
 }): JSX.Element => (
   <div
+    data-testid="booking-summary-master"
     className="flex items-center gap-3 rounded-xl p-3"
     style={{ background: `${PINK}08` }}
   >

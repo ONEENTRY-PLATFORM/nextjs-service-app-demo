@@ -26,6 +26,9 @@ const eslintConfig = defineConfig([
     'node_modules/**',
     // Default ignores of eslint-config-next:
     '.next/**',
+    // E2E build output (next.config distDir when E2E_BUILD=1) — compiled
+    // artifacts break the type-aware parser, same as `.next/**`.
+    '.next-e2e/**',
     'out/**',
     'build/**',
     'next-env.d.ts',
@@ -145,6 +148,13 @@ const eslintConfig = defineConfig([
       'import/extensions': 'off',
       'import/order': 'off',
       'import/prefer-default-export': 'off',
+
+      // Merge multiple imports from the same module into one statement.
+      // `simple-import-sort` sorts but never dedupes; without this, several
+      // named imports from the same source stay on separate lines. `prefer-inline`
+      // stays off so `import type`/value imports remain split under
+      // `consistent-type-imports`.
+      'import/no-duplicates': ['error', { 'prefer-inline': false }],
 
       // strict sorting
       'simple-import-sort/imports': 'error',

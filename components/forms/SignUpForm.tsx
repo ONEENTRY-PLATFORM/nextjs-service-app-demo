@@ -11,10 +11,10 @@ import { useCallback, useContext, useMemo, useState } from 'react';
 
 import {
   getApi,
+  isError,
   useGetAuthProvidersQuery,
   useGetFormByMarkerQuery,
 } from '@/app/api';
-import { isError } from '@/app/api';
 import { useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
