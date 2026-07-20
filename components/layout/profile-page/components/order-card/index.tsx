@@ -16,7 +16,7 @@ import CardAnimations from '../../animations/CardAnimations';
 import StatusBadge from '../StatusBadge';
 import OrderButtonsGroup from './components/OrderButtonsGroup';
 import OrderDateTime from './components/OrderDateTime';
-import OrderProductTitle from './components/OrderProductTitle';
+import OrderServiceList from './components/OrderServiceList';
 
 /**
  * Fetches salon data by ID
@@ -43,23 +43,26 @@ async function fetchSalon(
 /**
  * OrderCard component renders a card with order details including salon information,
  * product title, date/time and action buttons.
- * @param   {object}               props        - Component props
- * @param   {IAttributeValues}     props.dict   - Dictionary containing localized strings
- * @param   {IOrderByMarkerEntity} props.order  - Order entity containing order details
- * @param   {IAdminEntity}         props.master - Master entity associated with the order
- * @param   {number}               props.index  - Index of the card for animation purposes
- * @returns {JSX.Element}                       JSX element representing the order card
+ * @param   {object}               props           - Component props
+ * @param   {IAttributeValues}     props.dict      - Dictionary containing localized strings
+ * @param   {IOrderByMarkerEntity} props.order     - Order entity containing order details
+ * @param   {IAdminEntity}         props.master    - Master entity associated with the order
+ * @param   {number}               props.index     - Index of the card for animation purposes
+ * @param   {Map<number, number>}  props.durations - Product id → duration in minutes, for the service lines
+ * @returns {JSX.Element}                          JSX element representing the order card
  */
 const OrderCard = ({
   dict,
   order,
   master,
   index,
+  durations,
 }: {
   dict: IAttributeValues;
   order: IOrderByMarkerEntity;
   master: IAdminEntity;
   index: number;
+  durations: Map<number, number>;
 }): JSX.Element => {
   /** State for storing salon address and title */
   const [salonAddress, setSalonAddress] = useState<string>('');
@@ -142,8 +145,8 @@ const OrderCard = ({
           style={{ background: 'linear-gradient(90deg,#ed21f144,transparent)' }}
         />
 
-        {/* Product title section */}
-        <OrderProductTitle order={order} />
+        {/* Booked services, each with how long it takes */}
+        <OrderServiceList order={order} durations={durations} />
 
         {/* Date and time section */}
         <OrderDateTime order={order} />

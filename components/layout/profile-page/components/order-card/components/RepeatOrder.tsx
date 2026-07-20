@@ -79,10 +79,10 @@ const RepeatOrder = ({
   return (
     <button
       type="button"
-      className="w-full rounded-lg border-2 border-fuchsia-500 py-2 text-base font-bold text-fuchsia-500 transition-all hover:opacity-90"
+      className="w-full rounded-lg border-2 border-fuchsia-500 px-3.5 py-2 text-base font-bold text-fuchsia-500 transition-all hover:opacity-90"
       onClick={repeatOrderHandle}
     >
-      {(book_again_text?.value as string | undefined) || 'Book again'}
+      {(book_again_text?.value as string | undefined) || 'Book Again'}
     </button>
   );
 };

@@ -3,6 +3,7 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
 import { getChildPagesByParentUrl, getProductsByPageUrl } from '@/app/api';
+import productDurationMinutes from '@/app/utils/productDurationMinutes';
 import type {
   ServiceItem,
   ServicesCategory,
@@ -76,15 +77,7 @@ const toServiceItem = (
         : null;
 
   /** Duration in minutes: `duration` or `time` attribute, number or numeric string */
-  const rawDuration = attrs.duration?.value ?? attrs.time?.value;
-  const duration =
-    typeof rawDuration === 'number'
-      ? rawDuration
-      : typeof rawDuration === 'string' &&
-          rawDuration.trim() !== '' &&
-          !Number.isNaN(Number(rawDuration))
-        ? Number(rawDuration)
-        : null;
+  const duration = productDurationMinutes(attrs);
 
   /**
    * Short description: the `description` text attribute, whose `value` is a

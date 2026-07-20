@@ -121,7 +121,8 @@ const getLocalGalleryItems = async (): Promise<GalleryItem[]> => {
           category: classifySubcategory(disciplines, title),
           title,
           master,
-          salon,
+          /** Folder name (`Downtown`), matched against salon markers case-insensitively */
+          salon: [salon],
           role,
         });
       }

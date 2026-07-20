@@ -44,16 +44,19 @@ const groupOrdersByMaster = (
  * @param   {IOrderByMarkerEntity[]} props.orders    - Orders in this status bucket
  * @param   {IAdminEntity[]}         [props.masters] - Masters lookup list
  * @param   {IAttributeValues}       props.dict      - Dictionary with localized strings
+ * @param   {Map<number, number>}    props.durations - Product id → duration in minutes, for the service lines
  * @returns {JSX.Element}                            Grouped order list or empty state
  */
 const VisitGroups = ({
   orders,
   masters,
   dict,
+  durations,
 }: {
   orders: IOrderByMarkerEntity[];
   masters: IAdminEntity[] | undefined;
   dict: IAttributeValues;
+  durations: Map<number, number>;
 }): JSX.Element => {
   const groups = groupOrdersByMaster(orders);
 
@@ -93,6 +96,7 @@ const VisitGroups = ({
                   dict={dict}
                   order={order}
                   master={masterData as IAdminEntity}
+                  durations={durations}
                 />
               ))}
             </div>

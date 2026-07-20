@@ -44,8 +44,13 @@ const CancelOrderButton = ({
   master?: IAdminEntity | undefined;
 }): JSX.Element => {
   const [updateOrder] = useUpdateOrderMutation();
-  /** Destructure cancel text from dictionary */
-  const { cancel_text } = dict;
+  /**
+   * Label of the action. `cancel_booking_text` is the marker for THIS button;
+   * the generic `cancel_text` ("Cancel") is the dictionary's dialog/dismiss
+   * word and reading it here rendered a bare "Cancel" where the design asks for
+   * "Cancel booking". Until the marker exists in the CMS the fallback carries it.
+   */
+  const { cancel_booking_text } = dict;
   /** Dialog stage: confirmation → success (null = no dialog) */
   const [stage, setStage] = useState<'confirm' | 'done' | null>(null);
 
@@ -132,7 +137,7 @@ const CancelOrderButton = ({
         type="button"
         className="flex-1 rounded-lg border border-slate-150 py-2 text-base font-medium text-neutral-300 transition-all hover:bg-gray-50"
       >
-        {(cancel_text?.value as string | undefined) || 'Cancel booking'}
+        {(cancel_booking_text?.value as string | undefined) || 'Cancel booking'}
       </button>
       {stage === 'confirm' && (
         <CancelConfirmModal

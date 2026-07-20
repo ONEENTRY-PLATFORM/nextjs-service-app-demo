@@ -4,6 +4,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { JSX } from 'react';
 import { useState } from 'react';
 
+import formatMinutes from '@/app/utils/formatMinutes';
+
 import {
   BRAND_GRADIENT,
   CYAN,
@@ -14,7 +16,6 @@ import {
   PINK,
   TIMES,
 } from '../constants';
-import formatMinutes from '../formatMinutes';
 import slotFits from '../slotFits';
 import slotMinutes from '../slotMinutes';
 

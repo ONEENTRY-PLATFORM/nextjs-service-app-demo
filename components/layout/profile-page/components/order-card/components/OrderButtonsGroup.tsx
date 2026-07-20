@@ -2,7 +2,6 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
 import type { JSX } from 'react';
-import { useState } from 'react';
 
 import {
   ORDERS_STATUS_COMPLETED,
@@ -10,13 +9,20 @@ import {
 } from '@/app/store/orderMarkers';
 
 import CancelOrderButton from './CancelOrderButton';
-import EditOrderButton from './EditOrderButton';
 import LeaveReviewButton from './LeaveReviewButton';
 import RepeatOrder from './RepeatOrder';
-import SaveOrderButton from './SaveOrderButton';
+import RescheduleOrderButton from './RescheduleOrderButton';
 
 /**
- * Order buttons group
+ * Order buttons group — the per-status action pairs of the static-html mock
+ * (`AccountPage.tsx` → `VisitRow`): upcoming visits offer "Reschedule" +
+ * "Cancel booking", completed ones "Book Again" + "Leave a review", and a
+ * cancelled one only "Book Again" (right-aligned).
+ *
+ * Rescheduling reopens the booking wizard prefilled rather than editing the
+ * appointment in place: the in-card edit mode (`EditOrderButton` /
+ * `SaveOrderButton`, both kept on disk) had no way to pick a new day, which is
+ * the whole point of moving a visit.
  * @param   {object}               props        - OrderCard Props
  * @param   {IAttributeValues}     props.dict   - Dictionary data
  * @param   {IOrderByMarkerEntity} props.order  - Order data
@@ -35,43 +41,29 @@ const OrderButtonsGroup = ({
   /** Extract the status identifier from the order to determine which buttons to show */
   const { statusIdentifier } = order;
 
-  /** State to track if we're in edit mode for the order */
-  const [editState, setEditState] = useState<IOrderByMarkerEntity>();
-
   return (
     /** Full-width action row below the order details */
     <div className="flex w-full gap-2 text-base font-bold tracking-wide">
       {/* Conditional rendering based on order status */}
       {statusIdentifier === ORDERS_STATUS_UPCOMING ? (
-        /** For upcoming orders, show edit/save + cancel options */
+        /** Upcoming visits: move the appointment or call it off */
         <>
-          {editState ? (
-            /** If in edit mode, show save button */
-            <SaveOrderButton
-              dict={dict}
-              orderData={editState}
-              setEditState={setEditState}
-            />
-          ) : (
-            /** If not in edit mode, show edit button */
-            <EditOrderButton
-              dict={dict}
-              orderData={order}
-              setEditState={setEditState}
-            />
-          )}
-          {/* Always show cancel button for upcoming orders */}
+          <RescheduleOrderButton dict={dict} orderData={order} />
           <CancelOrderButton dict={dict} orderData={order} master={master} />
         </>
       ) : statusIdentifier === ORDERS_STATUS_COMPLETED ? (
         /** Completed visits: book again + leave a review (mock pair) */
         <>
-          <RepeatOrder dict={dict} orderData={order} />
+          <div className="flex-1">
+            <RepeatOrder dict={dict} orderData={order} />
+          </div>
           <LeaveReviewButton />
         </>
       ) : (
-        /** Canceled orders: only offer to book again */
-        <RepeatOrder dict={dict} orderData={order} />
+        /** Canceled orders: only offer to book again, right-aligned as in the mock */
+        <div className="ml-auto">
+          <RepeatOrder dict={dict} orderData={order} />
+        </div>
       )}
     </div>
   );

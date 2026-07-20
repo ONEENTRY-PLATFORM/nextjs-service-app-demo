@@ -13,6 +13,7 @@ import {
 import type { SalonDetail } from '@/components/layout/salon-page/types';
 import { formatUaePhone } from '@/components/utils';
 
+import getCmsGalleryItems from '../../gallery/getCmsGalleryItems';
 import getLocalGalleryItems from '../../gallery/getLocalGalleryItems';
 
 /**
@@ -27,9 +28,10 @@ export const revalidate = 300;
  *
  * Ported from the static-html mock (`SalonPage.tsx`). Address/phone come from
  * the CMS salon page (`salon_address` / `salon_phone`); the photo gallery is
- * built from the local photo library filtered to this salon, and the About /
- * highlights / accent color come from local content (`salonContent.ts`) until
- * they move to the CMS. 404s only when the salon page itself is missing.
+ * the gallery filtered to this salon — photos are tagged through their master
+ * (`master_id` → `master_salon`), so untagged ones simply do not show up. The
+ * About / highlights / accent color come from local content (`salonContent.ts`)
+ * until they move to the CMS. 404s only when the salon page itself is missing.
  * @param   {object}                      props        - Page properties
  * @param   {Promise<{ handle: string }>} props.params - Route params (salon `pageUrl`)
  * @returns {Promise<JSX.Element>}                     Salon detail page
@@ -41,15 +43,18 @@ export default async function SalonDetailLayout({
 }): Promise<JSX.Element> {
   const { handle } = await params;
 
-  /** The salon page and the photo scan are independent — run in parallel. */
-  const [{ page, isError }, items] = await Promise.all([
+  /** The salon page and the gallery are independent — run in parallel. */
+  const [{ page, isError }, cmsItems] = await Promise.all([
     getPageByUrl(handle),
-    getLocalGalleryItems(),
+    getCmsGalleryItems(),
   ]);
 
   if (!page || isError) {
     return notFound();
   }
+
+  /** Same source order as `/gallery`: CMS first, local scan as the fallback. */
+  const items = cmsItems.length > 0 ? cmsItems : await getLocalGalleryItems();
 
   const attrs = page.attributeValues ?? {};
   const address = (attrs.salon_address?.value as string | undefined) ?? '';
@@ -59,13 +64,19 @@ export default async function SalonDetailLayout({
     address || (page.localizeInfos?.title ?? ''),
   );
 
-  /** Photos for this salon from the local library (fallback: any photos). */
-  const salonPhotos = items
-    .filter((item) => item.salon.toLowerCase() === handle.toLowerCase())
-    .map((item) => item.url);
-  const photos = (
-    salonPhotos.length > 0 ? salonPhotos : items.map((item) => item.url)
-  ).slice(0, 9);
+  /**
+   * Photos of this salon. A photo reaches its salon through its master, so
+   * photos whose master has no salon carry no tag and are left out rather than
+   * shown under an arbitrary salon.
+   */
+  const photos = items
+    .filter((item) =>
+      item.salon.some(
+        (marker) => marker.toLowerCase() === handle.toLowerCase(),
+      ),
+    )
+    .map((item) => item.url)
+    .slice(0, 9);
 
   const content = SALON_CONTENT[handle] ?? DEFAULT_SALON_CONTENT;
 

@@ -26,8 +26,14 @@ export type GalleryItem = {
   master: string;
   /** Admin id of the linked master (CMS `master_id`), for the profile link */
   masterId?: number | undefined;
-  /** Salon name: Downtown | Marina | JBR */
-  salon: string;
+  /**
+   * Salons the photo belongs to, via its master (a master may work in more
+   * than one). CMS items carry salon `pageUrl` markers (`downtown`), the local
+   * scan carries folder names (`Downtown`) — match case-insensitively. Empty
+   * when the salon is unknown, in which case the photo is hidden from salon
+   * pages.
+   */
+  salon: string[];
   /** Specialist role line, e.g. `Stylist · Downtown` */
   role: string;
 };

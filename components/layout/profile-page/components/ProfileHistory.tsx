@@ -6,7 +6,10 @@ import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces
 import type { JSX } from 'react';
 import { useContext, useMemo } from 'react';
 
-import { useGetAllOrdersByMarkerQuery } from '@/app/api/api/RTKApi';
+import {
+  useGetAllOrdersByMarkerQuery,
+  useGetProductsByIdsQuery,
+} from '@/app/api/api/RTKApi';
 import {
   ORDERS_STATUS_CANCELED,
   ORDERS_STATUS_COMPLETED,
@@ -14,6 +17,7 @@ import {
   ORDERS_STORAGE_MARKER,
 } from '@/app/store/orderMarkers';
 import { AuthContext } from '@/app/store/providers/AuthContext';
+import productDurationMinutes from '@/app/utils/productDurationMinutes';
 
 import VisitGroups from './VisitGroups';
 import VisitSection from './VisitSection';
@@ -75,6 +79,30 @@ const ProfileHistory = ({
   );
 
   /**
+   * How long each booked service takes. The order entity carries only product
+   * titles, so the durations come from the products themselves — fetched once
+   * for the WHOLE history through the SDK's batch endpoint (one request for
+   * every id on the page) rather than per card, and shared with every
+   * `OrderCard` as a lookup.
+   */
+  const productIds = useMemo(
+    () => [...new Set(orders.flatMap((o) => o.products.map((p) => p.id)))],
+    [orders],
+  );
+  const { data: products = [] } = useGetProductsByIdsQuery(
+    { items: productIds },
+    { skip: !isAuth || productIds.length === 0 },
+  );
+  const durations = useMemo(() => {
+    const map = new Map<number, number>();
+    for (const product of products) {
+      const minutes = productDurationMinutes(product.attributeValues);
+      if (minutes !== null) map.set(product.id, minutes);
+    }
+    return map;
+  }, [products]);
+
+  /**
    * Split orders into the three status buckets with an explicit order: the API
    * returns them in its own sequence, so without sorting the groups would shift
    * around between refetches. Upcoming reads soonest-first, past visits newest-first.
@@ -107,6 +135,7 @@ const ProfileHistory = ({
             orders={buckets.upcoming}
             masters={masters}
             dict={dict}
+            durations={durations}
           />
         </VisitSection>
       </div>
@@ -121,6 +150,7 @@ const ProfileHistory = ({
             orders={buckets.completed}
             masters={masters}
             dict={dict}
+            durations={durations}
           />
         </VisitSection>
       </div>
@@ -135,6 +165,7 @@ const ProfileHistory = ({
             orders={buckets.canceled}
             masters={masters}
             dict={dict}
+            durations={durations}
           />
         </VisitSection>
       </div>

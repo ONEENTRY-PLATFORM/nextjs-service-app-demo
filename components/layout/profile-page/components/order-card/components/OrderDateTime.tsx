@@ -17,10 +17,18 @@ const OrderDateTime = ({
   const intervalField = order.formData.find(
     (el: { marker: string }) => el.marker === 'interval',
   );
-  const startTime = (intervalField?.value as string[][] | undefined)?.[0]?.[0];
+  const interval = intervalField?.value as string[][] | undefined;
+  const startTime = interval?.[0]?.[0];
+  /**
+   * End of the visit — the booking wrote it as start + the total length of every
+   * booked service, so it is the finish time of the whole appointment and needs
+   * no extra request.
+   */
+  const endTime = interval?.[0]?.[1];
 
   /** Create a Date object from the start time */
   const date = new Date(startTime ?? '');
+  const endDate = endTime ? new Date(endTime) : null;
 
   /** Extract and format date components with leading zeros */
   const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Month (1-12) with leading zero
@@ -29,8 +37,21 @@ const OrderDateTime = ({
   const hours = date.getUTCHours().toString().padStart(2, '0'); // Hours with leading zero
   const minutes = date.getUTCMinutes().toString().padStart(2, '0'); // Minutes with leading zero
 
-  /** Format time as HH:MM (24-hour format) */
+  /**
+   * Format time as HH:MM (24-hour format); when the visit's end is known and
+   * differs from its start, the whole span is shown ("14:00 – 16:50") so the
+   * card says when the client is free again, not only when they are due.
+   */
   const formattedTime = `${hours}:${minutes}`;
+  const formattedSpan =
+    endDate &&
+    !Number.isNaN(endDate.getTime()) &&
+    endDate.getTime() > date.getTime()
+      ? `${formattedTime} – ${endDate.getUTCHours().toString().padStart(2, '0')}:${endDate
+          .getUTCMinutes()
+          .toString()
+          .padStart(2, '0')}`
+      : formattedTime;
 
   /** Format date as DD.MM.YYYY */
   const formattedDate = `${day}.${month}.${year}`;
@@ -47,7 +68,7 @@ const OrderDateTime = ({
         dateTime={formattedTime}
         className="text-base font-bold text-fuchsia-500"
       >
-        {formattedTime}
+        {formattedSpan}
       </time>
     </div>
   );

@@ -3,6 +3,8 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import { getChildPagesByParentUrl } from '@/app/api';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import masterNamesById from '@/app/gallery/masterNamesById';
+import masterSalonsById from '@/app/gallery/masterSalonsById';
+import { PAGES } from '@/app/utils/constants';
 import getLqipPreview from '@/components/hooks/getLqipPreview';
 import type {
   GalleryItem,
@@ -72,21 +74,31 @@ const masterName = (
  * photos at the main-category level only, so `category` is the main category,
  * `title` is the category label and `role` is derived from the category
  * (matching the local scanner's discipline-based role) — no per-photo service
- * name or salon exists in the CMS.
+ * name exists in the CMS. The salon is not stored on the photo either: it comes
+ * from the photo's master (`master_id` → admin → `master_salon`), so a photo
+ * belongs to every salon its master works in.
  * @returns {Promise<GalleryItem[]>} Flat, deterministically ordered photo list
  */
 const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
-  /** The gallery tree and the master admins are independent — fetch in parallel. */
-  const [{ pages: categories }, { admins }] = await Promise.all([
-    getChildPagesByParentUrl('gallery'),
-    getMastersList(),
-  ]);
+  /**
+   * The gallery tree, the master admins and the salon pages are independent —
+   * fetch in parallel. Salon pages are needed to turn the `master_salon` page
+   * ids into route markers.
+   */
+  const [{ pages: categories }, { admins }, { pages: salonPages }] =
+    await Promise.all([
+      getChildPagesByParentUrl(PAGES.gallery),
+      getMastersList(),
+      getChildPagesByParentUrl(PAGES.salons),
+    ]);
   if (!categories || categories.length === 0) {
     return [];
   }
 
   /** Admin id → `master_name`, empty when the admins request failed */
   const mastersById = masterNamesById(admins);
+  /** Admin id → salon markers of that master, for the photo's salon tags */
+  const salonsById = masterSalonsById(admins, salonPages);
 
   /** Photo pages of every category, fetched concurrently, order preserved */
   const groups = await Promise.all(
@@ -108,6 +120,7 @@ const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
     title: string;
     master: string;
     masterId: number | undefined;
+    salon: string[];
     role: string;
   };
   const raw: RawPhoto[] = [];
@@ -127,6 +140,9 @@ const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
       const linkedId = Number(linked?.[0]?.value);
       const masterId =
         Number.isFinite(linkedId) && linkedId > 0 ? linkedId : undefined;
+      /** Salons of that master; empty hides the photo from salon pages */
+      const salon =
+        masterId === undefined ? [] : (salonsById.get(masterId) ?? []);
       const images =
         (photoPage.attributeValues?.gallery_photos?.value as
           OneEntryImageFile[] | undefined) ?? [];
@@ -143,6 +159,7 @@ const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
           title: categoryLabel,
           master,
           masterId,
+          salon,
           role,
         });
       }
@@ -168,7 +185,7 @@ const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
         title: photo.title,
         master: photo.master,
         masterId: photo.masterId,
-        salon: '',
+        salon: photo.salon,
         role: photo.role,
       })),
     );

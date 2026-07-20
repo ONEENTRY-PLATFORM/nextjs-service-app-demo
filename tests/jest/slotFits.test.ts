@@ -1,4 +1,4 @@
-import formatMinutes from '@/components/layout/booking-page/formatMinutes';
+import formatMinutes from '@/app/utils/formatMinutes';
 import slotFits from '@/components/layout/booking-page/slotFits';
 import totalServiceMinutes from '@/components/layout/booking-page/totalServiceMinutes';
 import type { BookingService } from '@/components/layout/booking-page/types';
