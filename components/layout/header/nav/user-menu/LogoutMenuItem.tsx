@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { useContext } from 'react';
 
 import { logOutUser } from '@/app/api/server/users/logOutUser';
+import { readAuthProviderMarker } from '@/app/store/auth/authStorage';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 
 /**
@@ -31,9 +32,8 @@ const LogoutMenuItem = (): JSX.Element => {
   const handleLogout = async () => {
     try {
       // Log out through the provider the user actually signed in with, which
-      // AuthContext.login persisted; 'email' is the fallback for legacy
-      // sessions saved before the marker was stored.
-      const marker = localStorage.getItem('authProviderMarker') ?? 'email';
+      // AuthProvider.login persisted (with the legacy 'email' fallback).
+      const marker = readAuthProviderMarker();
       await logOutUser({ marker });
       logout();
       router.push('/');

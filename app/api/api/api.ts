@@ -1,6 +1,8 @@
 import { defineOneEntry } from 'oneentry';
 import type { IError } from 'oneentry/dist/base/utils';
 
+import { REFRESH_TOKEN_KEY } from '@/app/store/auth/authStorage';
+
 const PROJECT_URL = process.env.NEXT_PUBLIC_ONEENTRY_URL as string;
 const APP_TOKEN = process.env.NEXT_PUBLIC_ONEENTRY_TOKEN as string;
 
@@ -36,7 +38,7 @@ const saveFunction = async (refreshToken: string): Promise<void> => {
   if (!refreshToken || typeof window === 'undefined') {
     return;
   }
-  localStorage.setItem('refresh-token', refreshToken);
+  localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
 };
 
 /**

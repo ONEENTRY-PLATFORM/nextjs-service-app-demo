@@ -1,6 +1,10 @@
 'use client';
 
 import { clearSession, getApi } from '@/app/api/api/api';
+import {
+  clearAuthSession,
+  readRefreshToken,
+} from '@/app/store/auth/authStorage';
 
 type LogOutProps = { marker: string; token?: string };
 
@@ -28,7 +32,7 @@ type LogOutProps = { marker: string; token?: string };
  */
 export const logOutUser = async ({ marker }: LogOutProps): Promise<object> => {
   try {
-    const token = localStorage.getItem('refresh-token');
+    const token = readRefreshToken();
     if (!token) {
       throw Error('No token provided');
     }
@@ -43,8 +47,7 @@ export const logOutUser = async ({ marker }: LogOutProps): Promise<object> => {
      * stays in localStorage and in the SDK state, and the SDK retries it
      * before every request — endless 400/401 noise (rules/tokens.md).
      */
-    localStorage.removeItem('refresh-token');
-    localStorage.removeItem('authProviderMarker');
+    clearAuthSession();
     clearSession();
   }
 };

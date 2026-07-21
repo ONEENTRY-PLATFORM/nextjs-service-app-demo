@@ -9,7 +9,7 @@ import type { JSX, ReactNode } from 'react';
 import { LANG_CODE } from '@/app/api/api/api';
 import { getMenuByMarker } from '@/app/api/server/menus/getMenuByMarker';
 import { getDictionary } from '@/app/api/utils/dictionaries';
-import { AuthProvider } from '@/app/store/providers/AuthContext';
+import { AuthProvider } from '@/app/store/providers/AuthProvider';
 import { OpenDrawerProvider } from '@/app/store/providers/OpenDrawerContext';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import StoreProvider from '@/app/store/providers/StoreProvider';
