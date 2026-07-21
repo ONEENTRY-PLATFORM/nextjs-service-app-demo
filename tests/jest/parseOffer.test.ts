@@ -26,13 +26,13 @@ const makeOffer = (
   }) as unknown as IProductsEntity;
 
 describe('parseOffer', () => {
-  it('reads the name, bundled services and first service parent id', () => {
+  it('reads the name, bundled services and their product ids', () => {
     const view = parseOffer(
       makeOffer({
         offer_services: {
           value: [
-            { title: 'Haircut', value: { id: 5, parentId: 12 } },
-            { title: 'Blow-dry', value: { id: 6, parentId: 13 } },
+            { title: 'Haircut', value: { id: 'p-12-233', parentId: 12 } },
+            { title: 'Blow-dry', value: { id: 'p-13-240', parentId: 13 } },
           ],
         },
       }),
@@ -40,7 +40,27 @@ describe('parseOffer', () => {
 
     expect(view.name).toBe('Glow Package');
     expect(view.services).toEqual(['Haircut', 'Blow-dry']);
-    expect(view.firstServiceParentId).toBe(12);
+    // Product links carry `p-{pageId}-{productId}`; the wizard preselects by product id
+    expect(view.serviceProductIds).toEqual([233, 240]);
+  });
+
+  it('skips page links in offer_services — only products are bookable', () => {
+    const view = parseOffer(
+      makeOffer({
+        offer_services: {
+          value: [
+            { title: 'Hair', value: { id: 12, parentId: 10 } },
+            { title: 'Haircut', value: { id: 'p-12-233', parentId: 12 } },
+          ],
+        },
+      }),
+    );
+
+    expect(view.serviceProductIds).toEqual([233]);
+  });
+
+  it('has no bundled product ids when offer_services is unset', () => {
+    expect(parseOffer(makeOffer({})).serviceProductIds).toEqual([]);
   });
 
   it('detects the "(featured)" flag and strips it from the name', () => {

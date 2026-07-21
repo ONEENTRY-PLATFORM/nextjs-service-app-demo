@@ -1,5 +1,6 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
+import { offerServiceProductIds } from '@/app/utils/offerServiceProductIds';
 import { offerAccentGradientsData } from '@/components/data/offerAccentGradientsData';
 
 /**
@@ -37,8 +38,8 @@ export interface OfferView {
   accentColor: string;
   /** `linear-gradient` built from the accent colour */
   accentGrad: string;
-  /** Category page id of the first bundled service (for the booking cart) */
-  firstServiceParentId: number;
+  /** Product ids of the bundled services — what "Book Offer" preselects */
+  serviceProductIds: number[];
 }
 
 /**
@@ -118,6 +119,6 @@ export const parseOffer = (product: IProductsEntity): OfferView => {
     discount,
     accentColor,
     accentGrad,
-    firstServiceParentId: servicesArr?.[0]?.value?.parentId ?? 0,
+    serviceProductIds: offerServiceProductIds(servicesArr),
   };
 };

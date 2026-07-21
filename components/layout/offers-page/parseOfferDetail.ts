@@ -1,5 +1,6 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
+import { offerServiceProductIds } from '@/app/utils/offerServiceProductIds';
 import { offerAccentGradientsData } from '@/components/data/offerAccentGradientsData';
 
 /**
@@ -39,8 +40,8 @@ export interface OfferDetailView {
   image: string;
   /** Appointment duration line (`offer_time`, `''` hides the pill) */
   duration: string;
-  /** Category page id of the first bundled service (for the booking cart) */
-  firstServiceParentId: number;
+  /** Product ids of the bundled services — what "Book Offer" preselects */
+  serviceProductIds: number[];
 }
 
 /**
@@ -140,6 +141,6 @@ export const parseOfferDetail = (product: IProductsEntity): OfferDetailView => {
     accentGrad,
     image,
     duration,
-    firstServiceParentId: servicesArr?.[0]?.value?.parentId ?? 0,
+    serviceProductIds: offerServiceProductIds(servicesArr),
   };
 };

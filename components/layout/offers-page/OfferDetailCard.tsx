@@ -6,13 +6,7 @@ import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces'
 import type { JSX } from 'react';
 
 import CardAnimations from '@/app/animations/CardAnimations';
-import { useGetPageByIdQuery } from '@/app/api/api/RTKApi';
-import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
-import {
-  addServiceToCart,
-  selectActiveItemId,
-  setTabsState,
-} from '@/app/store/reducers/CartSlice';
+import { offerBookingHref } from '@/app/utils/offerBookingHref';
 import { productCurrency } from '@/components/shared/productCurrency';
 
 import OfferDetailMedia from './OfferDetailMedia';
@@ -27,8 +21,8 @@ import { parseOfferDetail } from './parseOfferDetail';
  * "Book Offer" button on the right ({@link OfferDetailPanel}), and a duration
  * pill in the top-right corner. Offer data is parsed by {@link parseOfferDetail}.
  *
- * The button adds the offer to the booking cart and navigates to the booking
- * page — same flow as the home page `OfferCard`.
+ * The button opens the booking wizard with the offer's bundled services
+ * preselected — same flow as the home page `OfferCard`.
  * @param   {object}          props         - Component properties
  * @param   {IProductsEntity} props.product - Product entity representing the special offer (`offer`)
  * @param   {number}          props.index   - Card index — used for the animation stagger
@@ -42,9 +36,6 @@ const OfferDetailCard = ({
   index: number;
 }): JSX.Element => {
   const router = useTransitionRouter();
-  const dispatch = useAppDispatch();
-  /** Active cart row index */
-  const activeId = useAppSelector(selectActiveItemId);
 
   const {
     name,
@@ -57,37 +48,19 @@ const OfferDetailCard = ({
     accentGrad,
     image,
     duration,
-    firstServiceParentId,
+    serviceProductIds,
   } = parseOfferDetail(product);
 
-  /** Category page of the first bundled service — needed for the booking cart */
-  const { data: service } = useGetPageByIdQuery(
-    { id: firstServiceParentId },
-    { skip: !firstServiceParentId },
-  );
-
   /**
-   * Add the offer to the booking cart and navigate to the booking page
+   * Open the booking wizard with the offer's bundled services preselected.
+   *
+   * The offer product itself is NOT bookable — it carries the `offer`
+   * attribute set and is excluded from the booking catalog — so the link
+   * names the services it bundles instead.
    * @returns {void}
    */
   const handleBook = () => {
-    /** Don't proceed if service data is not available */
-    if (!service) {
-      return;
-    }
-    dispatch(
-      addServiceToCart({
-        id: activeId,
-        serviceId: service.id,
-        productId: product.id,
-        salonId: null,
-        masterId: null,
-        date: null,
-      }),
-    );
-    dispatch(setTabsState({ key: 'services', value: true }));
-    dispatch(setTabsState({ key: 'products', value: true }));
-    router.push('/booking');
+    router.push(offerBookingHref(serviceProductIds));
   };
 
   return (

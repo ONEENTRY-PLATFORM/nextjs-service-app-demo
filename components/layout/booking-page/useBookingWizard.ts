@@ -22,6 +22,7 @@ import type { BookingScheduleState } from './useBookingSchedule';
 import { useBookingSchedule } from './useBookingSchedule';
 import { useBookingSubmit } from './useBookingSubmit';
 import { useReschedulePrefill } from './useReschedulePrefill';
+import { useServicesPrefill } from './useServicesPrefill';
 
 /**
  * Everything render needs from the controller hook: the wizard's own state and
@@ -145,6 +146,9 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
    */
   const reschedule = useReschedulePrefill();
 
+  /** `?services=233,240` — the services an offer bundles, preselected as a set */
+  const queryProductIds = useServicesPrefill();
+
   const { submit, booked, closeSuccess, isAuth, isLoading, error } =
     useBookingSubmit({
       paymentAccount: payment.paymentAccount,
@@ -154,6 +158,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   useBookingPreselect({
     data,
     reschedule,
+    queryProductIds,
     touched,
     setters: {
       setFlow,

@@ -40,20 +40,23 @@ export interface BookingPreselectSetters {
  * The preselection is applied while rendering (React's "adjust state on prop
  * change" pattern, no effect): once per distinct cart content and never over a
  * flow the user has already started themselves.
- * @param {object}                  input            - Hook input
- * @param {BookingData}             input.data       - Salons, services and specialists from the CMS
- * @param {ReschedulePrefill}       input.reschedule - The `?reschedule={orderId}` prefill
- * @param {boolean}                 input.touched    - The user has already interacted with the wizard
- * @param {BookingPreselectSetters} input.setters    - Wizard setters the preselection drives
+ * @param {object}                  input                 - Hook input
+ * @param {BookingData}             input.data            - Salons, services and specialists from the CMS
+ * @param {ReschedulePrefill}       input.reschedule      - The `?reschedule={orderId}` prefill
+ * @param {number[]}                input.queryProductIds - The `?services=` prefill (an offer's bundled services)
+ * @param {boolean}                 input.touched         - The user has already interacted with the wizard
+ * @param {BookingPreselectSetters} input.setters         - Wizard setters the preselection drives
  */
 export const useBookingPreselect = ({
   data,
   reschedule,
+  queryProductIds,
   touched,
   setters,
 }: {
   data: BookingData;
   reschedule: ReschedulePrefill;
+  queryProductIds: number[];
   touched: boolean;
   setters: BookingPreselectSetters;
 }): void => {
@@ -65,16 +68,28 @@ export const useBookingPreselect = ({
 
   /**
    * A reschedule wins over the cart: it names the appointment being moved, and
-   * unlike the cart it can carry every service of a bundled visit.
+   * unlike the cart it can carry every service of a bundled visit. The
+   * `?services=` query ranks next — it is scoped to this navigation (an offer's
+   * bundle), so it must beat whatever the cart still remembers from before.
    */
-  const cartMasterId = reschedule.masterId ?? cartItem?.masterId;
-  const cartSalonId = reschedule.salonId ?? cartItem?.salonId;
+  /**
+   * An explicit `?services=` navigation replaces the cart rather than merging
+   * with it — a specialist left in the cart by an earlier booking must not
+   * hijack an offer into the specialist-first flow.
+   */
+  const fromQuery = queryProductIds.length > 0;
+  const cartMasterId =
+    reschedule.masterId ?? (fromQuery ? undefined : cartItem?.masterId);
+  const cartSalonId =
+    reschedule.salonId ?? (fromQuery ? undefined : cartItem?.salonId);
   const preProductIds =
     reschedule.productIds.length > 0
       ? reschedule.productIds
-      : cartItem?.productId
-        ? [cartItem.productId]
-        : [];
+      : queryProductIds.length > 0
+        ? queryProductIds
+        : cartItem?.productId
+          ? [cartItem.productId]
+          : [];
 
   const hydrated = useHydrated();
 
