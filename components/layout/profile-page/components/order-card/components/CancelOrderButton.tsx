@@ -135,6 +135,7 @@ const CancelOrderButton = ({
       <button
         onClick={() => setStage('confirm')}
         type="button"
+        data-testid="order-cancel"
         className="flex-1 rounded-lg border border-slate-150 py-2 text-base font-medium text-neutral-300 transition-all hover:bg-gray-50"
       >
         {(cancel_booking_text?.value as string | undefined) || 'Cancel booking'}

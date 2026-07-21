@@ -79,6 +79,7 @@ const RepeatOrder = ({
   return (
     <button
       type="button"
+      data-testid="order-repeat"
       className="w-full rounded-lg border-2 border-fuchsia-500 px-3.5 py-2 text-base font-bold text-fuchsia-500 transition-all hover:opacity-90"
       onClick={repeatOrderHandle}
     >

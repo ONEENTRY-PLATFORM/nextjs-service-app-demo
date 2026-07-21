@@ -30,6 +30,7 @@ const SalonCard = ({
 
   return (
     <div
+      data-testid="salon-card"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className="flex flex-col overflow-hidden rounded-3xl bg-white md:max-xl:w-80 md:max-xl:shrink-0 md:max-xl:snap-start"
@@ -127,6 +128,7 @@ const SalonCard = ({
       <div className="flex gap-2 p-4">
         <a
           href={`tel:${salon.tel}`}
+          data-testid="salon-call"
           className="flex flex-1 items-center justify-center gap-1.5 rounded-xl py-3.5 text-sm font-bold tracking-wide text-white uppercase transition-transform duration-200 hover:scale-103 active:scale-95 md:hidden"
           style={{
             background: `linear-gradient(135deg, ${salon.color}, ${salon.color}cc)`,
@@ -139,6 +141,7 @@ const SalonCard = ({
           href={salon.mapsLink}
           target="_blank"
           rel="noopener noreferrer"
+          data-testid="salon-directions"
           className="hidden flex-1 items-center justify-center gap-1.5 rounded-xl py-3.5 text-sm font-bold tracking-wide text-white uppercase transition-transform duration-200 hover:scale-103 active:scale-95 md:flex"
           style={{
             background: `linear-gradient(135deg, ${salon.color}, ${salon.color}cc)`,

@@ -45,6 +45,7 @@ const FadeStaggerGroup = ({
   const ref = useRef<HTMLDivElement>(null);
   /** Latest children, read after the exit tween — by then props have moved on */
   const latest = useRef<ReactNode>(children);
+  // eslint-disable-next-line react-hooks/refs
   latest.current = children;
   const [shown, setShown] = useState<{ key: string; node: ReactNode }>({
     key: groupKey,

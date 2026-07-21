@@ -4,12 +4,30 @@ import NextImage from 'next/image';
 import type { JSX, UIEvent } from 'react';
 import { useState } from 'react';
 
+import type { SalonPhoto } from '../types';
+
+/**
+ * Blur-placeholder props for a photo, empty when it carries no LQIP.
+ *
+ * next/image rejects `placeholder="blur"` without a `blurDataURL`, and
+ * `exactOptionalPropertyTypes` forbids passing the key as `undefined` — so the
+ * pair is spread in or left out entirely.
+ * @param   {SalonPhoto} photo - Photo to place
+ * @returns {object}           Props to spread onto `next/image`
+ */
+const blurProps = (
+  photo: SalonPhoto,
+): { placeholder: 'blur'; blurDataURL: string } | Record<string, never> =>
+  photo.preview
+    ? { placeholder: 'blur' as const, blurDataURL: photo.preview }
+    : {};
+
 /**
  * SalonPhotoGallery — the salon photo gallery ported from the static-html mock
  * (`SalonPage.tsx` → PhotoGallery): a swipe carousel with dots on mobile and a
  * hero + thumbnail grid on desktop. Every tile opens the lightbox via `onOpen`.
  * @param   {object}              props        - Component properties
- * @param   {string[]}            props.photos - Photo URLs
+ * @param   {SalonPhoto[]}        props.photos - Photos with their LQIP placeholders
  * @param   {string}              props.accent - Accent color (hex) for the dots
  * @param   {(i: number) => void} props.onOpen - Open the lightbox at an index
  * @returns {JSX.Element}                      Responsive photo gallery
@@ -19,7 +37,7 @@ const SalonPhotoGallery = ({
   accent,
   onOpen,
 }: {
-  photos: string[];
+  photos: SalonPhoto[];
   accent: string;
   onOpen: (i: number) => void;
 }): JSX.Element => {
@@ -57,7 +75,7 @@ const SalonPhotoGallery = ({
           className="-mx-3 flex snap-x snap-mandatory gap-2 overflow-x-auto px-3 [&::-webkit-scrollbar]:hidden"
           style={{ scrollbarWidth: 'none' }}
         >
-          {photos.map((url, i) => (
+          {photos.map((photo, i) => (
             <button
               key={i}
               onClick={() => onOpen(i)}
@@ -65,11 +83,12 @@ const SalonPhotoGallery = ({
               className="relative aspect-5/4 w-[86%] shrink-0 snap-center overflow-hidden rounded-2xl"
             >
               <NextImage
-                src={url}
+                src={photo.url}
                 alt=""
                 fill
                 sizes="86vw"
                 className="object-cover"
+                {...blurProps(photo)}
               />
             </button>
           ))}
@@ -97,11 +116,12 @@ const SalonPhotoGallery = ({
             className="group relative aspect-5/4 overflow-hidden rounded-2xl lg:aspect-auto lg:h-full lg:min-h-100"
           >
             <NextImage
-              src={hero}
+              src={hero.url}
               alt=""
               fill
               sizes="(min-width: 1024px) 40vw, 86vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
+              {...blurProps(hero)}
             />
             <div
               className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
@@ -113,7 +133,7 @@ const SalonPhotoGallery = ({
         )}
 
         <div className="grid grid-cols-2 gap-2">
-          {rest.slice(0, 6).map((url, i) => {
+          {rest.slice(0, 6).map((photo, i) => {
             const isLastWithMore = i === 5 && rest.length > 6;
             const moreCount = rest.length - 6;
             return (
@@ -128,11 +148,12 @@ const SalonPhotoGallery = ({
                 className="group relative aspect-5/4 overflow-hidden rounded-2xl"
               >
                 <NextImage
-                  src={url}
+                  src={photo.url}
                   alt=""
                   fill
                   sizes="(min-width: 1024px) 20vw, 86vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  {...blurProps(photo)}
                 />
                 {isLastWithMore && (
                   <div

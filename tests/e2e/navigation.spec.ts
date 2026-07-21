@@ -42,6 +42,37 @@ test.describe('Header navigation and search', () => {
     });
   });
 
+  test('a query with no matches shows the empty state', async ({ page }) => {
+    await page.goto('/');
+
+    await page.getByTestId('header-search-open').click();
+    // A term no service title and no specialist name can contain
+    await page.getByTestId('header-search-input').fill('zzqqxx-no-such-thing');
+
+    const empty = page.getByTestId('search-empty');
+    await expect(empty).toBeVisible({ timeout: 30_000 });
+    await expect(empty).toContainText('zzqqxx-no-such-thing');
+    await expect(page.getByTestId('search-results')).toHaveCount(0);
+  });
+
+  test('the search popup closes with its button and with Escape', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    // Close button — the popup (and with it the input) is unmounted
+    await page.getByTestId('header-search-open').click();
+    await expect(page.getByTestId('header-search-input')).toBeVisible();
+    await page.getByRole('button', { name: 'Close search' }).click();
+    await expect(page.getByTestId('header-search-input')).toHaveCount(0);
+
+    // Escape — same result (the popup keeps its term in state, but unmounts)
+    await page.getByTestId('header-search-open').click();
+    await page.getByTestId('header-search-input').fill('hair');
+    await page.keyboard.press('Escape');
+    await expect(page.getByTestId('header-search-input')).toHaveCount(0);
+  });
+
   test('picking a service from the search results opens its page', async ({
     page,
   }) => {

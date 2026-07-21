@@ -21,6 +21,7 @@ const LeaveReviewButton = (): JSX.Element => {
       <button
         type="button"
         onClick={() => setReviewOpen(true)}
+        data-testid="order-leave-review"
         className="flex-1 rounded-lg bg-gradient-brand py-1.5 text-base font-bold text-white transition-all hover:opacity-90"
       >
         Leave a review

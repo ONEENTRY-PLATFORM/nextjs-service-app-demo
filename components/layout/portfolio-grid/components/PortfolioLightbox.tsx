@@ -2,9 +2,12 @@
 
 import { ChevronLeft, ChevronRight, Share2, X } from 'lucide-react';
 import type { JSX } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
+import LightboxStage from '@/components/shared/LightboxStage';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
+import { useNeighborPreload } from '@/components/shared/useNeighborPreload';
+import { useSlideDirection } from '@/components/shared/useSlideDirection';
 
 /** A single portfolio image with its full/thumbnail/preview sources. */
 type PortfolioImage = {
@@ -48,6 +51,13 @@ const PortfolioLightbox = ({
   const count = images.length;
   const current = images[index];
 
+  /** Which way the viewer is paging — drives the stage slide transition. */
+  const direction = useSlideDirection(index, count);
+
+  /** Warm the neighbouring originals so stepping through feels instant. */
+  const urls = useMemo(() => images.map((item) => item.img), [images]);
+  useNeighborPreload(urls, index);
+
   /** Arrow-key navigation (Escape / focus-trap / scroll-lock handled by useDialogA11y). */
   useEffect(() => {
     if (count === 0) {
@@ -75,6 +85,7 @@ const PortfolioLightbox = ({
   return (
     <div
       ref={dialogRef}
+      data-testid="portfolio-lightbox"
       role="dialog"
       aria-modal="true"
       aria-label={masterName ? `${masterName} — portfolio` : 'Portfolio viewer'}
@@ -123,24 +134,14 @@ const PortfolioLightbox = ({
 
       {/* Stage */}
       <div className="flex w-full max-w-2xl flex-col items-center gap-4 px-4 md:mx-20 md:px-0">
-        <div
-          className="relative w-full overflow-hidden rounded-2xl"
-          style={{
-            boxShadow: '0 0 80px #ed21f122, 0 32px 64px rgba(0,0,0,0.7)',
-          }}
-        >
-          {/*
-            Stage image at natural dimensions bounded by the viewport
-            (`max-h-[70vh]`); next/image needs a fixed width/height or a sized
-            `fill` box, so a raw <img> is the right tool for the lightbox.
-          */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={current.img}
-            alt={current.alt}
-            className="max-h-[70vh] w-full object-cover"
-          />
-        </div>
+        <LightboxStage
+          src={current.img}
+          preview={current.preview}
+          alt={current.alt}
+          direction={direction}
+          onPrev={() => onSelect((index - 1 + count) % count)}
+          onNext={() => onSelect((index + 1) % count)}
+        />
 
         {/* Caption + share — mock: service line (role fallback: the CMS has no
             per-photo service name), then "name · role" with the role in PINK. */}

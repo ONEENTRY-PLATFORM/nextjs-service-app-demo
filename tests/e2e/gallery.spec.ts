@@ -26,6 +26,33 @@ test.describe('Gallery lightbox', () => {
     await expect(lightbox).toHaveCount(0);
   });
 
+  test('arrow keys page through the photos', async ({ page }) => {
+    await page.goto('/gallery');
+
+    const items = page.getByTestId('gallery-page').getByTestId('gallery-item');
+    await expect(items.first()).toBeAttached({ timeout: 30_000 });
+    const total = await items.count();
+    test.skip(total < 2, 'needs at least two photos to page through');
+
+    await items.first().scrollIntoViewIfNeeded();
+    await items.first().click();
+
+    const lightbox = page.getByTestId('gallery-lightbox');
+    await expect(lightbox).toBeVisible({ timeout: 15_000 });
+    // The counter reads "n / total" — it is the visible index state
+    await expect(lightbox).toContainText(`1 / ${total}`);
+
+    await page.keyboard.press('ArrowRight');
+    await expect(lightbox).toContainText(`2 / ${total}`);
+
+    await page.keyboard.press('ArrowLeft');
+    await expect(lightbox).toContainText(`1 / ${total}`);
+
+    // Paging wraps around backwards from the first photo
+    await page.keyboard.press('ArrowLeft');
+    await expect(lightbox).toContainText(`${total} / ${total}`);
+  });
+
   test('category deep-link renders CMS photos, not the local fallback', async ({
     page,
   }) => {

@@ -125,7 +125,10 @@ const MenuSection = async ({
         <SalonsGrid />
 
         {openingRows.length > 0 && (
-          <div className="hidden min-w-0 xl:block xl:border-l xl:border-black/80 xl:pl-4">
+          <div
+            data-testid="footer-opening"
+            className="hidden min-w-0 xl:block xl:border-l xl:border-black/80 xl:pl-4"
+          >
             <p className="mb-3 text-sm font-bold tracking-wide uppercase">
               {openingTitle}
             </p>
@@ -140,7 +143,7 @@ const MenuSection = async ({
       {/* Mobile/tablet: Opening Time — collapsible */}
       {openingRows.length > 0 && (
         <>
-          <div className="py-4 xl:hidden">
+          <div data-testid="footer-opening-mobile" className="py-4 xl:hidden">
             <FooterCollapse title={openingTitle}>
               <div className="space-y-2">
                 <OpeningTime rows={openingRows} variant="row" />

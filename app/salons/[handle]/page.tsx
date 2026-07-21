@@ -72,7 +72,7 @@ export default async function SalonDetailLayout({
         (marker) => marker.toLowerCase() === handle.toLowerCase(),
       ),
     )
-    .map((item) => item.url)
+    .map((item) => ({ url: item.url, preview: item.preview }))
     .slice(0, 9);
 
   const content = SALON_CONTENT[handle] ?? DEFAULT_SALON_CONTENT;

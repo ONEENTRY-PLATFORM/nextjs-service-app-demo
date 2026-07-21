@@ -53,6 +53,7 @@ const RatingCluster = ({
       </Link>
       <button
         onClick={() => setReviewOpen(true)}
+        data-testid="master-leave-review"
         className="text-base font-bold text-fuchsia-500 underline underline-offset-2 transition-opacity hover:opacity-70"
       >
         Leave a review

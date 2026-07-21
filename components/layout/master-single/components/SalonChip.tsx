@@ -50,6 +50,7 @@ const SalonChip = ({
       <Link
         prefetch={false}
         href={href}
+        data-testid="master-salon-chip"
         className={`${chipClass} hover:shadow-md`}
       >
         {content}
@@ -57,7 +58,11 @@ const SalonChip = ({
     );
   }
 
-  return <div className={chipClass}>{content}</div>;
+  return (
+    <div data-testid="master-salon-chip" className={chipClass}>
+      {content}
+    </div>
+  );
 };
 
 export default SalonChip;

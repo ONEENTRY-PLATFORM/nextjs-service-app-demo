@@ -1,4 +1,15 @@
 /**
+ * A salon gallery photo: the full-size source plus the LQIP placeholder shown
+ * while it downloads (the CMS `previewLink`, `null` when the file has none).
+ */
+export type SalonPhoto = {
+  /** Public URL of the full-size photo */
+  url: string;
+  /** Base64 LQIP blur placeholder shown while the photo loads, or `null` */
+  preview: string | null;
+};
+
+/**
  * Plain serializable data shape for the salon detail page. Built on the server
  * from the CMS salon page (`salon_address`, `salon_phone`) plus local content
  * (photos scanned from `public/`, About/highlights copy) and passed into the
@@ -23,6 +34,6 @@ export type SalonDetail = {
   about: string[];
   /** Highlight bullet items */
   highlights: string[];
-  /** Photo URLs for the gallery */
-  photos: string[];
+  /** Photos of the gallery, with their blur placeholders */
+  photos: SalonPhoto[];
 };

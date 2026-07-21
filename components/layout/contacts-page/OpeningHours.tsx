@@ -53,7 +53,7 @@ const OpeningHours = ({ rows }: { rows: OpeningHoursRow[] }): JSX.Element => {
         : `${summary.from.slice(0, 3)} – ${summary.to.slice(0, 3)}`;
 
   return (
-    <section className="bg-slate-50 py-6 md:py-10">
+    <section className="bg-slate-50 py-6 md:py-10" data-testid="opening-hours">
       <div className="mx-auto max-w-7xl px-3 md:px-8">
         <SectionHeading className="mb-6 md:mb-10">Opening Hours</SectionHeading>
 
@@ -61,6 +61,7 @@ const OpeningHours = ({ rows }: { rows: OpeningHoursRow[] }): JSX.Element => {
         <div className="lg:hidden">
           {summary ? (
             <div
+              data-testid="opening-hours-summary"
               className="flex flex-col items-center gap-2 rounded-2xl bg-gradient-brand p-5 text-center"
               style={{ boxShadow: '0 8px 24px #ed21f144' }}
             >

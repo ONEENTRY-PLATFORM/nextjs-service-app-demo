@@ -20,6 +20,7 @@ const OpeningHoursDayCard = ({
 }): JSX.Element => {
   return (
     <div
+      data-testid="opening-hours-day"
       className={`flex flex-col items-center gap-2 rounded-2xl p-4 text-center transition-all duration-300 ${
         isToday
           ? 'scale-105 bg-gradient-brand'

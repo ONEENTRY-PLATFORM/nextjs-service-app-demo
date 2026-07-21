@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
+import SwapAnimations from '@/app/animations/SwapAnimations';
 
 import MobileSpecialistList from './components/MobileSpecialistList';
 import SalonFilter from './components/SalonFilter';
@@ -158,7 +159,12 @@ const MastersPageContent = ({
       </RevealAnimations>
 
       {/* ── Card sections — tablet & desktop (mobile uses the row list) ──── */}
-      <SpecialistSections sections={sections} onClearAll={clearAll} />
+      {/* Swapping on the chip/salon filters fades the old cards out first, so
+          the exit mirrors the entrance instead of a blank flash. Search typing
+          is left out of the key — it must update as you type. */}
+      <SwapAnimations swapKey={`${mainCat}|${salonId ?? 'all'}`}>
+        <SpecialistSections sections={sections} onClearAll={clearAll} />
+      </SwapAnimations>
     </div>
   );
 };

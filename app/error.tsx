@@ -33,7 +33,10 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex grow flex-col items-center justify-center gap-4 p-8 text-center">
+    <div
+      data-testid="error-boundary"
+      className="flex grow flex-col items-center justify-center gap-4 p-8 text-center"
+    >
       <h1 className="text-2xl font-bold">Something went wrong</h1>
       <p className="max-w-md text-base text-neutral-600">
         We couldn&apos;t load this page. Please try again in a moment.

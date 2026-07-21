@@ -1,18 +1,19 @@
 'use client';
 
 /*
-  Fullscreen lightbox viewer. Rule disabled file-wide because both images here
-  need a raw <img>: the stage image renders at its natural dimensions bounded by
-  the viewport (`max-h-[70vh]`), which next/image can't do without a fixed
-  width/height or a sized `fill` box; the thumbnail strip is on-demand overlay
-  micro-thumbnails whose bytes don't warrant the optimizer round-trip.
+  Fullscreen lightbox viewer. The rule is disabled file-wide because the
+  thumbnail strip is made of on-demand overlay micro-thumbnails whose bytes
+  don't warrant the optimizer round-trip.
 */
 /* eslint-disable @next/next/no-img-element */
 import { ChevronLeft, ChevronRight, Share2, X } from 'lucide-react';
 import type { JSX } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
+import LightboxStage from '@/components/shared/LightboxStage';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
+import { useNeighborPreload } from '@/components/shared/useNeighborPreload';
+import { useSlideDirection } from '@/components/shared/useSlideDirection';
 
 import type { GalleryItem } from '../taxonomy';
 
@@ -46,6 +47,13 @@ const GalleryLightbox = ({
   onSelect: (index: number) => void;
 }): JSX.Element => {
   const item = items[index];
+
+  /** Which way the viewer is paging — drives the stage slide transition. */
+  const direction = useSlideDirection(index, items.length);
+
+  /** Warm the neighbouring originals so stepping through feels instant. */
+  const urls = useMemo(() => items.map((photo) => photo.url), [items]);
+  useNeighborPreload(urls, index);
 
   /** Arrow-key navigation (Escape / focus-trap / scroll-lock handled by useDialogA11y). */
   useEffect(() => {
@@ -111,18 +119,14 @@ const GalleryLightbox = ({
 
       {/* Main image + caption + thumbnails */}
       <div className="flex w-full max-w-2xl flex-col items-center gap-4 px-4 md:mx-20 md:px-0">
-        <div
-          className="relative w-full overflow-hidden rounded-2xl"
-          style={{
-            boxShadow: '0 0 80px #ed21f122, 0 32px 64px rgba(0,0,0,0.7)',
-          }}
-        >
-          <img
-            src={item.url}
-            alt={item.title}
-            className="max-h-[70vh] w-full object-cover"
-          />
-        </div>
+        <LightboxStage
+          src={item.url}
+          preview={item.preview}
+          alt={item.title}
+          direction={direction}
+          onPrev={onPrev}
+          onNext={onNext}
+        />
 
         {/* Caption */}
         <div className="flex w-full items-center justify-between gap-4 px-1">

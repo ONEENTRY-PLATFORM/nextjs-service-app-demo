@@ -32,8 +32,19 @@ export default defineConfig({
   },
   projects: [
     {
+      // Desktop suite — everything except the phone-only specs
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: /.*\.mobile\.spec\.ts/,
+    },
+    {
+      // Phone suite: `MobileNavPanel`, `MobileSpecialistList` and the mobile
+      // salon CTA only exist below the `md`/`lg` breakpoints, so they need a
+      // real phone profile (touch + 393px) rather than a resized desktop.
+      // Opt in by naming the file `*.mobile.spec.ts`.
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
+      testMatch: /.*\.mobile\.spec\.ts/,
     },
   ],
   webServer: {

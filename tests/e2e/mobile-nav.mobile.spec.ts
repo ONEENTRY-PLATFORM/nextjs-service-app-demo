@@ -2,12 +2,13 @@ import { expect, test } from '@playwright/test';
 
 // The mobile header (< lg) collapses the main menu behind a hamburger that
 // toggles the inline `MobileNavPanel` (a grid-rows height animation under the
-// header row). The desktop nav specs run at ≥1024px where this panel is
+// header row). The desktop nav specs run at >=1024px where this panel is
 // `lg:hidden`, so the whole mobile surface — trigger, panel, link → navigate —
-// is only exercised here. Phone viewport keeps the hamburger rendered.
+// is only exercised here.
+//
+// Runs in the `Mobile Chrome` project (Pixel 5): a real phone profile with
+// touch, not a narrowed desktop — hence the `.mobile.spec.ts` suffix.
 test.describe('Mobile navigation', () => {
-  test.use({ viewport: { width: 390, height: 844 } });
-
   test('hamburger opens the panel, a link navigates and closes it', async ({
     page,
   }) => {
