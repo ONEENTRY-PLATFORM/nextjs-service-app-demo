@@ -5,7 +5,7 @@ import Link from 'next/link';
 import type { JSX } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { reviewsData } from '@/components/data';
+import { reviewsData } from '@/components/data/reviewsData';
 
 import ReviewsAnimations from '../animations/ReviewsAnimations';
 import ReviewSlide from './ReviewSlide';

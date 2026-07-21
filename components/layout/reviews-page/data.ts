@@ -4,7 +4,7 @@
  *
  * Temporary local data source: while the reviews section of the CMS is not
  * populated, the `/reviews` page is driven by this module (mirrors how
- * `components/data.js` `reviewsData` and
+ * `components/data/reviewsData.ts` and
  * `components/layout/gallery-page/taxonomy.ts` document their local-data
  * status). Move to OneEntry once the reviews storage is filled.
  */

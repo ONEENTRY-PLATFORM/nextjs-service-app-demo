@@ -41,9 +41,9 @@ const readJsonLd = async (page: Page): Promise<Record<string, unknown>[]> => {
 };
 
 /**
- * Collect the @type values across all JSON-LD blocks on the page.
+ * Collect the type values across all JSON-LD blocks on the page.
  * @param   {Record<string, unknown>[]} blocks - Parsed JSON-LD objects
- * @returns {string[]}                         The @type strings found
+ * @returns {string[]}                         The type strings found
  */
 const typesOf = (blocks: Record<string, unknown>[]): string[] =>
   blocks

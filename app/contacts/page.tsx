@@ -8,8 +8,7 @@ import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesBy
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import parseOpeningTime from '@/app/utils/parseOpeningTime';
 import summarizeOpeningHours from '@/app/utils/summarizeOpeningHours';
 import BookCtaBanner from '@/components/layout/contacts-page/BookCtaBanner';
@@ -20,7 +19,7 @@ import OpeningHours from '@/components/layout/contacts-page/OpeningHours';
 import type { ContactSalon } from '@/components/layout/contacts-page/SalonLocations';
 import SalonLocations from '@/components/layout/contacts-page/SalonLocations';
 import SectionHeading from '@/components/shared/SectionHeading';
-import { formatUaePhone } from '@/components/utils';
+import { formatUaePhone } from '@/components/utils/formatUaePhone';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it
@@ -169,23 +168,10 @@ export default ContactsPageLayout;
  * @returns {Promise<Metadata>} - Metadata for the contacts page
  */
 export async function generateMetadata(): Promise<Metadata> {
-  /** get page by Url */
-  const { page, isError } = await getPageByUrl('contacts');
-
-  if (isError || !page) {
-    return {};
-  }
-
-  /** extract data from page */
-  const { localizeInfos } = page;
-
-  return {
-    title: localizeInfos?.title || 'Contacts',
-    description: getPagePlainContent(page) || 'Contact information',
-    alternates: { canonical: '/contacts' },
-    openGraph: {
-      ...(await pageOpenGraph('/contacts')),
-      type: 'article',
-    },
-  };
+  return cmsPageMetadata({
+    pageUrl: 'contacts',
+    path: '/contacts',
+    fallbackTitle: 'Contacts',
+    fallbackDescription: 'Contact information',
+  });
 }

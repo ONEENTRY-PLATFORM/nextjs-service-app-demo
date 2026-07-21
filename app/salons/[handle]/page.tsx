@@ -13,7 +13,7 @@ import {
   SALON_CONTENT,
 } from '@/components/layout/salon-page/salonContent';
 import type { SalonDetail } from '@/components/layout/salon-page/types';
-import { formatUaePhone } from '@/components/utils';
+import { formatUaePhone } from '@/components/utils/formatUaePhone';
 
 import getCmsGalleryItems from '../../gallery/getCmsGalleryItems';
 

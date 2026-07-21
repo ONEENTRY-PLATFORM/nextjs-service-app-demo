@@ -1,13 +1,16 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, Share2, X } from 'lucide-react';
+import { Share2 } from 'lucide-react';
 import type { JSX } from 'react';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
+import LightboxArrow from '@/components/shared/lightbox/LightboxArrow';
+import LightboxCloseButton from '@/components/shared/lightbox/LightboxCloseButton';
+import LightboxCounter from '@/components/shared/lightbox/LightboxCounter';
+import LightboxOverlay from '@/components/shared/lightbox/LightboxOverlay';
+import LightboxThumbStrip from '@/components/shared/lightbox/LightboxThumbStrip';
+import { useLightboxNav } from '@/components/shared/lightbox/useLightboxNav';
 import LightboxStage from '@/components/shared/LightboxStage';
-import { useDialogA11y } from '@/components/shared/useDialogA11y';
-import { useNeighborPreload } from '@/components/shared/useNeighborPreload';
-import { useSlideDirection } from '@/components/shared/useSlideDirection';
 
 /** A single portfolio image with its full/thumbnail/preview sources. */
 type PortfolioImage = {
@@ -15,6 +18,13 @@ type PortfolioImage = {
   thumb: string;
   preview: string;
   alt: string;
+};
+
+/** Ring + backdrop styling of the paging arrows. */
+const ARROW_STYLE = {
+  border: '1.5px solid rgba(255,255,255,0.6)',
+  background: 'rgba(0,0,0,0.45)',
+  backdropFilter: 'blur(4px)',
 };
 
 /**
@@ -51,31 +61,27 @@ const PortfolioLightbox = ({
   const count = images.length;
   const current = images[index];
 
-  /** Which way the viewer is paging — drives the stage slide transition. */
-  const direction = useSlideDirection(index, count);
+  const onPrev = () => onSelect((index - 1 + count) % count);
+  const onNext = () => onSelect((index + 1) % count);
 
-  /** Warm the neighbouring originals so stepping through feels instant. */
   const urls = useMemo(() => images.map((item) => item.img), [images]);
-  useNeighborPreload(urls, index);
+  const { direction, dialogRef } = useLightboxNav({
+    urls,
+    index,
+    onPrev,
+    onNext,
+    onClose,
+  });
 
-  /** Arrow-key navigation (Escape / focus-trap / scroll-lock handled by useDialogA11y). */
-  useEffect(() => {
-    if (count === 0) {
-      return;
-    }
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') {
-        onSelect((index - 1 + count) % count);
-      } else if (e.key === 'ArrowRight') {
-        onSelect((index + 1) % count);
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [index, count, onSelect]);
-
-  /** Dialog a11y: focus trap, focus restore, scroll lock and Escape-to-close. */
-  const dialogRef = useDialogA11y({ isOpen: true, onClose });
+  const thumbs = useMemo(
+    () =>
+      images.map((item, i) => ({
+        key: i,
+        src: item.thumb,
+        label: `Show image ${i + 1}`,
+      })),
+    [images],
+  );
 
   /** Out-of-range guard (noUncheckedIndexedAccess). */
   if (!current) {
@@ -83,54 +89,23 @@ const PortfolioLightbox = ({
   }
 
   return (
-    <div
-      ref={dialogRef}
-      data-testid="portfolio-lightbox"
-      role="dialog"
-      aria-modal="true"
-      aria-label={masterName ? `${masterName} — portfolio` : 'Portfolio viewer'}
-      className="fixed inset-0 z-300 flex items-center justify-center"
+    <LightboxOverlay
+      dialogRef={dialogRef}
+      testId="portfolio-lightbox"
+      label={masterName ? `${masterName} — portfolio` : 'Portfolio viewer'}
       style={{ background: 'rgba(8,0,14,0.92)', backdropFilter: 'blur(12px)' }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          onClose();
-        }
-      }}
+      onClose={onClose}
     >
-      {/* Close */}
-      <button
-        onClick={onClose}
-        aria-label="Close"
-        className="absolute top-5 right-5 z-10 flex size-10 items-center justify-center rounded-full transition-colors hover:bg-white/10"
-        style={{ border: '1.5px solid rgba(255,255,255,0.25)' }}
-      >
-        <X size={17} color="#fff" />
-      </button>
+      <LightboxCloseButton onClose={onClose} />
+      <LightboxCounter index={index} total={count} />
 
-      {/* Counter */}
-      <div
-        className="absolute top-5 left-5 rounded-full px-3 py-1.5 text-xs font-medium"
-        style={{
-          background: 'rgba(255,255,255,0.08)',
-          color: 'rgba(255,255,255,0.6)',
-        }}
-      >
-        {index + 1} / {count}
-      </div>
-
-      {/* Prev */}
-      <button
-        onClick={() => onSelect((index - 1 + count) % count)}
-        aria-label="Previous"
-        className="absolute left-4 z-10 flex size-12 items-center justify-center rounded-full transition-colors md:left-8"
-        style={{
-          border: '1.5px solid rgba(255,255,255,0.6)',
-          background: 'rgba(0,0,0,0.45)',
-          backdropFilter: 'blur(4px)',
-        }}
-      >
-        <ChevronLeft size={22} color="#fff" />
-      </button>
+      <LightboxArrow
+        side="prev"
+        onClick={onPrev}
+        label="Previous"
+        className="left-4 transition-colors md:left-8"
+        style={ARROW_STYLE}
+      />
 
       {/* Stage */}
       <div className="flex w-full max-w-2xl flex-col items-center gap-4 px-4 md:mx-20 md:px-0">
@@ -139,8 +114,8 @@ const PortfolioLightbox = ({
           preview={current.preview}
           alt={current.alt}
           direction={direction}
-          onPrev={() => onSelect((index - 1 + count) % count)}
-          onNext={() => onSelect((index + 1) % count)}
+          onPrev={onPrev}
+          onNext={onNext}
         />
 
         {/* Caption + share — mock: service line (role fallback: the CMS has no
@@ -169,44 +144,17 @@ const PortfolioLightbox = ({
           </button>
         </div>
 
-        {/* Thumbnail strip */}
-        <div className="flex w-full justify-center gap-2 overflow-x-auto pb-1">
-          {images.map((item, i) => (
-            <button
-              key={i}
-              onClick={() => onSelect(i)}
-              aria-label={`Show image ${i + 1}`}
-              className="size-11 shrink-0 overflow-hidden rounded-lg transition-all"
-              style={{
-                opacity: i === index ? 1 : 0.38,
-                border:
-                  i === index ? '2px solid #ed21f1' : '2px solid transparent',
-                boxShadow: i === index ? '0 0 10px #ed21f155' : 'none',
-                transform: i === index ? 'scale(1.1)' : 'scale(1)',
-              }}
-            >
-              {/* On-demand overlay micro-thumbnail — raw <img>, see the stage note above. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={item.thumb} alt="" className="size-full object-cover" />
-            </button>
-          ))}
-        </div>
+        <LightboxThumbStrip thumbs={thumbs} index={index} onSelect={onSelect} />
       </div>
 
-      {/* Next */}
-      <button
-        onClick={() => onSelect((index + 1) % count)}
-        aria-label="Next"
-        className="absolute right-4 z-10 flex size-12 items-center justify-center rounded-full transition-colors md:right-8"
-        style={{
-          border: '1.5px solid rgba(255,255,255,0.6)',
-          background: 'rgba(0,0,0,0.45)',
-          backdropFilter: 'blur(4px)',
-        }}
-      >
-        <ChevronRight size={22} color="#fff" />
-      </button>
-    </div>
+      <LightboxArrow
+        side="next"
+        onClick={onNext}
+        label="Next"
+        className="right-4 transition-colors md:right-8"
+        style={ARROW_STYLE}
+      />
+    </LightboxOverlay>
   );
 };
 

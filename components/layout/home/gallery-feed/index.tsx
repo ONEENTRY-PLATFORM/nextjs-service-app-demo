@@ -7,8 +7,9 @@ import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesBy
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import masterNamesById from '@/app/gallery/masterNamesById';
 import SectionTitle from '@/components/shared/SectionTitle';
-import type { OneEntryImageFile } from '@/components/utils';
-import { getGalleryImageUrls, shuffleArray } from '@/components/utils';
+import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
+import type { OneEntryImageFile } from '@/components/utils/OneEntryImageFile';
+import { shuffleArray } from '@/components/utils/shuffleArray';
 
 import GalleryGrid from './components/GalleryGrid';
 

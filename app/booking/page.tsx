@@ -5,7 +5,7 @@ import { Suspense } from 'react';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import BookingWizard from '@/components/layout/booking-page';
 import BookingAnimations from '@/components/layout/booking-page/animations/BookingAnimations';
 import BookingHero from '@/components/layout/booking-page/BookingHero';
@@ -86,23 +86,9 @@ export default BookingPageLayout;
  * @returns {Promise<Metadata>} metadata
  */
 export async function generateMetadata(): Promise<Metadata> {
-  /** get page by Url */
-  const { page, isError } = await getPageByUrl('booking');
-
-  if (isError || !page) {
-    return { title: 'Book Online' };
-  }
-
-  /** extract data from page */
-  const { localizeInfos } = page;
-
-  return {
-    title: localizeInfos?.title,
-    description: localizeInfos?.title,
-    alternates: { canonical: '/booking' },
-    openGraph: {
-      ...(await pageOpenGraph('/booking')),
-      type: 'article',
-    },
-  };
+  return cmsPageMetadata({
+    pageUrl: 'booking',
+    path: '/booking',
+    fallbackTitle: 'Book Online',
+  });
 }

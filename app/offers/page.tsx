@@ -8,10 +8,9 @@ import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getProductsByPageUrl } from '@/app/api/server/products/getProductsByPageUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { isOfferProduct } from '@/app/utils/isOfferProduct';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
-import { offerTermsData } from '@/components/data';
+import { offerTermsData } from '@/components/data/offerTermsData';
 import OfferDetailCard from '@/components/layout/offers-page/OfferDetailCard';
 
 /**
@@ -146,22 +145,8 @@ export default OffersPageLayout;
  * @see {@link https://nextjs.org/docs/app/api-reference/file-conventions/page Next.js docs}
  */
 export async function generateMetadata(): Promise<Metadata> {
-  /** get page by Url */
-  const { page, isError } = await getPageByUrl('offers');
-  if (isError || !page) {
-    return {};
-  }
-
-  /** extract data from page */
-  const { localizeInfos } = page;
-
-  return {
-    title: localizeInfos?.title,
-    description: getPagePlainContent(page) || localizeInfos?.title,
-    alternates: { canonical: '/offers' },
-    openGraph: {
-      ...(await pageOpenGraph('/offers')),
-      type: 'article',
-    },
-  };
+  return cmsPageMetadata({
+    pageUrl: 'offers',
+    path: '/offers',
+  });
 }

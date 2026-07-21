@@ -1,9 +1,9 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
-import { offerAccentGradientsData } from '@/components/data';
+import { offerAccentGradientsData } from '@/components/data/offerAccentGradientsData';
 
 /**
- * Brand accent pairs from the static-html mock (`components/data.js`): each
+ * Brand accent pairs from the static-html mock (`components/data/offerAccentGradientsData.ts`): each
  * known accent color maps to its light→dark gradient. Unknown accents fall
  * back to a same-color gradient like the home page `OfferCard`.
  */

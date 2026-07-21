@@ -4,11 +4,10 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
-import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import MastersPageContent from '@/components/layout/masters-page';
 import type {
   MasterItem,
@@ -16,7 +15,8 @@ import type {
   SalonOption,
 } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
-import { fileBlurDataUrl, fileDisplayUrl } from '@/components/utils';
+import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
+import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it
@@ -205,23 +205,8 @@ export default MastersPageLayout;
  * @returns {Promise<JSX.Element>} metadata
  */
 export async function generateMetadata(): Promise<Metadata> {
-  /** get page by Url */
-  const { page, isError } = await getPageByUrl('masters');
-
-  if (isError || !page) {
-    return {};
-  }
-
-  /** extract data from page */
-  const { localizeInfos } = page;
-
-  return {
-    title: localizeInfos?.title,
-    description: localizeInfos?.title,
-    alternates: { canonical: '/masters' },
-    openGraph: {
-      ...(await pageOpenGraph('/masters')),
-      type: 'article',
-    },
-  };
+  return cmsPageMetadata({
+    pageUrl: 'masters',
+    path: '/masters',
+  });
 }

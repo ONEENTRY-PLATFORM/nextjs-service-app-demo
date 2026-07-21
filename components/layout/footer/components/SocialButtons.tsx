@@ -1,6 +1,6 @@
 import type { JSX } from 'react';
 
-import { socialData } from '@/components/data';
+import { socialData } from '@/components/data/socialData';
 import * as icons from '@/components/icons';
 
 /**

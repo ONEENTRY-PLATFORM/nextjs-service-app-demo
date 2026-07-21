@@ -2,8 +2,9 @@ import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
-import type { OneEntryImageFile } from '@/components/utils';
-import { getGalleryImageUrls, plainTextFromTextAttr } from '@/components/utils';
+import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
+import type { OneEntryImageFile } from '@/components/utils/OneEntryImageFile';
+import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
 
 import CtaBannerOverlay from './components/CtaBannerOverlay';
 

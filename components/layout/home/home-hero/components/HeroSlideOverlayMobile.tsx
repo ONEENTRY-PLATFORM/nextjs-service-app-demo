@@ -4,15 +4,7 @@ import type { JSX } from 'react';
 import SaleText from './SaleText';
 
 /**
- * HeroSlideOverlayMobile — the mobile (`md:hidden`) text overlay of a hero
- * slide, ported from the Figma mobile frame (390×535): a left-aligned column
- * anchored to the top with a solid `-15 %` badge, then the title, subtitle and
- * the "Discover More" CTA. Desktop keeps the centered overlay and the separate
- * bottom-right button in {@link HeroSlider}, so this renders only under `md`.
- *
- * The badge circle is 194px but only reserves the Figma's 136px in flow (the
- * negative bottom margin), so it bleeds down into the 100px gap exactly as in
- * the mock; empty CMS fields are simply not rendered.
+ * HeroSlideOverlayMobile — the mobile (`md:hidden`) text overlay of a hero slide.
  * @param   {object}      props            - Component properties
  * @param   {string}      props.sale       - Badge text (e.g. "-15%"), empty to hide
  * @param   {string}      props.title      - Slide title, empty to hide

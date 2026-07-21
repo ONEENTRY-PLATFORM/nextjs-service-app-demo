@@ -8,7 +8,7 @@ import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 import type { OpeningHoursRow } from '@/app/utils/parseOpeningTime';
 import parseOpeningTime from '@/app/utils/parseOpeningTime';
 import summarizeOpeningHours from '@/app/utils/summarizeOpeningHours';
-import { flatMenuToNested } from '@/components/utils';
+import { flatMenuToNested } from '@/components/utils/flatMenuToNested';
 
 import Copyrights from './Copyrights';
 import FollowUs from './FollowUs';

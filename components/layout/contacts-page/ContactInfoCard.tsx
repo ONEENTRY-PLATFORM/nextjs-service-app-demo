@@ -10,7 +10,8 @@ import {
 } from 'lucide-react';
 import type { JSX } from 'react';
 
-import { contactInfoData, socialData } from '@/components/data';
+import { contactInfoData } from '@/components/data/contactInfoData';
+import { socialData } from '@/components/data/socialData';
 
 /** Lucide icon per the `icon` key of `contactInfoData` */
 const INFO_ICONS = {
@@ -31,7 +32,7 @@ const SOCIAL_ICONS = {
  * ContactInfoCard component — the "Reach out" info sidebar of the contacts
  * page as in the static-html mock (`ContactsPage.tsx` → ContactInfo): tinted
  * contact rows (phone, e-mail, head office, hours) and the "Follow us"
- * social card. Data comes from `components/data.js` until it moves to the
+ * social card. Data comes from `components/data/` until it moves to the
  * CMS.
  * @returns {JSX.Element} Info sidebar with contact rows and social links
  */

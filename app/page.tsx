@@ -13,7 +13,7 @@ import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
-import { sortArrayByPosition } from '@/components/utils';
+import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it

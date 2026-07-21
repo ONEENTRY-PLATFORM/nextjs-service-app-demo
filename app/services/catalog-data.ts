@@ -11,7 +11,7 @@ import type {
   ServicesCategory,
   ServicesSalon,
 } from '@/components/layout/services-page/types';
-import { plainTextFromTextAttr } from '@/components/utils';
+import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
 
 /** Page size of a single catalog products request. */
 const PAGE_LIMIT = 100;

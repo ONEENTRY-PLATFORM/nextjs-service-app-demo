@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
 import { useGetFormByMarkerQuery } from '@/app/api/api/RTKApi';
-import { getFormAttributes } from '@/components/utils';
+import { getFormAttributes } from '@/components/utils/getFormAttributes';
 
 import ErrorMessage from '../../forms/inputs/ErrorMessage';
 import FormReCaptcha from '../../forms/inputs/FormReCaptcha';

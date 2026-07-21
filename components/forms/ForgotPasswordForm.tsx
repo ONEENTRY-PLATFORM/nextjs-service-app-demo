@@ -11,7 +11,8 @@ import { useAppSelector } from '@/app/store/hooks';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
-import { getFormAttributes, sortArrayByPosition } from '@/components/utils';
+import { getFormAttributes } from '@/components/utils/getFormAttributes';
+import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
 
 import SpinnerLoader from '../shared/SpinnerLoader';
 import ErrorMessage from './inputs/ErrorMessage';

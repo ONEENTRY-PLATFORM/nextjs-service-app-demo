@@ -1,20 +1,18 @@
 import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
 
-import type { OneEntryImageFile } from '@/components/utils';
-import {
-  fileBlurDataUrl,
-  fileDisplayUrl,
-  flatMenuToNested,
-  formatUaePhone,
-  getFormAttributes,
-  getGalleryImageUrls,
-  plainTextFromTextAttr,
-  shuffleArray,
-  sortArrayByPosition,
-  sortObjectFieldsByPosition,
-  UseDate,
-  UsePrice,
-} from '@/components/utils';
+import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
+import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
+import { flatMenuToNested } from '@/components/utils/flatMenuToNested';
+import { formatUaePhone } from '@/components/utils/formatUaePhone';
+import { getFormAttributes } from '@/components/utils/getFormAttributes';
+import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
+import type { OneEntryImageFile } from '@/components/utils/OneEntryImageFile';
+import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
+import { shuffleArray } from '@/components/utils/shuffleArray';
+import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
+import { sortObjectFieldsByPosition } from '@/components/utils/sortObjectFieldsByPosition';
+import { UseDate } from '@/components/utils/UseDate';
+import { UsePrice } from '@/components/utils/UsePrice';
 
 describe('UsePrice', () => {
   it('formats a number as USD', () => {

@@ -9,11 +9,6 @@ import HeroSlider from './components/HeroSlider';
 
 /**
  * HomeHero section component.
- *
- * Full-bleed banner carousel from the `home_hero` slider block, as in the
- * static-html mock: the banner artwork carries its own text, so each slide
- * renders only images — `image_id1` on desktop and `image_id2` on mobile.
- * Slides and the auto-advance interval come from the block's slides endpoint.
  * @param   {object}               props       - The props for the HomeHero component.
  * @param   {IBlockEntity}         props.block - The slider block entity (`home_hero`).
  * @returns {Promise<JSX.Element>}             JSX.Element representing the HomeHero section.

@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 import NavigationMenu from '@/components/layout/header/main-menu';
-import { flatMenuToNested } from '@/components/utils';
+import { flatMenuToNested } from '@/components/utils/flatMenuToNested';
 
 import Logo from './Logo';
 import BookOnlineLink from './nav/BookOnlineLink';

@@ -6,7 +6,8 @@ import { getMastersList } from '@/app/api/utils/getMastersList';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
 import SectionTitle from '@/components/shared/SectionTitle';
-import { fileBlurDataUrl, fileDisplayUrl } from '@/components/utils';
+import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
+import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 
 import SpecialistsGrid from './components/SpecialistsGrid';
 

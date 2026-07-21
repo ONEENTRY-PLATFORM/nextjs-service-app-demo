@@ -1,15 +1,19 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { JSX } from 'react';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
+import LightboxArrow from '@/components/shared/lightbox/LightboxArrow';
+import LightboxCloseButton from '@/components/shared/lightbox/LightboxCloseButton';
+import LightboxCounter from '@/components/shared/lightbox/LightboxCounter';
+import LightboxOverlay from '@/components/shared/lightbox/LightboxOverlay';
+import { useLightboxNav } from '@/components/shared/lightbox/useLightboxNav';
 import LightboxStage from '@/components/shared/LightboxStage';
-import { useDialogA11y } from '@/components/shared/useDialogA11y';
-import { useNeighborPreload } from '@/components/shared/useNeighborPreload';
-import { useSlideDirection } from '@/components/shared/useSlideDirection';
 
 import type { SalonPhoto } from '../types';
+
+/** Ring styling of the paging arrows — thinner than the gallery viewer's. */
+const ARROW_STYLE = { border: '1.5px solid rgba(255,255,255,0.18)' };
 
 /**
  * SalonLightbox — full-screen photo viewer for the salon gallery, ported from
@@ -38,69 +42,42 @@ const SalonLightbox = ({
   onSelect: (i: number) => void;
 }): JSX.Element => {
   const total = photos.length;
-  const prev = () => onSelect((index - 1 + total) % total);
-  const next = () => onSelect((index + 1) % total);
+  const onPrev = () => onSelect((index - 1 + total) % total);
+  const onNext = () => onSelect((index + 1) % total);
 
-  /** Which way the viewer is paging — drives the stage slide transition. */
-  const direction = useSlideDirection(index, total);
-
-  /** Warm the neighbouring originals so stepping through feels instant. */
   const urls = useMemo(() => photos.map((photo) => photo.url), [photos]);
-  useNeighborPreload(urls, index);
-
-  /** Arrow-key navigation (Escape / focus-trap / scroll-lock handled by useDialogA11y). */
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') onSelect((index - 1 + total) % total);
-      if (e.key === 'ArrowRight') onSelect((index + 1) % total);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [index, total, onSelect]);
-
-  /** Dialog a11y: focus trap, focus restore, scroll lock and Escape-to-close. */
-  const dialogRef = useDialogA11y({ isOpen: true, onClose });
+  const { direction, dialogRef } = useLightboxNav({
+    urls,
+    index,
+    onPrev,
+    onNext,
+    onClose,
+  });
 
   const photo = photos[index];
 
   return (
-    <div
-      ref={dialogRef}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Salon photo viewer"
-      /* z-300 like the gallery and portfolio viewers: the fixed header sits at
-         z-245, so a lower level lets it cover the close button and counter. */
-      className="fixed inset-0 z-300 flex items-center justify-center p-4"
+    <LightboxOverlay
+      dialogRef={dialogRef}
+      label="Salon photo viewer"
+      className="p-4"
       style={{ background: 'rgba(6,0,14,0.94)', backdropFilter: 'blur(16px)' }}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
+      onClose={onClose}
     >
-      <button
-        onClick={onClose}
-        aria-label="Close"
-        className="absolute top-5 right-5 flex size-10 items-center justify-center rounded-full transition-colors hover:bg-white/10"
-        style={{ border: '1.5px solid rgba(255,255,255,0.25)' }}
-      >
-        <X size={18} color="#fff" />
-      </button>
-      <div
-        className="absolute top-5 left-5 rounded-full px-3 py-1.5 text-xs font-medium"
-        style={{
-          background: 'rgba(255,255,255,0.08)',
-          color: 'rgba(255,255,255,0.7)',
-        }}
-      >
-        {index + 1} / {total}
-      </div>
+      <LightboxCloseButton onClose={onClose} size={18} />
+      <LightboxCounter
+        index={index}
+        total={total}
+        tone="rgba(255,255,255,0.7)"
+      />
 
-      <button
-        onClick={prev}
-        aria-label="Previous"
-        className="absolute left-6 flex size-12 items-center justify-center rounded-full transition-colors hover:bg-white/10"
-        style={{ border: '1.5px solid rgba(255,255,255,0.18)' }}
-      >
-        <ChevronLeft size={22} color="#fff" />
-      </button>
+      <LightboxArrow
+        side="prev"
+        onClick={onPrev}
+        label="Previous"
+        className="left-6 transition-colors hover:bg-white/10"
+        style={ARROW_STYLE}
+      />
 
       {photo && (
         <div className="w-full max-w-xl px-4 md:mx-20 md:px-0">
@@ -108,22 +85,21 @@ const SalonLightbox = ({
             src={photo.url}
             preview={photo.preview}
             direction={direction}
-            onPrev={prev}
-            onNext={next}
+            onPrev={onPrev}
+            onNext={onNext}
             glow={`0 0 80px ${color}33, 0 32px 64px rgba(0,0,0,0.7)`}
           />
         </div>
       )}
 
-      <button
-        onClick={next}
-        aria-label="Next"
-        className="absolute right-6 flex size-12 items-center justify-center rounded-full transition-colors hover:bg-white/10"
-        style={{ border: '1.5px solid rgba(255,255,255,0.18)' }}
-      >
-        <ChevronRight size={22} color="#fff" />
-      </button>
-    </div>
+      <LightboxArrow
+        side="next"
+        onClick={onNext}
+        label="Next"
+        className="right-6 transition-colors hover:bg-white/10"
+        style={ARROW_STYLE}
+      />
+    </LightboxOverlay>
   );
 };
 

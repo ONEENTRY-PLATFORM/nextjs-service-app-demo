@@ -22,7 +22,8 @@ import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isLoginCredential } from '@/components/forms/fieldFlags/isLoginCredential';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
-import { getFormAttributes, sortArrayByPosition } from '@/components/utils';
+import { getFormAttributes } from '@/components/utils/getFormAttributes';
+import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
 
 import AuthDivider from './inputs/AuthDivider';
 import ErrorMessage from './inputs/ErrorMessage';

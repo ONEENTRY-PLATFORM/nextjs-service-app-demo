@@ -11,8 +11,8 @@ import type {
   GalleryMainCategory,
 } from '@/components/layout/gallery-page/taxonomy';
 import { DISC_ROLE } from '@/components/layout/gallery-page/taxonomy';
-import type { OneEntryImageFile } from '@/components/utils';
-import { getGalleryImageUrls } from '@/components/utils';
+import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
+import type { OneEntryImageFile } from '@/components/utils/OneEntryImageFile';
 
 /**
  * Gallery category `pageUrl` (`gallery-hair`) → main-category filter value.

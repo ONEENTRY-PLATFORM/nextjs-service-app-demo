@@ -1,6 +1,6 @@
 import type { JSX } from 'react';
 
-import { copyrightsData } from '@/components/data';
+import { copyrightsData } from '@/components/data/copyrightsData';
 
 /**
  * Copyrights component

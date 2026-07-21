@@ -1,4 +1,4 @@
-import { anySpecialistPhotosData } from '@/components/data';
+import { anySpecialistPhotosData } from '@/components/data/anySpecialistPhotosData';
 
 import type { BookingFlow, BookingSalon, StepKey } from './types';
 

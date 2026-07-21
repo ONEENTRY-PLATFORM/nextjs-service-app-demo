@@ -1,29 +1,10 @@
 'use client';
 
-import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces';
-import { useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { usePaymentAccounts } from '@/app/api/hooks/usePaymentAccounts';
-import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
-import { useAppSelector } from '@/app/store/hooks';
-import { PAYMENT_ACCOUNT_CASH } from '@/app/store/orderMarkers';
-import { AuthContext } from '@/app/store/providers/AuthContext';
-import {
-  selectActiveItemId,
-  selectCartData,
-} from '@/app/store/reducers/CartSlice';
-import { useHydrated } from '@/app/store/useHydrated';
-
-import {
-  ANY_MASTER,
-  CATEGORY_ORDER,
-  FALLBACK_CLOSE_MINUTES,
-  FLOWS,
-} from './constants';
-import dayCloseMinutes from './dayCloseMinutes';
-import daySlots from './daySlots';
+import bookingStepKeys from './bookingStepKeys';
+import { ANY_MASTER } from './constants';
 import slotFits from './slotFits';
-import totalServiceMinutes from './totalServiceMinutes';
 import type {
   BookingData,
   BookingFlow,
@@ -32,11 +13,24 @@ import type {
   BookingService,
   StepKey,
 } from './types';
+import type { BookingFiltersState } from './useBookingFilters';
+import { useBookingFilters } from './useBookingFilters';
+import type { BookingPaymentState } from './useBookingPayment';
+import { useBookingPayment } from './useBookingPayment';
+import { useBookingPreselect } from './useBookingPreselect';
+import type { BookingScheduleState } from './useBookingSchedule';
+import { useBookingSchedule } from './useBookingSchedule';
 import { useBookingSubmit } from './useBookingSubmit';
 import { useReschedulePrefill } from './useReschedulePrefill';
 
-/** Everything render needs from the controller hook. */
-export interface BookingWizardState {
+/**
+ * Everything render needs from the controller hook: the wizard's own state and
+ * handlers, plus the narrowed rosters ({@link BookingFiltersState}), the day's
+ * slots ({@link BookingScheduleState}) and the payment choice
+ * ({@link BookingPaymentState}) the wizard composes.
+ */
+export interface BookingWizardState
+  extends BookingFiltersState, BookingScheduleState, BookingPaymentState {
   /** Chosen flow, `null` on the entry screen */
   flow: BookingFlow | null;
   /** Dynamic step order for the chosen flow */
@@ -49,18 +43,10 @@ export interface BookingWizardState {
   mobileSummary: boolean;
   /** Toggle the mobile summary screen */
   setMobileSummary: (v: boolean) => void;
-  /** Category pill labels (with "All") */
-  categories: string[];
   /** Active category pill */
   categoryFilter: string;
   /** All salons */
   salons: BookingSalon[];
-  /** Salons narrowed to the chosen specialist */
-  filteredSalons: BookingSalon[];
-  /** Services narrowed by the specialist-first flow */
-  filteredServices: BookingService[];
-  /** Specialists narrowed by salon / service / category */
-  filteredMasters: BookingMaster[];
   /** Chosen salon id */
   salon: string;
   /** Chosen service ids (multi-select, in the order they were picked) */
@@ -71,17 +57,9 @@ export interface BookingWizardState {
   date: string;
   /** Chosen time slot */
   time: string;
-  /** Booking slots (`HH:MM`) for the chosen day, from the schedule; `[]` if none */
-  slots: string[];
-  /** Whether a CMS schedule drives the slots (else the step falls back to the static grid) */
-  hasSchedule: boolean;
-  /** Total length of the chosen services in minutes (`0` when none are chosen) */
-  durationMinutes: number;
-  /** Closing time of the chosen day, minutes since midnight; `null` when unknown */
-  closeMinutes: number | null;
   /** Resolved chosen salon */
   salonObj: BookingSalon | undefined;
-  /** Resolved chosen services (order matches {@link selectedServiceIds}) */
+  /** Resolved chosen services */
   serviceObjs: BookingService[];
   /** Resolved chosen specialist (`undefined` for "Any specialist") */
   masterObj: BookingMaster | undefined;
@@ -99,12 +77,6 @@ export interface BookingWizardState {
   isLoading: boolean;
   /** The order error message (`''` when none) */
   error: string;
-  /** Payment accounts the salon offers for these orders (see `usePaymentAccounts`) */
-  paymentAccounts: IAccountsEntity[];
-  /** Identifier of the payment account the order will use */
-  paymentAccount: string;
-  /** Choose a payment account */
-  selectPaymentAccount: (identifier: string) => void;
   /** Start a flow from the entry screen */
   startFlow: (f: BookingFlow) => void;
   /** Choose a salon */
@@ -136,10 +108,13 @@ export interface BookingWizardState {
 }
 
 /**
- * useBookingWizard — the controller of all wizard state,
- * the cross-filters between studio / service / specialist, the dynamic step
- * order, cart preselection (React's "adjust state on prop change" pattern) and
- * every handler. Kept as a hook so the component stays a thin render.
+ * useBookingWizard — the controller of all wizard state, the dynamic step order
+ * and every handler. The pieces that derive from that state live in their own
+ * hooks — {@link useBookingFilters} (cross-filters between studio / service /
+ * specialist), {@link useBookingSchedule} (the day's slots and their limits),
+ * {@link useBookingPayment} (payment account) and {@link useBookingPreselect}
+ * (cart / reschedule preselection) — and are composed back into one state
+ * object, so the component stays a thin render.
  * @param   {BookingData}        data - Salons, services and specialists from the CMS
  * @returns {BookingWizardState}      Wizard state and handlers
  */
@@ -159,29 +134,10 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   const [serviceLocked, setServiceLocked] = useState(false);
   /** Jump to the Date & Time step once the step list settles (repeat flow) */
   const [pendingDateTime, setPendingDateTime] = useState(false);
+  /** The user's own interaction wins over a late cart rehydration */
+  const [touched, setTouched] = useState(false);
 
-  /**
-   * Payment accounts the salon actually offers for these orders, and the
-   * client's pick. A single-account salon never sees a picker at all — the
-   * choice only appears because more than one account is linked.
-   *
-   * The default is the OFFLINE account (pay at the salon), not simply the first
-   * one the API returns: the design books an appointment without asking about
-   * payment at all, so paying on site is the expected path, and `getAccounts`
-   * happens to list the online provider first — defaulting to it would send
-   * every client who ignores the picker to a payment gateway.
-   */
-  const { isAuth: authed } = useContext(AuthContext);
-  const { accounts: paymentAccounts } = usePaymentAccounts({ isAuth: authed });
-  const [paymentAccount, setPaymentAccount] = useState('');
-  const offlineAccount = paymentAccounts.find(
-    (account) => !isOnlinePayment(account.identifier),
-  );
-  const activePaymentAccount =
-    paymentAccount ||
-    offlineAccount?.identifier ||
-    paymentAccounts[0]?.identifier ||
-    PAYMENT_ACCOUNT_CASH;
+  const payment = useBookingPayment();
 
   /**
    * `?reschedule={orderId}` — the wizard is moving an existing appointment, so
@@ -191,96 +147,27 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
 
   const { submit, booked, closeSuccess, isAuth, isLoading, error } =
     useBookingSubmit({
-      paymentAccount: activePaymentAccount,
+      paymentAccount: payment.paymentAccount,
       rescheduleOrderId: reschedule.orderId,
     });
 
-  /** ── Preselection from the reschedule query / the booking cart ───────── */
-  const activeId = useAppSelector(selectActiveItemId);
-  const cartItems = useAppSelector(selectCartData);
-  const cartItem = cartItems.find((item) => item.id === activeId);
-  /**
-   * A reschedule wins over the cart: it names the appointment being moved, and
-   * unlike the cart it can carry every service of a bundled visit.
-   */
-  const cartMasterId = reschedule.masterId ?? cartItem?.masterId;
-  const cartSalonId = reschedule.salonId ?? cartItem?.salonId;
-  const preProductIds =
-    reschedule.productIds.length > 0
-      ? reschedule.productIds
-      : cartItem?.productId
-        ? [cartItem.productId]
-        : [];
-  /** The user's own interaction wins over a late cart rehydration */
-  const [touched, setTouched] = useState(false);
+  useBookingPreselect({
+    data,
+    reschedule,
+    touched,
+    setters: {
+      setFlow,
+      setMaster,
+      setServiceIds,
+      setSalon,
+      setCategoryFilter,
+      setStepIdx,
+      setServiceLocked,
+      setPendingDateTime,
+    },
+  });
 
-  /**
-   * The cart lives in `redux-persist` (localStorage), so the server cannot know
-   * it. Applying the preselection during the FIRST client render would make the
-   * hydrated tree differ from the server HTML — React throws "Hydration failed"
-   * and re-renders the whole page on the client. `useSyncExternalStore` returns
-   * the server snapshot (`false`) for SSR *and* the hydration render, then the
-   * client snapshot (`true`) right after: the first render matches the server,
-   * and the jump to the preselected step lands in the very next commit.
-   */
-  const hydrated = useHydrated();
-
-  /**
-   * Preselection is applied while rendering (React's "adjust state on prop
-   * change" pattern, no effect): once per distinct cart content and never
-   * over a flow the user has already started themselves.
-   */
-  const cartKey = hydrated
-    ? `${cartMasterId ?? ''}:${preProductIds.join(',')}:${cartSalonId ?? ''}`
-    : '';
-  const [appliedCartKey, setAppliedCartKey] = useState('');
-  if (cartKey !== appliedCartKey) {
-    setAppliedCartKey(cartKey);
-    const preMaster = cartMasterId
-      ? masters.find((m) => m.adminId === cartMasterId)
-      : undefined;
-    /** Every preselected service — a rescheduled visit may bundle several */
-    const preServices = preProductIds
-      .map((pid) => services.find((s) => s.productId === pid))
-      .filter((s): s is BookingService => Boolean(s));
-    const preService = preServices[0];
-    const preSalon = cartSalonId
-      ? salons.find((s) => s.id === String(cartSalonId))
-      : undefined;
-    /** Single shared category → that pill, a mixed bundle → All */
-    const preCategories = [...new Set(preServices.map((s) => s.category))];
-    const preCategory =
-      preCategories.length === 1 ? (preCategories[0] ?? 'All') : 'All';
-
-    if (touched) {
-      /** Skip — the user is already in a flow of their own */
-    } else if (preMaster && preService) {
-      /** Repeat/reschedule: everything known → jump to Date & Time */
-      setFlow('specialist-first');
-      setMaster(preMaster.id);
-      setServiceIds(preServices.map((s) => s.id));
-      setSalon(preSalon?.id ?? preMaster.salonIds[0] ?? '');
-      setCategoryFilter(preCategory);
-      setPendingDateTime(true);
-    } else if (preMaster) {
-      /** From a specialist profile → specialist-first, land on the next step */
-      setFlow('specialist-first');
-      setMaster(preMaster.id);
-      setSalon(
-        preMaster.salonIds.length === 1 ? (preMaster.salonIds[0] ?? '') : '',
-      );
-      setStepIdx(1);
-    } else if (preService) {
-      /** From Services & Prices / an offer → salon-first, service locked */
-      setFlow('salon-first');
-      setServiceIds(preServices.map((s) => s.id));
-      setServiceLocked(true);
-      setCategoryFilter(preCategory);
-      setStepIdx(0);
-    }
-  }
-
-  /** ── Derived entities & cross-filters (mock `BookingPage` logic) ─────── */
+  /** ── Derived entities ────────────────────────────────────────────────── */
   const salonObj = useMemo(
     () => salons.find((s) => s.id === salon),
     [salons, salon],
@@ -299,39 +186,20 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     [masters, master],
   );
 
-  /**
-   * Slot source for the Date & Time step: the chosen specialist's
-   * `master_schedule`, or — for "Any specialist" / before one is picked — the
-   * chosen salon's `salon_time`. `hasSchedule` distinguishes "no schedule in the
-   * CMS" (fall back to the static grid) from "open that day has no slots" (show
-   * none), which an empty `slots` alone cannot.
-   */
-  const daySchedule = masterObj?.schedule ?? salonObj?.schedule;
-  const hasSchedule = Boolean(daySchedule);
-  const slots = useMemo(
-    () => (date && daySchedule ? daySlots(daySchedule, date) : []),
-    [date, daySchedule],
-  );
-
-  /**
-   * How long the visit runs and when the studio shuts — together they cut the
-   * tail off the time grid: a 90-minute visit cannot start an hour before
-   * closing. Without a CMS schedule the static grid stands in, so its own
-   * closing time does too.
-   */
-  const durationMinutes = useMemo(
-    () => totalServiceMinutes(serviceObjs),
-    [serviceObjs],
-  );
-  const closeMinutes = useMemo(
-    () =>
-      hasSchedule
-        ? date
-          ? dayCloseMinutes(daySchedule, date)
-          : null
-        : FALLBACK_CLOSE_MINUTES,
-    [hasSchedule, daySchedule, date],
-  );
+  const filters = useBookingFilters({
+    data,
+    flow,
+    salon,
+    serviceIds,
+    master,
+    categoryFilter,
+  });
+  const schedule = useBookingSchedule({
+    masterObj,
+    salonObj,
+    serviceObjs,
+    date,
+  });
 
   /**
    * Drop a time that stopped fitting — the services can be changed after the
@@ -340,105 +208,17 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
    * "derive state during render" pattern), so the step never paints a selected
    * slot that its own grid shows as disabled.
    */
-  if (time && !slotFits(time, durationMinutes, closeMinutes)) {
+  if (
+    time &&
+    !slotFits(time, schedule.durationMinutes, schedule.closeMinutes)
+  ) {
     setTime('');
   }
 
-  /** Category pills: All + the categories the services actually cover */
-  const categories = useMemo(() => {
-    const present = new Set(services.map((s) => s.category));
-    return [
-      'All',
-      ...CATEGORY_ORDER.filter((c) => present.has(c)),
-      ...[...present].filter((c) => !CATEGORY_ORDER.includes(c)),
-    ];
-  }, [services]);
-
-  /**
-   * Salon → narrows specialists; service → narrows specialists; category tab
-   * → narrows specialists. In the specialist-first flow the salon is chosen
-   * BY the specialist, so the roster is not pre-filtered by salon. Empty CMS
-   * link arrays mean "no restriction".
-   */
-  const filteredMasters = useMemo(() => {
-    return masters.filter((m) => {
-      if (
-        flow === 'salon-first' &&
-        salon &&
-        m.salonIds.length > 0 &&
-        !m.salonIds.includes(salon)
-      ) {
-        return false;
-      }
-      /** Keep specialists who perform AT LEAST ONE of the picked services */
-      if (
-        serviceIds.length > 0 &&
-        m.serviceIds.length > 0 &&
-        !serviceIds.some((sid) => m.serviceIds.includes(sid))
-      ) {
-        return false;
-      }
-      if (categoryFilter !== 'All' && m.serviceIds.length > 0) {
-        const matchesCat = m.serviceIds.some((sid) => {
-          const sv = services.find((x) => x.id === sid);
-          return sv?.category === categoryFilter;
-        });
-        if (!matchesCat) return false;
-      }
-      return true;
-    });
-  }, [masters, flow, salon, serviceIds, categoryFilter, services]);
-
-  /** Salons narrowed to the chosen specialist's studios */
-  const filteredSalons = useMemo(() => {
-    if (!master || master === ANY_MASTER) return salons;
-    const m = masters.find((x) => x.id === master);
-    if (!m || m.salonIds.length === 0) return salons;
-    return salons.filter((s) => m.salonIds.includes(s.id));
-  }, [salons, master, masters]);
-
-  /**
-   * In the specialist-first flow the Service step only offers what the chosen
-   * specialist performs. For a concrete specialist the WHOLE of their roster is
-   * shown across categories — the step's own category pills browse within it,
-   * and a multi-pick may span categories, so it must not be pre-narrowed by
-   * `categoryFilter` (which the pick itself keeps re-syncing). "Any specialist"
-   * has no roster to define the set, so it stays locked to the category they
-   * were chosen through.
-   */
-  const filteredServices = useMemo(() => {
-    if (flow !== 'specialist-first' || !master) return services;
-    if (master === ANY_MASTER) {
-      return categoryFilter === 'All'
-        ? services
-        : services.filter((s) => s.category === categoryFilter);
-    }
-    const m = masters.find((x) => x.id === master);
-    if (!m || m.serviceIds.length === 0) return services;
-    return services.filter((s) => m.serviceIds.includes(s.id));
-  }, [flow, master, masters, services, categoryFilter]);
-
-  /**
-   * Step order is dynamic: specialist-first adds a Salon step only when the
-   * chosen specialist works at multiple studios (or "Any specialist" was
-   * picked — the studio is then the client's choice).
-   */
-  const stepKeys = useMemo<StepKey[]>(() => {
-    if (!flow) return [];
-    if (flow === 'salon-first') {
-      return serviceLocked
-        ? ['salon', 'specialist', 'datetime']
-        : FLOWS['salon-first'];
-    }
-    const m = masters.find((x) => x.id === master);
-    const salonCount =
-      master === ANY_MASTER
-        ? salons.length
-        : (m?.salonIds.length ?? 0) || salons.length;
-    return salonCount > 1
-      ? ['specialist', 'salon', 'service', 'datetime']
-      : ['specialist', 'service', 'datetime'];
-  }, [flow, serviceLocked, master, masters, salons]);
+  const stepKeys = useMemo<StepKey[]>(
+    () => bookingStepKeys({ flow, serviceLocked, master, masters, salons }),
+    [flow, serviceLocked, master, masters, salons],
+  );
   const currentStepKey = stepKeys[stepIdx];
 
   /** Once the step list reflects the preselected master, jump to Date & Time */
@@ -630,27 +410,22 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   };
 
   return {
+    ...filters,
+    ...schedule,
+    ...payment,
     flow,
     stepKeys,
     stepIdx,
     currentStepKey,
     mobileSummary,
     setMobileSummary,
-    categories,
     categoryFilter,
     salons,
-    filteredSalons,
-    filteredServices,
-    filteredMasters,
     salon,
     selectedServiceIds: serviceIds,
     master,
     date,
     time,
-    slots,
-    hasSchedule,
-    durationMinutes,
-    closeMinutes,
     salonObj,
     serviceObjs,
     masterObj,
@@ -661,9 +436,6 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     isAuth,
     isLoading,
     error,
-    paymentAccounts,
-    paymentAccount: activePaymentAccount,
-    selectPaymentAccount: setPaymentAccount,
     startFlow,
     selectSalon,
     selectService,

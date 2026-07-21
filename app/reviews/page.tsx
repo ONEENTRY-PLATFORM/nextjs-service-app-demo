@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import type { JSX } from 'react';
 
-import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import ReviewsPageContent from '@/components/layout/reviews-page';
 
 /**
@@ -50,23 +49,8 @@ export default ReviewsPageLayout;
  * @see {@link https://nextjs.org/docs/app/api-reference/file-conventions/page Next.js docs}
  */
 export async function generateMetadata(): Promise<Metadata> {
-  /** get page by Url */
-  const { page, isError } = await getPageByUrl('reviews');
-
-  if (isError || !page) {
-    return {};
-  }
-
-  /** extract data from page */
-  const { localizeInfos } = page;
-
-  return {
-    title: localizeInfos?.title,
-    description: localizeInfos?.title,
-    alternates: { canonical: '/reviews' },
-    openGraph: {
-      ...(await pageOpenGraph('/reviews')),
-      type: 'article',
-    },
-  };
+  return cmsPageMetadata({
+    pageUrl: 'reviews',
+    path: '/reviews',
+  });
 }

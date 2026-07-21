@@ -9,7 +9,7 @@ import { useContext, useEffect, useRef } from 'react';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
-import { flatMenuToNested } from '@/components/utils';
+import { flatMenuToNested } from '@/components/utils/flatMenuToNested';
 
 import ModalBackdrop from '../modal/components/ModalBackdrop';
 import MobileMenuAnimations from './animations/MobileMenuAnimations';

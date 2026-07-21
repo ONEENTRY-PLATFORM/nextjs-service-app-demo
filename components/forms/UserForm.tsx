@@ -18,7 +18,8 @@ import type { FormProps } from '@/app/types/global';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isLoginCredential } from '@/components/forms/fieldFlags/isLoginCredential';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
-import { getFormAttributes, sortArrayByPosition } from '@/components/utils';
+import { getFormAttributes } from '@/components/utils/getFormAttributes';
+import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
 
 import AuthError from '../pages/AuthError';
 import SpinnerLoader from '../shared/SpinnerLoader';

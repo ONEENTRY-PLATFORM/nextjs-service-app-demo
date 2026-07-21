@@ -3,7 +3,7 @@
  *
  * The CMS salon pages hold only `salon_address` / `salon_phone`; the "About
  * this studio" copy, highlight bullets and accent color are kept here (English
- * fallbacks in code, mirroring `components/data.js`) until they move to the
+ * fallbacks in code, mirroring `components/data/`) until they move to the
  * CMS. Keyed by the salon `pageUrl` (`downtown` / `marina` / `jbr`).
  */
 

@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import type { JSX } from 'react';
 
-import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import GalleryPageContent from '@/components/layout/gallery-page';
 import GalleryUnavailable from '@/components/layout/gallery-page/components/GalleryUnavailable';
 import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
@@ -64,23 +63,8 @@ export default GalleryPageLayout;
  * @returns {Promise<Metadata>} - Metadata for the gallery page
  */
 export async function generateMetadata(): Promise<Metadata> {
-  /** get page by Url */
-  const { page, isError } = await getPageByUrl('gallery');
-
-  if (isError || !page) {
-    return {};
-  }
-
-  /** extract data from page */
-  const { localizeInfos } = page;
-
-  return {
-    title: localizeInfos?.title,
-    description: localizeInfos?.title,
-    alternates: { canonical: '/gallery' },
-    openGraph: {
-      ...(await pageOpenGraph('/gallery')),
-      type: 'article',
-    },
-  };
+  return cmsPageMetadata({
+    pageUrl: 'gallery',
+    path: '/gallery',
+  });
 }

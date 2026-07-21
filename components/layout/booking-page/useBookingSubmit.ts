@@ -80,8 +80,7 @@ const toInterval = (sel: BookingSelection): [Date, Date] => {
  * success modal, an online one creates a payment session and hands the client
  * over to the gateway.
  *
- * A RESCHEDULE (`rescheduleOrderId`, see {@link useReschedulePrefill}) takes a
- * fourth branch: the existing appointment is updated in place — no second order
+ * A RESCHEDULE (`rescheduleOrderId`, takes a fourth branch: the existing appointment is updated in place — no second order
  * is created and no payment is taken again, since the client already paid (or
  * agreed to pay) for this very visit.
  * @param   {object} props                   - Hook parameters

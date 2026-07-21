@@ -14,7 +14,8 @@ import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
-import { getFormAttributes, sortArrayByPosition } from '@/components/utils';
+import { getFormAttributes } from '@/components/utils/getFormAttributes';
+import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
 
 import ErrorMessage from './inputs/ErrorMessage';
 import FormInput from './inputs/FormInput';

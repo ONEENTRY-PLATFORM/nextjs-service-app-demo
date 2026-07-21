@@ -11,10 +11,10 @@ import { useAppSelector } from '@/app/store/hooks';
 /**
  * BookingAnimations animations.
  *
- * Fades the wizard body (`.mx-auto`) in and out across page transitions. The
- * hero header is intentionally left alone — {@link HeroAnimations} inside
- * `BookingHero` fully drives the kicker/title/subtitle, so the booking header
- * animates identically to the services and contacts heroes.
+ * Fades the wizard body in and out across page transitions. The hero header is
+ * intentionally left alone — `HeroAnimations` inside `BookingHero` fully drives
+ * the kicker/title/subtitle, so the booking header animates identically to the
+ * services and contacts heroes.
  * @param   {object}      props           - BookingAnimations props.
  * @param   {ReactNode}   props.children  - children ReactNode.
  * @param   {string}      props.className - card wrapper className.
@@ -43,8 +43,14 @@ const BookingAnimations = ({
     () => {
       /** Create timeline for stage transitions */
       const stageTl = gsap.timeline();
-      /** Fade the wizard body only — the hero is driven by HeroAnimations */
-      const container = ref.current?.querySelectorAll('.mx-auto') || '';
+      /**
+       * The wrapper element itself is the fade target — it holds nothing but
+       * the wizard. It used to be selected as `.mx-auto`, which matched a
+       * Tailwind utility rather than a hook: inside the wizard that class also
+       * sits on every calendar day button and on the success-modal icon, so the
+       * transition faded them too. The hero is driven by `HeroAnimations`.
+       */
+      const container = ref.current;
 
       /** Set initial state to hidden except for specific leaving transition */
       if (!(stage === 'leaving' && prevStage === 'none')) {

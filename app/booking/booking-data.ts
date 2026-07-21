@@ -10,12 +10,10 @@ import type {
   BookingSalon,
   BookingService,
 } from '@/components/layout/booking-page/types';
-import {
-  fileBlurDataUrl,
-  fileDisplayUrl,
-  formatUaePhone,
-  plainTextFromTextAttr,
-} from '@/components/utils';
+import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
+import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
+import { formatUaePhone } from '@/components/utils/formatUaePhone';
+import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
 
 /** Services child page `pageUrl` → display category of the wizard pills */
 const CATEGORY_BY_PAGEURL: Record<string, string> = {

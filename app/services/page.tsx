@@ -4,8 +4,7 @@ import type { JSX } from 'react';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import PromoBanner from '@/components/layout/services-page/PromoBanner';
 import ServicesCatalog from '@/components/layout/services-page/ServicesCatalog';
 import ServicesHero from '@/components/layout/services-page/ServicesHero';
@@ -84,22 +83,8 @@ export default ServicesPageLayout;
  * @see {@link https://nextjs.org/docs/app/api-reference/file-conventions/page Next.js docs}
  */
 export async function generateMetadata(): Promise<Metadata> {
-  /** get page by Url */
-  const { page, isError } = await getPageByUrl('services');
-  if (isError || !page) {
-    return {};
-  }
-
-  /** extract data from page */
-  const { localizeInfos } = page;
-
-  return {
-    title: localizeInfos?.title,
-    description: getPagePlainContent(page) || localizeInfos?.title,
-    alternates: { canonical: '/services' },
-    openGraph: {
-      ...(await pageOpenGraph('/services')),
-      type: 'article',
-    },
-  };
+  return cmsPageMetadata({
+    pageUrl: 'services',
+    path: '/services',
+  });
 }

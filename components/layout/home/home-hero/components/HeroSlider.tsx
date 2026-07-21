@@ -3,13 +3,13 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { JSX } from 'react';
+import type { CSSProperties, JSX } from 'react';
 import { useEffect, useState } from 'react';
 
 import { useHeroRef } from '@/app/animations/HeroAnimations';
 
+import HeroSlideOverlayDesktop from './HeroSlideOverlayDesktop';
 import HeroSlideOverlayMobile from './HeroSlideOverlayMobile';
-import SaleText from './SaleText';
 
 /**
  * A single hero slide: desktop/mobile banner images plus the optional CMS text
@@ -48,16 +48,9 @@ const HeroSlider = ({
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = slides.length;
-  /** Current slide — drives the single CTA button */
   const current = slides[idx];
-  /** Registers the slides layer as the hero `bg` for the parallax timeline */
   const bgRef = useHeroRef('bg');
 
-  /**
-   * Respect `prefers-reduced-motion`: users who ask for less motion get a
-   * static hero (no auto-advance). The arrows and dots still let them step
-   * through the slides manually (WCAG 2.2.2 / 2.3.3).
-   */
   const [reduceMotion, setReduceMotion] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -76,13 +69,10 @@ const HeroSlider = ({
     return () => clearInterval(timer);
   }, [paused, reduceMotion, count, intervalMs]);
 
-  // The aspect ratios keep the hero proportional as the viewport grows; the
-  // min-heights are the floor below which the artwork and overlay text get
-  // cramped (narrow phones, and desktops under ~1920px where 1920/600 would
-  // otherwise compute well under 600px).
   return (
     <section
-      className="relative aspect-390/535 min-h-133.75 w-full overflow-hidden bg-[linear-gradient(90deg,#49268b_3%,#ed21f1_90%)] select-none md:aspect-auto md:h-140 lg:aspect-1920/600 lg:h-auto lg:min-h-150"
+      className="relative aspect-390/535 min-h-133.75 w-full overflow-hidden bg-[linear-gradient(90deg,#c082ff_0%,#ed21f1_90%)] select-none md:aspect-auto md:h-140 lg:aspect-1920/600 lg:h-auto lg:min-h-150"
+      style={{ '--hero-u': 'clamp(15px, 1vw, 19.2px)' } as CSSProperties}
       aria-roledescription="carousel"
       aria-label="Promotions"
       onMouseEnter={() => setPaused(true)}
@@ -90,8 +80,6 @@ const HeroSlider = ({
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      {/* Slides — crossfade; each carries its optional CMS text overlay
-          (sale badge, title, subtitle) on the left. */}
       <div ref={bgRef} className="absolute inset-0">
         {slides.map((slide, i) => (
           <div
@@ -99,31 +87,12 @@ const HeroSlider = ({
             role="group"
             aria-roledescription="slide"
             aria-label={`${i + 1} of ${count}`}
-            // Hide off-screen slides from assistive tech: without this every
-            // slide's overlay text — including its <h1> — is exposed, so a
-            // multi-slide hero would announce several <h1>s at once.
             aria-hidden={i !== idx}
             className={
               'absolute inset-0 transition-opacity duration-700 ' +
               (i === idx ? 'opacity-100' : 'pointer-events-none opacity-0')
             }
           >
-            {/*
-              Only ONE variant of the first slide may be `priority`: two
-              priority images preload on every viewport and compete as LCP
-              candidates, even though CSS shows just one of them. The mobile
-              variant keeps the preload (mobile-first traffic); the desktop
-              variant still loads eagerly, just without its own preload link.
-            */}
-            {/*
-              `sizes` must mirror the CSS breakpoint that shows each variant.
-              With a flat `sizes="100vw"` both variants claim the full viewport,
-              so the browser downloads a viewport-wide JPEG for the one that is
-              `display:none` too — Next.js flags exactly this ("image is not
-              rendered at full viewport width"). Claiming `1px` outside its own
-              range makes the hidden variant resolve to the smallest srcset
-              candidate instead. `768px` is Tailwind's default `md`.
-            */}
             {slide.desktop && (
               <Image
                 fill
@@ -145,8 +114,7 @@ const HeroSlider = ({
               />
             )}
 
-            {/* Mobile overlay — top-anchored column per the Figma mobile frame
-                (solid badge, title, subtitle and the CTA together). */}
+            {/* Mobile overlay. */}
             <HeroSlideOverlayMobile
               sale={slide.sale}
               title={slide.title}
@@ -155,63 +123,25 @@ const HeroSlider = ({
               buttonLink={slide.buttonLink}
             />
 
-            {/* Desktop CMS text overlay — sale badge, title and subtitle from the
-                slide, vertically centered on the left. Empty fields are not
-                rendered; mobile and tablet use HeroSlideOverlayMobile (< lg). */}
-            {(slide.sale || slide.title || slide.text) && (
-              <div className="absolute inset-y-0 left-16 z-10 hidden max-w-[68%] flex-col items-start justify-center gap-3 pr-5 lg:left-[7%] lg:flex lg:gap-5">
-                {/* League Gothic goes on the sale badge and the title only — the
-                    subtitle below stays on the site's default Lato, as in the
-                    promo artwork. Hence the per-element `fontFamily` instead of
-                    one on this wrapper, which would inherit down to all three. */}
-                {slide.sale && (
-                  <div className="flex aspect-square w-35 items-center justify-center rounded-full border border-white/40 bg-fuchsia-500/35 backdrop-blur-md md:w-65">
-                    <span
-                      className="px-2 text-center text-[88px] text-nowrap text-white [text-box:trim-both_cap_alphabetic] md:text-[163px]"
-                      // `lineHeight` is inline rather than a `leading-*` class:
-                      // Tailwind emits no rule for a fractional ratio here, so
-                      // the class silently degrades to the inherited 1.5.
-                      style={{
-                        fontFamily: 'var(--font-league-gothic)',
-                        lineHeight: 0.915,
-                      }}
-                    >
-                      <SaleText text={slide.sale} />
-                    </span>
-                  </div>
-                )}
-                {slide.title && (
-                  <h1
-                    className="text-5xl leading-none text-white md:text-7xl lg:text-8xl"
-                    style={{ fontFamily: 'var(--font-league-gothic)' }}
-                  >
-                    {slide.title}
-                  </h1>
-                )}
-                {slide.text && (
-                  <p className="text-lg font-light tracking-wide text-white/85 md:text-2xl">
-                    {slide.text}
-                  </p>
-                )}
-              </div>
-            )}
+            {/* Desktop CMS text overlay. */}
+            <HeroSlideOverlayDesktop
+              sale={slide.sale}
+              title={slide.title}
+              text={slide.text}
+            />
           </div>
         ))}
       </div>
 
-      {/* Desktop CTA — a single "Discover More" button pinned bottom-right on the
-          site rail. Mobile and tablet place their CTA inside HeroSlideOverlayMobile. */}
+      {/* Desktop CTA. */}
       {current && (
-        <div className="pointer-events-none absolute inset-0 z-10 mx-auto hidden h-full max-w-7xl flex-col justify-end px-3 pt-6 pb-16 md:px-8 md:py-10 lg:flex">
-          <div className="flex items-end justify-end">
-            <Link
-              href={current.buttonLink || '/offers'}
-              className="pointer-events-auto inline-flex min-w-50 items-center justify-center rounded-xl bg-white px-7 py-3.5 text-base font-normal tracking-[0.2em] text-charcoal uppercase transition-colors hover:bg-gray-50"
-            >
-              {current.buttonText || 'Discover More'}
-            </Link>
-          </div>
-        </div>
+        <Link
+          href={current.buttonLink || '/offers'}
+          className="absolute right-[3.33em] bottom-[2.83em] z-10 hidden h-[2.5em] w-[12.5em] items-center justify-center rounded-[0.83em] bg-white/80 font-normal tracking-widest text-charcoal uppercase transition-colors hover:bg-white lg:inline-flex"
+          style={{ fontSize: 'calc(var(--hero-u) * 1.25)' }}
+        >
+          {current.buttonText || 'Discover More'}
+        </Link>
       )}
 
       {count > 1 && (

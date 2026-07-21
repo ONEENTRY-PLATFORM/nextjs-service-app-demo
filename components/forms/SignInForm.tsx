@@ -17,7 +17,7 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import FormFieldAnimations from '@/components/forms/animations/FormFieldAnimations';
-import { getFormAttributes } from '@/components/utils';
+import { getFormAttributes } from '@/components/utils/getFormAttributes';
 
 import AuthDivider from './inputs/AuthDivider';
 import CreateAccountButton from './inputs/CreateAccountButton';
