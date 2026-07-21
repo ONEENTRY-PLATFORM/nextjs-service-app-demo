@@ -21,29 +21,48 @@ const OffersAnimations = ({
 }): JSX.Element => {
   const ref = useRef(null);
 
-  /** Setup scroll-triggered animation */
+  /**
+   * Setup the scroll-triggered dimming.
+   *
+   * The fade only makes sense in the single-row (xl) layout, where the whole
+   * grid leaves the viewport as one block. On mobile/tablet the cards stack
+   * into a grid several screens tall, so `top +=50` fired while the user was
+   * still reading the first card and left the rest of the section stuck at
+   * half opacity. `gsap.matchMedia` keeps the tween off below `xl` (1240px,
+   * the project breakpoint) and reverts the inline styles when the viewport
+   * crosses back down.
+   */
   useGSAP(
     () => {
-      /** Create timeline with scroll trigger for offers section */
-      const tl = gsap.timeline({
-        paused: true,
-        scrollTrigger: {
-          trigger: ref.current,
-          toggleActions: 'restart reverse restart reverse',
-          start: 'top +=50',
-          end: 'center top',
-        },
+      const mm = gsap.matchMedia();
+
+      mm.add('(min-width: 1240px)', () => {
+        /** Create timeline with scroll trigger for offers section */
+        const tl = gsap.timeline({
+          paused: true,
+          scrollTrigger: {
+            trigger: ref.current,
+            toggleActions: 'restart reverse restart reverse',
+            start: 'top +=50',
+            end: 'center top',
+          },
+        });
+
+        /** Animate the opacity of the element when scrolled */
+        tl.to(ref?.current, {
+          autoAlpha: 0.5,
+          duration: 1,
+        });
+
+        /** Cleanup function to kill timeline when the media query stops matching */
+        return () => {
+          tl.kill();
+        };
       });
 
-      /** Animate the opacity of the element when scrolled */
-      tl.to(ref?.current, {
-        autoAlpha: 0.5,
-        duration: 1,
-      });
-
-      /** Cleanup function to kill timeline on unmount */
+      /** Cleanup function to revert every media-scoped tween on unmount */
       return () => {
-        tl.kill();
+        mm.revert();
       };
     },
     { dependencies: [], scope: ref },

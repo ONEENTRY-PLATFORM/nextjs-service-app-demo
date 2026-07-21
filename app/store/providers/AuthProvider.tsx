@@ -4,7 +4,12 @@ import type { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
 import type { JSX, ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { hasActiveSession, reDefine, syncTokens } from '@/app/api/api/api';
+import {
+  clearSession,
+  hasActiveSession,
+  reDefine,
+  syncTokens,
+} from '@/app/api/api/api';
 import { useLazyGetMeQuery } from '@/app/api/api/RTKApi';
 import {
   clearAuthSession,
@@ -12,6 +17,7 @@ import {
   readRefreshToken,
   saveAuthSession,
 } from '@/app/store/auth/authStorage';
+import { isRefreshTokenExpired } from '@/app/store/auth/isRefreshTokenExpired';
 import {
   isAuthFailure,
   useLogoutOnAuthFailure,
@@ -100,7 +106,15 @@ export const AuthProvider = ({
          */
         setIsAuth(false);
         if (isAuthFailure(res.error)) {
+          /**
+           * Drop the dead token from BOTH places. `clearAuthSession()` only
+           * clears `localStorage`; the live SDK instance (built by `reDefine()`
+           * during session restore) keeps the revoked refresh token in its
+           * state and proactively retries `POST /users/refresh` before every
+           * later user-scoped request, so each one costs an extra 400.
+           */
           clearAuthSession();
+          clearSession();
         }
       })
       .catch(async () => {
@@ -118,6 +132,16 @@ export const AuthProvider = ({
     const refresh = readRefreshToken();
 
     if (!refresh) {
+      setIsAuth(false);
+      return;
+    }
+    /**
+     * A token past the provider's TTL cannot be refreshed, and probing it costs
+     * a guaranteed 400 (`/users/refresh`) plus a 401 (`/users/me`) on every
+     * load. Drop it locally and start as a guest instead.
+     */
+    if (isRefreshTokenExpired(refresh)) {
+      clearAuthSession();
       setIsAuth(false);
       return;
     }
@@ -213,6 +237,8 @@ export const AuthProvider = ({
     onAuthFailure: () => {
       initRef.current = false;
       clearAuthSession();
+      /** Same reason as in `checkToken()` — the SDK instance holds it too. */
+      clearSession();
       setIsAuth(false);
     },
   });

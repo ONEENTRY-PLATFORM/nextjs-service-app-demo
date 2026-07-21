@@ -95,7 +95,9 @@ const CardAnimations = ({
 
       /**
        * Draw-in timeline driven by its own ScrollTrigger. The tile scales up from
-       * its centre, the circle + icon contour draw, the icons fill and the label
+       * its centre while the circle + icon contour draw at the same time (the
+       * stroke tween is pinned to `'<'`, so it no longer waits for the scale to
+       * finish), then the icons fill and the label
        * slides in. `toggleActions` replays it on every scroll: it draws in once a
        * third of the tile is visible (`start`) and reverses (undraws) only after
        * the tile has fully left the screen (`end`). Removing the old
@@ -120,11 +122,15 @@ const CardAnimations = ({
           { autoAlpha: 0, scale: 0, transformOrigin: 'center center' },
           { autoAlpha: 1, scale: 1, duration: 0.85, delay: index / 10 },
         )
-        .to([circle, ...paths], {
-          strokeDashoffset: 0,
-          duration: 1.25,
-          delay: index / 10,
-        })
+        .to(
+          [circle, ...paths],
+          {
+            strokeDashoffset: 0,
+            duration: 2.25,
+            delay: index / 5,
+          },
+          '<',
+        )
         .to(
           paths,
           { stroke: 'none', fill: '#525252', delay: -index / 10 },
