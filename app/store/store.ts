@@ -5,7 +5,7 @@ import type { PersistedState, Storage } from 'redux-persist';
 import { createMigrate, persistReducer } from 'redux-persist';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 
-import { RTKApi } from '../api';
+import { RTKApi } from '../api/api/RTKApi';
 import animationsSlice from './reducers/AnimationsSlice';
 import cartSlice from './reducers/CartSlice';
 import formFieldsSlice from './reducers/FormFieldsSlice';

@@ -3,7 +3,7 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import { cache } from 'react';
 
-import { getApi, isError } from '@/app/api';
+import { getApi, isError } from '@/app/api/api/api';
 import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 import getSearchParams from '@/app/api/utils/getSearchParams';
 

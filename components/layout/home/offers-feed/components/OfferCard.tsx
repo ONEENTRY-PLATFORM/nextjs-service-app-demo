@@ -6,7 +6,7 @@ import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces'
 import type { JSX } from 'react';
 
 import CardAnimations from '@/app/animations/CardAnimations';
-import { useGetPageByIdQuery } from '@/app/api';
+import { useGetPageByIdQuery } from '@/app/api/api/RTKApi';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
   addServiceToCart,

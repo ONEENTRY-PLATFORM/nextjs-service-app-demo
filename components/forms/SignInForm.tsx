@@ -7,12 +7,11 @@ import type { FormEvent, JSX } from 'react';
 import { useContext, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 
+import { getApi, isError } from '@/app/api/api/api';
 import {
-  getApi,
-  isError,
   useGetAuthProvidersQuery,
   useGetFormByMarkerQuery,
-} from '@/app/api';
+} from '@/app/api/api/RTKApi';
 import { useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';

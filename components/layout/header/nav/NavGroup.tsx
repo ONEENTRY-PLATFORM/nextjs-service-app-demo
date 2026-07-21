@@ -1,7 +1,7 @@
 import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 
-import { getMenuByMarker } from '@/app/api';
+import { getMenuByMarker } from '@/app/api/server/menus/getMenuByMarker';
 
 import BookOnlineLink from './BookOnlineLink';
 import MenuButton from './MenuButton';

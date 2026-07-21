@@ -89,10 +89,7 @@ const GalleryFilterBar = ({
     </div>
 
     {/* Main category chips — mobile: scrollable row; desktop: centered */}
-    <div
-      className="-mx-3 mb-3 flex gap-2 overflow-x-auto px-3 md:mx-0 md:flex-wrap md:items-center md:justify-center md:px-0 [&::-webkit-scrollbar]:hidden"
-      style={{ scrollbarWidth: 'none' }}
-    >
+    <div className="-mx-3 mb-3 flex gap-2 px-3 md:mx-0 md:flex-wrap md:items-center md:justify-center md:px-0">
       {GALLERY_MAIN_CATS.map((cat) => {
         const active = mainCat === cat.id;
         return (

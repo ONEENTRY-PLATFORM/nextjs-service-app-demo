@@ -1,4 +1,4 @@
-import { getChildPagesByParentUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
 

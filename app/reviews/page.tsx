@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import type { JSX } from 'react';
 
-import { getPageByUrl } from '@/app/api';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import ReviewsPageContent from '@/components/layout/reviews-page';
 
 /**

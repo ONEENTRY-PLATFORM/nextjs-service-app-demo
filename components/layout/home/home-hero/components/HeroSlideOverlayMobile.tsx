@@ -36,7 +36,7 @@ const HeroSlideOverlayMobile = ({
 }): JSX.Element => (
   <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-start gap-25 p-10 md:p-14 lg:hidden">
     {sale && (
-      <div className="flex aspect-square w-48.5 shrink-0 -mb-14.5 items-center justify-center rounded-full bg-logo-dot/60">
+      <div className="-mb-14.5 flex aspect-square w-48.5 shrink-0 items-center justify-center rounded-full bg-logo-dot/60">
         <span
           className="px-2 text-center text-[88px] text-nowrap text-white/80 [text-box:trim-both_cap_alphabetic]"
           style={{ fontFamily: 'var(--font-league-gothic)', lineHeight: 0.915 }}

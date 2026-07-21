@@ -2,7 +2,7 @@ import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
 import HeroAnimations from '@/app/animations/HeroAnimations';
-import { getBlockSlides } from '@/app/api';
+import { getBlockSlides } from '@/app/api/server/blocks/getBlockSlides';
 
 import type { HeroSlide } from './components/HeroSlider';
 import HeroSlider from './components/HeroSlider';

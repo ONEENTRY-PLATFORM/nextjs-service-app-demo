@@ -1,14 +1,15 @@
 import { ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
-import { getPageByUrl, getProductsByPageUrl } from '@/app/api';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
+import { getProductsByPageUrl } from '@/app/api/server/products/getProductsByPageUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
+import { isOfferProduct } from '@/app/utils/isOfferProduct';
 import { offerTermsData } from '@/components/data';
 import OfferDetailCard from '@/components/layout/offers-page/OfferDetailCard';
 
@@ -37,7 +38,7 @@ const PINK = '#ed21f1';
  */
 const OffersPageLayout = async (): Promise<JSX.Element> => {
   /** All three fetches are independent — run in parallel. */
-  const [dict, { page, isError }, { products }] = await Promise.all([
+  const [dict, { page }, { products }] = await Promise.all([
     getDictionary(),
     getPageByUrl('offers'),
     /**
@@ -53,16 +54,15 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
   ]);
   ServerProvider('dict', dict);
 
-  if (!page || isError) {
-    return notFound();
-  }
-
-  const title = page.localizeInfos?.title ?? 'Special Offers';
+  /**
+   * A missing or errored `offers` page only drops the custom heading — the page
+   * still renders with the fallback title, and an empty product list shows the
+   * "no offers" state. A transient CMS failure must not 404 this static route.
+   */
+  const title = page?.localizeInfos?.title ?? 'Special Offers';
 
   /** Keep only genuine offer products, ignoring anything else on the page. */
-  const offers = (products ?? []).filter(
-    (product) => product.attributeSetIdentifier === 'offer',
-  );
+  const offers = (products ?? []).filter(isOfferProduct);
 
   return (
     <div className="bg-white" data-testid="offers-page">

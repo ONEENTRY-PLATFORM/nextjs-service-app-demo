@@ -2,16 +2,17 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
-import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import GalleryPageContent from '@/components/layout/gallery-page';
+import GalleryUnavailable from '@/components/layout/gallery-page/components/GalleryUnavailable';
 import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
 import { GALLERY_MAIN_CATS } from '@/components/layout/gallery-page/taxonomy';
 
 import getCmsGalleryItems from '../getCmsGalleryItems';
-import getLocalGalleryItems from '../getLocalGalleryItems';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it
@@ -52,7 +53,7 @@ export default async function GallerySingleLayout({
 }): Promise<JSX.Element> {
   const { handle } = await params;
   /** The page read and the CMS gallery fetch are independent — run in parallel. */
-  const [{ page, isError }, cmsItems] = await Promise.all([
+  const [{ page, isError }, items] = await Promise.all([
     getPageByUrl(handle),
     getCmsGalleryItems(),
   ]);
@@ -60,13 +61,6 @@ export default async function GallerySingleLayout({
   if (!page || isError) {
     return notFound();
   }
-
-  /**
-   * Same source as `/gallery`: prefer the CMS gallery tree, fall back to the
-   * local library only when it is empty — so a category deep-link shows the
-   * very same photos as the unified page, just pre-filtered.
-   */
-  const items = cmsItems.length > 0 ? cmsItems : await getLocalGalleryItems();
 
   const initialCategory = handleToCategory(handle);
 
@@ -89,10 +83,14 @@ export default async function GallerySingleLayout({
       />
       {/* Gradient accent strip */}
       <div className="h-1.25 bg-gradient-stats" />
-      <GalleryPageContent
-        items={items}
-        {...(initialCategory ? { initialCategory } : {})}
-      />
+      {items.length > 0 ? (
+        <GalleryPageContent
+          items={items}
+          {...(initialCategory ? { initialCategory } : {})}
+        />
+      ) : (
+        <GalleryUnavailable />
+      )}
     </div>
   );
 }

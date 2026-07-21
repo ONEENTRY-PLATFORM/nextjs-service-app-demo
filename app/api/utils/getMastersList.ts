@@ -2,7 +2,7 @@ import 'server-only';
 
 import { cache } from 'react';
 
-import { getAdminsInfo } from '@/app/api';
+import { getAdminsInfo } from '@/app/api/server/admins/getAdminsInfo';
 
 /**
  * getMastersList — shared, request-deduped fetch of the full masters (admins) list.

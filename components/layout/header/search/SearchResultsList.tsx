@@ -3,8 +3,9 @@
 import type { Dispatch, JSX, SetStateAction } from 'react';
 import { useMemo } from 'react';
 
-import { useGetAdminsQuery } from '@/app/api';
+import { useGetAdminsQuery } from '@/app/api/api/RTKApi';
 import { useSearchProducts } from '@/app/api/hooks/useSearchProducts';
+import { isOfferProduct } from '@/app/utils/isOfferProduct';
 import Spinner from '@/components/shared/Spinner';
 
 import { adminAttr } from './adminAttr';
@@ -60,9 +61,7 @@ const SearchResultsList = ({
   }
 
   /** Services rows exclude special-offer products (rendered separately). */
-  const services = products.filter(
-    (product) => product.attributeSetIdentifier !== 'offer',
-  );
+  const services = products.filter((product) => !isOfferProduct(product));
   const hasResults = specialists.length > 0 || services.length > 0;
 
   /**

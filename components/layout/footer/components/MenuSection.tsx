@@ -2,7 +2,8 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 
-import { getBlockByMarker, getMenuByMarker } from '@/app/api';
+import { getBlockByMarker } from '@/app/api/server/blocks/getBlockByMarker';
+import { getMenuByMarker } from '@/app/api/server/menus/getMenuByMarker';
 import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 import type { OpeningHoursRow } from '@/app/utils/parseOpeningTime';
 import parseOpeningTime from '@/app/utils/parseOpeningTime';

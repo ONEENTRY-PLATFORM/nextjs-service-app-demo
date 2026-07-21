@@ -4,7 +4,7 @@ import { unstable_cache } from 'next/cache';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import { cache } from 'react';
 
-import { getBlockByMarker } from '@/app/api/';
+import { getBlockByMarker } from '@/app/api/server/blocks/getBlockByMarker';
 
 /**
  * Cross-request cache for the `system_content` block (private helper).

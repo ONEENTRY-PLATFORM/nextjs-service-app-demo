@@ -1,6 +1,6 @@
 'use client';
 
-import { clearSession, getApi } from '@/app/api';
+import { clearSession, getApi } from '@/app/api/api/api';
 
 type LogOutProps = { marker: string; token?: string };
 

@@ -112,6 +112,8 @@ test.describe('Sign-up', () => {
     await form
       .getByTestId('form-field-repeat_password')
       .fill(credentials.password);
+    // The submit is gated on the required Terms & Privacy consent checkbox
+    await form.getByRole('checkbox').check();
     await form.getByTestId('form-submit').click();
 
     await expect(form.getByTestId('form-error')).toBeVisible({
@@ -135,6 +137,8 @@ test.describe('Sign-up', () => {
     await form.getByTestId('form-field-phone_reg').fill('+971500000000');
     await form.getByTestId('form-field-password_reg').fill('Test1234!');
     await form.getByTestId('form-field-repeat_password').fill('Test1234!');
+    // The submit is gated on the required Terms & Privacy consent checkbox
+    await form.getByRole('checkbox').check();
     await form.getByTestId('form-submit').click();
 
     // Provider `email` has isCheckCode=false → the account is active at once and

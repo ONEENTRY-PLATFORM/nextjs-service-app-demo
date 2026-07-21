@@ -1,6 +1,7 @@
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
+import { isOfferProduct } from '@/app/utils/isOfferProduct';
 import SectionTitle from '@/components/shared/SectionTitle';
 
 import OffersFeed from './components/OffersFeed';
@@ -24,9 +25,7 @@ const OffersFeedBlock = ({
    * `similarProducts` is optional on the block entity (the API omits it once a
    * traffic limit kicks in), hence the optional chaining and the empty fallback.
    */
-  const products = (block?.similarProducts?.items ?? []).filter(
-    (product) => product.attributeSetIdentifier === 'offer',
-  );
+  const products = (block?.similarProducts?.items ?? []).filter(isOfferProduct);
 
   /** No offers — hide the whole section instead of showing an empty heading. */
   if (products.length < 1) {

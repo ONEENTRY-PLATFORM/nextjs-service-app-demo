@@ -202,7 +202,7 @@ const HeroSlider = ({
       {/* Desktop CTA — a single "Discover More" button pinned bottom-right on the
           site rail. Mobile and tablet place their CTA inside HeroSlideOverlayMobile. */}
       {current && (
-        <div className="pointer-events-none absolute inset-0 z-10 mx-auto hidden h-full max-w-7xl flex-col justify-end px-3 pt-6 pb-16 lg:flex md:px-8 md:py-10">
+        <div className="pointer-events-none absolute inset-0 z-10 mx-auto hidden h-full max-w-7xl flex-col justify-end px-3 pt-6 pb-16 md:px-8 md:py-10 lg:flex">
           <div className="flex items-end justify-end">
             <Link
               href={current.buttonLink || '/offers'}

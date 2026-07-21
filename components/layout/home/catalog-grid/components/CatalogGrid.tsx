@@ -2,7 +2,7 @@ import { Link } from 'next-transition-router';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX, Key } from 'react';
 
-import { getChildPagesByParentUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 
 import CatalogCard from './CatalogCard';
 import CategoryTile, { CATEGORY_TILES } from './CategoryTile';

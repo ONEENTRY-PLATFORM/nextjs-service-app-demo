@@ -1,6 +1,6 @@
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
-import { getChildPagesByParentUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import masterNamesById from '@/app/gallery/masterNamesById';
 import masterSalonsById from '@/app/gallery/masterSalonsById';
@@ -69,8 +69,9 @@ const masterName = (
  * page's category children (`gallery-hair` … `gallery-nails`), each holding
  * photo pages with a `gallery_photos` group and a `master_id` link.
  *
- * Returns an empty list when the CMS gallery is not populated so the page can
- * fall back to the local photo scan (`getLocalGalleryItems`). The CMS tags
+ * Returns an empty list when the CMS gallery is not populated or the read
+ * fails, so the page degrades to an error text (`GalleryUnavailable`). The CMS
+ * tags
  * photos at the main-category level only, so `category` is the main category,
  * `title` is the category label and `role` is derived from the category
  * (matching the local scanner's discipline-based role) — no per-photo service

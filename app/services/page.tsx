@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
-import { getPageByUrl } from '@/app/api';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
@@ -34,19 +33,19 @@ export const revalidate = 60;
  */
 const ServicesPageLayout = async (): Promise<JSX.Element> => {
   /** All three fetches are independent — run in parallel. */
-  const [dict, { page, isError }, { categories, salons, services }] =
-    await Promise.all([
-      getDictionary(),
-      getPageByUrl('services'),
-      getServicesCatalogData(),
-    ]);
+  const [dict, { page }, { categories, salons, services }] = await Promise.all([
+    getDictionary(),
+    getPageByUrl('services'),
+    getServicesCatalogData(),
+  ]);
   ServerProvider('dict', dict);
 
-  if (!page || isError) {
-    return notFound();
-  }
-
-  const title = page.localizeInfos?.title ?? 'Services & Prices';
+  /**
+   * A missing or errored `services` page only drops the custom heading — the
+   * hero, catalog (with its own empty state) and promo banner still render. A
+   * transient CMS failure must not 404 this static route.
+   */
+  const title = page?.localizeInfos?.title ?? 'Services & Prices';
   /** Stats line under the hero title — only when the CMS has services */
   const subtitle =
     services.length > 0

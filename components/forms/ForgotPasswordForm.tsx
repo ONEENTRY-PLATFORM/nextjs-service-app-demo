@@ -5,11 +5,8 @@ import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { FormEvent, JSX } from 'react';
 import { useContext, useState } from 'react';
 
-import {
-  getApi,
-  isError as isSdkError,
-  useGetFormByMarkerQuery,
-} from '@/app/api';
+import { getApi, isError as isSdkError } from '@/app/api/api/api';
+import { useGetFormByMarkerQuery } from '@/app/api/api/RTKApi';
 import { useAppSelector } from '@/app/store/hooks';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import FormAnimations from '@/components/forms/animations/FormAnimations';

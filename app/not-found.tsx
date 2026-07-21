@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { JSX } from 'react';
 
-import { getPageByUrl } from '@/app/api';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 
 /** Shown when the CMS page has no text — the page must never be bare */

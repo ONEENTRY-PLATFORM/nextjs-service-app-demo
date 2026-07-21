@@ -6,7 +6,8 @@ import { Lato, League_Gothic } from 'next/font/google';
 import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX, ReactNode } from 'react';
 
-import { getMenuByMarker, LANG_CODE } from '@/app/api';
+import { LANG_CODE } from '@/app/api/api/api';
+import { getMenuByMarker } from '@/app/api/server/menus/getMenuByMarker';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { AuthProvider } from '@/app/store/providers/AuthContext';
 import { OpenDrawerProvider } from '@/app/store/providers/OpenDrawerContext';

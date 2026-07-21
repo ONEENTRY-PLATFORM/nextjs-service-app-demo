@@ -4,11 +4,8 @@ import { Send } from 'lucide-react';
 import type { FormEvent, JSX } from 'react';
 import { useState } from 'react';
 
-import {
-  getApi,
-  isError as isSdkError,
-  useGetFormByMarkerQuery,
-} from '@/app/api';
+import { getApi, isError as isSdkError } from '@/app/api/api/api';
+import { useGetFormByMarkerQuery } from '@/app/api/api/RTKApi';
 import { getFormAttributes } from '@/components/utils';
 
 import ErrorMessage from '../../forms/inputs/ErrorMessage';

@@ -10,11 +10,8 @@ import type { FormEvent, JSX } from 'react';
 import { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import {
-  getApi,
-  isError as isSdkError,
-  useGetFormByMarkerQuery,
-} from '@/app/api';
+import { getApi, isError as isSdkError } from '@/app/api/api/api';
+import { useGetFormByMarkerQuery } from '@/app/api/api/RTKApi';
 import { useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import type { FormProps } from '@/app/types/global';

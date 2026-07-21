@@ -7,7 +7,7 @@ import type {
 } from 'oneentry/dist/orders/ordersInterfaces';
 import { useContext, useState } from 'react';
 
-import { getApi, isError } from '@/app/api';
+import { getApi, isError } from '@/app/api/api/api';
 import { RTKApi, useUpdateOrderMutation } from '@/app/api/api/RTKApi';
 import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
@@ -233,11 +233,19 @@ export const useBookingSubmit = ({
           setError(current.message);
           return;
         }
-        const updateBody = {
-          ...current,
+        /**
+         * Echo the whole read entity back with only `products` / `formData`
+         * swapped to the write shape (see the block comment above). `current` is
+         * the read shape (`IOrderByMarkerEntity`) — a superset with read-only
+         * fields and different `products` typing — so it alone needs the cast;
+         * keeping `products` / `formData` outside it means they are still
+         * type-checked against `IOrderData` instead of being silently erased.
+         */
+        const updateBody: IOrderData = {
+          ...(current as unknown as IOrderData),
           products,
           formData,
-        } as unknown as IOrderData;
+        };
         await updateOrder({
           marker: ORDERS_STORAGE_MARKER,
           id: rescheduleOrderId,

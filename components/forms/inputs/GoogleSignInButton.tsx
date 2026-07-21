@@ -3,7 +3,7 @@
 import type { JSX } from 'react';
 import { useState } from 'react';
 
-import { getApi, isError } from '@/app/api';
+import { getApi, isError } from '@/app/api/api/api';
 import GoogleIcon from '@/components/icons/google';
 
 /**

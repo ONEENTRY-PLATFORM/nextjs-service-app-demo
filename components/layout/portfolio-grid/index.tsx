@@ -1,7 +1,7 @@
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 
-import { getPagesByIds } from '@/app/api';
+import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import SectionHeading from '@/components/shared/SectionHeading';
 

@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 // Aliased: the route-segment `export const dynamic` below owns the name `dynamic`.
 import nextDynamic from 'next/dynamic';
-import { notFound } from 'next/navigation';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 import { cache } from 'react';
 
-import { getBlocksByPageUrl, getPageByUrl } from '@/app/api';
+import { getBlocksByPageUrl } from '@/app/api/server/blocks/getBlocksByPageUrl';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
@@ -135,21 +135,22 @@ const IndexPageLayout = async (): Promise<JSX.Element> => {
    * known up-front, so the blocks request does not need to wait for the page
    * request to resolve.
    */
-  const [dict, { page, isError }, { blocks }, structuredData] =
-    await Promise.all([
-      getDictionary(),
-      getHomePage(),
-      getBlocksByPageUrl({ pageUrl: 'home' }),
-      generateStructuredData(),
-    ]);
+  const [dict, { blocks }, structuredData] = await Promise.all([
+    getDictionary(),
+    getBlocksByPageUrl({ pageUrl: 'home' }),
+    generateStructuredData(),
+  ]);
 
   /** Set dictionary for localization */
   ServerProvider('dict', dict);
 
-  /** The page marker is enough to render; blocks and lists are optional. */
-  if (isError || !page) {
-    notFound();
-  }
+  /**
+   * The site root NEVER 404s: the `home` page entity is not rendered here (only
+   * its blocks are), and every section degrades to the mock's demo fallbacks
+   * when its block is missing or the CMS errors. So we do not fetch `home` or
+   * gate on it — a transient CMS failure or an unpopulated `home` page still
+   * renders the designed layout instead of turning the whole site into a 404.
+   */
 
   /**
    * Index the CMS blocks by their marker so the home page can render a fixed

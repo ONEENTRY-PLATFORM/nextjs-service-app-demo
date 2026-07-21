@@ -19,7 +19,8 @@
     "test:e2e:build": "cross-env E2E_BUILD=1 next build",
     "test:e2e:start": "cross-env E2E_BUILD=1 next start -p 3010",
     "test:e2e:server": "npm run test:e2e:build && npm run test:e2e:start",
-    "analyze": "cross-env ANALYZE=true next build"
+    "analyze": "next experimental-analyze",
+    "analyze:webpack": "cross-env ANALYZE=true next build --webpack"
   },
   "dependencies": {
     "gsap": "^3.15.0",
@@ -29,15 +30,10 @@
     "next": "^16.2.10",
     "next-transition-router": "^0.2.11",
     "oneentry": "^1.0.156",
-    "photoswipe": "^5.4.4",
     "react": "^19.2.7",
-    "react-calendar": "^6.0.1",
     "react-dom": "^19.2.7",
     "react-imask": "^7.6.1",
     "react-otp-input": "^3.1.1",
-    "react-photoswipe-gallery": "^4.1.2",
-    "react-range": "^1.10.0",
-    "react-simply-carousel": "^10.0.3",
     "react-toastify": "^11.1.0"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 import type { IError } from 'oneentry/dist/base/utils';
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
 
-import { getApi, isError } from '@/app/api';
+import { getApi, isError } from '@/app/api/api/api';
 import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**

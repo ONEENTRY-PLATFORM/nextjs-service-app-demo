@@ -7,7 +7,7 @@ import type {
 } from 'oneentry/dist/forms-data/formsDataInterfaces';
 import { useState } from 'react';
 
-import { getApi } from '@/app/api';
+import { getApi } from '@/app/api/api/api';
 
 /**
  * Custom hook for submitting form data using the OneEntry FormData API.

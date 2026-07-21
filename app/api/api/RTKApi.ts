@@ -24,10 +24,8 @@ import type {
 } from 'oneentry/dist/products/productsInterfaces';
 import type { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
 
-import { isError } from '@/app/api';
-
 import { updateUserState } from '../server/users/updateUserState';
-import { getApi } from './api';
+import { getApi, isError } from './api';
 
 interface BlockByMarkerProps {
   marker: string;

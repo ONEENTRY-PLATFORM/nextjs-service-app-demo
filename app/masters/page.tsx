@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
-import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
@@ -123,19 +123,20 @@ const toMasterItem = ({
  */
 const MastersPageLayout = async (): Promise<JSX.Element> => {
   /** All five reads are independent — fetch them in parallel to cut TTFB. */
-  const [dict, { page, isError }, { admins }, servicesResult, salonsResult] =
-    await Promise.all([
-      getDictionary(),
-      getPageByUrl('masters'),
-      getMastersList(),
-      getChildPagesByParentUrl('services'),
-      getChildPagesByParentUrl('salons'),
-    ]);
+  const [dict, { admins }, servicesResult, salonsResult] = await Promise.all([
+    getDictionary(),
+    getMastersList(),
+    getChildPagesByParentUrl('services'),
+    getChildPagesByParentUrl('salons'),
+  ]);
   ServerProvider('dict', dict);
 
-  if (!page || isError) {
-    return notFound();
-  }
+  /**
+   * The `masters` page entity is not rendered here (only the admin roster and
+   * the service/salon filter options are), so it is neither fetched nor gated
+   * on: a transient CMS failure or an unpopulated page degrades to empty
+   * filters and sections instead of 404-ing over missing masters.
+   */
 
   /**
    * Service page id → main category. Keyed by BOTH the 4 main category pages

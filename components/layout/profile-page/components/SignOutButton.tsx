@@ -5,7 +5,7 @@ import { useTransitionRouter } from 'next-transition-router';
 import type { JSX } from 'react';
 import { useContext } from 'react';
 
-import { logOutUser } from '@/app/api';
+import { logOutUser } from '@/app/api/server/users/logOutUser';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 
 /**

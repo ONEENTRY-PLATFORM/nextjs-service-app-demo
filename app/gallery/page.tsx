@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import type { JSX } from 'react';
 
-import { getPageByUrl } from '@/app/api';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import GalleryPageContent from '@/components/layout/gallery-page';
+import GalleryUnavailable from '@/components/layout/gallery-page/components/GalleryUnavailable';
 import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
 import { GALLERY_MAIN_CATS } from '@/components/layout/gallery-page/taxonomy';
 
 import getCmsGalleryItems from './getCmsGalleryItems';
-import getLocalGalleryItems from './getLocalGalleryItems';
 
 /**
  * ISR: refresh the prerendered CMS content on a timer. Not `force-static` —
@@ -20,10 +20,8 @@ export const revalidate = 60;
  * accent strip, Service/Specialist filter block, full-bleed photo grid and a
  * lightbox.
  *
- * Photos come from the OneEntry gallery tree (`getCmsGalleryItems`); while the
- * CMS gallery is empty the page falls back to the local library in
- * `public/images/Beauty content/Gallery/` (`getLocalGalleryItems`) so it never
- * 404s over missing photos — the grid degrades to an empty-state message.
+ * Photos come from the OneEntry gallery tree (`getCmsGalleryItems`); when the
+ * CMS gallery is empty the grid degrades to an empty-state message (no 404).
  * @param   {object}                       props              - Page properties
  * @param   {Promise<{category?: string}>} props.searchParams - Optional `?category=HAIR|FACE|BODY|NAILS` to open a main category
  * @returns {Promise<JSX.Element>}                            JSX.Element representing the gallery page
@@ -34,13 +32,10 @@ const GalleryPageLayout = async ({
   searchParams: Promise<{ category?: string }>;
 }): Promise<JSX.Element> => {
   /** Query params and the CMS gallery fetch are independent — run in parallel. */
-  const [{ category }, cmsItems] = await Promise.all([
+  const [{ category }, items] = await Promise.all([
     searchParams,
     getCmsGalleryItems(),
   ]);
-
-  /** Prefer the CMS gallery; fall back to the local scan when it is empty. */
-  const items = cmsItems.length > 0 ? cmsItems : await getLocalGalleryItems();
 
   /** Accept only a known main category from the query string */
   const initialCategory = GALLERY_MAIN_CATS.some((cat) => cat.id === category)
@@ -51,7 +46,11 @@ const GalleryPageLayout = async ({
     <div className="flex w-full flex-col bg-white">
       {/* Gradient accent strip */}
       <div className="h-1.25 bg-gradient-stats" />
-      <GalleryPageContent items={items} initialCategory={initialCategory} />
+      {items.length > 0 ? (
+        <GalleryPageContent items={items} initialCategory={initialCategory} />
+      ) : (
+        <GalleryUnavailable />
+      )}
     </div>
   );
 };

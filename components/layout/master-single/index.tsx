@@ -4,7 +4,8 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import { type JSX, memo } from 'react';
 
-import { getPageById, getPagesByIds } from '@/app/api';
+import { getPageById } from '@/app/api/server/pages/getPageById';
+import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { REVIEWS } from '@/components/layout/reviews-page/data';

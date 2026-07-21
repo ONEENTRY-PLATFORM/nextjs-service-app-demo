@@ -6,7 +6,7 @@ import type {
 } from 'oneentry/dist/blocks/blocksInterfaces';
 import { cache } from 'react';
 
-import { getApi, isError } from '@/app/api';
+import { getApi, isError } from '@/app/api/api/api';
 import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**

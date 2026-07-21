@@ -1,7 +1,23 @@
-/* eslint-disable no-console */
 import { toast } from 'react-toastify';
 
 import { isError } from '@/app/api/api/api';
+
+/**
+ * Dev-only diagnostic log for {@link handleApiError}. Gated on `NODE_ENV` so the
+ * production server/browser console stays clean, and routed through
+ * `console.error` (not `console.log`) to match the severity. Real error
+ * surfacing happens via the returned {@link ApiError} / toast, not this log.
+ * @param   {string} label   - Short category label for the error
+ * @param   {object} payload - Structured details to log
+ * @returns {void}
+ */
+const logApiError = (label: string, payload: object): void => {
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
+  // eslint-disable-next-line no-console
+  console.error(label, payload);
+};
 
 /**
  * Custom error class for API errors
@@ -35,8 +51,7 @@ export const isIError = isError;
  */
 export function handleApiError(handle: string, error: unknown): ApiError {
   if (isError(error)) {
-    /** Log the error for debugging purposes */
-    console.log('API Error:', {
+    logApiError('API Error:', {
       handle: handle,
       message: error.message,
       statusCode: error.statusCode,
@@ -51,8 +66,7 @@ export function handleApiError(handle: string, error: unknown): ApiError {
   }
 
   if (error instanceof Error) {
-    /** Log the error for debugging purposes */
-    console.log('Generic Error:', {
+    logApiError('Generic Error:', {
       message: error.message,
       stack: error.stack,
       timestamp: new Date().toISOString(),
@@ -61,8 +75,7 @@ export function handleApiError(handle: string, error: unknown): ApiError {
     return new ApiError(error.message || 'An error occurred', 500, error);
   }
 
-  /** Log unknown errors */
-  console.log('Unknown Error:', {
+  logApiError('Unknown Error:', {
     error,
     timestamp: new Date().toISOString(),
   });
@@ -72,9 +85,10 @@ export function handleApiError(handle: string, error: unknown): ApiError {
 
 /**
  * Custom hook for handling API errors in React components
- * @returns {unknown} A function to handle API errors with toast notifications
+ * @returns {(error: unknown) => ApiError} A function that toasts the error and
+ *                                         returns the normalized {@link ApiError}
  */
-export function useApiErrorHandler(): unknown {
+export function useApiErrorHandler(): (error: unknown) => ApiError {
   /* This would typically integrate with a notification system like toast */
   return function handleApiErrorWithNotification(error: unknown): ApiError {
     const apiError = handleApiError('useApiErrorHandler', error);

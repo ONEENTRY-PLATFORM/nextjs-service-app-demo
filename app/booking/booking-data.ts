@@ -1,7 +1,7 @@
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
-import { getChildPagesByParentUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { getServicesCatalogData } from '@/app/services/catalog-data';
 import type {

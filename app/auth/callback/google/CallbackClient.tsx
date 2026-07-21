@@ -5,7 +5,8 @@ import type { JSX } from 'react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import { getApi, googleOAuthAction } from '@/app/api';
+import { getApi } from '@/app/api/api/api';
+import { googleOAuthAction } from '@/app/api/server/auth/googleOAuthAction';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import Spinner from '@/components/shared/Spinner';
 

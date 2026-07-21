@@ -25,10 +25,7 @@ const CategoryPills = ({
   onChange: (cat: string) => void;
 }): JSX.Element => {
   return (
-    <div
-      className="-mx-1 flex gap-2 overflow-x-auto px-1 md:mx-0 md:flex-wrap md:px-0 [&::-webkit-scrollbar]:hidden"
-      style={{ scrollbarWidth: 'none' }}
-    >
+    <div className="-mx-1 flex gap-2 px-1 md:mx-0 md:flex-wrap md:px-0">
       {categories.map((c) => {
         const isActive = active === c;
         return (

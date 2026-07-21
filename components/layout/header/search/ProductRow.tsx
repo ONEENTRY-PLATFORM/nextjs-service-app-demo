@@ -5,7 +5,7 @@ import Link from 'next/link';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import type { Dispatch, JSX, SetStateAction } from 'react';
 
-import { useGetPageByIdQuery } from '@/app/api';
+import { useGetPageByIdQuery } from '@/app/api/api/RTKApi';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
   addServiceToCart,

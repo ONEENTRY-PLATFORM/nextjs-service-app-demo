@@ -3,7 +3,7 @@
 import { useTransitionRouter } from 'next-transition-router';
 import { useState } from 'react';
 
-import { getApi, isError } from '@/app/api';
+import { getApi, isError } from '@/app/api/api/api';
 import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { ORDERS_STORAGE_MARKER } from '@/app/store/orderMarkers';

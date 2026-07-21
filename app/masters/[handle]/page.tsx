@@ -3,7 +3,7 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 import { Suspense } from 'react';
 
-import { getPageByUrl } from '@/app/api';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';

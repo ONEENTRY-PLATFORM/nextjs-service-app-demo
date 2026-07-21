@@ -4,7 +4,7 @@ import { defineOneEntry } from 'oneentry';
 import type { IAuthEntity } from 'oneentry/dist/auth-provider/authProvidersInterfaces';
 import type { IError } from 'oneentry/dist/base/utils';
 
-import { isError, LANG_CODE } from '@/app/api';
+import { isError, LANG_CODE } from '@/app/api/api/api';
 
 /**
  * Exchange a Google OAuth `code` for OneEntry auth tokens (Server Action).

@@ -49,11 +49,20 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
             </h1>
           </RevealAnimations>
           <RevealAnimations className="mt-6">
-            <SalonPhotoGallery
-              photos={salon.photos}
-              accent={c}
-              onOpen={setLightboxIdx}
-            />
+            {salon.photos.length > 0 ? (
+              <SalonPhotoGallery
+                photos={salon.photos}
+                accent={c}
+                onOpen={setLightboxIdx}
+              />
+            ) : (
+              <p
+                data-testid="salon-no-photos"
+                className="py-10 text-center text-sm text-neutral-300"
+              >
+                This salon has no photos yet.
+              </p>
+            )}
           </RevealAnimations>
         </div>
       </section>

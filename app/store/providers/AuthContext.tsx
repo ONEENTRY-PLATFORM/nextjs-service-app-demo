@@ -5,12 +5,8 @@ import type { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
 import type { JSX, ReactNode } from 'react';
 import { createContext, useCallback, useEffect, useRef, useState } from 'react';
 
-import {
-  hasActiveSession,
-  reDefine,
-  syncTokens,
-  useLazyGetMeQuery,
-} from '@/app/api';
+import { hasActiveSession, reDefine, syncTokens } from '@/app/api/api/api';
+import { useLazyGetMeQuery } from '@/app/api/api/RTKApi';
 
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { setCartVersion } from '../reducers/CartSlice';
@@ -244,9 +240,19 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     if (initRef.current) return;
     initRef.current = true;
     setIsLoading(true);
-    onInit().then(() => {
-      setIsLoading(false);
-    });
+    onInit()
+      .catch(() => {
+        /**
+         * A failed probe (network / SDK reject in `reDefine` or `checkToken`)
+         * must not strand the whole app in the loading state. Treat it like the
+         * no-refresh-token branch — the user is simply not authenticated — and
+         * let the UI recover.
+         */
+        setIsAuth(false);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [refetch, onInit]);
 
   /**

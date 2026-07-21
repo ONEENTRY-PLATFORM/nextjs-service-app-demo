@@ -2,7 +2,9 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
-import { getChildPagesByParentUrl, getProductsByPageUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
+import { getProductsByPageUrl } from '@/app/api/server/products/getProductsByPageUrl';
+import { isOfferProduct } from '@/app/utils/isOfferProduct';
 import productDurationMinutes from '@/app/utils/productDurationMinutes';
 import type {
   ServiceItem,
@@ -177,10 +179,7 @@ export const getServicesCatalogData = async (): Promise<{
       for (const { subcategoryUrl, products } of lists) {
         for (const product of products) {
           /** Special offers (`offer`) belong to the offers page */
-          if (
-            product.attributeSetIdentifier === 'offer' ||
-            seen.has(product.id)
-          ) {
+          if (isOfferProduct(product) || seen.has(product.id)) {
             continue;
           }
           seen.add(product.id);

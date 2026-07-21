@@ -6,7 +6,8 @@ import type { FormEvent, JSX } from 'react';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import OtpInput from 'react-otp-input';
 
-import { getApi, isError, useGetAuthProvidersQuery } from '@/app/api';
+import { getApi, isError } from '@/app/api/api/api';
+import { useGetAuthProvidersQuery } from '@/app/api/api/RTKApi';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';

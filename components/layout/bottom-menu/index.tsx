@@ -1,7 +1,7 @@
 import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX, Key } from 'react';
 
-import { getMenuByMarker } from '@/app/api';
+import { getMenuByMarker } from '@/app/api/server/menus/getMenuByMarker';
 import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 
 import NavItemBooking from './components/NavItemBooking';

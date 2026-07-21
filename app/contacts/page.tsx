@@ -1,14 +1,11 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
-import {
-  getBlockByMarker,
-  getChildPagesByParentUrl,
-  getPageByUrl,
-} from '@/app/api';
+import { getBlockByMarker } from '@/app/api/server/blocks/getBlockByMarker';
+import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
@@ -82,18 +79,19 @@ const toContactSalon = (
  */
 const ContactsPageLayout = async (): Promise<JSX.Element> => {
   /** All four fetches are independent — run in parallel. */
-  const [dict, { page, isError }, salonsResult, openingResult] =
-    await Promise.all([
-      getDictionary(),
-      getPageByUrl('contacts'),
-      getChildPagesByParentUrl('salons'),
-      getBlockByMarker('opening_time'),
-    ]);
+  const [dict, { page }, salonsResult, openingResult] = await Promise.all([
+    getDictionary(),
+    getPageByUrl('contacts'),
+    getChildPagesByParentUrl('salons'),
+    getBlockByMarker('opening_time'),
+  ]);
   ServerProvider('dict', dict);
 
-  if (!page || isError) {
-    return notFound();
-  }
+  /**
+   * A missing or errored `contacts` page only drops the custom heading — salon
+   * cards and opening hours are read independently and degrade on their own. A
+   * transient CMS failure must not 404 this static route.
+   */
 
   /** Salon location cards come from the CMS `salons` child pages. */
   const salons: ContactSalon[] = (salonsResult.pages ?? [])
@@ -107,7 +105,7 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
   /** Counters strip: the hours cell only works while the week is uniform. */
   const openingSummary = summarizeOpeningHours(openingRows);
 
-  const title = page.localizeInfos?.title ?? 'Contacts';
+  const title = page?.localizeInfos?.title ?? 'Contacts';
 
   return (
     <div className="bg-white" data-testid="contacts-page">

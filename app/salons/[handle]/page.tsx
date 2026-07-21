@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
-import { getChildPagesByParentUrl, getPageByUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import SalonPageContent from '@/components/layout/salon-page';
 import {
@@ -14,7 +15,6 @@ import type { SalonDetail } from '@/components/layout/salon-page/types';
 import { formatUaePhone } from '@/components/utils';
 
 import getCmsGalleryItems from '../../gallery/getCmsGalleryItems';
-import getLocalGalleryItems from '../../gallery/getLocalGalleryItems';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it
@@ -44,7 +44,7 @@ export default async function SalonDetailLayout({
   const { handle } = await params;
 
   /** The salon page and the gallery are independent — run in parallel. */
-  const [{ page, isError }, cmsItems] = await Promise.all([
+  const [{ page, isError }, items] = await Promise.all([
     getPageByUrl(handle),
     getCmsGalleryItems(),
   ]);
@@ -52,9 +52,6 @@ export default async function SalonDetailLayout({
   if (!page || isError) {
     return notFound();
   }
-
-  /** Same source order as `/gallery`: CMS first, local scan as the fallback. */
-  const items = cmsItems.length > 0 ? cmsItems : await getLocalGalleryItems();
 
   const attrs = page.attributeValues ?? {};
   const address = (attrs.salon_address?.value as string | undefined) ?? '';

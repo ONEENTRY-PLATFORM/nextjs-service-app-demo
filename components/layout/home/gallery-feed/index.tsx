@@ -3,11 +3,9 @@ import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
-import { getChildPagesByParentUrl } from '@/app/api';
+import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
-import getLocalGalleryItems from '@/app/gallery/getLocalGalleryItems';
 import masterNamesById from '@/app/gallery/masterNamesById';
-import { SUB_TO_MAIN } from '@/components/layout/gallery-page/taxonomy';
 import SectionTitle from '@/components/shared/SectionTitle';
 import type { OneEntryImageFile } from '@/components/utils';
 import { getGalleryImageUrls, shuffleArray } from '@/components/utils';
@@ -43,18 +41,19 @@ const GalleryFeed = async ({
   /** Resolve all gallery data promises and flatten results */
   const galleryData = (await Promise.all(galleryDataPromises)).flat();
 
-  /**
-   * Fall back to the local photo library when the CMS gallery tree is not
-   * populated yet (content plan, stage 5), so the home strip matches the
-   * design instead of rendering empty.
-   */
-  const cards =
-    galleryData.length > 0 ? galleryData : await getLocalGalleryFeed();
-  /** Shuffle gallery data and take the mock's six-tile strip */
-  const feedCards = shuffleArray(cards).slice(0, 6);
+  /** Shuffle the CMS gallery cards and take the mock's six-tile strip */
+  const feedCards = shuffleArray(galleryData).slice(0, 6);
 
   /** Section heading; falls back to the mock's "Gallery" when the block is not filled */
   const title = block?.localizeInfos?.title || 'Gallery';
+
+  /**
+   * Nothing in the CMS gallery tree → drop the whole strip rather than render a
+   * titled section with an empty grid (the section degrades away, not to a mock).
+   */
+  if (feedCards.length === 0) {
+    return <></>;
+  }
 
   /** Render gallery feed section with title and photo grid */
   return (
@@ -70,29 +69,6 @@ const GalleryFeed = async ({
     </section>
   );
 };
-
-/**
- * Build gallery feed cards from the local photo library
- * (`public/images/Beauty content/Gallery/`) — the demo fallback used while the
- * CMS gallery tree is empty. Each card opens the Gallery page filtered to its
- * main category (`/gallery?category=HAIR`), mirroring the static-html home
- * GALLERY strip (`onGalleryClick(category, sub)`).
- * @returns {Promise<FeedCard[]>} Demo gallery cards
- */
-async function getLocalGalleryFeed(): Promise<FeedCard[]> {
-  const items = await getLocalGalleryItems();
-  return items.map((item) => {
-    const main = SUB_TO_MAIN[item.category];
-    return {
-      name: item.master,
-      link: main ? `/gallery?category=${main.toUpperCase()}` : '/gallery',
-      img: item.url,
-      thumb: item.url,
-      preview: null,
-      spec: { title: item.title } as ILocalizeInfo,
-    };
-  });
-}
 
 type FeedCard = {
   name: string;

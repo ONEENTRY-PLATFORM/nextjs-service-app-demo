@@ -3,7 +3,7 @@ import type { IAttributesSetsEntity } from 'oneentry/dist/attribute-sets/attribu
 import type { IError } from 'oneentry/dist/base/utils';
 import { cache } from 'react';
 
-import { getApi, isError } from '@/app/api';
+import { getApi, isError } from '@/app/api/api/api';
 import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**

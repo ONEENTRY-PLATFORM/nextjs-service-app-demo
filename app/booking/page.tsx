@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { JSX } from 'react';
 import { Suspense } from 'react';
 
-import { getPageByUrl } from '@/app/api';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import BookingWizard from '@/components/layout/booking-page';
