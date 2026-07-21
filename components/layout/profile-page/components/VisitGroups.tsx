@@ -87,7 +87,10 @@ const VisitGroups = ({
             key={i}
             className="mb-5 flex justify-between gap-5 max-md:max-w-full max-md:flex-wrap"
           >
-            <MasterCard attributeValues={attributeValues} />
+            <MasterCard
+              attributeValues={attributeValues}
+              {...(masterData ? { masterId: masterData.id } : {})}
+            />
             <div className="mb-4 flex w-[calc(100%-160px)] flex-col gap-3 max-md:w-full">
               {orders.map((order: IOrderByMarkerEntity, j: number) => (
                 <OrderCard

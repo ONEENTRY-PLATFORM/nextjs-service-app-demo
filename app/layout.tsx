@@ -196,7 +196,10 @@ export default async function RootLayout({
               <TransitionProvider>
                 {/* Spacer matching the fixed header height (h-20) */}
                 <div className="h-20"></div>
-                <main className="flex grow flex-col overflow-hidden">
+                {/* `overflow-x-clip`, not `overflow-hidden`: it still contains
+                    horizontal overflow, but keeps the viewport as the scroll
+                    container so `position: sticky` works inside pages. */}
+                <main className="flex grow flex-col overflow-x-clip">
                   {children}
                 </main>
                 <Footer dict={dict} />

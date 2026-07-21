@@ -10,10 +10,6 @@ import CatalogGrid from './components/CatalogGrid';
 
 /**
  * CatalogSection component to render the main service catalog section.
- *
- * This component displays the main catalog section with a title and a grid of service categories.
- * It includes background animations with "Beauty Salon" text and title animations for enhanced
- * visual presentation. The component uses data from a block entity to display localized content.
  * @param   {object}       props         - Component properties
  * @param   {IBlockEntity} [props.block] - Block entity with the section title; falls back to the mock's "Service" heading when the block is not filled in the CMS yet
  * @returns {JSX.Element}                JSX.Element representing the complete catalog section with background animations
@@ -47,15 +43,7 @@ const CatalogSection = ({
           <CatalogGrid />
         </div>
       </div>
-      {/* "Beauty Studio" watermark, ported from the mock's SERVICES section.
-          Two notes on why this differs from the mock's class list verbatim:
-          - the tablet size is scoped with `md:max-xl:` rather than a `md:` +
-            `xl:` pair, because `--breakpoint-xl` is overridden in px while `md`
-            stays in rem, so Tailwind emits `md` after `xl` and a bare `xl:`
-            override never wins on desktop;
-          - `lineHeight` stays an inline style exactly as in the mock: as a
-            Tailwind class it silently emits no rule at all, and the lines fall
-            back to the inherited 1.5, which overflows the section. */}
+      {/* "Beauty Studio" watermark. */}
       <BgAnimations className="pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center overflow-hidden text-center text-[clamp(6rem,13vw,13rem)] text-[#e1e5ef]/30 uppercase select-none md:max-xl:text-[clamp(7rem,17vw,13rem)]">
         <div id="beauty_bg" className="font-black" style={{ lineHeight: 1.05 }}>
           {parse(title1)}

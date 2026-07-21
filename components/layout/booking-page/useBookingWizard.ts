@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 
 import bookingStepKeys from './bookingStepKeys';
 import { ANY_MASTER } from './constants';
+import { scrollToBookingTop } from './scrollToBookingTop';
 import slotFits from './slotFits';
 import type {
   BookingData,
@@ -252,15 +253,20 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
 
   /** ── Handlers (mock `BookingPage` handlers) ──────────────────────────── */
 
-  /** Advance to the next step, unless already on the last one. */
+  /**
+   * Advance to the next step, unless already on the last one. Steps differ in
+   * height, so the block's top is brought back into view with the new step.
+   */
   const handleNext = () => {
     if (!isLastStep) setStepIdx((s) => s + 1);
+    scrollToBookingTop();
   };
   /** Step back; from the first step this exits the flow to the entry screen. */
   const handleBack = () => {
     setTouched(true);
     if (stepIdx > 0) setStepIdx((s) => s - 1);
     else setFlow(null);
+    scrollToBookingTop();
   };
   /** Clear every selection and return to the flow-choice entry screen. */
   const resetFlow = () => {

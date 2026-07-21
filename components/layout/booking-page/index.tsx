@@ -14,6 +14,7 @@ import SpecialistStep from './components/SpecialistStep';
 import StepBar from './components/StepBar';
 import SuccessModal from './components/SuccessModal';
 import { BRAND_GRADIENT, MUTED, PINK } from './constants';
+import { scrollToBookingTop } from './scrollToBookingTop';
 import type { BookingData } from './types';
 import { useBookingWizard } from './useBookingWizard';
 
@@ -90,7 +91,12 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
       id="booking-section"
       data-testid="booking-page"
       className="flex-1 py-6 xl:pb-12 md:py-12 md:pb-20"
-      style={{ background: 'linear-gradient(180deg,#f7f7fb 0%,#fff 60%)' }}
+      style={{
+        background: 'linear-gradient(180deg,#f7f7fb 0%,#fff 60%)',
+        /* Steps differ in height: without this the browser's scroll anchoring
+           yanks the page before `scrollToBookingTop` runs */
+        overflowAnchor: 'none',
+      }}
     >
       <div className="mx-auto w-full max-w-7xl px-3 md:px-8">
         {flow && (
@@ -183,7 +189,10 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                   {/* Mobile: on the last step Continue leads to the summary */}
                   {isLastStep && (
                     <button
-                      onClick={() => setMobileSummary(true)}
+                      onClick={() => {
+                        setMobileSummary(true);
+                        scrollToBookingTop();
+                      }}
                       disabled={!time}
                       data-testid="booking-summary-open"
                       className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold tracking-wider uppercase transition-all enabled:hover:scale-102 enabled:active:scale-98 xl:hidden md:text-base"
@@ -210,31 +219,38 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
             }`}
           >
             <button
-              onClick={() => setMobileSummary(false)}
+              onClick={() => {
+                setMobileSummary(false);
+                scrollToBookingTop();
+              }}
               className="mb-4 flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold tracking-wider uppercase xl:hidden"
               style={{ background: '#f7f7fb', color: MUTED }}
             >
               <ChevronLeft size={16} /> Back
             </button>
-            <BookingSummary
-              flow={flow}
-              salon={salonObj}
-              services={serviceObjs}
-              master={masterObj}
-              masterAny={masterAny}
-              date={date}
-              time={time}
-              currentIdx={stepIdx}
-              totalSteps={stepKeys.length}
-              paymentAccounts={paymentAccounts}
-              paymentAccount={paymentAccount}
-              onSelectPaymentAccount={selectPaymentAccount}
-              onBook={handleConfirm}
-              isLoggedIn={isAuth}
-              isLoading={isLoading}
-              error={error}
-              onReset={resetFlow}
-            />
+            {/* Desktop: the summary follows the long steps down the page,
+                pinned under the fixed header (`h-20`) */}
+            <div className="xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto">
+              <BookingSummary
+                flow={flow}
+                salon={salonObj}
+                services={serviceObjs}
+                master={masterObj}
+                masterAny={masterAny}
+                date={date}
+                time={time}
+                currentIdx={stepIdx}
+                totalSteps={stepKeys.length}
+                paymentAccounts={paymentAccounts}
+                paymentAccount={paymentAccount}
+                onSelectPaymentAccount={selectPaymentAccount}
+                onBook={handleConfirm}
+                isLoggedIn={isAuth}
+                isLoading={isLoading}
+                error={error}
+                onReset={resetFlow}
+              />
+            </div>
           </div>
         </div>
       </div>

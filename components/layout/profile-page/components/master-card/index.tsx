@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
@@ -9,15 +10,19 @@ import StarsGroup from '@/components/shared/StarsGroup';
 import CardAnimations from '../../animations/CardAnimations';
 
 /**
- * MasterCard component displays a master's profile card with image, name, service type and rating
+ * MasterCard component displays a master's profile card with image, name, service type and rating.
+ * When `masterId` is set, the card links to the specialist profile page.
  * @param   {object}           props                 - Component properties
  * @param   {IAttributeValues} props.attributeValues - Master's attribute values including image, name and rating
+ * @param   {number}           [props.masterId]      - CMS admin id of the master, used to build the profile link
  * @returns {JSX.Element}                            A card component displaying master's information
  */
 const MasterCard = ({
   attributeValues,
+  masterId,
 }: {
   attributeValues: IAttributeValues;
+  masterId?: number | undefined;
 }): JSX.Element => {
   /** Extract master's image source, name, role and rating from attribute values */
   const imgArr = attributeValues?.master_image?.value as
@@ -30,8 +35,9 @@ const MasterCard = ({
   const masterRating =
     (attributeValues?.master_rating?.value as number | undefined) ?? 0;
 
-  return (
-    <CardAnimations className="flex w-40 flex-col self-stretch" index={0}>
+  /** Card body — shared between the linked and the static (unknown master) variants. */
+  const inner = (
+    <>
       {imgSrc && (
         <div
           className="self-center overflow-hidden rounded-2xl"
@@ -56,6 +62,24 @@ const MasterCard = ({
         {/* Profile visit card uses PINK stars (static-html AccountPage) */}
         <StarsGroup rating={masterRating} size={16} color="#ed21f1" />
       </div>
+    </>
+  );
+
+  return (
+    <CardAnimations className="flex w-40 flex-col self-stretch" index={0}>
+      {masterId ? (
+        <Link
+          prefetch={false}
+          href={'/masters/' + masterId}
+          title={masterName}
+          className="flex flex-col transition-transform duration-300 hover:-translate-y-1"
+          data-testid="profile-master-card-link"
+        >
+          {inner}
+        </Link>
+      ) : (
+        inner
+      )}
     </CardAnimations>
   );
 };

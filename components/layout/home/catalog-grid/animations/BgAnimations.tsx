@@ -2,7 +2,7 @@
 
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { useTransitionState } from 'next-transition-router';
 import type { JSX, ReactNode } from 'react';
 import { useRef } from 'react';
@@ -11,12 +11,6 @@ import { useAppSelector } from '@/app/store/hooks';
 
 /**
  * BgAnimations component to add background animations to the catalog section.
- *
- * The two background words fade in character by character with a stagger once
- * the section scrolls into view, and the whole block fades out on a router
- * transition away from the page. Everything here is opacity only — no offsets:
- * the wrapper is absolutely positioned inside an `overflow-hidden` section, so
- * any x/y displacement risks leaving a line parked outside the clipped box.
  * @param   {object}      props           - Component properties
  * @param   {ReactNode}   props.children  - Child elements to apply animations to
  * @param   {string}      props.className - CSS classes to apply to the wrapper element
@@ -42,13 +36,14 @@ const BgAnimations = ({
   /** Fade the background characters in with a stagger when the section enters the viewport */
   useGSAP(
     () => {
-      if (!readyState) {
+      const root = ref.current;
+      if (!root || !readyState) {
         return;
       }
 
       /** Both words in document order, so the stagger runs line 1 then line 2 */
       const chars = gsap.utils.toArray<HTMLElement>(
-        '#beauty_bg span, #salon_bg span',
+        root.querySelectorAll('span'),
       );
       if (chars.length === 0) {
         return;
@@ -63,12 +58,14 @@ const BgAnimations = ({
           ease: 'power1.out',
           stagger: 0.05,
           scrollTrigger: {
-            trigger: ref.current,
-            /* Deliberately not `top bottom`: the section sits ~680px down, so on
-               a normal desktop viewport it is already on screen at load and the
-               reveal would fire before the user scrolls at all. Starting at 75%
-               of the viewport keeps it a scroll reveal on every screen size. */
-            start: 'top 75%',
+            trigger: root,
+            /* The hero above is fixed-height, so this section always rests the
+               same ~680px down the document — any start line below that is
+               already crossed at load and the reveal would play unseen, before
+               the user scrolls at all. `top 75%` did exactly that on every
+               viewport taller than ~900px (the common case). 45% keeps it a real
+               scroll reveal up to ~1500px-tall viewports. */
+            start: 'top 45%',
             end: 'bottom top',
             toggleActions: 'play none none reverse',
           },
