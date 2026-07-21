@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 
 import { useHeroRef } from '@/app/animations/HeroAnimations';
 
+import HeroSlideOverlayMobile from './HeroSlideOverlayMobile';
 import SaleText from './SaleText';
 
 /**
@@ -81,7 +82,7 @@ const HeroSlider = ({
   // otherwise compute well under 600px).
   return (
     <section
-      className="relative aspect-390/535 min-h-133.75 w-full overflow-hidden bg-[linear-gradient(90deg,#49268b_3%,#ed21f1_90%)] select-none md:aspect-1920/600 md:min-h-150"
+      className="relative aspect-390/535 min-h-133.75 w-full overflow-hidden bg-[linear-gradient(90deg,#49268b_3%,#ed21f1_90%)] select-none md:aspect-auto md:h-140 lg:aspect-1920/600 lg:h-auto lg:min-h-150"
       aria-roledescription="carousel"
       aria-label="Promotions"
       onMouseEnter={() => setPaused(true)}
@@ -144,10 +145,21 @@ const HeroSlider = ({
               />
             )}
 
-            {/* CMS text overlay — sale badge, title and subtitle from the slide,
-                vertically centered on the left. Empty fields are not rendered. */}
+            {/* Mobile overlay — top-anchored column per the Figma mobile frame
+                (solid badge, title, subtitle and the CTA together). */}
+            <HeroSlideOverlayMobile
+              sale={slide.sale}
+              title={slide.title}
+              text={slide.text}
+              buttonText={slide.buttonText}
+              buttonLink={slide.buttonLink}
+            />
+
+            {/* Desktop CMS text overlay — sale badge, title and subtitle from the
+                slide, vertically centered on the left. Empty fields are not
+                rendered; mobile and tablet use HeroSlideOverlayMobile (< lg). */}
             {(slide.sale || slide.title || slide.text) && (
-              <div className="absolute inset-y-0 left-16 z-10 flex max-w-[68%] flex-col items-start justify-center gap-3 pr-5 md:left-[7%] md:gap-5">
+              <div className="absolute inset-y-0 left-16 z-10 hidden max-w-[68%] flex-col items-start justify-center gap-3 pr-5 lg:left-[7%] lg:flex lg:gap-5">
                 {/* League Gothic goes on the sale badge and the title only — the
                     subtitle below stays on the site's default Lato, as in the
                     promo artwork. Hence the per-element `fontFamily` instead of
@@ -187,11 +199,11 @@ const HeroSlider = ({
         ))}
       </div>
 
-      {/* CTA — a single "Discover More" button on the site rails: bottom-left on
-          mobile (aligned under the banner's baked text), bottom-right on desktop. */}
+      {/* Desktop CTA — a single "Discover More" button pinned bottom-right on the
+          site rail. Mobile and tablet place their CTA inside HeroSlideOverlayMobile. */}
       {current && (
-        <div className="pointer-events-none absolute inset-0 z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-3 pt-6 pb-16 md:px-8 md:py-10">
-          <div className="flex items-end justify-start pl-2.75 md:justify-end md:pl-0">
+        <div className="pointer-events-none absolute inset-0 z-10 mx-auto hidden h-full max-w-7xl flex-col justify-end px-3 pt-6 pb-16 lg:flex md:px-8 md:py-10">
+          <div className="flex items-end justify-end">
             <Link
               href={current.buttonLink || '/offers'}
               className="pointer-events-auto inline-flex min-w-50 items-center justify-center rounded-xl bg-white px-7 py-3.5 text-base font-normal tracking-[0.2em] text-charcoal uppercase transition-colors hover:bg-gray-50"

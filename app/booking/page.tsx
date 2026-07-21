@@ -54,16 +54,25 @@ const BookingPageLayout = async (): Promise<JSX.Element> => {
   }`;
 
   return (
-    <BookingAnimations className="flex min-h-screen w-full flex-col bg-white">
+    <div className="flex min-h-screen w-full flex-col bg-white">
       <BookingHero title={title} subtitle={subtitle} />
       {/* The wizard reads `?reschedule={orderId}` (`useSearchParams`), which on
           a prerendered route is only known on the client — Next requires the
           boundary. The fallback never reaches the user: the wizard itself is
-          client-rendered, so the suspense resolves in the same commit. */}
+          client-rendered, so the suspense resolves in the same commit.
+
+          `BookingAnimations` lives INSIDE the boundary so its GSAP `.set` on the
+          wizard body (`.mx-auto`) never reaches across the Suspense boundary: a
+          parent-side layout effect that mutated that div before the suspended
+          subtree hydrated produced a hydration mismatch (server DOM carried an
+          `opacity:0;visibility:hidden` the client render didn't). Sharing one
+          hydration boundary with its target keeps the fade after hydration. */}
       <Suspense fallback={null}>
-        <BookingWizard data={data} />
+        <BookingAnimations className="flex flex-1 flex-col">
+          <BookingWizard data={data} />
+        </BookingAnimations>
       </Suspense>
-    </BookingAnimations>
+    </div>
   );
 };
 
