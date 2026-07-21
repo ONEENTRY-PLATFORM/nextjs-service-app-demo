@@ -19,7 +19,6 @@ import {
   ApiError,
   formatErrorMessage,
   handleApiError,
-  isIError,
   useApiErrorHandler,
 } from '@/app/utils/errorHandler';
 
@@ -89,13 +88,6 @@ describe('formatErrorMessage', () => {
   it('uses a plain Error message, then the default for anything else', () => {
     expect(formatErrorMessage(new Error('boom'))).toBe('boom');
     expect(formatErrorMessage(null, 'fallback')).toBe('fallback');
-  });
-});
-
-describe('isIError', () => {
-  it('is the same guard re-exported from the api layer', () => {
-    expect(isIError({ statusCode: 404 })).toBe(true);
-    expect(isIError({ id: 1 })).toBe(false);
   });
 });
 

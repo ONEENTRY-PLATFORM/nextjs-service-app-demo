@@ -457,35 +457,6 @@ export const RTKApi = createApi({
       keepUnusedDataFor: 60, // 1 minute for individual orders
     }),
     /**
-     * Update a single order from the order storage object created by the user.
-     * Updates a specific order by its ID and the marker of its storage object.
-     * @deprecated Use the `updateOrder` mutation below instead. This is a WRITE
-     * operation wrongly declared as `build.query`: it therefore caches its
-     * result and declares `providesTags` where it should `invalidatesTags`, so
-     * updating an order through it would leave every cached order list stale.
-     * Kept only because the project does not delete unused exports without an
-     * explicit request; not consumed by any component.
-     * @param      id     - ID of the order object
-     * @param      marker - Text identifier of the order storage object
-     * @param      body   - Data to update the order with
-     * @returns           Base orders entity
-     */
-    updateOrderByMarkerAndId: build.query<IBaseOrdersEntity, SingleOrderProps>({
-      queryFn: async ({ id, marker, body }) => {
-        const result = await getApi().Orders.updateOrderByMarkerAndId(
-          marker,
-          id,
-          body,
-        );
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IBaseOrdersEntity };
-      },
-      providesTags: ['Orders'],
-      keepUnusedDataFor: 60, // 1 minute for updated orders
-    }),
-    /**
      * Update user state — persists cart into `user.state`.
      * Fresh user is fetched inside `updateUserState` to avoid clobbering
      * concurrent state changes (favorites, etc.).
@@ -543,7 +514,6 @@ export const {
   useGetProductsByPageUrlQuery,
   useGetProductsByIdsQuery,
   useSearchProductsQuery,
-  useUpdateOrderByMarkerAndIdQuery,
   useUpdateUserStateMutation,
   useUpdateOrderMutation,
 } = RTKApi;

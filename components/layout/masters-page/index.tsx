@@ -107,10 +107,7 @@ const MastersPageContent = ({
         />
 
         {/* Main category chips — mobile: scrollable row; desktop: centered */}
-        <div
-          className="-mx-3 mb-3 flex gap-2 overflow-x-auto px-3 lg:mx-0 lg:flex-wrap lg:items-center lg:justify-center lg:px-0 [&::-webkit-scrollbar]:hidden"
-          style={{ scrollbarWidth: 'none' }}
-        >
+        <div className="-mx-3 mb-3 flex gap-2 px-3 lg:mx-0 lg:flex-wrap lg:items-center lg:justify-center lg:px-0">
           {MASTERS_MAIN_CATS.map((cat) => {
             const active = mainCat === cat.id;
             return (

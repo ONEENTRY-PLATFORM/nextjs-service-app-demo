@@ -37,13 +37,6 @@ export class ApiError extends Error {
 }
 
 /**
- * Type guard alias kept for backward compatibility with existing call sites.
- * Prefer importing {@link isError} from `@/app/api` in new code.
- * @deprecated Use `isError` from `@/app/api` instead.
- */
-export const isIError = isError;
-
-/**
  * Centralized error handling function
  * @param   {string}   handle - The function to handle the error
  * @param   {unknown}  error  - The error to handle

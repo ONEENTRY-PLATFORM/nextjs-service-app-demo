@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import formatMinutes from '@/app/utils/formatMinutes';
 
+import FadeStaggerGroup from '../animations/FadeStaggerGroup';
 import {
   BRAND_GRADIENT,
   CYAN,
@@ -189,7 +190,11 @@ const DateTimeStep = ({
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-7 gap-y-1">
+        <FadeStaggerGroup
+          className="grid grid-cols-7 gap-y-1"
+          groupKey={`${year}-${month}`}
+          stagger={0.022}
+        >
           {cells.map((day, i) => {
             if (!day) return <div key={`e${i}`} />;
             const key = `${year}-${month}-${day}`;
@@ -228,7 +233,7 @@ const DateTimeStep = ({
               </button>
             );
           })}
-        </div>
+        </FadeStaggerGroup>
       </div>
 
       {selectedDate && (
@@ -267,7 +272,11 @@ const DateTimeStep = ({
               another date or fewer services.
             </p>
           ) : (
-            <div className="grid grid-cols-4 gap-2">
+            <FadeStaggerGroup
+              className="grid grid-cols-4 gap-2"
+              groupKey={selectedDate}
+              stagger={0.055}
+            >
               {times.map((t) => {
                 /**
                  * Past on the current day, booked, or too late for the visit to
@@ -301,7 +310,7 @@ const DateTimeStep = ({
                   </button>
                 );
               })}
-            </div>
+            </FadeStaggerGroup>
           )}
         </div>
       )}

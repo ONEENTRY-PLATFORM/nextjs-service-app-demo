@@ -3,7 +3,16 @@ import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
 import type { JSX } from 'react';
 
 // import MenuAnimations from '../../animations/MenuAnimations';
+import NavUnderline from '../animations/NavUnderline';
 import NavigationMenuItem from './NavigationMenuItem';
+
+/**
+ * Route of a top level menu item.
+ * @param   {IMenusPages} item - Menu item from OneEntry CMS
+ * @returns {string}           Href for the item, `/` for the home page
+ */
+const menuHref = (item: IMenusPages): string =>
+  `/${item.pageUrl && item.pageUrl !== 'home' ? item.pageUrl : ''}`;
 
 /**
  * Main navigation menu component.
@@ -16,6 +25,10 @@ import NavigationMenuItem from './NavigationMenuItem';
  * For menu items with children, it creates dropdown menus that appear on hover.
  * Each child item is linked to a specific page URL constructed from the parent
  * and child page URLs.
+ *
+ * The active item is not underlined by the item itself: the list is wrapped in
+ * `NavUnderline`, which owns a single bar and flows it between the items on
+ * hover. It needs the hrefs in the same order as the rendered items.
  * @param   {object}        props      - Component properties
  * @param   {IMenusPages[]} props.menu - Array of menu items representing the site navigation structure
  * @returns {JSX.Element}              JSX.Element representing the main navigation menu
@@ -26,7 +39,10 @@ const NavigationMenu = ({ menu }: { menu: IMenusPages[] }): JSX.Element => {
       className="hidden text-slate-400 fade-in lg:flex"
       data-testid="main-nav"
     >
-      <ul className="nav-menu my-auto flex flex-row flex-wrap items-center gap-8">
+      <NavUnderline
+        hrefs={menu.map(menuHref)}
+        className="nav-menu flex flex-row flex-wrap items-center gap-8"
+      >
         {menu.map((item, index) => {
           const hasChildren =
             Array.isArray(item.children) && item.children.length > 0;
@@ -38,7 +54,7 @@ const NavigationMenu = ({ menu }: { menu: IMenusPages[] }): JSX.Element => {
                   item.localizeInfos?.title ||
                   ''
                 }
-                href={`/${item.pageUrl && item.pageUrl !== 'home' ? item.pageUrl : ''}`}
+                href={menuHref(item)}
                 hasDropdown={hasChildren}
               />
               {Array.isArray(item.children) && item.children.length > 0 && (
@@ -65,7 +81,7 @@ const NavigationMenu = ({ menu }: { menu: IMenusPages[] }): JSX.Element => {
             </li>
           );
         })}
-      </ul>
+      </NavUnderline>
     </nav>
   );
 };

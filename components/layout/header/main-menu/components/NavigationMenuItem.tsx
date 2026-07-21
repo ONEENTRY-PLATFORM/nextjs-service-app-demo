@@ -48,10 +48,13 @@ const NavigationMenuItem = ({
       data-testid="main-nav-link"
       data-menu-href={href}
       className={clsx(
-        'flex items-center justify-center gap-2 border-b-2 pb-0.5 text-base font-medium transition-colors duration-300 ease-in-out focus:text-fuchsia-500 focus:outline-none',
-        isActive
-          ? 'border-fuchsia-500 text-fuchsia-500'
-          : 'border-transparent opacity-60',
+        /**
+         * The underline is drawn by `NavUnderline` for the whole menu, the
+         * transparent border only keeps the space it used to take. `transition`
+         * (not `transition-colors`) so the dimming fades along with the color.
+         */
+        'flex items-center justify-center gap-2 border-b-2 border-transparent pb-0.5 text-base font-medium transition duration-300 ease-in-out hover:text-fuchsia-500 hover:opacity-100 focus:text-fuchsia-500 focus:opacity-100 focus:outline-none',
+        isActive ? 'text-fuchsia-500' : 'opacity-60',
       )}
     >
       <div
