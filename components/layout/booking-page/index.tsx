@@ -228,29 +228,25 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
             >
               <ChevronLeft size={16} /> Back
             </button>
-            {/* Desktop: the summary follows the long steps down the page,
-                pinned under the fixed header (`h-20`) */}
-            <div className="xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto">
-              <BookingSummary
-                flow={flow}
-                salon={salonObj}
-                services={serviceObjs}
-                master={masterObj}
-                masterAny={masterAny}
-                date={date}
-                time={time}
-                currentIdx={stepIdx}
-                totalSteps={stepKeys.length}
-                paymentAccounts={paymentAccounts}
-                paymentAccount={paymentAccount}
-                onSelectPaymentAccount={selectPaymentAccount}
-                onBook={handleConfirm}
-                isLoggedIn={isAuth}
-                isLoading={isLoading}
-                error={error}
-                onReset={resetFlow}
-              />
-            </div>
+            <BookingSummary
+              flow={flow}
+              salon={salonObj}
+              services={serviceObjs}
+              master={masterObj}
+              masterAny={masterAny}
+              date={date}
+              time={time}
+              currentIdx={stepIdx}
+              totalSteps={stepKeys.length}
+              paymentAccounts={paymentAccounts}
+              paymentAccount={paymentAccount}
+              onSelectPaymentAccount={selectPaymentAccount}
+              onBook={handleConfirm}
+              isLoggedIn={isAuth}
+              isLoading={isLoading}
+              error={error}
+              onReset={resetFlow}
+            />
           </div>
         </div>
       </div>

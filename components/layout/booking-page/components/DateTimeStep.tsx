@@ -19,6 +19,7 @@ import {
 } from '../constants';
 import slotFits from '../slotFits';
 import slotMinutes from '../slotMinutes';
+import todayDateKey from '../todayDateKey';
 
 /**
  * Days in a month.
@@ -96,7 +97,7 @@ const DateTimeStep = ({
   const cells: (number | null)[] = [];
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysCount; d++) cells.push(d);
-  const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+  const todayKey = todayDateKey();
   /**
    * Booked slots to strike through. Always empty for now: the public SDK only
    * returns the signed-in client's own orders, so other clients' bookings — the

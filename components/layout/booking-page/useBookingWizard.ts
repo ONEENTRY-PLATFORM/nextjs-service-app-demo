@@ -2,10 +2,13 @@
 
 import { useMemo, useState } from 'react';
 
+import { useHydrated } from '@/app/store/useHydrated';
+
 import bookingStepKeys from './bookingStepKeys';
 import { ANY_MASTER } from './constants';
 import { scrollToBookingTop } from './scrollToBookingTop';
 import slotFits from './slotFits';
+import todayDateKey from './todayDateKey';
 import type {
   BookingData,
   BookingFlow,
@@ -231,6 +234,17 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   if (pendingDateTime && stepKeys.length > 0) {
     setPendingDateTime(false);
     setStepIdx(stepKeys.length - 1);
+  }
+
+  /**
+   * Land on Date & Time with today already picked, so the step opens on a grid
+   * of times instead of a bare calendar. Gated on {@link useHydrated}: "today"
+   * is the browser's day and the server cannot know it, so picking it during
+   * the hydration render would make the tree differ from the server HTML.
+   */
+  const hydrated = useHydrated();
+  if (hydrated && currentStepKey === 'datetime' && !date) {
+    setDate(todayDateKey());
   }
 
   const stepDone: Record<StepKey, boolean> = {
