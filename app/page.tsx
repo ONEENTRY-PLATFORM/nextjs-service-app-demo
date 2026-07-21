@@ -11,6 +11,7 @@ import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import { sortArrayByPosition } from '@/components/utils';
 
@@ -91,7 +92,9 @@ export async function generateMetadata(): Promise<Metadata> {
       getPagePlainContent(page) ||
       page.localizeInfos?.title ||
       'OneEntry next-js Beauty description',
+    alternates: { canonical: '/' },
     openGraph: {
+      ...(await pageOpenGraph('/')),
       type: 'website',
       title: page.localizeInfos?.title || 'OneEntry Beauty',
       description:

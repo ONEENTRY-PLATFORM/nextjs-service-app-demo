@@ -13,6 +13,7 @@ import { AuthProvider } from '@/app/store/providers/AuthContext';
 import { OpenDrawerProvider } from '@/app/store/providers/OpenDrawerContext';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import StoreProvider from '@/app/store/providers/StoreProvider';
+import { getSiteName } from '@/app/utils/getSiteName';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import BottomMenu from '@/components/layout/bottom-menu';
@@ -63,19 +64,6 @@ const leagueGothic = League_Gothic({
 
 /** This site's public origin (NOT the CMS host) — for OG/canonical/JSON-LD. */
 const siteUrl = getSiteUrl();
-
-/** Site name fallback when the `system_content` dictionary is unavailable. */
-const SITE_NAME_FALLBACK = 'Thalia Beauty Studio';
-
-/**
- * Resolve the public site name from the `system_content` dictionary
- * (`site_name`), falling back to the hardcoded brand name.
- * @returns {Promise<string>} Site name for metadata and structured data
- */
-const getSiteName = async (): Promise<string> => {
-  const dict = await getDictionary();
-  return (dict?.site_name?.value as string | undefined) || SITE_NAME_FALLBACK;
-};
 
 /**
  * Site metadata driven by the CMS: the title (and og:siteName) come from the
@@ -150,6 +138,8 @@ export default async function RootLayout({
   ]);
   /** Get dictionary and set to server provider */
   const [dict] = ServerProvider('dict', dictData);
+  /** Brand name for the JSON-LD block (same source as the metadata title). */
+  const siteName = await getSiteName();
 
   /**
    * Only a confirmed "resource is closed" (403) is fatal enough to replace the
@@ -191,12 +181,7 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: serializeJsonLd(
-              generateStructuredData(
-                (dict?.site_name?.value as string | undefined) ||
-                  SITE_NAME_FALLBACK,
-              ),
-            ),
+            __html: serializeJsonLd(generateStructuredData(siteName)),
           }}
         />
       </head>

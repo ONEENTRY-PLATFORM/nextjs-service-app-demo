@@ -1,6 +1,6 @@
 'use client';
 
-import { useTransitionRouter } from 'next-transition-router';
+import { useRouter } from 'next/navigation';
 import type { JSX } from 'react';
 import { useContext } from 'react';
 
@@ -13,7 +13,17 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
  */
 const LogoutMenuItem = (): JSX.Element => {
   const { logout } = useContext(AuthContext);
-  const router = useTransitionRouter();
+  /**
+   * Plain Next router, NOT `useTransitionRouter`.
+   *
+   * The header is mounted OUTSIDE `<TransitionProvider>` (`app/layout.tsx`), so
+   * `useTransitionRouter()` here resolves to the library's DEFAULT context,
+   * whose `navigate` is a no-op — the post-logout redirect silently did
+   * nothing and the visitor stayed on the private page they just signed out of.
+   * Header *links* are unaffected: the provider delegates `a[href]` clicks at
+   * the document level, so they still animate.
+   */
+  const router = useRouter();
 
   /**
    * Handle user logout

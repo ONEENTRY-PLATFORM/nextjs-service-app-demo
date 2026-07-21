@@ -8,6 +8,7 @@ import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import MastersPageContent from '@/components/layout/masters-page';
 import type {
   MasterItem,
@@ -217,7 +218,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: localizeInfos?.title,
     description: localizeInfos?.title,
+    alternates: { canonical: '/masters' },
     openGraph: {
+      ...(await pageOpenGraph('/masters')),
       type: 'article',
     },
   };

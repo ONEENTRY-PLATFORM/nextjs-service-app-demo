@@ -9,6 +9,7 @@ import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import MasterSingleLayout from '@/components/layout/master-single';
 import MasterLoader from '@/components/layout/master-single/components/MasterLoader';
@@ -146,7 +147,9 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: { canonical: `/masters/${handle}` },
     openGraph: {
+      ...(await pageOpenGraph(`/masters/${handle}`)),
       type: 'profile',
       title,
       description,

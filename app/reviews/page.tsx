@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { JSX } from 'react';
 
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import ReviewsPageContent from '@/components/layout/reviews-page';
 
 /**
@@ -62,7 +63,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: localizeInfos?.title,
     description: localizeInfos?.title,
+    alternates: { canonical: '/reviews' },
     openGraph: {
+      ...(await pageOpenGraph('/reviews')),
       type: 'article',
     },
   };

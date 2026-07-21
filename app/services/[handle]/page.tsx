@@ -8,6 +8,7 @@ import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import PromoBanner from '@/components/layout/services-page/PromoBanner';
 import ServicesCatalog from '@/components/layout/services-page/ServicesCatalog';
@@ -182,7 +183,9 @@ export async function generateMetadata({
   return {
     title: localizeInfos?.title,
     description,
+    alternates: { canonical: `/services/${handle}` },
     openGraph: {
+      ...(await pageOpenGraph(`/services/${handle}`)),
       type: 'article',
       title: localizeInfos?.title,
       description,

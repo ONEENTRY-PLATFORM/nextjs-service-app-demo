@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import SalonPageContent from '@/components/layout/salon-page';
 import {
   DEFAULT_SALON_CONTENT,
@@ -134,7 +135,9 @@ export async function generateMetadata({
   return {
     title: localizeInfos?.title,
     description,
+    alternates: { canonical: `/salons/${handle}` },
     openGraph: {
+      ...(await pageOpenGraph(`/salons/${handle}`)),
       type: 'article',
       title: localizeInfos?.title,
       description,

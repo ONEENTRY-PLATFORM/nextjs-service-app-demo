@@ -20,6 +20,7 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
 import productDurationMinutes from '@/app/utils/productDurationMinutes';
 
 import VisitGroups from './VisitGroups';
+import VisitHistorySkeleton from './VisitHistorySkeleton';
 import VisitSection from './VisitSection';
 
 /**
@@ -80,7 +81,7 @@ const ProfileHistory = ({
    * mounts (i.e. on the redirect back here) turns that mark into an actual
    * reload instead of the stale list that used to need a manual page refresh.
    */
-  const { data: orders = [] } = useGetAllOrdersByMarkerQuery(
+  const { data: orders = [], isLoading } = useGetAllOrdersByMarkerQuery(
     { marker: ORDERS_STORAGE_MARKER },
     { skip: !isAuth, refetchOnMountOrArgChange: true },
   );
@@ -128,6 +129,15 @@ const ProfileHistory = ({
     }),
     [orders],
   );
+
+  /**
+   * First load of the orders storage — render the skeleton instead of three
+   * sections with a "0" badge and "No visits yet", which would otherwise read as
+   * an empty history for the split second before the request resolves.
+   */
+  if (isLoading) {
+    return <VisitHistorySkeleton />;
+  }
 
   return (
     <div className="w-full divide-y divide-slate-150">

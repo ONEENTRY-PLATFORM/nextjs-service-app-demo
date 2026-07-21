@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import BookingWizard from '@/components/layout/booking-page';
 import BookingAnimations from '@/components/layout/booking-page/animations/BookingAnimations';
 import BookingHero from '@/components/layout/booking-page/BookingHero';
@@ -98,7 +99,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: localizeInfos?.title,
     description: localizeInfos?.title,
+    alternates: { canonical: '/booking' },
     openGraph: {
+      ...(await pageOpenGraph('/booking')),
       type: 'article',
     },
   };

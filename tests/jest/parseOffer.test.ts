@@ -95,14 +95,24 @@ describe('parseOffer', () => {
   });
 
   describe('accent colour', () => {
-    it('maps a category title to its brand accent and gradient', () => {
+    it('maps a category title to its brand accent and two-tone gradient', () => {
       const view = parseOffer(
         makeOffer({ offer_type: { value: [{ title: 'Hair' }] } }),
       );
 
       expect(view.accentColor).toBe('#ed21f1');
+      // Brand accents carry the mock's light→dark pair
+      // (`offerAccentGradientsData`), not a shade of the accent itself
+      expect(view.accentGrad).toBe('linear-gradient(135deg,#f60efb,#ed21f1)');
+    });
+
+    it('derives a gradient from the colour when it is not a brand accent', () => {
+      const view = parseOffer(
+        makeOffer({ offer_type: { value: [{ value: '#123456' }] } }),
+      );
+
       expect(view.accentGrad).toBe(
-        'linear-gradient(135deg, #ed21f1, #ed21f1cc)',
+        'linear-gradient(135deg, #123456, #123456cc)',
       );
     });
 

@@ -42,13 +42,10 @@ test.describe('SEO metadata', () => {
     // `getSiteUrl()`, so every absolute URL Next emits must live on the site.
     await page.goto('/');
 
-    // Location-ish metadata: whatever of it Next emits must be absolute and on
-    // this site. NOTE: `og:url` / `og:site_name` are declared in the ROOT
-    // metadata only, and a page-level `openGraph` object REPLACES the root one
-    // wholesale (`app/page.tsx`, `app/[handle]/page.tsx` set `type`/`title`
-    // only) — so in practice neither tag reaches a page. The assertions below
-    // are therefore conditional: they lock in "never the CMS host" without
-    // pretending tags exist that do not.
+    // A page-level `openGraph` REPLACES the root one wholesale, which used to
+    // drop `og:url` / `og:site_name` from every page; `pageOpenGraph()` puts
+    // them back, and `alternates.canonical` is declared per page. Both must be
+    // absolute, on this site, and point at the page itself.
     const locationMeta = await page
       .locator('meta[property="og:url"], link[rel="canonical"]')
       .evaluateAll((nodes) =>
@@ -57,15 +54,35 @@ test.describe('SEO metadata', () => {
             node.getAttribute('content') ?? node.getAttribute('href') ?? '',
         ),
       );
+    expect(locationMeta.length).toBeGreaterThanOrEqual(2);
     for (const value of locationMeta) {
       expect(value).toMatch(/^https?:\/\//);
       expect(value).not.toContain('oneentry.cloud');
     }
 
-    // OpenGraph itself is emitted (the block exists at all)
     await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
       'content',
       /\S/,
+    );
+    await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute(
+      'content',
+      /\S/,
+    );
+  });
+
+  test('a deep page carries its own canonical and og:url', async ({ page }) => {
+    // The path must be the page's own, not the site root — this is what makes
+    // canonical/og:url useful to a crawler
+    await page.goto('/offers');
+
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/offers$/,
+      { timeout: 30_000 },
+    );
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+      'content',
+      /\/offers$/,
     );
   });
 

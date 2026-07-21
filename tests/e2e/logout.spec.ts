@@ -34,14 +34,13 @@ test.describe('Logout', () => {
     await expect(logout).toBeVisible({ timeout: 15_000 });
     await logout.click();
 
-    // Both auth keys go (`logOutUser` finally-block).
-    //
-    // The post-logout `router.push('/')` is NOT asserted: it does not take
-    // effect from /profile — dropping the session re-renders the page as the
-    // auth wall and unmounts the menu, and the transition-router navigation
-    // never commits, so the visitor stays on /profile (verified 2026-07-21,
-    // same code in `SignOutButton`). Signing out itself works, which is what
-    // this test locks in.
+    // Redirected home — the visitor must not be left sitting on the private
+    // page they just signed out of. Regression guard: the header lives outside
+    // `<TransitionProvider>`, where `useTransitionRouter()` degrades to a no-op
+    // `navigate`, so this push used to do nothing at all.
+    await expect(page).toHaveURL(/\/$/, { timeout: 30_000 });
+
+    // Both auth keys go (`logOutUser` finally-block)
     await expect
       .poll(
         async () =>

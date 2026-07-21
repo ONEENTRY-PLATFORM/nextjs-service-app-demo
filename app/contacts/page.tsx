@@ -9,6 +9,7 @@ import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import parseOpeningTime from '@/app/utils/parseOpeningTime';
 import summarizeOpeningHours from '@/app/utils/summarizeOpeningHours';
 import BookCtaBanner from '@/components/layout/contacts-page/BookCtaBanner';
@@ -181,7 +182,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: localizeInfos?.title || 'Contacts',
     description: getPagePlainContent(page) || 'Contact information',
+    alternates: { canonical: '/contacts' },
     openGraph: {
+      ...(await pageOpenGraph('/contacts')),
       type: 'article',
     },
   };

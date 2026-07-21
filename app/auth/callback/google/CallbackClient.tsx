@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { getApi } from '@/app/api/api/api';
 import { googleOAuthAction } from '@/app/api/server/auth/googleOAuthAction';
 import { AuthContext } from '@/app/store/providers/AuthContext';
+import { parseOAuthState } from '@/app/utils/parseOAuthState';
 import Spinner from '@/components/shared/Spinner';
 
 /** Route path Google redirects back to — must equal the URI whitelisted in Console. */
@@ -22,6 +23,8 @@ const CALLBACK_PATH = '/auth/callback/google';
  * the refresh token binds to this browser, not the server (see
  * `googleOAuthAction`). Tokens then go through the shared `AuthContext.login()`
  * — the exact same path email sign-in uses — with the `google` provider marker.
+ * Afterwards the user is returned to the page they signed in from, decoded from
+ * the OAuth `state` param (`parseOAuthState`); `/` if it is missing or unsafe.
  * @returns {JSX.Element} Loading / error status UI
  */
 const CallbackClient = (): JSX.Element => {
@@ -38,13 +41,15 @@ const CallbackClient = (): JSX.Element => {
 
     const code = searchParams.get('code');
     const errorParam = searchParams.get('error');
+    /** Page the user started from — Google echoes `state` back untouched. */
+    const returnPath = parseOAuthState(searchParams.get('state'));
 
     if (errorParam || !code) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setError(
         errorParam ? 'Authorization was canceled' : 'No authorization code',
       );
-      setTimeout(() => router.push('/'), 2500);
+      setTimeout(() => router.push(returnPath), 2500);
       return;
     }
 
@@ -66,7 +71,7 @@ const CallbackClient = (): JSX.Element => {
           ? rawMessage.join('; ')
           : (rawMessage ?? 'Google sign-in failed');
         setError(message);
-        setTimeout(() => router.push('/'), 3000);
+        setTimeout(() => router.push(returnPath), 3000);
         return;
       }
 
@@ -77,7 +82,7 @@ const CallbackClient = (): JSX.Element => {
         authProviderMarker: 'google',
       });
       toast('You signed in!');
-      router.push('/');
+      router.push(returnPath);
     })();
   }, [searchParams, router, login]);
 

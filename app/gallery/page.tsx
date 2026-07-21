@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { JSX } from 'react';
 
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import GalleryPageContent from '@/components/layout/gallery-page';
 import GalleryUnavailable from '@/components/layout/gallery-page/components/GalleryUnavailable';
 import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
@@ -76,7 +77,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: localizeInfos?.title,
     description: localizeInfos?.title,
+    alternates: { canonical: '/gallery' },
     openGraph: {
+      ...(await pageOpenGraph('/gallery')),
       type: 'article',
     },
   };

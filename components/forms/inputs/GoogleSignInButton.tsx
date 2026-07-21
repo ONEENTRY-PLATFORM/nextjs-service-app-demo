@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import { getApi, isError } from '@/app/api/api/api';
+import { buildOAuthState } from '@/app/utils/buildOAuthState';
 import GoogleIcon from '@/components/icons/google';
 
 /**
@@ -17,7 +18,8 @@ import GoogleIcon from '@/components/icons/google';
  * origins just need to be whitelisted in the Google Cloud Console.
  *
  * Google returns to `/auth/callback`, which exchanges the `code` for tokens via
- * the `googleOAuthAction` Server Action.
+ * the `googleOAuthAction` Server Action and sends the user back to the page they
+ * started from (carried through the redirect in the OAuth `state` param).
  * @param   {object}      props       - Component props
  * @param   {string}      props.title - Button label (default "Sign in with Google")
  * @returns {JSX.Element}             The Google sign-in button
@@ -58,6 +60,8 @@ const GoogleSignInButton = ({
         scope: 'openid email profile',
         access_type: 'offline',
         prompt: 'consent',
+        /** Carries the current page through the redirect — see `buildOAuthState`. */
+        state: buildOAuthState(),
       });
       window.location.href = `${baseUrl}?${params.toString()}`;
     } catch {

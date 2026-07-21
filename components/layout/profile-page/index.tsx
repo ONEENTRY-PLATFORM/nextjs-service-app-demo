@@ -15,6 +15,7 @@ import FromAnimations from './animations/FromAnimations';
 import HistoryAnimations from './animations/HistoryAnimations';
 import MobileTabs, { type ProfileTab } from './components/MobileTabs';
 import ProfileCard from './components/ProfileCard';
+import VisitHistorySkeleton from './components/VisitHistorySkeleton';
 
 const ProfileHistory = dynamic(() => import('./components/ProfileHistory'), {
   ssr: true,
@@ -104,7 +105,7 @@ const ProfilePageLayout = ({
             </h2>
             {/* ProfileHistory reads useSearchParams — it must sit under a
                 Suspense boundary or the whole route bails out to CSR. */}
-            <Suspense fallback={null}>
+            <Suspense fallback={<VisitHistorySkeleton />}>
               <ProfileHistory dict={dict} masters={masters} />
             </Suspense>
           </div>

@@ -6,6 +6,7 @@ import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import PaymentCanceled from '@/components/pages/PaymentCanceled';
 import PaymentSuccess from '@/components/pages/PaymentSuccess';
 
@@ -105,7 +106,9 @@ export async function generateMetadata({
   return {
     title: localizeInfos?.title || 'Default Title',
     description: getPagePlainContent(page) || 'Default Description',
+    alternates: { canonical: `/${handle}` },
     openGraph: {
+      ...(await pageOpenGraph(`/${handle}`)),
       type: 'article',
     },
   };

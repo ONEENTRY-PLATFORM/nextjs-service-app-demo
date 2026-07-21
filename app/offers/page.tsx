@@ -10,6 +10,7 @@ import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { isOfferProduct } from '@/app/utils/isOfferProduct';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import { offerTermsData } from '@/components/data';
 import OfferDetailCard from '@/components/layout/offers-page/OfferDetailCard';
 
@@ -157,7 +158,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: localizeInfos?.title,
     description: getPagePlainContent(page) || localizeInfos?.title,
+    alternates: { canonical: '/offers' },
     openGraph: {
+      ...(await pageOpenGraph('/offers')),
       type: 'article',
     },
   };

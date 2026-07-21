@@ -6,6 +6,7 @@ import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesBy
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
+import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import GalleryPageContent from '@/components/layout/gallery-page';
 import GalleryUnavailable from '@/components/layout/gallery-page/components/GalleryUnavailable';
@@ -139,7 +140,9 @@ export async function generateMetadata({
   return {
     title: localizeInfos?.title,
     description,
+    alternates: { canonical: `/gallery/${handle}` },
     openGraph: {
+      ...(await pageOpenGraph(`/gallery/${handle}`)),
       type: 'article',
       title: localizeInfos?.title,
       description,

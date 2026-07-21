@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/no-undefined-types */
 'use client';
 
-import { useTransitionRouter } from 'next-transition-router';
+import { useRouter } from 'next/navigation';
 import type { FormEvent, JSX } from 'react';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import OtpInput from 'react-otp-input';
@@ -30,8 +30,12 @@ import FormSubmitButton from './inputs/FormSubmitButton';
  * @returns {JSX.Element}                 JSX element for verification form
  */
 const VerificationForm = ({ dict }: FormProps): JSX.Element => {
-  /** Router for navigation with transitions */
-  const router = useTransitionRouter();
+  /**
+   * Plain Next router: the auth popup is mounted by `PopupRoot`, OUTSIDE
+   * `<TransitionProvider>`, where `useTransitionRouter()` falls back to the
+   * library's default no-op context (same trap as `LogoutMenuItem`).
+   */
+  const router = useRouter();
   /** Redux dispatch function for updating state */
   const dispatch = useAppDispatch();
   /** Authentication context for managing user authentication state */
