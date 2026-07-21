@@ -8,16 +8,12 @@ import { useContext, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { getApi, isError } from '@/app/api/api/api';
-import {
-  useGetAuthProvidersQuery,
-  useGetFormByMarkerQuery,
-} from '@/app/api/api/RTKApi';
-import { useAppSelector } from '@/app/store/hooks';
+import { useGetAuthProvidersQuery } from '@/app/api/api/RTKApi';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import FormFieldAnimations from '@/components/forms/animations/FormFieldAnimations';
-import { getFormAttributes } from '@/components/utils/getFormAttributes';
+import { useCmsForm } from '@/components/forms/useCmsForm';
 
 import AuthDivider from './inputs/AuthDivider';
 import CreateAccountButton from './inputs/CreateAccountButton';
@@ -68,21 +64,13 @@ const SignInForm = ({
     sign_in_text,
   } = dict;
 
-  /** Get form by marker with RTK Query */
-  const { data, isLoading } = useGetFormByMarkerQuery({ marker: 'reg' });
-
-  /** Get form field values from Redux store */
-  const fields = useAppSelector((state) => state.formFieldsReducer.fields);
-
-  /** Sort form fields by their position property */
-  const formFields = useMemo(
-    () =>
-      getFormAttributes(data).sort(
-        (a: { position: number }, b: { position: number }) =>
-          a.position - b.position,
-      ),
-    [data],
-  );
+  /** CMS form definition (ordered fields) plus the live values */
+  const {
+    attributes: formFields,
+    fields,
+    isLoading,
+    hasForm,
+  } = useCmsForm('reg');
 
   /**
    * Credentials for sign-in are selected by the CMS flags `isLogin` /
@@ -180,7 +168,7 @@ const SignInForm = ({
   /** Render sign in form with email/phone tabs and form fields */
   return (
     <FormAnimations
-      isLoading={isLoading || !data}
+      isLoading={isLoading || !hasForm}
       className={className}
       isActive={isActive}
     >

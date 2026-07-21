@@ -2,7 +2,7 @@
 
 import type { JSX, ReactNode } from 'react';
 
-import { useHeroRef } from './HeroAnimations';
+import { useHeroRef } from './hero/useHeroRef';
 
 /**
  * HeroBg — leaf wrapper that registers the hero background element

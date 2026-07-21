@@ -2,7 +2,7 @@
 
 import type { CSSProperties, JSX, ReactNode } from 'react';
 
-import { useHeroRef } from './HeroAnimations';
+import { useHeroRef } from './hero/useHeroRef';
 
 /**
  * HeroTitle — leaf wrapper for the hero heading.

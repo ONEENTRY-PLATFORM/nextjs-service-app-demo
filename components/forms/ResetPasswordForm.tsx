@@ -6,16 +6,13 @@ import type { FormEvent, JSX } from 'react';
 import { useContext, useMemo, useState } from 'react';
 
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
-import { useGetFormByMarkerQuery } from '@/app/api/api/RTKApi';
-import { useAppSelector } from '@/app/store/hooks';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { FormProps } from '@/app/types/global';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
-import { getFormAttributes } from '@/components/utils/getFormAttributes';
-import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
+import { useCmsForm } from '@/components/forms/useCmsForm';
 
 import ErrorMessage from './inputs/ErrorMessage';
 import FormInput from './inputs/FormInput';
@@ -75,7 +72,8 @@ export const resetPasswordFormFields = [
  */
 const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
   /** Get form field values from Redux store */
-  const fields = useAppSelector((state) => state.formFieldsReducer.fields);
+  /** CMS form definition (ordered fields) plus the live values */
+  const { attributes, fields } = useCmsForm('reg');
   const { email_reg, otp_code } = fields;
   /** Access drawer context to control component display and actions */
   const { setComponent, setAction, setDirection } =
@@ -87,9 +85,6 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
   /** Extract localized text values from dictionary */
   const { new_password_desc, change_password_text } = dict;
 
-  /** Load the registration form so the password fields come from the CMS. */
-  const { data } = useGetFormByMarkerQuery({ marker: 'reg' });
-
   /**
    * The two password inputs of the reset step: the CMS password field
    * (`isPassword`) and its confirmation field (`isConfirmPasswordField`), taken
@@ -97,13 +92,12 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
    * Falls back to the synthesized fields when the CMS form is unavailable.
    */
   const passwordFields = useMemo(() => {
-    const attrs = sortArrayByPosition(getFormAttributes<IFormAttribute>(data));
-    const passwordAttr = attrs.find(isPasswordField);
-    const confirmAttr = attrs.find(isConfirmPasswordField);
+    const passwordAttr = attributes.find(isPasswordField);
+    const confirmAttr = attributes.find(isConfirmPasswordField);
     return passwordAttr && confirmAttr
       ? [passwordAttr, confirmAttr]
       : resetPasswordFormFields;
-  }, [data]);
+  }, [attributes]);
 
   /** Markers of the new-password and confirm-password inputs. */
   const passwordMarker = passwordFields[0]?.marker ?? 'password_reg';

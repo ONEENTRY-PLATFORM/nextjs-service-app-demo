@@ -1,10 +1,7 @@
 'use client';
 
 import { useTransitionRouter } from 'next-transition-router';
-import type {
-  IOrderData,
-  IOrdersFormData,
-} from 'oneentry/dist/orders/ordersInterfaces';
+import type { IOrderData } from 'oneentry/dist/orders/ordersInterfaces';
 import { useContext, useState } from 'react';
 
 import { getApi, isError } from '@/app/api/api/api';
@@ -12,9 +9,6 @@ import { RTKApi, useUpdateOrderMutation } from '@/app/api/api/RTKApi';
 import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
-  ORDER_FIELD_INTERVAL,
-  ORDER_FIELD_MASTER,
-  ORDER_FIELD_SALON,
   ORDERS_FORM_IDENTIFIER,
   ORDERS_STORAGE_MARKER,
 } from '@/app/store/orderMarkers';
@@ -26,7 +20,9 @@ import {
   selectActiveItemId,
 } from '@/app/store/reducers/CartSlice';
 
-import totalServiceMinutes from './totalServiceMinutes';
+import { buildOrderFormData } from './buildOrderFormData';
+import { buildOrderProducts } from './buildOrderProducts';
+import { toBookingInterval } from './toBookingInterval';
 import type { BookingMaster, BookingSalon, BookingService } from './types';
 
 /** Everything the wizard has picked by the time of the confirm click. */
@@ -40,28 +36,6 @@ export interface BookingSelection {
   /** Time slot `HH:MM` */
   time: string;
 }
-
-/**
- * Parse the wizard's date key + time slot into the appointment interval.
- * The interval length is the sum of every chosen service's duration (each
- * service defaults to 60 min when it has none; an empty selection → 60 min).
- * @param   {BookingSelection} sel - Confirmed selection
- * @returns {[Date, Date]}         Start / end of the appointment
- */
-const toInterval = (sel: BookingSelection): [Date, Date] => {
-  const [y = 0, m = 0, d = 1] = sel.date.split('-').map(Number);
-  const [hh = 0, mm = 0] = sel.time.split(':').map(Number);
-  /**
-   * Build the interval in UTC: the appointment is rendered back with `getUTC*`
-   * (see OrderDateTime), so a picked "14:00" slot must be stored as 14:00Z.
-   * Using the browser's local timezone here would shift the stored visit time
-   * by the client's offset.
-   */
-  const start = new Date(Date.UTC(y, m, d, hh, mm));
-  const minutes = totalServiceMinutes(sel.services) || 60;
-  const end = new Date(start.getTime() + minutes * 60_000);
-  return [start, end];
-};
 
 /**
  * useBookingSubmit — the confirm logic of the booking wizard.
@@ -153,13 +127,10 @@ export const useBookingSubmit = ({
     }
 
     /**
-     * Products to book — every chosen service that has a CMS product behind it.
-     * Demo services (no `productId`) are dropped; when none remain there is
-     * nothing to post, so just show the confirmation (demo booking).
+     * Nothing bookable in the selection (all demo services) → there is nothing
+     * to post, so just show the confirmation.
      */
-    const products = sel.services
-      .filter((sv) => sv.productId)
-      .map((sv) => ({ productId: sv.productId as number, quantity: 1 }));
+    const products = buildOrderProducts(sel.services);
     if (products.length === 0) {
       setRealOrder(false);
       setBooked(true);
@@ -168,47 +139,14 @@ export const useBookingSubmit = ({
 
     setIsLoading(true);
     try {
-      const [start, end] = toInterval(sel);
-      /**
-       * Markers and types mirror the `order` form's ATTRIBUTE SET, verified by
-       * actually posting orders (`.claude/temp/probe-order-fields.mjs`,
-       * 2026-07-17): `master` (list), `salon` (entity), `interval`
-       * (timeInterval) — and nothing else.
-       *
-       * They used to be guesses, and one was wrong: the salon went as
-       * `order_salon`, a marker the form does not have, so once the form was
-       * filled in the admin panel the salon silently stopped reaching the order.
-       *
-       * ⚠️ Do NOT add `price` / `currency` here, however tempting:
-       * `getFormByMarker('order')` lists them as attributes, but the form's
-       * attribute set holds only the three above, and `createOrder` rejects the
-       * extra markers outright — `400 "form includes an attribute's marker that
-       * is not presented in corresponding form's attributes sets"`. The public
-       * form listing and the set disagree; the set wins. Verify against a real
-       * POST, not the listing, whenever this changes.
-       */
-      const formData: IOrdersFormData[] = [];
-      if (sel.master?.adminId) {
-        formData.push({
-          marker: ORDER_FIELD_MASTER,
-          type: 'list',
-          value: [sel.master.adminId.toString()],
-        });
-      }
-      const salonId = Number(sel.salon?.id);
-      if (salonId) {
-        formData.push({
-          marker: ORDER_FIELD_SALON,
-          type: 'entity',
-          /** Entity refs to PAGES take numeric ids, not strings. */
-          value: [salonId],
-        });
-      }
-      formData.push({
-        marker: ORDER_FIELD_INTERVAL,
-        type: 'timeInterval',
-        /** Send the interval as explicit ISO strings rather than Date objects. */
-        value: [[start.toISOString(), end.toISOString()]],
+      const formData = buildOrderFormData({
+        salon: sel.salon,
+        master: sel.master,
+        interval: toBookingInterval({
+          date: sel.date,
+          time: sel.time,
+          services: sel.services,
+        }),
       });
 
       /**

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import type { CSSProperties, JSX } from 'react';
 import { useEffect, useState } from 'react';
 
-import { useHeroRef } from '@/app/animations/HeroAnimations';
+import { useHeroRef } from '@/app/animations/hero/useHeroRef';
 
 import HeroSlideOverlayDesktop from './HeroSlideOverlayDesktop';
 import HeroSlideOverlayMobile from './HeroSlideOverlayMobile';

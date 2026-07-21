@@ -6,13 +6,10 @@ import type { FormEvent, JSX } from 'react';
 import { useContext, useState } from 'react';
 
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
-import { useGetFormByMarkerQuery } from '@/app/api/api/RTKApi';
-import { useAppSelector } from '@/app/store/hooks';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
-import { getFormAttributes } from '@/components/utils/getFormAttributes';
-import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
+import { useCmsForm } from '@/components/forms/useCmsForm';
 
 import SpinnerLoader from '../shared/SpinnerLoader';
 import ErrorMessage from './inputs/ErrorMessage';
@@ -42,8 +39,7 @@ export const ForgotPasswordForm = ({
   const { reset_descr, send_text } = dict;
 
   /** Get form data with RTK from API */
-  const { data, isLoading } = useGetFormByMarkerQuery({ marker: 'reg' });
-  const fields = useAppSelector((state) => state.formFieldsReducer.fields);
+  const { attributes, fields, isLoading, hasForm } = useCmsForm('reg');
 
   /**
    * Submit form
@@ -87,7 +83,7 @@ export const ForgotPasswordForm = ({
   };
 
   /** Show loading spinner while form data is being fetched */
-  if (!data || isLoading) {
+  if (!hasForm || isLoading) {
     return <SpinnerLoader />;
   }
 
@@ -106,7 +102,7 @@ export const ForgotPasswordForm = ({
         </div>
 
         <div className="relative mb-8 box-border flex shrink-0 flex-col gap-4">
-          {sortArrayByPosition(getFormAttributes(data))
+          {attributes
             .filter((field: IFormAttribute) => field.marker === 'email_reg')
             .map((field: IFormAttribute, index: number) => (
               <FormInput key={index} index={index} {...field} />

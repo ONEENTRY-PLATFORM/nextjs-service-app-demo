@@ -2,7 +2,7 @@
 
 import type { JSX, ReactNode } from 'react';
 
-import { useHeroRef } from './HeroAnimations';
+import { useHeroRef } from './hero/useHeroRef';
 
 /**
  * HeroKicker — leaf wrapper for the small eyebrow line above the hero title

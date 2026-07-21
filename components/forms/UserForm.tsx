@@ -11,15 +11,12 @@ import { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
-import { useGetFormByMarkerQuery } from '@/app/api/api/RTKApi';
-import { useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import type { FormProps } from '@/app/types/global';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isLoginCredential } from '@/components/forms/fieldFlags/isLoginCredential';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
-import { getFormAttributes } from '@/components/utils/getFormAttributes';
-import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
+import { useCmsForm } from '@/components/forms/useCmsForm';
 
 import AuthError from '../pages/AuthError';
 import SpinnerLoader from '../shared/SpinnerLoader';
@@ -64,18 +61,12 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
    * registered with. It matches `'reg'` today (the only registration form), so
    * this changes nothing now and stops being a guess if a second one appears.
    */
-  const { data, isLoading, error } = useGetFormByMarkerQuery(
-    { marker: user?.formIdentifier ?? '' },
-    { skip: !user?.formIdentifier },
-  );
-
-  /** get fields from formFieldsReducer */
-  const fields = useAppSelector((state) => state.formFieldsReducer.fields);
-
-  /** Form fields sorted by position for a deterministic order. */
-  const sortedFields = sortArrayByPosition(
-    getFormAttributes<IFormAttribute>(data),
-  );
+  const {
+    attributes: sortedFields,
+    fields,
+    isLoading,
+    error,
+  } = useCmsForm(user?.formIdentifier ?? '');
 
   /**
    * Current trimmed value of a form field from the Redux store.

@@ -2,7 +2,7 @@
 
 import type { JSX, ReactNode } from 'react';
 
-import { useHeroRef } from './HeroAnimations';
+import { useHeroRef } from './hero/useHeroRef';
 
 /**
  * HeroDescription — leaf wrapper for the hero subtitle line under the title.
