@@ -4,6 +4,7 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { getServicesCatalogData } from '@/app/services/catalog-data';
+import { entityPageIds, entityProductIds } from '@/app/utils/entityLinks';
 import { salonFromPage } from '@/app/utils/salonFromPage';
 import type {
   BookingData,
@@ -22,34 +23,6 @@ const CATEGORY_BY_PAGEURL: Record<string, string> = {
   face: 'Face',
   body: 'Body',
   nails: 'Nails',
-};
-
-/**
- * Parse the admin's `services` attribute links: numeric entries are services
- * category pages, composite `p-<parentId>-<productId>` strings are products.
- * @param   {unknown} value - Raw `attributeValues.services.value`
- * @returns {object}        Category page ids and product ids of the links
- */
-const parseServiceLinks = (
-  value: unknown,
-): { categoryPageIds: number[]; productIds: number[] } => {
-  const categoryPageIds: number[] = [];
-  const productIds: number[] = [];
-  if (!Array.isArray(value)) {
-    return { categoryPageIds, productIds };
-  }
-  // An `entity` value is `[{ title, value: { id, parentId, … } }]`
-  // (OneEntry `IListTitleEntityValue`) — the linked id lives in `value.id`.
-  for (const entry of value as Array<{ value?: { id?: number | string } }>) {
-    const raw = entry?.value?.id;
-    if (typeof raw === 'number') {
-      categoryPageIds.push(raw);
-    } else if (typeof raw === 'string' && raw.startsWith('p-')) {
-      const productId = Number(raw.split('-')[2]);
-      if (productId) productIds.push(productId);
-    }
-  }
-  return { categoryPageIds, productIds };
 };
 
 /**
@@ -73,9 +46,9 @@ const toBookingMaster = ({
   const name = (attrs.master_name?.value as string | undefined) ?? '';
   if (!name) return null;
 
-  const { categoryPageIds, productIds } = parseServiceLinks(
-    attrs.master_services?.value,
-  );
+  const rawServices = attrs.master_services?.value;
+  const categoryPageIds = entityPageIds(rawServices);
+  const productIds = entityProductIds(rawServices);
   const serviceIds = productIds
     .map((id) => String(id))
     .filter((id) => serviceById.has(id));
@@ -91,13 +64,7 @@ const toBookingMaster = ({
     new Set(fromProducts.length > 0 ? fromProducts : fromPages),
   );
 
-  const salonArr = attrs.master_salon?.value as
-    Array<{ value?: { id?: number } }> | '' | undefined;
-  const salonIds = Array.isArray(salonArr)
-    ? salonArr
-        .map((s) => s?.value?.id)
-        .filter((id): id is number => typeof id === 'number')
-    : [];
+  const salonIds = entityPageIds(attrs.master_salon?.value);
 
   /** "from" price — the cheapest linked service */
   const prices = serviceIds

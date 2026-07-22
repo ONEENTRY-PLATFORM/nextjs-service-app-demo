@@ -1,42 +1,17 @@
-import { unstable_cache } from 'next/cache';
 import type { IError } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
-import { cache } from 'react';
 
-import { getApi, isError } from '@/app/api/api/api';
-import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
+import { getApi } from '@/app/api/api/api';
+import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
 
-/**
- * Fetch a page from OneEntry, cached across requests (private helper).
- *
- * The SDK call is a plain fetch that Next.js does not cache on its own, so it
- * is wrapped in `unstable_cache` with a short TTL and invalidation tags.
- * @param   {string}          url - Page marker (`pageUrl`) to fetch
- * @returns {Promise<object>}     Envelope with the page or the error
- */
-const getPageByUrlImpl = unstable_cache(
-  async (
-    url: string,
-  ): Promise<{
-    isError: boolean;
-    error?: IError;
-    page?: IPagesEntity;
-  }> => {
-    const data = await fetchCmsData(
-      () => getApi().Pages.getPageByUrl(url),
-      'getPageByUrl',
-    );
-    if (isError(data)) {
-      return { isError: true, error: data };
-    }
-    return { isError: false, page: data };
-  },
-  ['oneentry-page-by-url'],
-  { revalidate: 60, tags: ['oneentry', 'oneentry-pages'] },
-);
-
-/** Request-level dedupe over the cross-request cache. */
-const getPageByUrlCached = cache(getPageByUrlImpl);
+/** Cached reader: TTL, request-level dedupe and transient-failure handling. */
+const readPageByUrl = createCachedCmsReader<[string], IPagesEntity>({
+  cacheKey: 'oneentry-page-by-url',
+  label: 'getPageByUrl',
+  revalidate: 60,
+  tags: ['oneentry', 'oneentry-pages'],
+  call: (url) => getApi().Pages.getPageByUrl(url),
+});
 
 /**
  * Get page object with information about forms, blocks, menus, linked to the page by URL
@@ -44,9 +19,9 @@ const getPageByUrlCached = cache(getPageByUrlImpl);
  * This function fetches a page entity by its URL from the OneEntry API. The page entity
  * contains information about forms, blocks, and menus associated with the page.
  *
- * Wrapped in React `cache()` over a cross-request `unstable_cache`, so the same
- * marker requested from `generateMetadata` and the page body within one render
- * hits the API once (most routes fetch the very same page twice).
+ * The same marker requested from `generateMetadata` and the page body within one
+ * render hits the API once (most routes fetch the very same page twice), and a
+ * transient CMS failure degrades for that request only instead of being cached.
  *
  * NOTE: `url` is the OneEntry page marker (`pageUrl` from the admin panel),
  * NOT a Next.js route path — pass `'services'`, never `'/services/haircut'`.
@@ -67,12 +42,10 @@ const getPageByUrlCached = cache(getPageByUrlImpl);
 export const getPageByUrl = async (
   url: string,
 ): Promise<{ isError: boolean; error?: IError; page?: IPagesEntity }> => {
-  try {
-    return await getPageByUrlCached(url);
-  } catch (e) {
-    // Transient CMS failure (timeout / 5xx / network): unstable_cache did not
-    // store it (fetchCmsData threw), so this degrades for THIS request only —
-    // the next request retries instead of serving a cache-poisoned notFound.
-    return { isError: true, error: e as IError };
-  }
+  const { isError: failed, error, data } = await readPageByUrl(url);
+  return {
+    isError: failed,
+    ...(error ? { error } : {}),
+    ...(data ? { page: data } : {}),
+  };
 };

@@ -141,11 +141,29 @@
 
 Проверено: typecheck (оба проекта), `npx eslint .` — 0 ошибок, `npm test` — **247/247**, прод-сборка, полный e2e — **98 passed / 0 failed**, визуально — навигация с hover, галерея, футер с градиентом и тремя салонами. Резолвнутый конфиг eslint сверен с эталоном: **137 активных правил, 0 потеряно**.
 
-Ниже — незакрытое. Пункт **10** требует **явного согласия**: заметно двигает вёрстку на ≥1240px.
+**Волна 2, блок A — типизированный ридер `entity`-ссылок ✅ 2026-07-22.** Заведён [entityLinks.ts](app/utils/entityLinks.ts) с тремя функциями: `entityLinks` (title + сырой id + parentId), `entityPageIds` (только числовые id страниц) и `entityProductIds` (разбор композитного `p-{pageId}-{productId}`). Тесты — [entityLinks.test.ts](tests/jest/entityLinks.test.ts), 15 кейсов. −128 строк.
 
-| # | Заголовок | Файлы | Что не так | Что сделать | Эффект | Объём | Риск |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | **Порядок брейкпойнтов px/rem** | [globals.css:7](app/globals.css#L7) | `--breakpoint-xs/-xl` заданы в px при sm/md/lg в rem → Tailwind v4 не может упорядочить медиа-запросы, `xl:` эмитится до `md:` и проигрывает. 8 живых class-списков сочетают `xl:` и `md:`/`sm:` по одному свойству — значение `xl:` мёртвое, но выглядит корректным в ревью | `--breakpoint-xl: 77.5rem` (root font-size 16px, оверрайдов нет). `--breakpoint-xs` — мёртвый токен (0 использований `xs:`) | 8 «мёртвых» правил оживают, порядок восстанавливается глобально | S (2 строки) | **Высокий визуально**: страницы, подписанные на ≥1240px, изменятся (padding секций 24↔40px, footer-треки). Нужна проверка 1240-1440 и явное согласие. **Не** упрощать обратно работающие `md:max-xl:` сайты |
+- **Все инлайн-касты `entity` устранены** — `grep` по `master_salon?.value as` / `master_services?.value as` / `master_portfolio?.value as` / `offer_services?.value as` даёт **0**. Переведены: [booking-data](app/booking/booking-data.ts) (вместе с локальным `parseServiceLinks`, 27 строк), [masters/page](app/masters/page.tsx), [masters-feed](components/layout/home/masters-feed/index.tsx), [master-single](components/layout/master-single/index.tsx), [portfolio-grid](components/layout/portfolio-grid/index.tsx), [masterSalonsById](app/gallery/masterSalonsById.ts), [parseOfferBase](app/utils/parseOfferBase.ts).
+- **`offerServiceProductIds.ts` удалён** — он стал дословным дублем `entityProductIds`. Все 35 тестов обоих парсеров офферов прошли без правок.
+- **Класс crash-поверхности закрыт целиком:** пустая строка от незаполненного `entity`-атрибута больше не может дойти до `.map`/индексации ни на одном сайте, а не только в офферах. Покрыто параметризованным тестом на 5 форм значения.
+- `gallery_photos` намеренно **не** трогался: это `groupOfImages` (массив файлов), у него другая форма.
+
+**📋 Осталось от блока A (срез `master`):** сами мапперы всё ещё три штуки (`toMasterItem` ×2 + `toBookingMaster`), и расхождения между ними живы — рейтинг по умолчанию 5 (masters/booking) против 0 (master-single, master-card); фото через `fileDisplayUrl`+blur (3 сайта) против сырого `downloadLink` (3 сайта, теряют документированный `previewLink`-фолбэк); источник имени салона — резолв из CMS на `/masters` («· Thalia Downtown») против `title` со срезанным «Thalia» в фиде главной («· Downtown»), что **видно на живом сайте**. Слияние требует характеризационных тестов по каждому сайту и явных решений по трём расхождениям — отдельный заход.
+
+**Блок B — фабрика кэширующих CMS-ридеров ✅ частично, 2026-07-22.** Порядок соблюдён: сперва два фикса дрейфа, потом фабрика, потом конвертация с проверкой кэша.
+
+- ✅ **Дрейф 1 закрыт.** [getAllOrdersByMarker](app/api/server/orders/getAllOrdersByMarker.ts) звал `withTimeout` напрямую мимо `fetchCmsData` — без ретрая и без разделения transient/stable, поэтому 5xx возвращался обычным конвертом, и кэширующий вызывающий сохранил бы сбой. Переведён на `fetchCmsData`.
+- ✅ **Дрейф 2 закрыт.** Ключ `blocks` означал `IBlocksResponse` в [getBlocks](app/api/server/blocks/getBlocks.ts) и `IBlockEntity[]` в [getBlocksByPageUrl](app/api/server/blocks/getBlocksByPageUrl.ts). `getBlocks` приведён к списковой конвенции проекта: `blocks: IBlockEntity[]` + `total`. Обе обёртки теперь понимают под `blocks` одно и то же.
+- ✅ **Фабрика** — [createCachedCmsReader.ts](app/api/utils/createCachedCmsReader.ts). Собирает три слоя (`unstable_cache` → React `cache()` → try/catch) и отдаёт нагрузку под нейтральным `data`; обёртка переименовывает его в свой доменный ключ одной строкой, так что конвенция конверта сохраняется.
+  - **Guard на дубли ключей — обязательная часть.** `unstable_cache` выводит ключ из массива ключей И из тела функции: пока тела были написаны по отдельности, продублированный ключ всё равно давал разные записи. С общим замыканием ключ остаётся единственным разделителем, поэтому фабрика бросает на повторе при загрузке модуля.
+- ✅ **Сконвертировано 6 одноэлементных ридеров:** `getPageByUrl` (78 → 51 строка), `getPageById`, `getBlockByMarker`, `getProductById`, `getFormByMarker`, `getMenuByMarker`. Пометки `⚠️ Currently UNUSED` сохранены.
+- **📋 Не конвертировались** (осознанно, по границе из самого аудита): 4 списковых ридера с обязательным `total` (`getBlocks`, `getBlocksByPageUrl`, `getChildPagesByParentUrl`, `getProductsByPageUrl`) — им нужен отдельный вариант фабрики; `getPagesByIds`, `getProducts`, `getRelatedProductsById`, `getSingleAttributeByMarkerSet`, `getAdminsInfo` — у них многопараметрические или уплощающие адаптеры, ручные по необходимости.
+- **Кэш проверен, а не предположен:** прод-сборка прегенерировала все CMS-страницы через новый ридер; три последовательных запроса `/contacts` — 42 мс → 10 мс → 8 мс; меню из CMS отдаёт 6 пунктов, блок `opening_time` — «Daily 10:00–22:00».
+
+Проверено: typecheck (оба проекта), `npx eslint .` — 0 ошибок, `npm test` — **262/262**, прод-сборка, полный e2e — **102 passed / 0 failed**.
+
+Ниже — незакрытое. Пункт **10 (брейкпойнты px/rem) отклонён пользователем 2026-07-22** — не трогать; 8 «мёртвых» `xl:`-правил остаются мёртвыми осознанно.
+
 
 #### Следующий заход — ценно, но крупнее
 

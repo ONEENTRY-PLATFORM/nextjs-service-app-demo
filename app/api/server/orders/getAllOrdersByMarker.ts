@@ -2,7 +2,7 @@ import type { IError } from 'oneentry/dist/base/utils';
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
 
 import { getApi, isError } from '@/app/api/api/api';
-import { withTimeout } from '@/app/api/utils/withTimeout';
+import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
  * Getting all orders from the orders storage object created by the user.
@@ -32,9 +32,15 @@ export const getAllOrdersByMarker = async ({
   total: number;
 }> => {
   try {
-    const data = await withTimeout(
-      getApi().Orders.getAllOrdersByMarker(marker, undefined, offset, limit),
-      10_000,
+    /**
+     * Goes through `fetchCmsData` like every other wrapper. It used to call
+     * `withTimeout` directly, which meant no retry on a latency spike and no
+     * transient/stable classification — a 5xx came back as a plain envelope
+     * instead of throwing, so a caching caller would have stored the outage.
+     */
+    const data = await fetchCmsData(
+      () =>
+        getApi().Orders.getAllOrdersByMarker(marker, undefined, offset, limit),
       'getAllOrdersByMarker',
     );
 

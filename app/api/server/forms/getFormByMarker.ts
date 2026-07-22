@@ -1,42 +1,17 @@
-import { unstable_cache } from 'next/cache';
 import type { IError } from 'oneentry/dist/base/utils';
 import type { IFormsEntity } from 'oneentry/dist/forms/formsInterfaces';
-import { cache } from 'react';
 
-import { getApi, isError } from '@/app/api/api/api';
-import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
+import { getApi } from '@/app/api/api/api';
+import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
 
-/**
- * Fetch a form from OneEntry, cached across requests (private helper).
- *
- * Form schemas change rarely (they are edited in the admin panel), so this uses
- * the longer 5-minute TTL rather than the 60s of page/product content.
- * @param   {string}          marker - Form marker
- * @returns {Promise<object>}        Envelope with the form or the error
- */
-const getFormByMarkerImpl = unstable_cache(
-  async (
-    marker: string,
-  ): Promise<{
-    isError: boolean;
-    error?: IError;
-    form?: IFormsEntity;
-  }> => {
-    const data = await fetchCmsData(
-      () => getApi().Forms.getFormByMarker(marker),
-      'getFormByMarker',
-    );
-    if (isError(data)) {
-      return { isError: true, error: data };
-    }
-    return { isError: false, form: data };
-  },
-  ['oneentry-form-by-marker'],
-  { revalidate: 300, tags: ['oneentry', 'oneentry-forms'] },
-);
-
-/** Request-level dedupe over the cross-request cache. */
-const getFormByMarkerCached = cache(getFormByMarkerImpl);
+/** Cached reader: TTL, request-level dedupe and transient-failure handling. */
+const readFormByMarker = createCachedCmsReader<[string], IFormsEntity>({
+  cacheKey: 'oneentry-form-by-marker',
+  label: 'getFormByMarker',
+  revalidate: 300,
+  tags: ['oneentry', 'oneentry-forms'],
+  call: (marker) => getApi().Forms.getFormByMarker(marker),
+});
 
 /**
  * Get form by marker.
@@ -53,11 +28,10 @@ const getFormByMarkerCached = cache(getFormByMarkerImpl);
 export const getFormByMarker = async (
   marker: string,
 ): Promise<{ isError: boolean; error?: IError; form?: IFormsEntity }> => {
-  try {
-    return await getFormByMarkerCached(marker);
-  } catch (e) {
-    // Transient CMS failure — not cached by unstable_cache; degrade for this
-    // request only instead of caching a poisoned result.
-    return { isError: true, error: e as IError };
-  }
+  const { isError: failed, error, data } = await readFormByMarker(marker);
+  return {
+    isError: failed,
+    ...(error ? { error } : {}),
+    ...(data ? { form: data } : {}),
+  };
 };

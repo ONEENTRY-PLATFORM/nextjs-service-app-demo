@@ -1,42 +1,17 @@
-import { unstable_cache } from 'next/cache';
 import type { IError } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
-import { cache } from 'react';
 
-import { getApi, isError } from '@/app/api/api/api';
-import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
+import { getApi } from '@/app/api/api/api';
+import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
 
-/**
- * Fetch a page by id from OneEntry, cached across requests (private helper).
- *
- * The SDK call is a plain fetch that Next.js does not cache on its own, so it
- * is wrapped in `unstable_cache` with a short TTL and invalidation tags.
- * @param   {number}          id - Page id
- * @returns {Promise<object>}    Envelope with the page or the error
- */
-const getPageByIdImpl = unstable_cache(
-  async (
-    id: number,
-  ): Promise<{
-    isError: boolean;
-    error?: IError;
-    page?: IPagesEntity;
-  }> => {
-    const data = await fetchCmsData(
-      () => getApi().Pages.getPageById(id),
-      'getPageById',
-    );
-    if (isError(data)) {
-      return { isError: true, error: data };
-    }
-    return { isError: false, page: data };
-  },
-  ['oneentry-page-by-id'],
-  { revalidate: 60, tags: ['oneentry', 'oneentry-pages'] },
-);
-
-/** Request-level dedupe over the cross-request cache. */
-const getPageByIdCached = cache(getPageByIdImpl);
+/** Cached reader: TTL, request-level dedupe and transient-failure handling. */
+const readPageById = createCachedCmsReader<[number], IPagesEntity>({
+  cacheKey: 'oneentry-page-by-id',
+  label: 'getPageById',
+  revalidate: 60,
+  tags: ['oneentry', 'oneentry-pages'],
+  call: (id) => getApi().Pages.getPageById(id),
+});
 
 /**
  * Get page object with information about forms, blocks, menus, linked to the page.
@@ -51,11 +26,10 @@ const getPageByIdCached = cache(getPageByIdImpl);
 export const getPageById = async (
   id: number,
 ): Promise<{ isError: boolean; error?: IError; page?: IPagesEntity }> => {
-  try {
-    return await getPageByIdCached(id);
-  } catch (e) {
-    // Transient CMS failure — not cached by unstable_cache; degrade for this
-    // request only instead of caching a poisoned result.
-    return { isError: true, error: e as IError };
-  }
+  const { isError: failed, error, data } = await readPageById(id);
+  return {
+    isError: failed,
+    ...(error ? { error } : {}),
+    ...(data ? { page: data } : {}),
+  };
 };

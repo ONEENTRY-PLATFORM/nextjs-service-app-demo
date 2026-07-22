@@ -1,43 +1,17 @@
-import { unstable_cache } from 'next/cache';
 import type { IError } from 'oneentry/dist/base/utils';
 import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
-import { cache } from 'react';
 
-import { getApi, isError } from '@/app/api/api/api';
-import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
+import { getApi } from '@/app/api/api/api';
+import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
 
-/**
- * Fetch a menu from OneEntry, cached across requests (private helper).
- *
- * Menus change rarely but are read on every single page render (the root layout
- * needs `main`, the header needs `user_menu`), so they are cached with a longer
- * TTL and invalidation tags.
- * @param   {string}          marker - Menu marker
- * @returns {Promise<object>}        Envelope with the menu or the error
- */
-const getMenuByMarkerImpl = unstable_cache(
-  async (
-    marker: string,
-  ): Promise<{
-    isError: boolean;
-    error?: IError;
-    menu?: IMenusEntity;
-  }> => {
-    const data = await fetchCmsData(
-      () => getApi().Menus.getMenusByMarker(marker),
-      'getMenuByMarker',
-    );
-    if (isError(data)) {
-      return { isError: true, error: data };
-    }
-    return { isError: false, menu: data };
-  },
-  ['oneentry-menu-by-marker'],
-  { revalidate: 300, tags: ['oneentry', 'oneentry-menus'] },
-);
-
-/** Request-level dedupe over the cross-request cache. */
-const getMenuByMarkerCached = cache(getMenuByMarkerImpl);
+/** Cached reader: TTL, request-level dedupe and transient-failure handling. */
+const readMenuByMarker = createCachedCmsReader<[string], IMenusEntity>({
+  cacheKey: 'oneentry-menu-by-marker',
+  label: 'getMenuByMarker',
+  revalidate: 300,
+  tags: ['oneentry', 'oneentry-menus'],
+  call: (marker) => getApi().Menus.getMenusByMarker(marker),
+});
 
 /**
  * Get menu by marker.
@@ -51,11 +25,10 @@ const getMenuByMarkerCached = cache(getMenuByMarkerImpl);
 export const getMenuByMarker = async (
   marker: string,
 ): Promise<{ isError: boolean; error?: IError; menu?: IMenusEntity }> => {
-  try {
-    return await getMenuByMarkerCached(marker);
-  } catch (e) {
-    // Transient CMS failure — not cached by unstable_cache; degrade for this
-    // request only instead of caching a poisoned result.
-    return { isError: true, error: e as IError };
-  }
+  const { isError: failed, error, data } = await readMenuByMarker(marker);
+  return {
+    isError: failed,
+    ...(error ? { error } : {}),
+    ...(data ? { menu: data } : {}),
+  };
 };

@@ -3,6 +3,7 @@ import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
 import { getMastersList } from '@/app/api/utils/getMastersList';
+import { entityLinks } from '@/app/utils/entityLinks';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
 import SectionTitle from '@/components/shared/SectionTitle';
@@ -32,13 +33,9 @@ const toMasterItem = (admin: IAdminEntity): MasterItem | null => {
     (attrs.master_short_description?.value as string | undefined) ||
     'Specialist';
 
-  /** `master_salon` is an entity attribute: `[{ title, value: { id } }]` */
-  const salonArr = attrs.master_salon?.value as
-    Array<{ title?: string; value?: { id?: number } }> | '' | undefined;
-  const firstSalon = Array.isArray(salonArr) ? salonArr[0] : undefined;
-  const salonName = (firstSalon?.title ?? '').replace(/^Thalia\s+/i, '');
-  const rawSalonId = firstSalon?.value?.id;
-  const salonId = typeof rawSalonId === 'number' ? rawSalonId : null;
+  const firstSalon = entityLinks(attrs.master_salon?.value)[0];
+  const salonName = firstSalon?.title.replace(/^Thalia\s+/i, '') ?? '';
+  const salonId = typeof firstSalon?.id === 'number' ? firstSalon.id : null;
 
   return {
     id: String(admin.id),

@@ -1,6 +1,6 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
-import { offerServiceProductIds } from '@/app/utils/offerServiceProductIds';
+import { entityLinks, entityProductIds } from '@/app/utils/entityLinks';
 import { offerAccentGradientsData } from '@/components/data/offerAccentGradientsData';
 import { offerCategoryAccentsData } from '@/components/data/offerCategoryAccentsData';
 
@@ -47,19 +47,11 @@ export const parseOfferBase = (product: IProductsEntity): OfferBase => {
       ? attrDescription
       : ((product.localizeInfos?.plainValue as string | undefined) ?? '');
 
-  /**
-   * `offer_services` — entity list `[{ title, value: { id, parentId } }]`.
-   * Guarded with `Array.isArray` rather than an optional call: an entity
-   * attribute with nothing selected comes back as the empty STRING, and
-   * `''.map` would throw where a missing attribute merely yields no services.
-   */
+  /** `offer_services` — entity links to the bundled service products */
   const rawServices = product.attributeValues?.offer_services?.value;
-  const servicesArr = Array.isArray(rawServices)
-    ? (rawServices as Array<{ title?: string }>)
-    : [];
-  const services = servicesArr
-    .map((service) => service.title)
-    .filter((title): title is string => Boolean(title));
+  const services = entityLinks(rawServices)
+    .map((link) => link.title)
+    .filter(Boolean);
 
   /** `offer_sale` = current price, `offer_price` = crossed-out original (real → strings) */
   const price =
@@ -105,6 +97,6 @@ export const parseOfferBase = (product: IProductsEntity): OfferBase => {
     discount,
     accentColor,
     accentGrad,
-    serviceProductIds: offerServiceProductIds(rawServices),
+    serviceProductIds: entityProductIds(rawServices),
   };
 };

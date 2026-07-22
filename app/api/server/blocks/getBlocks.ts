@@ -2,7 +2,7 @@ import { unstable_cache } from 'next/cache';
 import type { IError } from 'oneentry/dist/base/utils';
 import type {
   BlockType,
-  IBlocksResponse,
+  IBlockEntity,
 } from 'oneentry/dist/blocks/blocksInterfaces';
 import { cache } from 'react';
 
@@ -23,16 +23,17 @@ const getBlocksImpl = unstable_cache(
   ): Promise<{
     isError: boolean;
     error?: IError;
-    blocks?: IBlocksResponse;
+    blocks?: IBlockEntity[];
+    total: number;
   }> => {
     const data = await fetchCmsData(
       () => getApi().Blocks.getBlocks(type),
       'getBlocks',
     );
     if (isError(data)) {
-      return { isError: true, error: data };
+      return { isError: true, error: data, total: 0 };
     }
-    return { isError: false, blocks: data };
+    return { isError: false, blocks: data.items, total: data.total };
   },
   ['oneentry-blocks-by-type'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-blocks'] },
@@ -59,13 +60,14 @@ export const getBlocks = async ({
 }): Promise<{
   isError: boolean;
   error?: IError;
-  blocks?: IBlocksResponse;
+  blocks?: IBlockEntity[];
+  total: number;
 }> => {
   try {
     return await getBlocksCached(type);
   } catch (e) {
     // Transient CMS failure — not cached by unstable_cache; degrade for this
     // request only instead of caching a poisoned result.
-    return { isError: true, error: e as IError };
+    return { isError: true, error: e as IError, total: 0 };
   }
 };

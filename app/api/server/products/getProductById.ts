@@ -1,42 +1,17 @@
-import { unstable_cache } from 'next/cache';
 import type { IError } from 'oneentry/dist/base/utils';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
-import { cache } from 'react';
 
-import { getApi, isError } from '@/app/api/api/api';
-import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
+import { getApi } from '@/app/api/api/api';
+import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
 
-/**
- * Fetch a product from OneEntry, cached across requests (private helper).
- *
- * The SDK call is a plain fetch that Next.js does not cache on its own, so it
- * is wrapped in `unstable_cache` with a short TTL and invalidation tags.
- * @param   {number}          id - The numeric ID of the product to fetch
- * @returns {Promise<object>}    Envelope with the product or the error
- */
-const getProductByIdImpl = unstable_cache(
-  async (
-    id: number,
-  ): Promise<{
-    isError: boolean;
-    error?: IError;
-    product?: IProductsEntity;
-  }> => {
-    const data = await fetchCmsData(
-      () => getApi().Products.getProductById(id),
-      'getProductById',
-    );
-    if (isError(data)) {
-      return { isError: true, error: data };
-    }
-    return { isError: false, product: data };
-  },
-  ['oneentry-product-by-id'],
-  { revalidate: 60, tags: ['oneentry', 'oneentry-products'] },
-);
-
-/** Request-level dedupe over the cross-request cache. */
-const getProductByIdCached = cache(getProductByIdImpl);
+/** Cached reader: TTL, request-level dedupe and transient-failure handling. */
+const readProductById = createCachedCmsReader<[number], IProductsEntity>({
+  cacheKey: 'oneentry-product-by-id',
+  label: 'getProductById',
+  revalidate: 60,
+  tags: ['oneentry', 'oneentry-products'],
+  call: (id) => getApi().Products.getProductById(id),
+});
 
 /**
  * Get product by ID from the OneEntry API
@@ -56,11 +31,10 @@ const getProductByIdCached = cache(getProductByIdImpl);
 export const getProductById = async (
   id: number,
 ): Promise<{ isError: boolean; error?: IError; product?: IProductsEntity }> => {
-  try {
-    return await getProductByIdCached(id);
-  } catch (e) {
-    // Transient CMS failure — not cached by unstable_cache; degrade for this
-    // request only instead of caching a poisoned result.
-    return { isError: true, error: e as IError };
-  }
+  const { isError: failed, error, data } = await readProductById(id);
+  return {
+    isError: failed,
+    ...(error ? { error } : {}),
+    ...(data ? { product: data } : {}),
+  };
 };

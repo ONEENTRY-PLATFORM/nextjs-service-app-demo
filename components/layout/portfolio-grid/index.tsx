@@ -2,6 +2,7 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 
 import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
+import { entityPageIds } from '@/app/utils/entityLinks';
 import SectionHeading from '@/components/shared/SectionHeading';
 
 import PortfolioGallery from './components/PortfolioGallery';
@@ -41,13 +42,8 @@ const PortfolioGridLayout = async ({
    * now links products/subcategories that don't line up with the photo pages'
    * `gallery_category`, so filtering here would hide everything).
    */
-  const masterPortfolio =
-    (masterAttrs.master_portfolio?.value as
-      Array<{ value?: { id?: number } }> | undefined) || [];
   /** Extract photo-page IDs from portfolio items */
-  const ids = masterPortfolio
-    .map((v) => v.value?.id)
-    .filter((id): id is number => typeof id === 'number');
+  const ids = entityPageIds(masterAttrs.master_portfolio?.value);
 
   /** Fetch the master's photo pages */
   const { pages: childPages } = await getPagesByIds(ids);

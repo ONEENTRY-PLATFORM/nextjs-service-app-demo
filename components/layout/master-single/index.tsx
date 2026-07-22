@@ -6,6 +6,7 @@ import { type JSX, memo } from 'react';
 import { getPageById } from '@/app/api/server/pages/getPageById';
 import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { entityLinks } from '@/app/utils/entityLinks';
 import { salonFromPage } from '@/app/utils/salonFromPage';
 import { REVIEWS } from '@/components/layout/reviews-page/data';
 
@@ -63,24 +64,20 @@ const MasterSingleLayout = async ({
    * fallback when the master has no short description; a numeric `?service=`
    * param overrides it.
    */
-  const masterServices = attrs.master_services?.value as
-    Array<{ value?: { parentId?: number } }> | undefined;
   const searchService = Number(searchData?.service);
   const serviceId =
     Number.isFinite(searchService) && searchService > 0
       ? searchService
-      : masterServices?.[0]?.value?.parentId;
+      : entityLinks(attrs.master_services?.value)[0]?.parentId;
 
   /**
    * `master_salon` is an entity list `[{ title, value: { id } }]` pointing at
    * salon pages. We resolve those pages to enrich each chip with its
    * `salon_address` (falling back to title only when absent).
    */
-  const salonArr = attrs.master_salon?.value as
-    Array<{ title?: string; value?: { id?: number } }> | '' | undefined;
-  const salonEntities = Array.isArray(salonArr) ? salonArr : [];
+  const salonEntities = entityLinks(attrs.master_salon?.value);
   const salonIds = salonEntities
-    .map((entry) => entry.value?.id)
+    .map((entry) => entry.id)
     .filter((id): id is number => typeof id === 'number');
 
   /** Service (role fallback) and salon pages (chip addresses) — independent. */
@@ -108,11 +105,10 @@ const MasterSingleLayout = async ({
   });
   const salonChips = salonEntities
     .map((entry) => {
-      const id = entry.value?.id;
       const salonPage =
-        typeof id === 'number' ? salonPageById.get(id) : undefined;
+        typeof entry.id === 'number' ? salonPageById.get(entry.id) : undefined;
       return {
-        title: entry.title ?? '',
+        title: entry.title,
         address: salonPage?.address || undefined,
         href: salonPage?.url ? `/salons/${salonPage.url}` : undefined,
       };

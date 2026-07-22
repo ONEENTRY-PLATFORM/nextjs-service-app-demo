@@ -8,6 +8,7 @@ import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
+import { entityLinks, entityPageIds } from '@/app/utils/entityLinks';
 import { salonFromPage } from '@/app/utils/salonFromPage';
 import MastersPageContent from '@/components/layout/masters-page';
 import type {
@@ -57,23 +58,14 @@ const toMasterItem = ({
 
   /**
    * Service category links → main categories of the filter.
-   * An `entity` attribute value is `[{ title, value: { id, parentId, … } }]`
-   * (OneEntry `IListTitleEntityValue`) — the linked id lives in `value.id`.
-   */
-  const services = attrs.master_services?.value as
-    | Array<{ value?: { id?: number | string; parentId?: number } }>
-    | ''
-    | undefined;
-  /**
+   *
    * `master_services` links service PRODUCTS: `value.id` is a composite string
    * (`"p-<pageId>-<productId>"`), so the usable numeric page id is `value.parentId`
    * — the products' subcategory page, which maps to a main category.
    */
-  const serviceParentIds = Array.isArray(services)
-    ? services
-        .map((service) => service.value?.parentId)
-        .filter((id): id is number => typeof id === 'number')
-    : [];
+  const serviceParentIds = entityLinks(attrs.master_services?.value)
+    .map((link) => link.parentId)
+    .filter((id): id is number => typeof id === 'number');
   const categories = Array.from(
     new Set(
       serviceParentIds
@@ -83,11 +75,7 @@ const toMasterItem = ({
   );
 
   /** Salon link → filter id + the salon suffix of the role line */
-  const salonArr = attrs.master_salon?.value as
-    Array<{ value?: { id?: number } }> | '' | undefined;
-  const firstSalon = Array.isArray(salonArr) ? salonArr[0] : undefined;
-  const rawSalonId = firstSalon?.value?.id;
-  const salonId = typeof rawSalonId === 'number' ? rawSalonId : null;
+  const salonId = entityPageIds(attrs.master_salon?.value)[0] ?? null;
   const salonName = salonId !== null ? salonNameById.get(salonId) : undefined;
 
   const shortDescription =

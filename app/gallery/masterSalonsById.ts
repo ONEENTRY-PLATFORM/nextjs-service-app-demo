@@ -1,6 +1,8 @@
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
+import { entityPageIds } from '@/app/utils/entityLinks';
+
 /**
  * Salon markers of every master admin keyed by admin id.
  *
@@ -26,12 +28,11 @@ const masterSalonsById = (
 
   const byId = new Map<number, string[]>();
   for (const admin of admins ?? []) {
-    const linked = admin.attributeValues?.master_salon?.value as
-      Array<{ value?: { id?: number } }> | undefined;
     const markers: string[] = [];
-    for (const link of linked ?? []) {
-      const id = link?.value?.id;
-      const marker = id === undefined ? undefined : urlById.get(id);
+    for (const id of entityPageIds(
+      admin.attributeValues?.master_salon?.value,
+    )) {
+      const marker = urlById.get(id);
       if (marker && !markers.includes(marker)) {
         markers.push(marker);
       }
