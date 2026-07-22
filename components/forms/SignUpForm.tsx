@@ -5,16 +5,17 @@ import type { FormEvent, JSX } from 'react';
 import { useCallback, useContext, useMemo, useState } from 'react';
 
 import { getApi, isError } from '@/app/api/api/api';
-import { useGetAuthProvidersQuery } from '@/app/api/api/RTKApi';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { FormProps } from '@/app/types/global';
+import { toErrorMessage } from '@/app/utils/toErrorMessage';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { buildSignUpBody } from '@/components/forms/buildSignUpBody';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
 import { isSignUpVisibleField } from '@/components/forms/isSignUpVisibleField';
 import { useCmsForm } from '@/components/forms/useCmsForm';
+import { useCredentialProvider } from '@/components/forms/useCredentialProvider';
 
 import AuthDivider from './inputs/AuthDivider';
 import ErrorMessage from './inputs/ErrorMessage';
@@ -62,13 +63,8 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
    * (non-OAuth) provider drives sign-up; fall back to `email`/`reg` — the
    * current CMS values — while the query loads or when the field is unset.
    */
-  const { data: authProviders } = useGetAuthProvidersQuery('en_US');
-  const credentialProvider = useMemo(
-    () => (authProviders ?? []).find((provider) => provider.type !== 'oauth'),
-    [authProviders],
-  );
-  const providerMarker = credentialProvider?.identifier ?? 'email';
-  const signUpFormIdentifier = credentialProvider?.formIdentifier ?? 'reg';
+  const { marker: providerMarker, formIdentifier: signUpFormIdentifier } =
+    useCredentialProvider();
 
   /** Fields the sign-up form renders — pure notification fields are dropped */
   const visibleFields = useMemo(
@@ -168,7 +164,7 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
         setError('');
       } catch (e) {
         /** Capture and display any errors that occur during registration */
-        setError(e instanceof Error ? e.message : 'An error occurred');
+        setError(toErrorMessage(e));
       } finally {
         /** Reset loading state after registration attempt completes */
         setLoading(false);

@@ -14,7 +14,7 @@ import MasterFilter from './components/MasterFilter';
 import ReviewCard from './components/ReviewCard';
 import SalonFilter from './components/SalonFilter';
 import Stars from './components/Stars';
-import { DARK, INK, MUTED } from './constants';
+import { INK } from './constants';
 import type { MasterCategory } from './data';
 import { MASTER_CAT, MASTER_SALON, REVIEW_SALONS, REVIEWS } from './data';
 
@@ -122,8 +122,7 @@ const ReviewsPageContent = ({
       <div className="pt-6">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold transition-opacity hover:opacity-70"
-          style={{ color: DARK }}
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
         >
           <ArrowLeft size={16} /> Back
         </Link>
@@ -143,10 +142,8 @@ const ReviewsPageContent = ({
         </h1>
         <div className="mt-4 flex items-center justify-center gap-3">
           <Stars rating={Math.round(Number(avg))} />
-          <span className="text-sm font-bold" style={{ color: DARK }}>
-            {avg}
-          </span>
-          <span className="text-sm" style={{ color: MUTED }}>
+          <span className="text-sm font-bold text-slate-400">{avg}</span>
+          <span className="text-sm text-neutral-300">
             · {filtered.length} {filtered.length === 1 ? 'review' : 'reviews'}
           </span>
         </div>
@@ -183,7 +180,7 @@ const ReviewsPageContent = ({
         </div>
 
         {filtered.length === 0 && (
-          <p className="py-12 text-center text-sm" style={{ color: MUTED }}>
+          <p className="py-12 text-center text-sm text-neutral-300">
             No reviews for this specialist yet.
           </p>
         )}

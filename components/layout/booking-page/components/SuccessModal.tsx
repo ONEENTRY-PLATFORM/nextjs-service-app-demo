@@ -3,7 +3,7 @@
 import { Check } from 'lucide-react';
 import type { JSX } from 'react';
 
-import { BRAND_GRADIENT, DARK, MUTED, PINK } from '../constants';
+import { BRAND_GRADIENT, PINK } from '../constants';
 
 /**
  * SuccessModal — the "Booked!" confirmation modal of the booking wizard,
@@ -34,10 +34,8 @@ const SuccessModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
         >
           <Check size={36} color="#fff" />
         </div>
-        <h2 className="mb-2 text-xl font-bold" style={{ color: DARK }}>
-          Booked!
-        </h2>
-        <p className="mb-6 text-base" style={{ color: MUTED }}>
+        <h2 className="mb-2 text-xl font-bold text-slate-400">Booked!</h2>
+        <p className="mb-6 text-base text-neutral-300">
           Your appointment has been confirmed. We&apos;ll send you a reminder.
         </p>
         <button

@@ -8,12 +8,13 @@ import { useContext, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { getApi, isError } from '@/app/api/api/api';
-import { useGetAuthProvidersQuery } from '@/app/api/api/RTKApi';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
+import { toErrorMessage } from '@/app/utils/toErrorMessage';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import FormFieldAnimations from '@/components/forms/animations/FormFieldAnimations';
 import { useCmsForm } from '@/components/forms/useCmsForm';
+import { useCredentialProvider } from '@/components/forms/useCredentialProvider';
 
 import AuthDivider from './inputs/AuthDivider';
 import CreateAccountButton from './inputs/CreateAccountButton';
@@ -90,15 +91,9 @@ const SignInForm = ({
    * Sign-in tabs are the credential (non-OAuth) providers configured in the
    * CMS — do not hardcode them. Hardcoding `'phone'` broke the tab: no such
    * provider exists, so `auth('phone', …)` failed. OAuth providers (Google)
-   * are handled by a separate button. Fall back to `email` while loading.
+   * are handled by a separate button.
    */
-  const { data: authProviders } = useGetAuthProvidersQuery('en_US');
-  const tabs = useMemo(() => {
-    const credential = (authProviders ?? [])
-      .filter((provider) => provider.type !== 'oauth')
-      .map((provider) => provider.identifier);
-    return credential.length > 0 ? credential : ['email'];
-  }, [authProviders]);
+  const { identifiers: tabs } = useCredentialProvider();
 
   /**
    * Handle sign in form submission
@@ -158,7 +153,7 @@ const SignInForm = ({
       /** Show success notification */
       toast('You signed in!');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Authentication failed');
+      setError(toErrorMessage(err, 'Authentication failed'));
     } finally {
       /** Reset loading state after authentication attempt */
       setLoading(false);

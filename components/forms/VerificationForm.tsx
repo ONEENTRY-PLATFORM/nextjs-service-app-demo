@@ -7,17 +7,18 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import OtpInput from 'react-otp-input';
 
 import { getApi, isError } from '@/app/api/api/api';
-import { useGetAuthProvidersQuery } from '@/app/api/api/RTKApi';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { addField } from '@/app/store/reducers/FormFieldsSlice';
 import type { FormProps } from '@/app/types/global';
+import { toErrorMessage } from '@/app/utils/toErrorMessage';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import {
   EVENT_PASSWORD_RESET,
   EVENT_REGISTRATION,
 } from '@/components/forms/authEventMarkers';
+import { useCredentialProvider } from '@/components/forms/useCredentialProvider';
 
 import ErrorMessage from './inputs/ErrorMessage';
 import FormSubmitButton from './inputs/FormSubmitButton';
@@ -56,11 +57,9 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
    * (`systemCodeLength` / `systemCodeTlsSec`) — do not hardcode them.
    * Fall back to the CMS defaults while the providers query is loading.
    */
-  const { data: authProviders } = useGetAuthProvidersQuery('en_US');
-  const emailProvider = authProviders?.find((p) => p.identifier === 'email');
-  const codeLength = Number(emailProvider?.config?.systemCodeLength) || 8;
-  const resendCooldownSec =
-    Number(emailProvider?.config?.systemCodeTlsSec) || 120;
+  const { provider } = useCredentialProvider();
+  const codeLength = Number(provider?.config?.systemCodeLength) || 8;
+  const resendCooldownSec = Number(provider?.config?.systemCodeTlsSec) || 120;
 
   /** Extract localized strings from dictionary */
   const { enter_otp_code, resend_text, receive_otp_text, verify_now_text } =
@@ -87,12 +86,19 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
    * Can be either user activation or password reset verification
    */
   const handleVerification = useCallback(async () => {
-    /** Ensure required fields are present before proceeding */
-    if (!fields.email_reg || !fields.password_reg) {
-      return;
-    }
-
     try {
+      /**
+       * The e-mail is the only field BOTH flows need, and it is checked inside
+       * the try on purpose: the guard used to sit above it and `return` early,
+       * so `finally` never ran and the submit button span forever with no
+       * message. It also demanded `password_reg`, which only the activation
+       * flow ever writes — that alone made password reset unreachable.
+       */
+      const email = fields.email_reg?.value;
+      if (!email) {
+        throw new Error('E-mail is missing — please start over');
+      }
+
       /** Handle password reset verification flow */
       if (action !== 'activateUser') {
         /**
@@ -103,7 +109,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
          */
         const result = await getApi().AuthProvider.checkCode(
           'email',
-          fields.email_reg.value,
+          email,
           EVENT_PASSWORD_RESET,
           otp,
         );
@@ -125,7 +131,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
          */
         const result = await getApi().AuthProvider.activateUser(
           'email',
-          fields.email_reg.value,
+          email,
           otp,
         );
         if (isError(result)) {
@@ -136,6 +142,16 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
         }
 
         /**
+         * The password is needed only here, to sign the new account in — it is
+         * written by `SignUpForm` earlier in THIS flow. Checked in the branch
+         * that uses it, not at the top: the password-reset flow never writes it.
+         */
+        const password = fields.password_reg?.value;
+        if (!password) {
+          throw new Error('Password is missing — please sign up again');
+        }
+
+        /**
          * Log in the user after successful activation.
          * `getApi().AuthProvider.auth` is called directly (Client Component)
          * so the SDK captures the real browser fingerprint; tokens are
@@ -143,8 +159,8 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
          */
         const authResult = await getApi().AuthProvider.auth('email', {
           authData: [
-            { marker: 'email_reg', value: fields.email_reg.value },
-            { marker: 'password_reg', value: fields.password_reg.value },
+            { marker: 'email_reg', value: email },
+            { marker: 'password_reg', value: password },
           ],
         });
         if (isError(authResult)) {
@@ -164,7 +180,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
       }
     } catch (e) {
       /** Handle any errors during verification */
-      setError(e instanceof Error ? e.message : 'An error occurred');
+      setError(toErrorMessage(e));
     } finally {
       /**
        * Always stop loading state regardless of success or failure
@@ -207,7 +223,8 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
    */
   const onResendHandle = useCallback(async () => {
     /** Ensure email field is present and the cooldown has elapsed */
-    if (!fields.email_reg || cooldown > 0) {
+    const email = fields.email_reg?.value;
+    if (!email || cooldown > 0) {
       return;
     }
     try {
@@ -226,7 +243,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
        */
       const result = await getApi().AuthProvider.generateCode(
         'email',
-        fields.email_reg.value,
+        email,
         action === 'activateUser' ? EVENT_REGISTRATION : EVENT_PASSWORD_RESET,
       );
       if (isError(result)) {
@@ -236,7 +253,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
       setCooldown(resendCooldownSec);
     } catch (e) {
       /** Handle any errors during resend */
-      setError(e instanceof Error ? e.message : 'An error occurred');
+      setError(toErrorMessage(e));
     } finally {
       /** Always stop loading state */
       setLoading(false);

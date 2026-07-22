@@ -1,7 +1,7 @@
 import { MessageCircle } from 'lucide-react';
 import type { JSX } from 'react';
 
-import { DARK, MUTED, PINK } from '../constants';
+import { PINK } from '../constants';
 import type { Review } from '../data';
 import Stars from './Stars';
 
@@ -21,24 +21,17 @@ const ReviewCard = ({ review }: { review: Review }): JSX.Element => (
   >
     <div className="flex items-start justify-between gap-3">
       <div>
-        <p className="font-bold" style={{ color: DARK }}>
-          {review.author}
-        </p>
-        <p className="mt-0.5 text-sm" style={{ color: MUTED }}>
-          {review.date}
-        </p>
+        <p className="font-bold text-slate-400">{review.author}</p>
+        <p className="mt-0.5 text-sm text-neutral-300">{review.date}</p>
       </div>
       <Stars rating={review.rating} />
     </div>
-    <p
-      className="text-justify text-base leading-relaxed"
-      style={{ color: DARK }}
-    >
+    <p className="text-justify text-base leading-relaxed text-slate-400">
       {review.text}
     </p>
     <div className="mt-auto flex items-center gap-1.5 pt-1">
       <MessageCircle size={18} color={PINK} />
-      <span className="text-base font-semibold" style={{ color: PINK }}>
+      <span className="text-base font-semibold text-fuchsia-500">
         {review.master}
       </span>
     </div>

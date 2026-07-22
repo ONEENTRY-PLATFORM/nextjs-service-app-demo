@@ -1,3 +1,5 @@
+import { toErrorMessage } from '@/app/utils/toErrorMessage';
+
 import type { Preset, RequestResult } from './types';
 
 /** Body the `/api/test-connection` route answers a probe with. */
@@ -51,7 +53,7 @@ export const runProbe = async (opts: {
     return result;
   } catch (e) {
     const t1 = performance.now();
-    const message = e instanceof Error ? e.message : 'request failed';
+    const message = toErrorMessage(e, 'request failed');
     return {
       index: opts.index,
       time: t1 - t0,

@@ -1,10 +1,6 @@
 /* eslint-disable jsdoc/no-undefined-types */
 'use client';
 
-import type {
-  IAuthData,
-  IAuthFormData,
-} from 'oneentry/dist/auth-provider/authProvidersInterfaces';
 import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { FormEvent, JSX } from 'react';
 import { useContext, useState } from 'react';
@@ -13,8 +9,9 @@ import { toast } from 'react-toastify';
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import type { FormProps } from '@/app/types/global';
+import { toErrorMessage } from '@/app/utils/toErrorMessage';
+import { buildProfileUpdateBody } from '@/components/forms/buildProfileUpdateBody';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
-import { isLoginCredential } from '@/components/forms/fieldFlags/isLoginCredential';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
 import { useCmsForm } from '@/components/forms/useCmsForm';
 
@@ -67,14 +64,6 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
     isLoading,
     error,
   } = useCmsForm(user?.formIdentifier ?? '');
-
-  /**
-   * Current trimmed value of a form field from the Redux store.
-   * @param   {string} marker - Field marker
-   * @returns {string}        Trimmed value, or an empty string when unset
-   */
-  const value = (marker: string): string =>
-    fields[marker as keyof typeof fields]?.value?.toString().trim() || '';
 
   /**
    * Saved value of a field as the server holds it, used by the read-only rows.
@@ -130,40 +119,25 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
   const loginField = sortedFields.find((field) => field.isLogin === true);
 
   /**
-   * Prepare profile form data for update. Fields are routed by their CMS flags,
-   * NOT by marker name (mirrors SignUpForm):
-   * - login/password credentials  → `authData` ONLY (never `formData`)
-   * - repeat-password confirm      → not submitted at all
-   * - notification-email field     → carried in `notificationData.email`
-   * - everything else              → `formData`, empty values filtered out
-   * (FormInput seeds Redux with `''`, which the API would reject as a 400).
-   */
-  const formData = sortedFields
-    .filter(
-      (field) =>
-        field.marker !== 'email_notification_reg' &&
-        !isLoginCredential(field) &&
-        !isConfirmPasswordField(field),
-    )
-    .filter((field) => value(field.marker))
-    .map((field) => ({
-      marker: field.marker,
-      value: value(field.marker),
-      type: field.type || 'string',
-    })) as IAuthFormData[];
-
-  /**
    * Update user data
    * @param {FormEvent<HTMLFormElement>} e - form submit event
    */
   const onUpdateUserData = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     /**
-     * Email is required for the notification payload; the password is optional
-     * — an empty password means "keep the current one", so it must NOT block
-     * the save.
+     * Email for the notification payload. It comes from the signed-in user, not
+     * from the shared form-field bag: `editFields` deliberately hides `isLogin`
+     * fields, so this form never writes `email_reg` itself. Reading only the bag
+     * meant Save silently did nothing for anyone who had not just signed up in
+     * the same tab — a guest returning after a reload, or anyone who signed in
+     * with Google. The bag is still preferred so a just-typed value wins.
+     *
+     * The password stays optional — empty means "keep the current one" and must
+     * NOT block the save.
      */
-    if (!fields.email_reg) {
+    const notificationEmail = fields.email_reg?.value || user?.identifier || '';
+    if (!notificationEmail) {
+      setError('Your account has no e-mail on file — cannot save.');
       return;
     }
     /** Attempt to update user data */
@@ -171,43 +145,24 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
       /** Set loading state during update process */
       setLoading(true);
 
-      /**
-       * Login credentials go into `authData` (routed by CMS flags, not marker
-       * names), and the API takes them all-or-nothing: sending the login alone
-       * fails with "Login or password values are missed". So credentials are
-       * submitted only when a new password was typed — otherwise `authData`
-       * stays empty, which means "keep the current credentials".
-       *
-       * Entries are `{marker, value}` only: unlike sign-up's `IAuthFormData`,
-       * `updateUser` takes `IAuthData` and rejects a `type` key outright
-       * (`"authData[0].type" is not allowed`).
-       */
-      const authData: IAuthData[] = sortedFields
-        .filter(isPasswordField)
-        .filter((field) => value(field.marker))
-        .map((field) => ({
-          marker: field.marker,
-          value: value(field.marker),
-        }));
-
       /** Update user information via API if form identifier exists */
       if (user?.formIdentifier) {
-        const result = await getApi().Users.updateUser({
-          formIdentifier: user.formIdentifier,
-          formData,
-          ...(authData.length > 0 ? { authData } : {}),
-          notificationData: {
-            email: fields.email_reg.value,
-            phonePush: [],
+        /**
+         * The body is assembled by `buildProfileUpdateBody` (beside
+         * `buildSignUpBody`): fields are bucketed by their CMS flags, `state` is
+         * echoed back so cart / favorites survive, and `updateUser` returns
+         * `boolean | IError` so an API failure is a value, checked below.
+         */
+        const result = await getApi().Users.updateUser(
+          buildProfileUpdateBody({
+            attributes: sortedFields,
+            values: fields,
+            formIdentifier: user.formIdentifier,
+            email: notificationEmail,
             phoneSMS: fields.phone_reg?.value ?? '',
-          },
-          /**
-           * Preserve the user's server state (cart, favorites) — sending `{}`
-           * would wipe it. `updateUser` returns `boolean | IError`, so an API
-           * failure is a value, not a thrown error: check it explicitly.
-           */
-          state: user.state,
-        });
+            state: user.state,
+          }),
+        );
         if (isSdkError(result)) {
           setError(
             `Error ${result.statusCode}: ${result.message ?? ''}`.trim(),
@@ -226,7 +181,7 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
       toast('Data saved!');
     } catch (error) {
       /** Set error message if update fails */
-      setError(error instanceof Error ? error.message : 'An error occurred');
+      setError(toErrorMessage(error));
     } finally {
       /** Reset loading state after update attempt */
       setLoading(false);

@@ -4,7 +4,7 @@ import { Scissors, Search } from 'lucide-react';
 import type { JSX } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { ANY_MASTER, anySpecialistImg, DARK, MUTED, PINK } from '../constants';
+import { ANY_MASTER, anySpecialistImg, MUTED, PINK } from '../constants';
 import type { BookingMaster, BookingSalon, BookingService } from '../types';
 import AnySpecialistCard from './AnySpecialistCard';
 import CategoryPills from './CategoryPills';
@@ -162,7 +162,7 @@ const SpecialistStep = ({
 
   return (
     <div className="space-y-4" data-testid="booking-step-specialist">
-      <h3 className="text-lg font-light" style={{ color: DARK }}>
+      <h3 className="text-lg font-light text-slate-400">
         Choose your specialist
       </h3>
 
@@ -182,8 +182,7 @@ const SpecialistStep = ({
           value={specSearch}
           onChange={(e) => setSpecSearch(e.target.value)}
           placeholder="Search specialist by name"
-          className="flex-1 bg-transparent text-sm outline-none"
-          style={{ color: DARK }}
+          className="flex-1 bg-transparent text-sm text-slate-400 outline-none"
         />
       </div>
 
@@ -195,18 +194,12 @@ const SpecialistStep = ({
         >
           <div className="flex min-w-0 items-center gap-2">
             <Scissors size={18} color={PINK} />
-            <span
-              className="truncate text-base font-semibold"
-              style={{ color: DARK }}
-            >
+            <span className="truncate text-base font-semibold text-slate-400">
               {services.length === 1
                 ? services[0]?.name
                 : `${services.length} services`}
             </span>
-            <span
-              className="text-sm whitespace-nowrap"
-              style={{ color: MUTED }}
-            >
+            <span className="text-sm whitespace-nowrap text-neutral-300">
               {services.length === 1 && services[0]?.duration && (
                 <>· {services[0].duration} </>
               )}
@@ -215,8 +208,7 @@ const SpecialistStep = ({
           </div>
           <button
             onClick={onClearService}
-            className="text-sm font-bold tracking-wider uppercase"
-            style={{ color: PINK }}
+            className="text-sm font-bold tracking-wider text-fuchsia-500 uppercase"
           >
             Change
           </button>
@@ -261,14 +253,14 @@ const SpecialistStep = ({
             onSelect={() => onSelect(m.id)}
             salons={salonsOf(m)}
             price={cardPrice(m)}
+            currency={servicesCurrency}
             showFrom={!hasServices}
             chipsMinH={chipsMinH}
           />
         ))}
         {q && shownMasters.length === 0 && (
           <p
-            className="col-span-full py-6 text-center text-base"
-            style={{ color: MUTED }}
+            className="col-span-full py-6 text-center text-base text-neutral-300"
             data-testid="booking-specialists-search-empty"
           >
             No specialists match “{specSearch}”.

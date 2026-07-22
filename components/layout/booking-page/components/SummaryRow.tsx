@@ -1,6 +1,6 @@
 import type { JSX, ReactNode } from 'react';
 
-import { DARK, MUTED, PINK } from '../constants';
+import { PINK } from '../constants';
 
 /**
  * SummaryRow — one line of the booking summary (mock `SummaryRow`): a pink
@@ -31,17 +31,11 @@ const SummaryRow = ({
       {icon}
     </div>
     <div>
-      <p className="text-xs tracking-wide uppercase" style={{ color: MUTED }}>
+      <p className="text-xs tracking-wide text-neutral-300 uppercase">
         {label}
       </p>
-      <p className="text-base font-semibold" style={{ color: DARK }}>
-        {value}
-      </p>
-      {sub && (
-        <p className="text-sm" style={{ color: MUTED }}>
-          {sub}
-        </p>
-      )}
+      <p className="text-base font-semibold text-slate-400">{value}</p>
+      {sub && <p className="text-sm text-neutral-300">{sub}</p>}
     </div>
   </div>
 );

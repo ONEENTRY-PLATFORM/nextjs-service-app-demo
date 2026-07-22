@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import type { JSX } from 'react';
 
-import { DARK, PINK } from '../constants';
+import { PINK } from '../constants';
 import type { BookingMaster } from '../types';
 
 /**
@@ -37,9 +37,7 @@ const MasterSummaryCard = ({
       )}
     </div>
     <div className="min-w-0">
-      <p className="text-base font-semibold" style={{ color: DARK }}>
-        {master.name}
-      </p>
+      <p className="text-base font-semibold text-slate-400">{master.name}</p>
       <div className="mt-1 flex flex-wrap gap-1">
         {master.specialties.map((tag) => (
           <span

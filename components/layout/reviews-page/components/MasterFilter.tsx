@@ -51,8 +51,7 @@ const MasterFilter = ({
           value={masterSearch}
           onChange={(e) => onSearch(e.target.value)}
           placeholder="Search specialist"
-          className="flex-1 bg-transparent text-base outline-none"
-          style={{ color: DARK }}
+          className="flex-1 bg-transparent text-base text-slate-400 outline-none"
         />
       </div>
 

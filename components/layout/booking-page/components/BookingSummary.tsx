@@ -4,7 +4,7 @@ import { Calendar, MapPin, Scissors, User } from 'lucide-react';
 import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces';
 import type { JSX } from 'react';
 
-import { BRAND_GRADIENT, DARK, MONTHS, MUTED, PINK, PINK2 } from '../constants';
+import { BRAND_GRADIENT, MONTHS, MUTED, PINK, PINK2 } from '../constants';
 import type {
   BookingFlow,
   BookingMaster,
@@ -147,10 +147,7 @@ const BookingSummary = ({
       </div>
       <div className="flex flex-col space-y-4 rounded-b-3xl bg-white p-6 md:flex-1 md:p-8">
         {!flow && (
-          <p
-            className="flex flex-1 items-center justify-center text-center text-base"
-            style={{ color: MUTED }}
-          >
+          <p className="flex flex-1 items-center justify-center text-center text-base text-neutral-300">
             Choose how to start to see your booking details
           </p>
         )}
@@ -158,7 +155,7 @@ const BookingSummary = ({
             scrolls past — pinned under the fixed header (`h-20`). */}
         <div className="flex flex-col space-y-4 xl:sticky xl:top-24">
           {flow && !hasAny && (
-            <p className="py-6 text-center text-base" style={{ color: MUTED }}>
+            <p className="py-6 text-center text-base text-neutral-300">
               Complete the steps to see your booking details
             </p>
           )}
@@ -204,13 +201,10 @@ const BookingSummary = ({
           {total !== null && (
             <div className="border-t pt-4" style={{ borderColor: '#e8e8f0' }}>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium" style={{ color: MUTED }}>
+                <span className="text-sm font-medium text-neutral-300">
                   Total
                 </span>
-                <span
-                  className="text-xl font-bold whitespace-nowrap"
-                  style={{ color: DARK }}
-                >
+                <span className="text-xl font-bold whitespace-nowrap text-slate-400">
                   <Price amount={total} currency={totalCurrency} />
                 </span>
               </div>
@@ -232,10 +226,7 @@ const BookingSummary = ({
               {/* Helper text ABOVE the button so the button itself sits flush
                 at the bottom — aligning with the Continue button on the left */}
               {!ready && stepsRemaining > 0 && (
-                <p
-                  className="mb-2 text-center text-sm"
-                  style={{ color: MUTED }}
-                >
+                <p className="mb-2 text-center text-sm text-neutral-300">
                   {stepsRemaining} more step{stepsRemaining > 1 ? 's' : ''} to
                   complete
                 </p>

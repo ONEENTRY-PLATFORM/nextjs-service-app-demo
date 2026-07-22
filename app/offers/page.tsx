@@ -20,8 +20,11 @@ import OfferDetailCard from '@/components/layout/offers-page/OfferDetailCard';
 export const dynamic = 'force-static';
 export const revalidate = 60;
 
-/** Brand text colors from the static-html mock (`OffersPage.tsx`) */
-const DARK = '#4c4d56';
+/**
+ * Brand accent from the static-html mock (`OffersPage.tsx`). Kept as a raw hex
+ * because it is interpolated into an rgba shadow, which a token class cannot
+ * express; the plain text colours became `text-slate-400` / `text-neutral-300`.
+ */
 const PINK = '#ed21f1';
 
 /**
@@ -73,8 +76,7 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
       <div className="mx-auto max-w-7xl px-3 pt-6 md:px-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold transition-opacity hover:opacity-70"
-          style={{ color: DARK }}
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
         >
           <ArrowLeft size={16} /> Back to Home
         </Link>
@@ -119,8 +121,7 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
             {offerTermsData.map((term) => (
               <li
                 key={term}
-                className="flex items-start gap-2.5 text-sm"
-                style={{ color: DARK }}
+                className="flex items-start gap-2.5 text-sm text-slate-400"
               >
                 <span
                   className="mt-1.5 inline-block shrink-0 rounded-full"

@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
 import { useGetFormByMarkerQuery } from '@/app/api/api/RTKApi';
+import { toErrorMessage } from '@/app/utils/toErrorMessage';
 import { getFormAttributes } from '@/components/utils/getFormAttributes';
 
 import { buildContactAnswers } from './buildContactAnswers';
@@ -169,10 +170,7 @@ export const useContactForm = (): ContactFormState => {
       setTimeout(() => setSent(false), 3500);
     } catch (err) {
       /** A thrown (network) failure is still a failed submit — same CMS copy. */
-      setError(
-        data?.localizeInfos?.unsuccessMessage ||
-          (err instanceof Error ? err.message : 'An error occurred'),
-      );
+      setError(data?.localizeInfos?.unsuccessMessage || toErrorMessage(err));
     } finally {
       setLoading(false);
     }

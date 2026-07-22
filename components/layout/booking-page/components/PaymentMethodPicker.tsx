@@ -4,7 +4,7 @@ import { Check } from 'lucide-react';
 import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces';
 import type { JSX } from 'react';
 
-import { DARK, MUTED, PINK } from '../constants';
+import { DARK, PINK } from '../constants';
 
 /**
  * PaymentMethodPicker — how the client pays for the appointment.
@@ -38,10 +38,7 @@ const PaymentMethodPicker = ({
 
   return (
     <div className="border-t pt-4" style={{ borderColor: '#e8e8f0' }}>
-      <p
-        className="mb-2 text-xs font-medium tracking-wider uppercase"
-        style={{ color: MUTED }}
-      >
+      <p className="mb-2 text-xs font-medium tracking-wider text-neutral-300 uppercase">
         Payment
       </p>
       <div className="flex flex-wrap gap-2" data-testid="payment-methods">

@@ -7,6 +7,7 @@ import { useContext, useState } from 'react';
 
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
+import { toErrorMessage } from '@/app/utils/toErrorMessage';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
 import { useCmsForm } from '@/components/forms/useCmsForm';
@@ -78,7 +79,7 @@ export const ForgotPasswordForm = ({
       setComponent('VerificationForm');
       setAction('checkCode');
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'An error occurred');
+      setError(toErrorMessage(error));
     }
   };
 

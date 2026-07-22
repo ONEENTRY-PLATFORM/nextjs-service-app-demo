@@ -3,7 +3,7 @@
 import { Check, MapPin } from 'lucide-react';
 import type { JSX } from 'react';
 
-import { DARK, MUTED, PINK } from '../constants';
+import { MUTED, PINK } from '../constants';
 import type { BookingSalon } from '../types';
 
 /**
@@ -28,9 +28,7 @@ const SalonStep = ({
 }): JSX.Element => {
   return (
     <div className="space-y-3" data-testid="booking-step-salon">
-      <h3 className="text-lg font-light" style={{ color: DARK }}>
-        Choose your studio
-      </h3>
+      <h3 className="text-lg font-light text-slate-400">Choose your studio</h3>
       <div className="grid gap-3">
         {salons.map((s) => {
           const active = selected === s.id;
@@ -56,10 +54,8 @@ const SalonStep = ({
                 <MapPin size={18} color={active ? PINK : MUTED} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-semibold" style={{ color: DARK }}>
-                  {s.name}
-                </p>
-                <p className="text-base" style={{ color: MUTED }}>
+                <p className="font-semibold text-slate-400">{s.name}</p>
+                <p className="text-base text-neutral-300">
                   {[s.address, s.phone].filter(Boolean).join(' · ')}
                 </p>
               </div>

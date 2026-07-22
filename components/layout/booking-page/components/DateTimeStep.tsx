@@ -142,7 +142,7 @@ const DateTimeStep = ({
 
   return (
     <div className="space-y-5" data-testid="booking-step-datetime">
-      <h3 className="text-lg font-light" style={{ color: DARK }}>
+      <h3 className="text-lg font-light text-slate-400">
         Pick date &amp; time
       </h3>
       <div
@@ -163,7 +163,7 @@ const DateTimeStep = ({
           >
             <ChevronLeft size={18} color={MUTED} />
           </button>
-          <span className="font-semibold" style={{ color: PINK }}>
+          <span className="font-semibold text-fuchsia-500">
             {MONTHS[month]} {year}
           </span>
           <button
@@ -184,8 +184,7 @@ const DateTimeStep = ({
           {DAYS.map((d) => (
             <div
               key={d}
-              className="py-1 text-center text-xs font-medium"
-              style={{ color: PINK }}
+              className="py-1 text-center text-xs font-medium text-fuchsia-500"
             >
               {d}
             </div>
@@ -240,13 +239,12 @@ const DateTimeStep = ({
       {selectedDate && (
         <div className="space-y-3">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-            <p className="text-sm font-medium" style={{ color: DARK }}>
+            <p className="text-sm font-medium text-slate-400">
               Available times
             </p>
             {showDurationHint && (
               <p
-                className="text-xs"
-                style={{ color: MUTED }}
+                className="text-xs text-neutral-300"
                 data-testid="booking-duration-hint"
               >
                 Your visit takes {formatMinutes(durationMinutes)} — later starts

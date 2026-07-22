@@ -8,6 +8,7 @@ import { useContext, useMemo, useState } from 'react';
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { FormProps } from '@/app/types/global';
+import { toErrorMessage } from '@/app/utils/toErrorMessage';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
@@ -150,7 +151,7 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
       }
     } catch (error) {
       /** Set error message if password change fails */
-      setError(error instanceof Error ? error.message : 'An error occurred');
+      setError(toErrorMessage(error));
     } finally {
       /** Reset loading state after submission attempt */
       setLoading(false);

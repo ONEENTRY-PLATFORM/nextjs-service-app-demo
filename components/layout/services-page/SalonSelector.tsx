@@ -82,10 +82,7 @@ const SalonSelector = ({
             boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
           }}
         >
-          <span
-            className="flex items-center gap-2 text-base font-semibold"
-            style={{ color: DARK }}
-          >
+          <span className="flex items-center gap-2 text-base font-semibold text-slate-400">
             <MapPin size={14} color={PINK} />
             {activeSalon
               ? `Studio ${salons.indexOf(activeSalon) + 1} — ${activeSalon.title}`
@@ -148,7 +145,7 @@ const SalonSelector = ({
                       Salon {index + 1} — {s.title}
                     </span>
                     {s.address && (
-                      <span className="block text-sm" style={{ color: MUTED }}>
+                      <span className="block text-sm text-neutral-300">
                         {s.address}
                       </span>
                     )}

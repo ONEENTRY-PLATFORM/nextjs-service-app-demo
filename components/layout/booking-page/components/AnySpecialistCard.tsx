@@ -1,11 +1,12 @@
-import { Check } from 'lucide-react';
 import type { JSX } from 'react';
 
-import { DARK, DESC_MIN_H, MUTED, PINK } from '../constants';
+import { DESC_MIN_H, MUTED } from '../constants';
+import { selectableCardStyle } from '../selectableCardStyle';
 import type { BookingSalon } from '../types';
 import Portrait from './Portrait';
 import Price from './Price';
 import SalonChips from './SalonChips';
+import SelectedCheckBadge from './SelectedCheckBadge';
 
 /**
  * AnySpecialistCard — the "Any specialist" card of the specialist step.
@@ -45,12 +46,7 @@ const AnySpecialistCard = ({
       onClick={onSelect}
       data-testid="booking-any-specialist"
       className="cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 active:scale-99 md:hidden"
-      style={{
-        borderColor: active ? PINK : '#e8e8f0',
-        boxShadow: active
-          ? `0 0 0 3px ${PINK}22, 0 8px 24px ${PINK}22`
-          : '0 2px 12px rgba(0,0,0,0.06)',
-      }}
+      style={selectableCardStyle(active)}
     >
       <div className="flex gap-3 p-3">
         <div className="relative size-16 shrink-0 overflow-hidden rounded-full">
@@ -60,44 +56,25 @@ const AnySpecialistCard = ({
             sizes="64px"
             className="object-cover"
           />
-          {active && (
-            <div
-              className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full border-2 border-white"
-              style={{ background: PINK }}
-            >
-              <Check size={17} color="#fff" />
-            </div>
-          )}
+          {active && <SelectedCheckBadge variant="mobile" />}
         </div>
         <div className="min-w-0 flex-1">
-          <p
-            className="truncate text-base leading-tight font-bold"
-            style={{ color: DARK }}
-          >
+          <p className="truncate text-base leading-tight font-bold text-slate-400">
             Any specialist
           </p>
-          <p className="truncate text-base font-bold" style={{ color: PINK }}>
+          <p className="truncate text-base font-bold text-fuchsia-500">
             {specialties}
           </p>
-          <p
-            className="mt-0.5 line-clamp-2 text-base leading-snug"
-            style={{ color: MUTED }}
-          >
+          <p className="mt-0.5 line-clamp-2 text-base leading-snug text-neutral-300">
             We&apos;ll assign the first available master who can perform this
             service. Soonest available slot included.
           </p>
           {fromPrice !== null && (
             <p className="mt-1.5 flex items-baseline gap-1.5">
-              <span
-                className="text-xs font-medium tracking-wider uppercase"
-                style={{ color: MUTED }}
-              >
+              <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">
                 from
               </span>
-              <span
-                className="text-xl leading-none font-semibold"
-                style={{ color: DARK }}
-              >
+              <span className="text-xl leading-none font-semibold text-slate-400">
                 <Price big amount={fromPrice} currency={currency} />
               </span>
             </p>
@@ -115,12 +92,7 @@ const AnySpecialistCard = ({
       onClick={onSelect}
       data-testid="booking-any-specialist"
       className="hidden h-full cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 hover:-translate-y-0.5 md:flex md:flex-col"
-      style={{
-        borderColor: active ? PINK : '#e8e8f0',
-        boxShadow: active
-          ? `0 0 0 3px ${PINK}22, 0 8px 24px ${PINK}22`
-          : '0 2px 12px rgba(0,0,0,0.06)',
-      }}
+      style={selectableCardStyle(active)}
     >
       <div className="relative h-56 overflow-hidden">
         <Portrait
@@ -129,26 +101,16 @@ const AnySpecialistCard = ({
           sizes="(min-width: 768px) 33vw, 100vw"
           className="object-cover"
         />
-        {active && (
-          <div
-            className="absolute top-3 right-3 flex size-9 items-center justify-center rounded-full"
-            style={{ background: PINK, boxShadow: `0 0 12px ${PINK}` }}
-          >
-            <Check size={16} color="#fff" />
-          </div>
-        )}
+        {active && <SelectedCheckBadge variant="desktop" />}
       </div>
 
       {/* Body — identical structure & rhythm to master card */}
       <div className="flex flex-1 flex-col bg-white">
         <div className="flex flex-col gap-2 p-4">
-          <p
-            className="truncate text-lg leading-tight font-bold"
-            style={{ color: DARK }}
-          >
+          <p className="truncate text-lg leading-tight font-bold text-slate-400">
             Any specialist
           </p>
-          <p className="truncate text-base font-bold" style={{ color: PINK }}>
+          <p className="truncate text-base font-bold text-fuchsia-500">
             {specialties}
           </p>
           <p
@@ -160,16 +122,10 @@ const AnySpecialistCard = ({
           </p>
           {fromPrice !== null && (
             <p className="mt-1 flex items-baseline gap-1.5">
-              <span
-                className="text-xs font-medium tracking-wider uppercase"
-                style={{ color: MUTED }}
-              >
+              <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">
                 from
               </span>
-              <span
-                className="text-2xl leading-none font-semibold"
-                style={{ color: DARK }}
-              >
+              <span className="text-2xl leading-none font-semibold text-slate-400">
                 <Price big amount={fromPrice} currency={currency} />
               </span>
             </p>

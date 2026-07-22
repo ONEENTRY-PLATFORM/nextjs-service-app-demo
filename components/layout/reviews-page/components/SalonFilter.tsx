@@ -38,10 +38,7 @@ const SalonFilter = ({
           onClick={() => setOpen((o) => !o)}
           className="flex w-full items-center justify-between rounded-xl border-[1.5px] border-slate-150 bg-white px-4 py-3 shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
         >
-          <span
-            className="flex min-w-0 items-center gap-2 text-base font-semibold"
-            style={{ color: DARK }}
-          >
+          <span className="flex min-w-0 items-center gap-2 text-base font-semibold text-slate-400">
             <MapPin size={14} color={PINK} className="shrink-0" />
             <span className="truncate">
               {activeSalon
@@ -94,7 +91,7 @@ const SalonFilter = ({
                     >
                       Salon {idx + 1} — {s.name}
                     </span>
-                    <span className="block text-sm" style={{ color: MUTED }}>
+                    <span className="block text-sm text-neutral-300">
                       {s.address}
                     </span>
                   </button>

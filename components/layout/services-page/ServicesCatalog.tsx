@@ -168,8 +168,7 @@ const ServicesCatalog = ({
               <button
                 onClick={() => setQuery('')}
                 aria-label="Clear search"
-                className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 transition-colors"
-                style={{ color: MUTED }}
+                className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-neutral-300 transition-colors"
               >
                 <X size={16} />
               </button>
@@ -187,7 +186,7 @@ const ServicesCatalog = ({
           )}
 
           {searching && (
-            <p className="mb-2 text-sm" style={{ color: MUTED }}>
+            <p className="mb-2 text-sm text-neutral-300">
               {filtered.length} {filtered.length === 1 ? 'result' : 'results'}{' '}
               for “{query.trim()}”
             </p>
@@ -209,8 +208,7 @@ const ServicesCatalog = ({
         {filtered.length === 0 && (
           <p
             data-testid="services-empty"
-            className="mt-6 text-center text-base"
-            style={{ color: MUTED }}
+            className="mt-6 text-center text-base text-neutral-300"
           >
             {searching
               ? `No services match “${query.trim()}”.`

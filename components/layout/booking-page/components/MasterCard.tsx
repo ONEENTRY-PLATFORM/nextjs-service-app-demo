@@ -1,25 +1,28 @@
-import { Check, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import type { JSX } from 'react';
 
-import { CYAN, DARK, DESC_MIN_H, MUTED, PINK } from '../constants';
+import { CYAN, DESC_MIN_H, MUTED } from '../constants';
+import { selectableCardStyle } from '../selectableCardStyle';
 import type { BookingMaster, BookingSalon } from '../types';
 import Portrait from './Portrait';
 import Price from './Price';
 import SalonChips from './SalonChips';
+import SelectedCheckBadge from './SelectedCheckBadge';
 
 /**
  * MasterCard — a single specialist card of the specialist step: a compact
  * avatar row on mobile and a photo card with a rating pill on desktop. The
  * chips block reserves a shared min-height so dividers align across the grid.
- * @param   {object}         props           - Component properties
- * @param   {BookingMaster}  props.master    - Specialist to render
- * @param   {boolean}        props.active    - This card is the current selection
- * @param   {() => void}     props.onSelect  - Select this specialist
- * @param   {BookingSalon[]} props.salons    - Salons of this specialist (chips)
- * @param   {number | null}  props.price     - Exact/`from` price (`null` hides the line)
- * @param   {boolean}        props.showFrom  - Prefix the price with "from" (no chosen service)
- * @param   {string}         props.chipsMinH - Shared chips min-height (desktop rhythm)
- * @returns {JSX.Element}                    Master card
+ * @param   {object}         props            - Component properties
+ * @param   {BookingMaster}  props.master     - Specialist to render
+ * @param   {boolean}        props.active     - This card is the current selection
+ * @param   {() => void}     props.onSelect   - Select this specialist
+ * @param   {BookingSalon[]} props.salons     - Salons of this specialist (chips)
+ * @param   {number | null}  props.price      - Exact/`from` price (`null` hides the line)
+ * @param   {string}         [props.currency] - Currency of `price` from the CMS
+ * @param   {boolean}        props.showFrom   - Prefix the price with "from" (no chosen service)
+ * @param   {string}         props.chipsMinH  - Shared chips min-height (desktop rhythm)
+ * @returns {JSX.Element}                     Master card
  */
 const MasterCard = ({
   master: m,
@@ -27,6 +30,7 @@ const MasterCard = ({
   onSelect,
   salons,
   price,
+  currency,
   showFrom,
   chipsMinH,
 }: {
@@ -35,6 +39,8 @@ const MasterCard = ({
   onSelect: () => void;
   salons: BookingSalon[];
   price: number | null;
+  /** Kept optional to match `AnySpecialistCard`; `Price` falls back to AED. */
+  currency?: string | undefined;
   showFrom: boolean;
   chipsMinH: string;
 }): JSX.Element => (
@@ -45,12 +51,7 @@ const MasterCard = ({
       data-testid="booking-master-option"
       data-master-id={m.id}
       className="cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 active:scale-99 md:hidden"
-      style={{
-        borderColor: active ? PINK : '#e8e8f0',
-        boxShadow: active
-          ? `0 0 0 3px ${PINK}22, 0 8px 24px ${PINK}22`
-          : '0 2px 12px rgba(0,0,0,0.06)',
-      }}
+      style={selectableCardStyle(active)}
     >
       <div className="flex gap-3 p-3">
         <div className="relative size-16 shrink-0 overflow-hidden rounded-full">
@@ -60,37 +61,25 @@ const MasterCard = ({
             sizes="64px"
             className="object-cover object-top"
           />
-          {active && (
-            <div
-              className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full border-2 border-white"
-              style={{ background: PINK }}
-            >
-              <Check size={17} color="#fff" />
-            </div>
-          )}
+          {active && <SelectedCheckBadge variant="mobile" />}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <p
-              className="truncate text-base leading-tight font-bold"
-              style={{ color: DARK }}
-            >
+            <p className="truncate text-base leading-tight font-bold text-slate-400">
               {m.name}
             </p>
             <span className="mt-0.5 flex shrink-0 items-center gap-1">
               <Star size={16} fill={CYAN} color={CYAN} />
-              <span className="text-sm font-bold" style={{ color: DARK }}>
+              <span className="text-sm font-bold text-slate-400">
                 {m.rating.toFixed(1)}
               </span>
               {m.reviews !== null && (
-                <span className="text-sm" style={{ color: MUTED }}>
-                  ({m.reviews})
-                </span>
+                <span className="text-sm text-neutral-300">({m.reviews})</span>
               )}
             </span>
           </div>
           <div className="flex items-center justify-between gap-2">
-            <p className="truncate text-base font-bold" style={{ color: PINK }}>
+            <p className="truncate text-base font-bold text-fuchsia-500">
               {m.specialties.join(' · ')}
             </p>
             {m.grade && (
@@ -102,27 +91,18 @@ const MasterCard = ({
               </span>
             )}
           </div>
-          <p
-            className="mt-3 line-clamp-2 text-base leading-snug"
-            style={{ color: MUTED }}
-          >
+          <p className="mt-3 line-clamp-2 text-base leading-snug text-neutral-300">
             {m.bio}
           </p>
           {price !== null && (
             <p className="mt-1.5 flex items-baseline gap-1.5">
               {showFrom && (
-                <span
-                  className="text-xs font-medium tracking-wider uppercase"
-                  style={{ color: MUTED }}
-                >
+                <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">
                   from
                 </span>
               )}
-              <span
-                className="text-xl leading-none font-semibold"
-                style={{ color: DARK }}
-              >
-                <Price big amount={price} />
+              <span className="text-xl leading-none font-semibold text-slate-400">
+                <Price big amount={price} currency={currency} />
               </span>
             </p>
           )}
@@ -140,12 +120,7 @@ const MasterCard = ({
       data-testid="booking-master-option"
       data-master-id={m.id}
       className="hidden h-full cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 hover:-translate-y-0.5 md:flex md:flex-col"
-      style={{
-        borderColor: active ? PINK : '#e8e8f0',
-        boxShadow: active
-          ? `0 0 0 3px ${PINK}22, 0 8px 24px ${PINK}22`
-          : '0 2px 12px rgba(0,0,0,0.06)',
-      }}
+      style={selectableCardStyle(active)}
     >
       <div className="relative h-56 overflow-hidden">
         <Portrait
@@ -155,14 +130,7 @@ const MasterCard = ({
           className="object-cover object-top"
         />
 
-        {active && (
-          <div
-            className="absolute top-3 right-3 flex size-9 items-center justify-center rounded-full"
-            style={{ background: PINK, boxShadow: `0 0 12px ${PINK}` }}
-          >
-            <Check size={16} color="#fff" />
-          </div>
-        )}
+        {active && <SelectedCheckBadge variant="desktop" />}
 
         {/* Rating pill — bottom-right of photo */}
         <div
@@ -182,13 +150,10 @@ const MasterCard = ({
 
       <div className="flex flex-1 flex-col bg-white">
         <div className="flex flex-col gap-2 p-4">
-          <p
-            className="truncate text-lg leading-tight font-bold"
-            style={{ color: DARK }}
-          >
+          <p className="truncate text-lg leading-tight font-bold text-slate-400">
             {m.name}
           </p>
-          <p className="truncate text-base font-bold" style={{ color: PINK }}>
+          <p className="truncate text-base font-bold text-fuchsia-500">
             {m.specialties.join(' · ')}
           </p>
           {m.grade && (
@@ -208,18 +173,12 @@ const MasterCard = ({
           {price !== null && (
             <p className="mt-1 flex items-baseline gap-1.5">
               {showFrom && (
-                <span
-                  className="text-xs font-medium tracking-wider uppercase"
-                  style={{ color: MUTED }}
-                >
+                <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">
                   from
                 </span>
               )}
-              <span
-                className="text-2xl leading-none font-semibold"
-                style={{ color: DARK }}
-              >
-                <Price big amount={price} />
+              <span className="text-2xl leading-none font-semibold text-slate-400">
+                <Price big amount={price} currency={currency} />
               </span>
             </p>
           )}

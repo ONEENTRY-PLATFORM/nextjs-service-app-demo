@@ -91,14 +91,11 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
       {/* Top section: title + price */}
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
-          <p
-            className="text-base leading-snug font-semibold"
-            style={{ color: DARK }}
-          >
+          <p className="text-base leading-snug font-semibold text-slate-400">
             {service.title}
           </p>
           {service.description && (
-            <p className="mt-1 text-base" style={{ color: MUTED }}>
+            <p className="mt-1 text-base text-neutral-300">
               {service.description}
             </p>
           )}
@@ -132,10 +129,7 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
         style={{ borderTop: '1px solid #e8e8f0' }}
       >
         {service.duration !== null ? (
-          <span
-            className="inline-flex items-center gap-1 text-sm whitespace-nowrap"
-            style={{ color: MUTED }}
-          >
+          <span className="inline-flex items-center gap-1 text-sm whitespace-nowrap text-neutral-300">
             <Clock size={17} /> {service.duration} min
           </span>
         ) : (

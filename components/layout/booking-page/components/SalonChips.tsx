@@ -1,7 +1,7 @@
 import { MapPin } from 'lucide-react';
 import type { JSX } from 'react';
 
-import { DARK, MUTED } from '../constants';
+import { MUTED } from '../constants';
 import type { BookingSalon } from '../types';
 
 /**
@@ -27,10 +27,7 @@ const SalonChips = ({
         style={{ borderColor: '#e8e8f0', background: '#fff', height }}
       >
         <MapPin size={14} color={MUTED} />
-        <span
-          className="truncate text-base font-semibold"
-          style={{ color: DARK }}
-        >
+        <span className="truncate text-base font-semibold text-slate-400">
           {s.name}
         </span>
       </div>

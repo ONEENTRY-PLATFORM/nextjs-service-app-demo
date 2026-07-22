@@ -54,13 +54,10 @@ const ServiceStep = ({
   return (
     <div className="space-y-4" data-testid="booking-step-service">
       <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-lg font-light" style={{ color: DARK }}>
-          Choose services
-        </h3>
+        <h3 className="text-lg font-light text-slate-400">Choose services</h3>
         {selectedIds.length > 0 && (
           <span
-            className="text-sm font-semibold whitespace-nowrap"
-            style={{ color: PINK }}
+            className="text-sm font-semibold whitespace-nowrap text-fuchsia-500"
             data-testid="booking-services-count"
           >
             {selectedIds.length} selected
@@ -101,14 +98,9 @@ const ServiceStep = ({
               data-service-id={s.id}
             >
               <div className="flex-1">
-                <p className="font-medium" style={{ color: DARK }}>
-                  {s.name}
-                </p>
+                <p className="font-medium text-slate-400">{s.name}</p>
                 {s.duration && (
-                  <p
-                    className="flex items-center gap-1 text-sm"
-                    style={{ color: MUTED }}
-                  >
+                  <p className="flex items-center gap-1 text-sm text-neutral-300">
                     <Clock size={17} /> {s.duration}
                   </p>
                 )}

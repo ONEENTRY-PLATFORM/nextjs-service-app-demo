@@ -4,7 +4,7 @@ import { ChevronRight, MapPin, User } from 'lucide-react';
 import type { JSX } from 'react';
 import { useState } from 'react';
 
-import { BRAND_GRADIENT, CYAN, DARK, MUTED, PINK } from '../constants';
+import { BRAND_GRADIENT, CYAN, MUTED, PINK } from '../constants';
 import type { BookingFlow } from '../types';
 
 /** Entry options — the two booking flows (mock `EntryScreen` → `options`) */
@@ -52,20 +52,16 @@ const EntryScreen = ({
   return (
     <div className="space-y-5" data-testid="booking-entry">
       <div>
-        <p
-          className="mb-2 text-xs tracking-widest uppercase"
-          style={{ color: PINK }}
-        >
+        <p className="mb-2 text-xs tracking-widest text-fuchsia-500 uppercase">
           Start your booking
         </p>
         <h3
-          className="text-xl font-light"
-          style={{ color: DARK }}
+          className="text-xl font-light text-slate-400"
           data-testid="booking-entry-title"
         >
           How would you like to start?
         </h3>
-        <p className="mt-1 hidden text-sm sm:block" style={{ color: MUTED }}>
+        <p className="mt-1 hidden text-sm text-neutral-300 sm:block">
           Both paths take you to the same booking — pick whichever feels
           natural.
         </p>
@@ -96,7 +92,7 @@ const EntryScreen = ({
             );
           })}
         </div>
-        <p className="text-base leading-normal" style={{ color: MUTED }}>
+        <p className="text-base leading-normal text-neutral-300">
           {picked?.subtitle}
         </p>
         <button
@@ -137,23 +133,17 @@ const EntryScreen = ({
                 <Icon size={22} color="#fff" />
               </div>
 
-              <p className="mt-5 text-base font-light" style={{ color: DARK }}>
+              <p className="mt-5 text-base font-light text-slate-400">
                 {title}
               </p>
 
               {/* Description — grows to absorb height differences */}
-              <p
-                className="mt-2 flex-1 text-base leading-normal"
-                style={{ color: MUTED }}
-              >
+              <p className="mt-2 flex-1 text-base leading-normal text-neutral-300">
                 {subtitle}
               </p>
 
               {/* CTA — pinned to bottom */}
-              <div
-                className="mt-4 flex items-center gap-1 text-base font-bold"
-                style={{ color: PINK }}
-              >
+              <div className="mt-4 flex items-center gap-1 text-base font-bold text-fuchsia-500">
                 Continue <ChevronRight size={14} />
               </div>
             </div>

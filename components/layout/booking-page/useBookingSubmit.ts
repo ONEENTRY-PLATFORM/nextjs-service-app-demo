@@ -22,6 +22,7 @@ import {
   removeAllServices,
   selectActiveItemId,
 } from '@/app/store/reducers/CartSlice';
+import { toErrorMessage } from '@/app/utils/toErrorMessage';
 
 import { buildOrderFormData } from './buildOrderFormData';
 import { buildOrderProducts } from './buildOrderProducts';
@@ -252,9 +253,7 @@ export const useBookingSubmit = ({
       setRealOrder(true);
       setBooked(true);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'An unexpected error occurred',
-      );
+      setError(toErrorMessage(err));
     } finally {
       setIsLoading(false);
     }
