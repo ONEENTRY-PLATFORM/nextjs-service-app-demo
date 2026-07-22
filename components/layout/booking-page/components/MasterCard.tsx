@@ -1,7 +1,7 @@
 import { Star } from 'lucide-react';
 import type { JSX } from 'react';
 
-import { CYAN, DESC_MIN_H, MUTED } from '../constants';
+import { CYAN, DESC_MIN_H } from '../constants';
 import { selectableCardStyle } from '../selectableCardStyle';
 import type { BookingMaster, BookingSalon } from '../types';
 import Portrait from './Portrait';
@@ -165,8 +165,8 @@ const MasterCard = ({
             </span>
           )}
           <p
-            className="line-clamp-3 text-base leading-snug"
-            style={{ color: MUTED, minHeight: DESC_MIN_H }}
+            className="line-clamp-3 text-base leading-snug text-neutral-300"
+            style={{ minHeight: DESC_MIN_H }}
           >
             {m.bio}
           </p>

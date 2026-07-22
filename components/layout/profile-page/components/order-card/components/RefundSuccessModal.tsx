@@ -40,7 +40,7 @@ const RefundSuccessModal = ({
           }
         }}
       >
-        <div className="w-full max-w-sm rounded-2xl bg-white p-7 text-center shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <div className="w-full max-w-sm rounded-2xl bg-white p-7 text-center shadow-modal">
           <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-gradient-brand shadow-[0_0_28px_rgba(237,33,241,0.27)]">
             <Check size={30} color="#fff" />
           </div>

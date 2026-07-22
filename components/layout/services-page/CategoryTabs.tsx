@@ -133,8 +133,8 @@ const CategoryTabs = ({
                 <button
                   key={sub.url}
                   onClick={() => onSub(sub.url)}
-                  className="relative px-1 pb-1 text-base font-medium transition-opacity before:absolute before:top-1/2 before:-left-4 before:size-1 before:-translate-y-1/2 before:rounded-full before:bg-fuchsia-500 before:content-[''] first:before:hidden"
-                  style={{ color: PINK, opacity: active ? 1 : 0.65 }}
+                  className="relative px-1 pb-1 text-base font-medium text-fuchsia-500 transition-opacity before:absolute before:top-1/2 before:-left-4 before:size-1 before:-translate-y-1/2 before:rounded-full before:bg-fuchsia-500 before:content-[''] first:before:hidden"
+                  style={{ opacity: active ? 1 : 0.65 }}
                   onMouseEnter={(e) => {
                     if (!active) {
                       e.currentTarget.style.opacity = '1';

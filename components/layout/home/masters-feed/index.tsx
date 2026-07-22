@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { entityLinks } from '@/app/utils/entityLinks';
+import { salonLabel } from '@/app/utils/salonLabel';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
 import SectionTitle from '@/components/shared/SectionTitle';
@@ -34,7 +35,7 @@ const toMasterItem = (admin: IAdminEntity): MasterItem | null => {
     'Specialist';
 
   const firstSalon = entityLinks(attrs.master_salon?.value)[0];
-  const salonName = firstSalon?.title.replace(/^Thalia\s+/i, '') ?? '';
+  const salonName = salonLabel(firstSalon?.title);
   const salonId = typeof firstSalon?.id === 'number' ? firstSalon.id : null;
 
   return {

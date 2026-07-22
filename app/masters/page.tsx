@@ -9,6 +9,7 @@ import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { entityLinks, entityPageIds } from '@/app/utils/entityLinks';
+import { salonLabel } from '@/app/utils/salonLabel';
 import { salonFromPage } from '@/app/utils/salonFromPage';
 import MastersPageContent from '@/components/layout/masters-page';
 import type {
@@ -76,7 +77,8 @@ const toMasterItem = ({
 
   /** Salon link → filter id + the salon suffix of the role line */
   const salonId = entityPageIds(attrs.master_salon?.value)[0] ?? null;
-  const salonName = salonId !== null ? salonNameById.get(salonId) : undefined;
+  const salonName =
+    salonId !== null ? salonLabel(salonNameById.get(salonId)) : '';
 
   const shortDescription =
     (attrs.master_short_description?.value as string | undefined) ||

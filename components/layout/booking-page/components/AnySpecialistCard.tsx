@@ -1,6 +1,6 @@
 import type { JSX } from 'react';
 
-import { DESC_MIN_H, MUTED } from '../constants';
+import { DESC_MIN_H } from '../constants';
 import { selectableCardStyle } from '../selectableCardStyle';
 import type { BookingSalon } from '../types';
 import Portrait from './Portrait';
@@ -114,8 +114,8 @@ const AnySpecialistCard = ({
             {specialties}
           </p>
           <p
-            className="line-clamp-3 text-base leading-snug"
-            style={{ color: MUTED, minHeight: DESC_MIN_H }}
+            className="line-clamp-3 text-base leading-snug text-neutral-300"
+            style={{ minHeight: DESC_MIN_H }}
           >
             We&apos;ll assign the first available master who can perform this
             service. Soonest available slot included.

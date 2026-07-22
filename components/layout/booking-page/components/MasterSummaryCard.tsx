@@ -22,10 +22,7 @@ const MasterSummaryCard = ({
     className="flex items-center gap-3 rounded-xl p-3"
     style={{ background: `${PINK}08` }}
   >
-    <div
-      className="relative size-10 shrink-0 overflow-hidden rounded-full border-2"
-      style={{ borderColor: PINK }}
-    >
+    <div className="relative size-10 shrink-0 overflow-hidden rounded-full border-2 border-fuchsia-500">
       {master.photo && (
         <Image
           fill

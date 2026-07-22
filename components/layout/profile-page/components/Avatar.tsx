@@ -20,11 +20,8 @@ const Avatar = ({
 
   return (
     <div
-      className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full text-xl font-bold text-white"
-      style={{
-        background: 'linear-gradient(135deg,#f60efb,#ed21f1)',
-        boxShadow: '0 4px 16px #ed21f144',
-      }}
+      className="bg-gradient-brand relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full text-xl font-bold text-white"
+      style={{ boxShadow: '0 4px 16px #ed21f144' }}
     >
       {photo ? (
         // The avatar photo is an optional URL of unknown origin; next/image's

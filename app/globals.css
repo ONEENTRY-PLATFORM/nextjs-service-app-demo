@@ -18,6 +18,16 @@
   --aspect-photo: 0.88;
   --aspect-card: 0.86;
 
+  /*
+   * Lift of a centred dialog panel. The only shadow in the codebase that is
+   * genuinely repeated verbatim (5 order-card modals), so it is the only one
+   * worth a token: of 58 distinct shadow values 41 occur exactly once, 20 carry
+   * a runtime colour and cannot be tokenised at all, and the remaining neutral
+   * ones differ in blur/alpha rather than repeating. A "shadow scale" would
+   * therefore have to be invented and would move pixels, not de-duplicate them.
+   */
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.25);
+
   --color-fuchsia-50: #fff8ff;
   --color-fuchsia-300: #f587f7;
   --color-fuchsia-400: #f33de2;

@@ -48,7 +48,7 @@ const CancelConfirmModal = ({
           }
         }}
       >
-        <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-modal">
           <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-slate-50">
             <X size={26} color="#ed21f1" />
           </div>

@@ -4,7 +4,7 @@ import { ChevronDown, MapPin } from 'lucide-react';
 import type { JSX } from 'react';
 import { useState } from 'react';
 
-import { DARK, MUTED, PINK, PINK2 } from './constants';
+import { DARK, MUTED, PINK } from './constants';
 import type { ServicesSalon } from './types';
 
 /**
@@ -46,11 +46,10 @@ const SalonSelector = ({
             <button
               key={s.url}
               onClick={() => onSelect(active ? null : s.url)}
-              className="rounded-xl px-4 py-3 text-left transition-all active:scale-97"
+              className={`rounded-xl px-4 py-3 text-left transition-all active:scale-97 ${
+                active ? 'bg-gradient-brand' : 'bg-white'
+              }`}
               style={{
-                background: active
-                  ? `linear-gradient(135deg,${PINK2},${PINK})`
-                  : '#fff',
                 color: active ? '#fff' : DARK,
                 boxShadow: active
                   ? `0 8px 24px ${PINK}33`

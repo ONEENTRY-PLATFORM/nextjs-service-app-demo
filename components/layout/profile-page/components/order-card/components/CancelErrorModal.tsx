@@ -49,7 +49,7 @@ const CancelErrorModal = ({
           }
         }}
       >
-        <div className="w-full max-w-sm rounded-2xl bg-white p-7 text-center shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <div className="w-full max-w-sm rounded-2xl bg-white p-7 text-center shadow-modal">
           <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-amber-50">
             <AlertTriangle size={30} color="#d97706" />
           </div>
