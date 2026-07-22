@@ -39,7 +39,7 @@ const MastersPageContent = ({
 }): JSX.Element => {
   const [mainCat, setMainCat] = useState<MastersMainCategory>('HAIR');
   /** Selected salon id; `null` = all salons */
-  const [salonId, setSalonId] = useState<string | null>(null);
+  const [salonId, setSalonId] = useState<number | null>(null);
   /** Free-text specialist search (mobile & tablet) */
   const [query, setQuery] = useState('');
 

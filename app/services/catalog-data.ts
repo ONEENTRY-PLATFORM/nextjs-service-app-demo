@@ -6,6 +6,7 @@ import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesBy
 import { getProductsByPageUrl } from '@/app/api/server/products/getProductsByPageUrl';
 import { isOfferProduct } from '@/app/utils/isOfferProduct';
 import productDurationMinutes from '@/app/utils/productDurationMinutes';
+import { salonFromPage } from '@/app/utils/salonFromPage';
 import type {
   ServiceItem,
   ServicesCategory,
@@ -136,14 +137,12 @@ export const getServicesCatalogData = async (): Promise<{
     getChildPagesByParentUrl('salons'),
   ]);
 
-  const salons: ServicesSalon[] = (salonsResult.pages ?? []).map((salon) => ({
-    url: salon.pageUrl,
-    title: salon.localizeInfos?.title ?? salon.pageUrl,
-    address:
-      typeof salon.attributeValues?.salon_address?.value === 'string'
-        ? salon.attributeValues.salon_address.value
-        : '',
-  }));
+  const salons: ServicesSalon[] = (salonsResult.pages ?? []).map(
+    (salonPage) => {
+      const salon = salonFromPage(salonPage);
+      return { url: salon.url, title: salon.name, address: salon.address };
+    },
+  );
 
   const categoryPages = categoriesResult.pages ?? [];
 

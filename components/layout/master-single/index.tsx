@@ -6,6 +6,7 @@ import { type JSX, memo } from 'react';
 import { getPageById } from '@/app/api/server/pages/getPageById';
 import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { salonFromPage } from '@/app/utils/salonFromPage';
 import { REVIEWS } from '@/components/layout/reviews-page/data';
 
 import MasterAnimations from './animations/MasterAnimations';
@@ -102,9 +103,8 @@ const MasterSingleLayout = async ({
   /** Map salon page id → address/pageUrl for chip enrichment and links. */
   const salonPageById = new Map<number, { address: string; url: string }>();
   salonRes.pages?.forEach((page: IPagesEntity) => {
-    const address =
-      (page.attributeValues?.salon_address?.value as string | undefined) ?? '';
-    salonPageById.set(page.id, { address, url: page.pageUrl });
+    const salon = salonFromPage(page);
+    salonPageById.set(page.id, { address: salon.address, url: salon.url });
   });
   const salonChips = salonEntities
     .map((entry) => {

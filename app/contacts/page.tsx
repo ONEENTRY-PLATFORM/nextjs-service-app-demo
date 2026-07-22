@@ -10,6 +10,8 @@ import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import parseOpeningTime from '@/app/utils/parseOpeningTime';
+import { salonFromPage } from '@/app/utils/salonFromPage';
+import { salonMapLinks } from '@/app/utils/salonMapLinks';
 import summarizeOpeningHours from '@/app/utils/summarizeOpeningHours';
 import BookCtaBanner from '@/components/layout/contacts-page/BookCtaBanner';
 import ContactFormCard from '@/components/layout/contacts-page/ContactFormCard';
@@ -42,24 +44,17 @@ const toContactSalon = (
   page: IPagesEntity,
   index: number,
 ): ContactSalon | null => {
-  const attrs = page.attributeValues ?? {};
-  const address = (attrs.salon_address?.value as string | undefined) ?? '';
-  if (!address) return null;
-
-  const phone = (attrs.salon_phone?.value as string | undefined) ?? '';
-  const phoneFormatted = formatUaePhone(phone);
-  /** The CMS holds no coordinates — build the map links from the address */
-  const query = encodeURIComponent(address);
+  const salon = salonFromPage(page);
+  /** A salon with no address has nothing to show on a map — skip the card. */
+  if (!salon.address) return null;
 
   return {
-    id: String(page.id),
-    url: page.pageUrl,
-    name: page.localizeInfos?.title ?? 'Salon',
-    address,
-    phone: phoneFormatted,
-    tel: (phone || phoneFormatted).replace(/[^+\d]/g, ''),
-    mapSrc: `https://www.google.com/maps?q=${query}&z=15&hl=en&output=embed`,
-    mapsLink: `https://www.google.com/maps/dir/?api=1&destination=${query}`,
+    id: salon.id,
+    url: salon.url,
+    name: salon.name,
+    address: salon.address,
+    phone: formatUaePhone(salon.phone),
+    ...salonMapLinks(salon),
     color: SALON_COLORS[index % SALON_COLORS.length] ?? '#ed21f1',
   };
 };

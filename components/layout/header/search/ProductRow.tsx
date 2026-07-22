@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
   addServiceToCart,
   selectActiveItemId,
-  setTabsState,
 } from '@/app/store/reducers/CartSlice';
 
 /**
@@ -65,8 +64,6 @@ const ProductRow = ({
     );
 
     /** Update tabs state to show products and services tabs */
-    dispatch(setTabsState({ key: 'products', value: true }));
-    dispatch(setTabsState({ key: 'services', value: true }));
   };
 
   /**

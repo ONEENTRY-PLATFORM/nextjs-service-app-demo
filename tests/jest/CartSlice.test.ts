@@ -6,24 +6,18 @@ import reducer, {
   selectActiveItemId,
   selectCartData,
   selectFilledCartCount,
-  selectTabDataIds,
-  selectTabsState,
   setCartVersion,
-  setTabDataIds,
-  setTabsState,
 } from '@/app/store/reducers/CartSlice';
 
 const init = (): ReturnType<typeof reducer> =>
   reducer(undefined, { type: '@@INIT' } as UnknownAction);
 
 describe('CartSlice', () => {
-  it('has a single empty cart row and active salons tab initially', () => {
+  it('has a single empty cart row initially', () => {
     const state = init();
 
     expect(state.servicesData).toEqual([{ id: 0 }]);
     expect(state.activeItemId).toBe(0);
-    expect(state.tabsState.salons.isActive).toBe(true);
-    expect(state.tabsState.services.isActive).toBe(false);
   });
 
   describe('addServiceToCart', () => {
@@ -69,22 +63,12 @@ describe('CartSlice', () => {
     expect(reducer(init(), setCartVersion(2)).version).toBe(2);
   });
 
-  it('setTabsState toggles a tab and setTabDataIds stores filtered ids', () => {
-    let state = reducer(init(), setTabsState({ key: 'masters', value: true }));
-    state = reducer(state, setTabDataIds({ key: 'masters', value: [1, 2] }));
-
-    expect(state.tabsState.masters.isActive).toBe(true);
-    expect(state.tabsState.masters.dataIds).toEqual([1, 2]);
-  });
-
-  it('selectors read rows, active id and tab state', () => {
-    const state = reducer(init(), setTabDataIds({ key: 'salons', value: [9] }));
+  it('selectors read rows and the active id', () => {
+    const state = init();
     const root = { cartReducer: state };
 
     expect(selectCartData(root)).toBe(state.servicesData);
     expect(selectActiveItemId(root)).toBe(0);
-    expect(selectTabsState('salons', root).dataIds).toEqual([9]);
-    expect(selectTabDataIds('salons', root)).toEqual([9]);
   });
 
   describe('selectFilledCartCount', () => {

@@ -30,8 +30,8 @@ export type MasterItem = {
   section: string;
   /** Main price-list categories the specialist works in */
   categories: MastersMainCategory[];
-  /** Id of the specialist's salon (matches `SalonOption.id`); `''` when unknown */
-  salonId: string;
+  /** Page id of the specialist's salon (matches `SalonOption.id`); `null` when unknown */
+  salonId: number | null;
   /** Rating shown in the mobile row list */
   rating: number;
   /** Portrait URL; `''` when the CMS attribute is empty */
@@ -44,8 +44,8 @@ export type MasterItem = {
 
 /** A salon option of the salon filter */
 export type SalonOption = {
-  /** Stable id (CMS salon page id or a slug for local demo data) */
-  id: string;
+  /** CMS salon page id */
+  id: number;
   /** Salon name, e.g. `Thalia Downtown` */
   name: string;
   /** Street address shown under the salon name */

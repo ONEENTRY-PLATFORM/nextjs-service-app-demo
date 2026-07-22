@@ -17,7 +17,7 @@ export interface BookingPreselectSetters {
   setFlow: (flow: BookingFlow) => void;
   setMaster: (id: string) => void;
   setServiceIds: (ids: string[]) => void;
-  setSalon: (id: string) => void;
+  setSalon: (id: number | null) => void;
   setCategoryFilter: (category: string) => void;
   setStepIdx: (idx: number) => void;
   setServiceLocked: (locked: boolean) => void;
@@ -110,7 +110,7 @@ export const useBookingPreselect = ({
     .filter((s): s is BookingService => Boolean(s));
   const preService = preServices[0];
   const preSalon = cartSalonId
-    ? salons.find((s) => s.id === String(cartSalonId))
+    ? salons.find((s) => s.id === cartSalonId)
     : undefined;
   /** Single shared category → that pill, a mixed bundle → All */
   const preCategories = [...new Set(preServices.map((s) => s.category))];
@@ -124,7 +124,7 @@ export const useBookingPreselect = ({
     setters.setFlow('specialist-first');
     setters.setMaster(preMaster.id);
     setters.setServiceIds(preServices.map((s) => s.id));
-    setters.setSalon(preSalon?.id ?? preMaster.salonIds[0] ?? '');
+    setters.setSalon(preSalon?.id ?? preMaster.salonIds[0] ?? null);
     setters.setCategoryFilter(preCategory);
     setters.setPendingDateTime(true);
   } else if (preMaster) {
@@ -132,7 +132,7 @@ export const useBookingPreselect = ({
     setters.setFlow('specialist-first');
     setters.setMaster(preMaster.id);
     setters.setSalon(
-      preMaster.salonIds.length === 1 ? (preMaster.salonIds[0] ?? '') : '',
+      preMaster.salonIds.length === 1 ? (preMaster.salonIds[0] ?? null) : null,
     );
     setters.setStepIdx(1);
   } else if (preService) {

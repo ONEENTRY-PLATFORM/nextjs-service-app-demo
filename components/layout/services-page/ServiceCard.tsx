@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
   addServiceToCart,
   selectActiveItemId,
-  setTabsState,
 } from '@/app/store/reducers/CartSlice';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
@@ -70,8 +69,6 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
         date: null,
       }),
     );
-    dispatch(setTabsState({ key: 'services', value: true }));
-    dispatch(setTabsState({ key: 'products', value: true }));
     router.push('/booking');
   };
 

@@ -37,8 +37,8 @@ const toMasterItem = (admin: IAdminEntity): MasterItem | null => {
     Array<{ title?: string; value?: { id?: number } }> | '' | undefined;
   const firstSalon = Array.isArray(salonArr) ? salonArr[0] : undefined;
   const salonName = (firstSalon?.title ?? '').replace(/^Thalia\s+/i, '');
-  const salonId =
-    firstSalon?.value?.id !== undefined ? String(firstSalon.value.id) : '';
+  const rawSalonId = firstSalon?.value?.id;
+  const salonId = typeof rawSalonId === 'number' ? rawSalonId : null;
 
   return {
     id: String(admin.id),

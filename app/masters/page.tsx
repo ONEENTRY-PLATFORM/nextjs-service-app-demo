@@ -8,6 +8,7 @@ import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
+import { salonFromPage } from '@/app/utils/salonFromPage';
 import MastersPageContent from '@/components/layout/masters-page';
 import type {
   MasterItem,
@@ -38,7 +39,7 @@ const CATEGORY_BY_PAGEURL: Record<string, MastersMainCategory> = {
  * @param   {IAdminEntity}                     props                     - Function parameters
  * @param   {IAdminEntity}                     props.admin               - CMS admin entity
  * @param   {Map<number, MastersMainCategory>} props.categoryByServiceId - Services child page id → main category
- * @param   {Map<string, string>}              props.salonNameById       - Salon page id → salon title
+ * @param   {Map<number, string>}              props.salonNameById       - Salon page id → salon title
  * @returns {MasterItem | null}                                          Normalized specialist or `null` when `master_name` is empty
  */
 const toMasterItem = ({
@@ -48,7 +49,7 @@ const toMasterItem = ({
 }: {
   admin: IAdminEntity;
   categoryByServiceId: Map<number, MastersMainCategory>;
-  salonNameById: Map<string, string>;
+  salonNameById: Map<number, string>;
 }): MasterItem | null => {
   const attrs = admin.attributeValues ?? {};
   const name = (attrs.master_name?.value as string | undefined) ?? '';
@@ -85,9 +86,9 @@ const toMasterItem = ({
   const salonArr = attrs.master_salon?.value as
     Array<{ value?: { id?: number } }> | '' | undefined;
   const firstSalon = Array.isArray(salonArr) ? salonArr[0] : undefined;
-  const salonId =
-    firstSalon?.value?.id !== undefined ? String(firstSalon.value.id) : '';
-  const salonName = salonNameById.get(salonId);
+  const rawSalonId = firstSalon?.value?.id;
+  const salonId = typeof rawSalonId === 'number' ? rawSalonId : null;
+  const salonName = salonId !== null ? salonNameById.get(salonId) : undefined;
 
   const shortDescription =
     (attrs.master_short_description?.value as string | undefined) ||
@@ -166,12 +167,10 @@ const MastersPageLayout = async (): Promise<JSX.Element> => {
 
   /** Salon filter options from the CMS salon pages */
   const cmsSalons: SalonOption[] =
-    salonsResult.pages?.map((salonPage: IPagesEntity) => ({
-      id: String(salonPage.id),
-      name: salonPage.localizeInfos?.title ?? '',
-      address:
-        (salonPage.attributeValues?.salon_address?.value as string) ?? '',
-    })) ?? [];
+    salonsResult.pages?.map((salonPage: IPagesEntity) => {
+      const salon = salonFromPage(salonPage);
+      return { id: salon.id, name: salon.name, address: salon.address };
+    }) ?? [];
   const salonNameById = new Map(
     cmsSalons.map((salon) => [salon.id, salon.name]),
   );

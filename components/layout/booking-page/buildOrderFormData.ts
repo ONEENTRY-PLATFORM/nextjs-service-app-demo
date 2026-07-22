@@ -55,12 +55,12 @@ export const buildOrderFormData = ({
     });
   }
 
-  const salonId = Number(salon?.id);
+  const salonId = salon?.id;
   if (salonId) {
     formData.push({
       marker: ORDER_FIELD_SALON,
       type: 'entity',
-      /** Entity refs to PAGES take numeric ids, not strings. */
+      /** Entity refs to PAGES take numeric ids — `BookingSalon.id` already is one. */
       value: [salonId],
     });
   }

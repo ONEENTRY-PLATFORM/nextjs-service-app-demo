@@ -13,8 +13,8 @@ import type { SalonOption } from '../taxonomy';
  * without salons.
  * @param   {object}                      props            - Component properties
  * @param   {SalonOption[]}               props.salons     - Salon filter options
- * @param   {string | null}               props.selectedId - Selected salon id (`null` = All)
- * @param   {(id: string | null) => void} props.onSelect   - Change the selected salon
+ * @param   {number | null}               props.selectedId - Selected salon page id (`null` = All)
+ * @param   {(id: number | null) => void} props.onSelect   - Change the selected salon
  * @returns {JSX.Element | null}                           Studio filter or `null`
  */
 const SalonFilter = ({
@@ -23,8 +23,8 @@ const SalonFilter = ({
   onSelect,
 }: {
   salons: SalonOption[];
-  selectedId: string | null;
-  onSelect: (id: string | null) => void;
+  selectedId: number | null;
+  onSelect: (id: number | null) => void;
 }): JSX.Element | null => {
   /** Mobile salon dropdown open state */
   const [salonOpen, setSalonOpen] = useState(false);

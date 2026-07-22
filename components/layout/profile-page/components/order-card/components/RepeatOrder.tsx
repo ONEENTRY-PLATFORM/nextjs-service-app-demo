@@ -8,7 +8,6 @@ import { ORDER_FIELD_SALON } from '@/app/store/orderMarkers';
 import {
   addServiceToCart,
   selectActiveItemId,
-  setTabsState,
 } from '@/app/store/reducers/CartSlice';
 
 /**
@@ -68,10 +67,6 @@ const RepeatOrder = ({
         masterId: null,
       }),
     );
-    dispatch(setTabsState({ key: 'salons', value: true }));
-    dispatch(setTabsState({ key: 'services', value: true }));
-    dispatch(setTabsState({ key: 'products', value: true }));
-    dispatch(setTabsState({ key: 'masters', value: true }));
     /** Navigate to booking page */
     router.push('/booking');
   };

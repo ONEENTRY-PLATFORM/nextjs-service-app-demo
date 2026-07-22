@@ -26,7 +26,7 @@ const service = (over: Partial<BookingService> = {}): BookingService =>
     ...over,
   }) as BookingService;
 
-const SALON = { id: '39', name: 'Downtown' } as BookingSalon;
+const SALON = { id: 39, name: 'Downtown' } as BookingSalon;
 const MASTER = { id: 'm1', adminId: 7, name: 'Sofia' } as BookingMaster;
 
 describe('toBookingInterval', () => {
@@ -160,12 +160,15 @@ describe('buildOrderFormData', () => {
     expect(formData.map((f) => f.marker)).toEqual(['salon', 'interval']);
   });
 
-  it('omits a demo salon whose id is not numeric', () => {
-    const formData = buildOrderFormData({
-      salon: { id: 'downtown' } as BookingSalon,
-      master: MASTER,
-      interval,
-    });
+  /**
+   * Replaces "omits a demo salon whose id is not numeric": the salon used to
+   * travel as a string and be converted back here, so a non-numeric id had to
+   * be screened out. `BookingSalon.id` is a number now, so that case is gone
+   * from the type — the reachable one is simply having picked no salon. The
+   * numeric shape of the entity ref stays pinned by the test above.
+   */
+  it('omits the salon when none is picked', () => {
+    const formData = buildOrderFormData({ master: MASTER, interval });
 
     expect(formData.map((f) => f.marker)).toEqual(['master', 'interval']);
   });

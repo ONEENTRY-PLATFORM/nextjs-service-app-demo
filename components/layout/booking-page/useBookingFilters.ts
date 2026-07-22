@@ -18,7 +18,7 @@ export interface BookingFiltersInput {
   /** Chosen flow, `null` on the entry screen */
   flow: BookingFlow | null;
   /** Chosen salon id */
-  salon: string;
+  salon: number | null;
   /** Chosen service ids */
   serviceIds: string[];
   /** Chosen specialist id (`''`, id or `__any__`) */

@@ -13,8 +13,8 @@ import type { BookingSalon } from '../types';
  * circle on the right.
  * @param   {object}               props          - Component properties
  * @param   {BookingSalon[]}       props.salons   - Salons available for the selection
- * @param   {string}               props.selected - Id of the chosen salon (`''` when none)
- * @param   {(id: string) => void} props.onSelect - Select a salon by id
+ * @param   {number | null}        props.selected - Page id of the chosen salon (`''` when none)
+ * @param   {(id: number) => void} props.onSelect - Select a salon by page id
  * @returns {JSX.Element}                         Salon step
  */
 const SalonStep = ({
@@ -23,8 +23,8 @@ const SalonStep = ({
   onSelect,
 }: {
   salons: BookingSalon[];
-  selected: string;
-  onSelect: (id: string) => void;
+  selected: number | null;
+  onSelect: (id: number) => void;
 }): JSX.Element => {
   return (
     <div className="space-y-3" data-testid="booking-step-salon">

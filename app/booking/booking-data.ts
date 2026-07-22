@@ -4,6 +4,7 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { getServicesCatalogData } from '@/app/services/catalog-data';
+import { salonFromPage } from '@/app/utils/salonFromPage';
 import type {
   BookingData,
   BookingMaster,
@@ -94,8 +95,8 @@ const toBookingMaster = ({
     Array<{ value?: { id?: number } }> | '' | undefined;
   const salonIds = Array.isArray(salonArr)
     ? salonArr
-        .map((s) => (s?.value?.id !== undefined ? String(s.value.id) : ''))
-        .filter(Boolean)
+        .map((s) => s?.value?.id)
+        .filter((id): id is number => typeof id === 'number')
     : [];
 
   /** "from" price — the cheapest linked service */
@@ -144,18 +145,14 @@ export const getBookingData = async (): Promise<BookingData> => {
 
   const salons: BookingSalon[] = (salonsResult.pages ?? []).map(
     (salonPage: IPagesEntity) => {
-      const attrs = salonPage.attributeValues ?? {};
-      const phone = attrs.salon_phone?.value;
+      const salon = salonFromPage(salonPage);
       return {
-        id: String(salonPage.id),
-        name: salonPage.localizeInfos?.title ?? salonPage.pageUrl,
-        address:
-          typeof attrs.salon_address?.value === 'string'
-            ? attrs.salon_address.value
-            : '',
-        phone: typeof phone === 'string' ? formatUaePhone(phone) : '',
+        id: salon.id,
+        name: salon.name,
+        address: salon.address,
+        phone: formatUaePhone(salon.phone),
         /** Raw opening-hours schedule; the "any specialist" slot source */
-        schedule: attrs.salon_time,
+        schedule: salonPage.attributeValues?.salon_time,
       };
     },
   );

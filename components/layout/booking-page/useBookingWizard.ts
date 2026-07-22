@@ -53,7 +53,7 @@ export interface BookingWizardState
   /** All salons */
   salons: BookingSalon[];
   /** Chosen salon id */
-  salon: string;
+  salon: number | null;
   /** Chosen service ids (multi-select, in the order they were picked) */
   selectedServiceIds: string[];
   /** Chosen specialist id (`''`, id or `__any__`) */
@@ -85,7 +85,7 @@ export interface BookingWizardState
   /** Start a flow from the entry screen */
   startFlow: (f: BookingFlow) => void;
   /** Choose a salon */
-  selectSalon: (id: string) => void;
+  selectSalon: (id: number) => void;
   /** Toggle a service in or out of the multi-selection */
   selectService: (id: string) => void;
   /** Choose a specialist */
@@ -128,7 +128,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
 
   const [flow, setFlow] = useState<BookingFlow | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
-  const [salon, setSalon] = useState('');
+  const [salon, setSalon] = useState<number | null>(null);
   /** Ids of the chosen services — one appointment can bundle several */
   const [serviceIds, setServiceIds] = useState<string[]>([]);
   const [master, setMaster] = useState('');
@@ -287,7 +287,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     setTouched(true);
     setFlow(null);
     setStepIdx(0);
-    setSalon('');
+    setSalon(null);
     setServiceIds([]);
     setMaster('');
     setDate('');
@@ -311,7 +311,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
    * Pick a studio; invalidates a chosen specialist who doesn't work there.
    * @param {string} id - Salon id
    */
-  const selectSalon = (id: string) => {
+  const selectSalon = (id: number) => {
     setTouched(true);
     setSalon(id);
     /** Invalidate a chosen master who doesn't work at this studio */
@@ -377,10 +377,10 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
       const m = masters.find((x) => x.id === id);
       /** Invalidate a chosen studio the specialist doesn't work at */
       if (salon && m && m.salonIds.length > 0 && !m.salonIds.includes(salon)) {
-        setSalon('');
+        setSalon(null);
       }
       /** Auto-pick a single studio — skips the Salon step entirely */
-      if (m?.salonIds.length === 1) setSalon(m.salonIds[0] ?? '');
+      if (m?.salonIds.length === 1) setSalon(m.salonIds[0] ?? null);
     }
   };
 

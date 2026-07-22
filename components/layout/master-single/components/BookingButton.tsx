@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
   addServiceToCart,
   selectActiveItemId,
-  setTabsState,
 } from '@/app/store/reducers/CartSlice';
 
 /**
@@ -57,9 +56,7 @@ const BookingButton = ({
         }),
       );
       /** Update tabs state to show services tab */
-      dispatch(setTabsState({ key: 'services', value: true }));
       /** Update tabs state to show masters tab */
-      dispatch(setTabsState({ key: 'masters', value: true }));
       router.push('/booking');
     }
   };

@@ -115,11 +115,9 @@ const eslintConfig = defineConfig([
             // GSAP / animation selector hooks
             '^(beauty|salon|mask_path|intro|logo|loader|slide|slider|title|item|arrow)$',
             '^hero-(bg|title|description|button)$',
-            '^(nav-menu|menu-item|animate-loader)$',
+            '^(menu-item|animate-loader)$',
             // component classes defined in globals.css
-            '^gallery-card-(img|content|info|info-bg)$',
-            '^dropdown-(container|item)$',
-            '^(bg-wrapper|section-bg|card-label|login-btn|review-fade)$',
+            '^review-fade$',
           ],
         },
       ],

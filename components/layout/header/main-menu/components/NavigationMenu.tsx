@@ -41,7 +41,7 @@ const NavigationMenu = ({ menu }: { menu: IMenusPages[] }): JSX.Element => {
     >
       <NavUnderline
         hrefs={menu.map(menuHref)}
-        className="nav-menu flex flex-row flex-wrap items-center gap-8"
+        className="flex flex-row flex-wrap items-center gap-8"
       >
         {menu.map((item, index) => {
           const hasChildren =

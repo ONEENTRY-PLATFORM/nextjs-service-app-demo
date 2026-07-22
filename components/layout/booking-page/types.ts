@@ -6,10 +6,14 @@
 
 import type { IAttributeValue } from 'oneentry/dist/base/utils';
 
-/** A salon location — a child page of `salons` in the CMS or a demo studio. */
+/** A salon location — a child page of `salons` in the CMS. */
 export interface BookingSalon {
-  /** Salon page id as a string (demo: `downtown` / `marina` / `jbr`) */
-  id: string;
+  /**
+   * Salon page id, numeric as the CMS stores it. Stays a number all the way to
+   * `buildOrderFormData`, which posts it as an entity ref — those take numeric
+   * page ids, so a string here only meant converting back.
+   */
+  id: number;
   /** Salon display name */
   name: string;
   /** Street address from the `salon_address` attribute */
@@ -80,8 +84,8 @@ export interface BookingMaster {
   price: number | null;
   /** Short bio of the card (`master_description`) */
   bio: string;
-  /** Ids of the salons the specialist works at (`master_salon`) */
-  salonIds: string[];
+  /** Page ids of the salons the specialist works at (`master_salon`) */
+  salonIds: number[];
   /** Ids of the services the specialist performs (`services` product links) */
   serviceIds: string[];
   /**

@@ -2,6 +2,7 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
+import { salonFromPage } from '@/app/utils/salonFromPage';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
 
 import SalonCell from './SalonCell';
@@ -21,12 +22,12 @@ const SalonsGrid = async (): Promise<JSX.Element> => {
 
   /** Extract contact data from salon pages for display */
   const contactsData = pages?.map((page: IPagesEntity) => {
-    const phone = (page.attributeValues?.salon_phone?.value as string) ?? '';
+    const salon = salonFromPage(page);
     return {
-      title: page.localizeInfos?.title ?? '',
-      address: (page.attributeValues?.salon_address?.value as string) ?? '',
-      phone,
-      phoneFormatted: formatUaePhone(phone),
+      title: salon.name,
+      address: salon.address,
+      phone: salon.phone,
+      phoneFormatted: formatUaePhone(salon.phone),
     };
   });
 

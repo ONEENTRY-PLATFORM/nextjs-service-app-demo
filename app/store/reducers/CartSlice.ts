@@ -20,40 +20,13 @@ export interface CartItem {
   interval?: Date[];
 }
 
-interface TabState {
-  isActive: boolean;
-  disabled: boolean;
-  /**
-   * IDs of the entities currently filtered into this tab.
-   * Null when the tab has not computed its filter yet.
-   */
-  dataIds: number[] | null;
-}
-
-interface TabsState {
-  salons: TabState;
-  services: TabState;
-  products: TabState;
-  masters: TabState;
-  calendar: TabState;
-  signin: TabState;
-  payment: TabState;
-}
-
 interface CartState {
   /** Row index into `servicesData`. Currently always 0 — multi-row booking is vestigial. */
   activeItemId: number;
   servicesData: CartItem[];
-  tabsState: TabsState;
   transitionId: number;
   version: number;
 }
-
-const emptyTab: TabState = {
-  isActive: false,
-  disabled: false,
-  dataIds: null,
-};
 
 /**
  * Initial state for the cart reducer.
@@ -61,15 +34,6 @@ const emptyTab: TabState = {
 const initialState: CartState = {
   activeItemId: 0,
   servicesData: [{ id: 0 }],
-  tabsState: {
-    salons: { ...emptyTab, isActive: true },
-    services: { ...emptyTab },
-    products: { ...emptyTab },
-    masters: { ...emptyTab },
-    calendar: { ...emptyTab },
-    signin: { ...emptyTab },
-    payment: { ...emptyTab },
-  },
   transitionId: 0,
   version: 0,
 };
@@ -157,44 +121,11 @@ export const cartSlice = createSlice({
     setCartVersion(state: CartState, action: PayloadAction<number>) {
       state.version = action.payload;
     },
-    /**
-     * Toggle a tab's active state.
-     * @param {CartState}             state  - Current state of the slice.
-     * @param {PayloadAction<object>} action - Tab key and active flag.
-     */
-    setTabsState(
-      state: CartState,
-      action: PayloadAction<{ key: keyof TabsState; value: boolean }>,
-    ) {
-      state.tabsState[action.payload.key].isActive = action.payload.value;
-    },
-    /**
-     * Store the filtered entity IDs for a tab.
-     *
-     * Used for cross-tab filtering — e.g. MastersList writes the available master
-     * IDs so SalonsList can narrow salons to those served by at least one master.
-     * @param {CartState}             state  - Current state of the slice.
-     * @param {PayloadAction<object>} action - Tab key and ID array (or null).
-     */
-    setTabDataIds(
-      state: CartState,
-      action: PayloadAction<{
-        key: keyof TabsState;
-        value: number[] | null;
-      }>,
-    ) {
-      state.tabsState[action.payload.key].dataIds = action.payload.value;
-    },
   },
 });
 
-export const {
-  addServiceToCart,
-  removeAllServices,
-  setCartVersion,
-  setTabsState,
-  setTabDataIds,
-} = cartSlice.actions;
+export const { addServiceToCart, removeAllServices, setCartVersion } =
+  cartSlice.actions;
 
 /**
  * Select the raw cart items array (IDs only).
@@ -249,31 +180,5 @@ export const selectFilledCartCount = (state: {
 export const selectActiveItemId = (state: {
   cartReducer: { activeItemId: number };
 }): number => state.cartReducer.activeItemId;
-
-/**
- * Select a tab's state by key.
- * @param   {string}    key                         - The tab key.
- * @param   {object}    state                       - The Redux store state.
- * @param   {object}    state.cartReducer           - The cart reducer state.
- * @param   {TabsState} state.cartReducer.tabsState - The state of each tab.
- * @returns {TabState}                              Tab state object.
- */
-export const selectTabsState = (
-  key: keyof TabsState,
-  state: { cartReducer: { tabsState: TabsState } },
-): TabState => state.cartReducer.tabsState[key];
-
-/**
- * Select a tab's filtered entity IDs by key.
- * @param   {string}          key                         - The tab key.
- * @param   {object}          state                       - The Redux store state.
- * @param   {object}          state.cartReducer           - The cart reducer state.
- * @param   {TabsState}       state.cartReducer.tabsState - The state of each tab.
- * @returns {number[] | null}                             Array of entity IDs or null.
- */
-export const selectTabDataIds = (
-  key: keyof TabsState,
-  state: { cartReducer: { tabsState: TabsState } },
-): number[] | null => state.cartReducer.tabsState[key].dataIds;
 
 export default cartSlice.reducer;

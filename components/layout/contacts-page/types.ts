@@ -1,7 +1,7 @@
 /** Normalized salon of the contacts page location cards */
 export type ContactSalon = {
-  /** Stable key (CMS page id or the mock's `s1`…`s3`) */
-  id: string;
+  /** CMS salon page id — the React key of the card */
+  id: number;
   /** CMS `pageUrl` — the salon detail route `/salons/{url}` */
   url: string;
   name: string;

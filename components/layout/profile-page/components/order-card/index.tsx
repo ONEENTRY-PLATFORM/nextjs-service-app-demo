@@ -12,6 +12,7 @@ import {
   ORDERS_STATUS_CANCELED,
   ORDERS_STATUS_COMPLETED,
 } from '@/app/store/orderMarkers';
+import { salonFromPage } from '@/app/utils/salonFromPage';
 
 import CardAnimations from '../../animations/CardAnimations';
 import StatusBadge from '../StatusBadge';
@@ -92,13 +93,11 @@ const OrderCard = ({
       const result = await fetchSalon(salonId);
 
       /** Process successful response */
-      if (!result.isError && result.data) {
+      if (!result.isError && result.data?.page) {
         /** Set salon address and title from the fetched data */
-        setSalonAddress(
-          (result.data.page?.attributeValues?.salon_address?.value as
-            string | undefined) || '',
-        );
-        setSalonTitle(result.data.page?.localizeInfos?.title || '');
+        const salon = salonFromPage(result.data.page);
+        setSalonAddress(salon.address);
+        setSalonTitle(salon.name);
       } else {
         /** Log error if fetching fails */
         // eslint-disable-next-line no-console

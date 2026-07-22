@@ -5,6 +5,8 @@ import type { JSX } from 'react';
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
+import { salonFromPage } from '@/app/utils/salonFromPage';
+import { salonMapLinks } from '@/app/utils/salonMapLinks';
 import SalonPageContent from '@/components/layout/salon-page';
 import {
   DEFAULT_SALON_CONTENT,
@@ -53,13 +55,8 @@ export default async function SalonDetailLayout({
     return notFound();
   }
 
-  const attrs = page.attributeValues ?? {};
-  const address = (attrs.salon_address?.value as string | undefined) ?? '';
-  const phone = (attrs.salon_phone?.value as string | undefined) ?? '';
-  const phoneFormatted = formatUaePhone(phone);
-  const query = encodeURIComponent(
-    address || (page.localizeInfos?.title ?? ''),
-  );
+  const salon = salonFromPage(page);
+  const links = salonMapLinks(salon);
 
   /**
    * Photos of this salon. A photo reaches its salon through its master, so
@@ -77,20 +74,18 @@ export default async function SalonDetailLayout({
 
   const content = SALON_CONTENT[handle] ?? DEFAULT_SALON_CONTENT;
 
-  const salon: SalonDetail = {
-    name: page.localizeInfos?.title ?? 'Salon',
-    address,
-    phone: phoneFormatted,
-    tel: (phone || phoneFormatted).replace(/[^+\d]/g, ''),
-    mapSrc: `https://www.google.com/maps?q=${query}&z=15&hl=en&output=embed`,
-    mapsLink: `https://www.google.com/maps/dir/?api=1&destination=${query}`,
+  const detail: SalonDetail = {
+    name: salon.name,
+    address: salon.address,
+    phone: formatUaePhone(salon.phone),
+    ...links,
     color: SALON_COLOR[handle] ?? '#ed21f1',
     about: content.about,
     highlights: content.highlights,
     photos,
   };
 
-  return <SalonPageContent salon={salon} />;
+  return <SalonPageContent salon={detail} />;
 }
 
 /**

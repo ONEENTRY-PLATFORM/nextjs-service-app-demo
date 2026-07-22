@@ -103,21 +103,6 @@ section {
   position: relative;
 }
 
-.bg-wrapper {
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.section-bg {
-  position: absolute;
-  top: 0px;
-  left: 50%;
-  z-index: 0;
-  transform: translateX(-50%);
-  pointer-events: none;
-}
 /* forms */
 input.border-b {
   padding-right: 0;
@@ -277,35 +262,6 @@ address {
 }
 
 /* gallery */
-.gallery-card-info {
-  position: absolute;
-  bottom: -120px;
-  height: 120px;
-  transition: all 350ms ease-in-out;
-}
-.group:hover .gallery-card-info {
-  bottom: 0;
-  z-index: 10;
-  transition: all 350ms ease-in-out;
-}
-.gallery-card-info-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #ee21f18c;
-}
-.gallery-card-content {
-  position: relative;
-  z-index: 10;
-  backdrop-filter: blur(10px);
-}
-
-.slide-up {
-  /* opacity: 0; */
-}
 /* GSAP animation start state */
 @utility fade-in {
   opacity: 0;
@@ -370,16 +326,6 @@ address {
   }
 }
 
-.dropdown-container {
-  overflow: hidden;
-}
-
-.slider,
-.title,
-.item {}
-
-.menu-item {}
-
 /* intro */
 .intro #logo_wrapper {
   position: fixed;
@@ -414,10 +360,6 @@ address {
   left: -1%;
   top: -1%;
   z-index: 50;
-}
-
-.gallery-card-img {
-  max-width: 100%;
 }
 
 @keyframes gradient {

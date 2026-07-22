@@ -1,5 +1,4 @@
 import '@/app/globals.css';
-import '@/app/styles/nav-menu.scss';
 
 import type { Metadata } from 'next';
 import { Lato, League_Gothic } from 'next/font/google';

@@ -9,7 +9,6 @@ import { RTKApi } from '../api/api/RTKApi';
 import animationsSlice from './reducers/AnimationsSlice';
 import cartSlice from './reducers/CartSlice';
 import formFieldsSlice from './reducers/FormFieldsSlice';
-import orderSlice from './reducers/OrderSlice';
 
 /**
  * Creates a noop (no operation) storage implementation that mimics the redux-persist storage interface.
@@ -34,7 +33,6 @@ const storage =
   typeof window !== 'undefined'
     ? createWebStorage('local')
     : createNoopStorage();
-const version = 1;
 
 /**
  * Cart persist migrations.
@@ -56,23 +54,10 @@ const cartReducer = persistReducer(
     key: 'cart-slice',
     storage: storage,
     version: 2,
-    whitelist: ['servicesData', 'tabsState'],
+    whitelist: ['servicesData'],
     migrate: createMigrate(cartMigrations, { debug: false }),
   },
   cartSlice,
-);
-
-/**
- * Persist orderReducer
- */
-const orderReducer = persistReducer(
-  {
-    key: 'order-slice',
-    storage: storage,
-    version: version,
-    whitelist: ['products'],
-  },
-  orderSlice,
 );
 
 /**
@@ -86,7 +71,6 @@ const orderReducer = persistReducer(
  */
 const rootReducer = combineReducers({
   cartReducer,
-  orderReducer,
   formFieldsReducer: formFieldsSlice,
   animationsSlice,
   [RTKApi.reducerPath]: RTKApi.reducer,
