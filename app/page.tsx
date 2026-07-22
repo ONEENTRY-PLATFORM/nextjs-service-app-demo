@@ -12,7 +12,7 @@ import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
-import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
+import JsonLd from '@/components/shared/JsonLd';
 import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
 
 /**
@@ -88,13 +88,17 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * Generate structured data for the homepage
- * @returns {object} Structured data in JSON-LD format
+ *
+ * Returns `null` — not `{}` — when the CMS page is unavailable: the render guard
+ * is a truthiness check, and an empty object passes it, so a failed read used to
+ * ship a literal `<script type="application/ld+json">{}</script>` to crawlers.
+ * @returns {object | null} Structured data in JSON-LD format, or `null` when unavailable
  */
-const generateStructuredData = async (): Promise<object> => {
+const generateStructuredData = async (): Promise<object | null> => {
   const { page, isError } = await getHomePage();
 
   if (isError || !page) {
-    return {};
+    return null;
   }
 
   return {
@@ -154,14 +158,7 @@ const IndexPageLayout = async (): Promise<JSX.Element> => {
 
   return (
     <>
-      {structuredData && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: serializeJsonLd(structuredData),
-          }}
-        />
-      )}
+      <JsonLd data={structuredData} />
       {/* 1. Hero carousel banner */}
       {heroBlock && <HomeHero block={heroBlock} />}
       {/* 2. Service catalog */}

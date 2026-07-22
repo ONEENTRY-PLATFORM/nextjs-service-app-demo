@@ -9,30 +9,73 @@ import { getSiteUrl } from '@/app/utils/getSiteUrl';
 export async function GET(): Promise<Response> {
   const baseUrl = getSiteUrl();
 
-  /** Get all pages for the sitemap */
-  const staticPages = ['', 'services', 'gallery', 'masters', 'contacts'];
+  /**
+   * Public routes with no CMS children of their own. `offers` and `reviews`
+   * were missing, so two live pages were never advertised to crawlers.
+   *
+   * Not derived from `app/utils/constants.ts` on purpose: that table lists CMS
+   * MARKERS, not Next routes — it has no `offers`/`reviews` at all and does have
+   * `profile` and `404`, which must never appear here.
+   */
+  const staticPages = [
+    '',
+    'services',
+    'gallery',
+    'masters',
+    'offers',
+    'reviews',
+    'contacts',
+  ];
 
-  /** Get dynamic service pages */
-  const servicePages = await getChildPagesByParentUrl('services');
-  const services =
-    servicePages.pages?.map(
-      (page: { pageUrl: string }) => `services/${page.pageUrl}`,
-    ) || [];
+  /** The four child-page reads are independent — fetch them in parallel. */
+  const [servicePages, galleryPages, salonPages, { admins }] =
+    await Promise.all([
+      getChildPagesByParentUrl('services'),
+      getChildPagesByParentUrl('gallery'),
+      getChildPagesByParentUrl('salons'),
+      getMastersList(),
+    ]);
 
-  /** Get dynamic gallery pages */
-  const galleryPages = await getChildPagesByParentUrl('gallery');
+  /**
+   * Service categories AND their subcategories. `/services/[handle]` pre-renders
+   * both (see its `generateStaticParams`), but the sitemap listed only the four
+   * top-level categories — the 16 subcategory pages were never advertised.
+   */
+  const serviceCategories = servicePages.pages ?? [];
+  const subLists = await Promise.all(
+    serviceCategories.map((category) =>
+      getChildPagesByParentUrl(category.pageUrl),
+    ),
+  );
+  const services = serviceCategories.flatMap((category, index) => [
+    `services/${category.pageUrl}`,
+    ...(subLists[index]?.pages?.map(
+      (sub: { pageUrl: string }) => `services/${sub.pageUrl}`,
+    ) ?? []),
+  ]);
+
   const galleries =
     galleryPages.pages?.map(
       (page: { pageUrl: string }) => `gallery/${page.pageUrl}`,
     ) || [];
 
-  /** Get master pages */
-  const { admins } = await getMastersList();
+  /** Salon detail pages — a whole prerendered route group that was omitted. */
+  const salons =
+    salonPages.pages?.map(
+      (page: { pageUrl: string }) => `salons/${page.pageUrl}`,
+    ) || [];
+
   const masters =
     admins?.map((admin: { id: number }) => `masters/${admin.id}`) || [];
 
   /** Combine all paths */
-  const allPaths = [...staticPages, ...services, ...galleries, ...masters];
+  const allPaths = [
+    ...staticPages,
+    ...services,
+    ...galleries,
+    ...salons,
+    ...masters,
+  ];
 
   /** Generate sitemap XML */
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

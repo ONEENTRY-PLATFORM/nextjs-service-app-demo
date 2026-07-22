@@ -3,15 +3,15 @@ import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
-import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
-import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
+import { resolveCmsPage } from '@/app/utils/resolveCmsPage';
 import GalleryPageContent from '@/components/layout/gallery-page';
 import GalleryUnavailable from '@/components/layout/gallery-page/components/GalleryUnavailable';
 import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
 import { GALLERY_MAIN_CATS } from '@/components/layout/gallery-page/taxonomy';
+import JsonLd from '@/components/shared/JsonLd';
 
 import getCmsGalleryItems from '../getCmsGalleryItems';
 
@@ -54,34 +54,42 @@ export default async function GallerySingleLayout({
 }): Promise<JSX.Element> {
   const { handle } = await params;
   /** The page read and the CMS gallery fetch are independent — run in parallel. */
-  const [{ page, isError }, items] = await Promise.all([
-    getPageByUrl(handle),
+  const [resolved, items] = await Promise.all([
+    resolveCmsPage(handle),
     getCmsGalleryItems(),
   ]);
 
-  if (!page || isError) {
+  /**
+   * Only a genuine 404 means this category does not exist. A CMS outage used to
+   * take the same branch and freeze a 404 for the whole revalidate window on
+   * this `force-static` route; now it falls through to the gallery, which
+   * already degrades to `GalleryUnavailable` when there are no photos.
+   */
+  if (resolved.status === 'missing') {
     return notFound();
   }
+  const page = resolved.status === 'ok' ? resolved.page : undefined;
 
   const initialCategory = handleToCategory(handle);
 
-  /** Generate structured data for gallery */
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'ImageGallery',
-    name: page.localizeInfos?.title,
-    description: getPagePlainContent(page) || page.localizeInfos?.title,
-    url: `${getSiteUrl()}/gallery/${handle}`,
-  };
+  /**
+   * Structured data for the gallery. Emitted only when the CMS page really was
+   * read — describing it from nothing while the CMS is down would publish
+   * placeholder markup to crawlers.
+   */
+  const structuredData = page
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'ImageGallery',
+        name: page.localizeInfos?.title,
+        description: getPagePlainContent(page) || page.localizeInfos?.title,
+        url: `${getSiteUrl()}/gallery/${handle}`,
+      }
+    : null;
 
   return (
     <div className="flex w-full flex-col bg-white">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: serializeJsonLd(structuredData),
-        }}
-      />
+      <JsonLd data={structuredData} />
       {/* Gradient accent strip */}
       <div className="h-1.25 bg-gradient-stats" />
       {items.length > 0 ? (

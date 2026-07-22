@@ -9,11 +9,11 @@ import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
-import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import MasterSingleLayout from '@/components/layout/master-single';
 import MasterLoader from '@/components/layout/master-single/components/MasterLoader';
 import PortfolioGridLayout from '@/components/layout/portfolio-grid';
 import PortfolioGridLoader from '@/components/layout/portfolio-grid/components/PortfolioGridLoader';
+import JsonLd from '@/components/shared/JsonLd';
 
 /**
  * ISR: refresh the prerendered CMS content on a timer. Not `force-static` —
@@ -68,12 +68,7 @@ export default async function MasterPageLayout({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: serializeJsonLd(structuredData),
-        }}
-      />
+      <JsonLd data={structuredData} />
       <Suspense fallback={<MasterLoader />}>
         <MasterSingleLayout
           master={admin}

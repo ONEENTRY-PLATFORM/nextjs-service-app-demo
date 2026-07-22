@@ -14,11 +14,11 @@ import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import StoreProvider from '@/app/store/providers/StoreProvider';
 import { getSiteName } from '@/app/utils/getSiteName';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
-import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import BottomMenu from '@/components/layout/bottom-menu';
 import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/header';
 import PopupRoot from '@/components/layout/PopupRoot';
+import JsonLd from '@/components/shared/JsonLd';
 import ResponsiveToastContainer from '@/components/shared/ResponsiveToastContainer';
 
 import IntroAnimations from './animations/IntroAnimations';
@@ -109,11 +109,14 @@ const generateStructuredData = (siteName: string): object => {
     name: siteName,
     url: siteUrl,
     logo: `${siteUrl}/icons/thalia_logo.svg`,
-    sameAs: [
-      'https://www.facebook.com/OneEntry',
-      'https://twitter.com/OneEntry',
-      'https://www.instagram.com/OneEntry',
-    ],
+    /**
+     * No `sameAs`. It used to list OneEntry's OWN social accounts on every page
+     * of the site, telling search engines those are this studio's official
+     * profiles — wrong data about a real business, not a cosmetic issue. The
+     * placeholders in `components/data/socialData.ts` are `#1`/`#2`/`#3`, so
+     * sourcing it from there would publish invalid fragments instead. Add the
+     * property back when the studio's real accounts exist.
+     */
   };
 };
 
@@ -177,12 +180,7 @@ export default async function RootLayout({
   return (
     <html lang={HTML_LANG}>
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: serializeJsonLd(generateStructuredData(siteName)),
-          }}
-        />
+        <JsonLd data={generateStructuredData(siteName)} />
       </head>
       <body
         className={`${lato.variable} ${leagueGothic.variable} flex min-h-screen flex-col`}
