@@ -24,8 +24,8 @@ const MASTERS = [master('m1', [39]), master('m2', [39, 40]), master('m3', [])];
 
 /**
  * Call the step-order function with the defaults most cases share.
- * @param   {object}     over - Fields to override
- * @returns {string[]}        Step keys in order
+ * @param   {object}   over - Fields to override
+ * @returns {string[]}      Step keys in order
  */
 const keys = (over: Partial<Parameters<typeof bookingStepKeys>[0]> = {}) =>
   bookingStepKeys({

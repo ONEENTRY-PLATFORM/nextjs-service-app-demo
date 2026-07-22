@@ -6,6 +6,8 @@ import Link from 'next/link';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { Dispatch, JSX, SetStateAction } from 'react';
 
+import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
+
 import { adminAttr } from './adminAttr';
 
 /**
@@ -25,9 +27,7 @@ const SpecialistRow = ({
 }): JSX.Element => {
   const name = adminAttr(admin, 'master_name');
   const role = adminAttr(admin, 'master_short_description');
-  const photoArr = admin.attributeValues?.master_image?.value as
-    Array<{ downloadLink?: string }> | undefined;
-  const photo = photoArr?.[0]?.downloadLink;
+  const photo = fileDisplayUrl(admin.attributeValues?.master_image?.value);
 
   return (
     <Link

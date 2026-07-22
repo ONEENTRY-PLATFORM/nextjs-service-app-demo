@@ -4,6 +4,8 @@ import { ChevronDown } from 'lucide-react';
 import type { JSX, ReactNode } from 'react';
 import { useState } from 'react';
 
+import VisitOpenContext from '../animations/VisitOpenContext';
+
 /** Visit bucket statuses and their accent (dot / badge) colors. */
 const DOT_COLOR = {
   upcoming: '#ed21f1',
@@ -72,7 +74,10 @@ const VisitSection = ({
         style={{ gridTemplateRows: open ? '1fr' : '0fr' }}
       >
         <div className="overflow-hidden">
-          <div className="pt-2 pb-4">{children}</div>
+          {/* Cards inside read `open` to play their own enter/exit on toggle */}
+          <VisitOpenContext.Provider value={open}>
+            <div className="pt-2 pb-4">{children}</div>
+          </VisitOpenContext.Provider>
         </div>
       </div>
     </div>

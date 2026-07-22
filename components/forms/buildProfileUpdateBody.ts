@@ -13,9 +13,7 @@ export type ProfileValues = Record<
 >;
 
 /**
- * buildProfileUpdateBody — assemble the `Users.updateUser` body, the profile
- * counterpart of {@link buildSignUpBody}.
- *
+ * buildProfileUpdateBody — assemble the `Users.updateUser` body
  * Fields are routed by their CMS flags, NOT by marker name:
  * - login / password credentials → `authData` **only**, and all-or-nothing: the
  * API rejects a login without its password ("Login or password values are

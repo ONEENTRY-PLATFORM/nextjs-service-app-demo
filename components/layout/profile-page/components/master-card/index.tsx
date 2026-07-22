@@ -6,8 +6,9 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import StarsGroup from '@/components/shared/StarsGroup';
+import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 
-import CardAnimations from '../../animations/CardAnimations';
+import VisitCardAnimations from '../../animations/VisitCardAnimations';
 
 /**
  * MasterCard component displays a master's profile card with image, name, service type and rating.
@@ -15,19 +16,20 @@ import CardAnimations from '../../animations/CardAnimations';
  * @param   {object}           props                 - Component properties
  * @param   {IAttributeValues} props.attributeValues - Master's attribute values including image, name and rating
  * @param   {number}           [props.masterId]      - CMS admin id of the master, used to build the profile link
+ * @param   {number}           [props.index]         - Card index inside the history section, for the animation stagger
  * @returns {JSX.Element}                            A card component displaying master's information
  */
 const MasterCard = ({
   attributeValues,
   masterId,
+  index = 0,
 }: {
   attributeValues: IAttributeValues;
   masterId?: number | undefined;
+  index?: number | undefined;
 }): JSX.Element => {
   /** Extract master's image source, name, role and rating from attribute values */
-  const imgArr = attributeValues?.master_image?.value as
-    Array<{ downloadLink: string }> | undefined;
-  const imgSrc = imgArr?.[0]?.downloadLink;
+  const imgSrc = fileDisplayUrl(attributeValues?.master_image?.value);
   const masterName = attributeValues?.master_name?.value as string | undefined;
   const masterRole =
     (attributeValues?.master_short_description?.value as string | undefined) ||
@@ -66,7 +68,10 @@ const MasterCard = ({
   );
 
   return (
-    <CardAnimations className="flex w-40 flex-col self-stretch" index={0}>
+    <VisitCardAnimations
+      className="flex w-40 flex-col self-stretch"
+      index={index}
+    >
       {masterId ? (
         <Link
           prefetch={false}
@@ -80,7 +85,7 @@ const MasterCard = ({
       ) : (
         inner
       )}
-    </CardAnimations>
+    </VisitCardAnimations>
   );
 };
 

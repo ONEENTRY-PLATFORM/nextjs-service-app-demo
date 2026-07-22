@@ -9,19 +9,26 @@ import type {
 import type { JSX } from 'react';
 import { useCallback, useState } from 'react';
 
-import { useUpdateOrderMutation } from '@/app/api/api/RTKApi';
+import {
+  useCreateRefundRequestMutation,
+  useUpdateOrderMutation,
+} from '@/app/api/api/RTKApi';
 import {
   ORDERS_STATUS_CANCELED,
   ORDERS_STORAGE_MARKER,
 } from '@/app/store/orderMarkers';
 import { formatOrderCancelError } from '@/app/utils/formatOrderCancelError';
+import { formatOrderTotal } from '@/app/utils/formatOrderTotal';
 import { formatUtcDate } from '@/app/utils/formatUtcDate';
 import { formatUtcTime } from '@/app/utils/formatUtcTime';
+import { isPaidOrderError } from '@/app/utils/isPaidOrderError';
 import { parseOrderInterval } from '@/app/utils/parseOrderInterval';
 
 import CancelConfirmModal from './CancelConfirmModal';
 import CancelErrorModal from './CancelErrorModal';
 import CancelSuccessModal from './CancelSuccessModal';
+import RefundRequestModal from './RefundRequestModal';
+import RefundSuccessModal from './RefundSuccessModal';
 
 /**
  * Cancel order button — the "Cancel booking" flow from the static-html mock:
@@ -48,6 +55,8 @@ const CancelOrderButton = ({
   master?: IAdminEntity | undefined;
 }): JSX.Element => {
   const [updateOrder, { isLoading }] = useUpdateOrderMutation();
+  const [createRefundRequest, { isLoading: isRefunding }] =
+    useCreateRefundRequestMutation();
   /**
    * Label of the action. `cancel_booking_text` is the marker for THIS button;
    * the generic `cancel_text` ("Cancel") is the dictionary's dialog/dismiss
@@ -55,10 +64,18 @@ const CancelOrderButton = ({
    * "Cancel booking". Until the marker exists in the CMS the fallback carries it.
    */
   const { cancel_booking_text } = dict;
-  /** Dialog stage: confirmation → success or error (null = no dialog) */
-  const [stage, setStage] = useState<'confirm' | 'done' | 'error' | null>(null);
+  /**
+   * Dialog stage: confirmation → success, refund offer or error (null = no
+   * dialog). `refund` is the paid-order branch — the cancellation itself is
+   * refused, so the guest is offered a refund request instead.
+   */
+  const [stage, setStage] = useState<
+    'confirm' | 'done' | 'refund' | 'refund-done' | 'error' | null
+  >(null);
   /** Reason the server refused the cancellation, shown by the error dialog */
   const [errorMessage, setErrorMessage] = useState('');
+  /** Headline of the error dialog — the refund branch fails under its own name */
+  const [errorTitle, setErrorTitle] = useState('Appointment not cancelled');
 
   /** Memoized function to handle order cancellation */
   const cancelOrderHandle = useCallback(async () => {
@@ -97,9 +114,15 @@ const CancelOrderButton = ({
     } catch (e) {
       /**
        * Surface a failed cancellation instead of falsely reporting success.
-       * A paid order is the common case here and the guest has to act on it
-       * (call the salon), so it gets a dialog rather than a passing toast.
+       * A paid order is the common case: the API can't undo a payment, but the
+       * SDK can register a refund request — so that branch offers one instead
+       * of the dead-end error dialog. Anything else keeps the error dialog.
        */
+      if (isPaidOrderError(e)) {
+        setStage('refund');
+        return;
+      }
+      setErrorTitle('Appointment not cancelled');
       setErrorMessage(formatOrderCancelError(e));
       setStage('error');
       return;
@@ -108,6 +131,38 @@ const CancelOrderButton = ({
     /** The list refreshes itself — show the mock's success dialog. */
     setStage('done');
   }, [orderData, updateOrder]);
+
+  /**
+   * Ask the salon to refund the paid appointment.
+   *
+   * `createRefundRequest` wants a map `productId → { quantity }` rather than
+   * the order's product array, and the whole visit is refunded — a guest has no
+   * way to pick single services out of an appointment here.
+   */
+  const requestRefundHandle = useCallback(async () => {
+    if (!orderData) return;
+
+    const products = Object.fromEntries(
+      (orderData.products ?? []).map((product) => [
+        String(product.id),
+        { quantity: product.quantity ?? 1 },
+      ]),
+    );
+
+    try {
+      await createRefundRequest({
+        id: orderData.id,
+        body: { products, note: 'Cancellation requested from the profile' },
+      }).unwrap();
+    } catch (e) {
+      setErrorTitle('Refund not requested');
+      setErrorMessage(formatOrderCancelError(e));
+      setStage('error');
+      return;
+    }
+
+    setStage('refund-done');
+  }, [orderData, createRefundRequest]);
 
   /**
    * Confirm-dialog visit line, mock format: "Master · DD.MM.YYYY at HH:MM".
@@ -128,7 +183,7 @@ const CancelOrderButton = ({
         onClick={() => setStage('confirm')}
         type="button"
         data-testid="order-cancel"
-        className="flex-1 rounded-lg border border-slate-150 py-2 text-base font-medium text-neutral-300 transition-all hover:bg-gray-50"
+        className="flex-1 rounded-lg border border-slate-150 px-3.5 py-2 text-base font-medium text-neutral-300 transition-all hover:bg-gray-50"
       >
         {(cancel_booking_text?.value as string | undefined) || 'Cancel booking'}
       </button>
@@ -141,8 +196,22 @@ const CancelOrderButton = ({
         />
       )}
       {stage === 'done' && <CancelSuccessModal onDone={() => setStage(null)} />}
+      {stage === 'refund' && (
+        <RefundRequestModal
+          subtitle={subtitle}
+          total={formatOrderTotal(orderData?.totalSum)}
+          currency={orderData?.currency}
+          isPending={isRefunding}
+          onClose={() => setStage(null)}
+          onConfirm={requestRefundHandle}
+        />
+      )}
+      {stage === 'refund-done' && (
+        <RefundSuccessModal onDone={() => setStage(null)} />
+      )}
       {stage === 'error' && (
         <CancelErrorModal
+          title={errorTitle}
           message={errorMessage}
           onClose={() => setStage(null)}
         />

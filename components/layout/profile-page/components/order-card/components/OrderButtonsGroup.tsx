@@ -24,9 +24,9 @@ import RescheduleOrderButton from './RescheduleOrderButton';
  * `SaveOrderButton`, both kept on disk) had no way to pick a new day, which is
  * the whole point of moving a visit.
  * @param   {object}               props        - OrderCard Props
- * @param   {IAttributeValues}     props.dict   - Dictionary data
- * @param   {IOrderByMarkerEntity} props.order  - Order data
- * @param   {IAdminEntity}         props.master - Master data
+ * @param   {IAttributeValues}     props.dict   - Dictionary containing localized strings
+ * @param   {IOrderByMarkerEntity} props.order  - Order information to display
+ * @param   {IAdminEntity}         props.master - Master information associated with the order
  * @returns {JSX.Element}                       JSX.Element
  */
 const OrderButtonsGroup = ({
@@ -34,16 +34,16 @@ const OrderButtonsGroup = ({
   order,
   master,
 }: {
-  dict: IAttributeValues; // Dictionary containing localized strings
-  order: IOrderByMarkerEntity; // Order information to display
-  master: IAdminEntity; // Master information associated with the order
+  dict: IAttributeValues;
+  order: IOrderByMarkerEntity;
+  master: IAdminEntity;
 }): JSX.Element => {
   /** Extract the status identifier from the order to determine which buttons to show */
   const { statusIdentifier } = order;
 
   return (
     /** Full-width action row below the order details */
-    <div className="flex w-full gap-2 text-base font-bold tracking-wide">
+    <>
       {/* Conditional rendering based on order status */}
       {statusIdentifier === ORDERS_STATUS_UPCOMING ? (
         /** Upcoming visits: move the appointment or call it off */
@@ -65,7 +65,7 @@ const OrderButtonsGroup = ({
           <RepeatOrder dict={dict} orderData={order} />
         </div>
       )}
-    </div>
+    </>
   );
 };
 

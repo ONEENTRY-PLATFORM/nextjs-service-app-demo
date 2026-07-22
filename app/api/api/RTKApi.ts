@@ -5,6 +5,7 @@ import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { IFormsEntity } from 'oneentry/dist/forms/formsInterfaces';
 import type {
   IBaseOrdersEntity,
+  ICreateRefundRequest,
   IOrderByMarkerEntity,
   IOrderData,
   IOrdersEntity,
@@ -44,6 +45,11 @@ interface SingleOrderProps {
 interface CreateOrderProps {
   marker: string;
   body: IOrderData;
+}
+
+interface RefundRequestProps {
+  id: number;
+  body: ICreateRefundRequest;
 }
 
 /** Page size of a single orders request when paging the whole storage. */
@@ -524,6 +530,30 @@ export const RTKApi = createApi({
       },
       invalidatesTags: ['Orders'],
     }),
+    /**
+     * Ask the salon to refund a paid appointment.
+     *
+     * A paid order cannot be cancelled through `updateOrder` — the API refuses
+     * with "Payment sessions … could not be canceled" because the money has
+     * already moved. The refund request is the guest-side half of that flow:
+     * the salon resolves it in the admin panel and the order status follows.
+     *
+     * `products` is a map `productId → { quantity }`, not the array the order
+     * itself carries (see `ICreateRefundRequest`).
+     * @param id   - ID of the order to refund
+     * @param body - Products to refund plus an optional note
+     * @returns    `true` when the request was registered
+     */
+    createRefundRequest: build.mutation<boolean, RefundRequestProps>({
+      queryFn: async ({ id, body }) => {
+        const result = await getApi().Orders.createRefundRequest(id, body);
+        if (isError(result)) {
+          return { error: result };
+        }
+        return { data: result as boolean };
+      },
+      invalidatesTags: ['Orders'],
+    }),
   }),
 });
 
@@ -559,4 +589,5 @@ export const {
   useUpdateUserStateMutation,
   useCreateOrderMutation,
   useUpdateOrderMutation,
+  useCreateRefundRequestMutation,
 } = RTKApi;

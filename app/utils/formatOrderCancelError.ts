@@ -5,10 +5,14 @@
  * The API rejects with an `IError` whose `message` is plumbing-flavoured
  * ("Can't update the order. Payment sessions 3 could not be canceled — the
  * order may have been paid."): it names the storage operation, not what the
- * guest sees, and leaves them with no next step. Paid orders — the one case the
- * backend can't undo on its own — get their own sentence pointing at the salon;
- * anything else falls back to the server text with the `updateOrder` prefix
- * stripped, so a message we haven't seen yet still reaches the guest.
+ * guest sees, and leaves them with no next step. Anything unknown falls back to
+ * the server text with the `updateOrder` prefix stripped, so a message we
+ * haven't seen yet still reaches the guest.
+ *
+ * The paid-order sentence is now a safety net rather than the main path: a paid
+ * appointment is routed to the refund dialog before this runs (see
+ * `isPaidOrderError`), so it only shows if a refund request itself fails on
+ * payment grounds.
  * @param   {unknown} error - Value thrown by `updateOrder(...).unwrap()`
  * @returns {string}        Human-readable reason for the failed cancellation
  */

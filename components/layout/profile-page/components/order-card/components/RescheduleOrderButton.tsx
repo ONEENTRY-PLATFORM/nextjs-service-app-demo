@@ -42,7 +42,7 @@ const RescheduleOrderButton = ({
       type="button"
       onClick={rescheduleHandle}
       data-testid="order-reschedule"
-      className="flex-1 rounded-lg bg-gradient-brand py-2 text-base font-bold text-white transition-all hover:opacity-90"
+      className="flex-1 rounded-lg bg-gradient-brand px-3.5 py-2 text-base font-bold text-white transition-all hover:opacity-90"
     >
       {(dict.reschedule_text?.value as string | undefined) || 'Reschedule'}
     </button>

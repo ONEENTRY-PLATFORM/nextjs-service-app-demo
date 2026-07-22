@@ -52,13 +52,13 @@ const PayOrderButton = ({
   };
 
   return (
-    <div className="flex flex-col gap-1">
+    <>
       <button
         onClick={handlePay}
         disabled={isLoading}
         type="button"
         data-testid="order-pay"
-        className="w-full rounded-lg bg-gradient-brand py-2 text-base font-bold text-white transition-all hover:opacity-90 disabled:opacity-60"
+        className="flex-1 rounded-lg bg-gradient-brand px-3.5 py-2 text-base font-bold text-white transition-all hover:opacity-90 disabled:opacity-60"
       >
         {isLoading ? (
           'Opening checkout…'
@@ -80,7 +80,7 @@ const PayOrderButton = ({
           {error}
         </p>
       ) : null}
-    </div>
+    </>
   );
 };
 

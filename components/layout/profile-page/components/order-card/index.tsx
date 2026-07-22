@@ -15,7 +15,7 @@ import {
 } from '@/app/store/orderMarkers';
 import { salonFromPage } from '@/app/utils/salonFromPage';
 
-import CardAnimations from '../../animations/CardAnimations';
+import VisitCardAnimations from '../../animations/VisitCardAnimations';
 import StatusBadge from '../StatusBadge';
 import OrderButtonsGroup from './components/OrderButtonsGroup';
 import OrderDateTime from './components/OrderDateTime';
@@ -116,7 +116,7 @@ const OrderCard = ({
 
   return (
     /** Animated white panel matching the reference visit-row styling */
-    <CardAnimations
+    <VisitCardAnimations
       className="relative flex flex-col gap-3 rounded-2xl border border-slate-150 bg-white p-4 shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
       index={index}
     >
@@ -160,12 +160,14 @@ const OrderCard = ({
         <OrderTotal order={order} />
       </div>
 
-      {/* An online booking left unpaid can still be checked out from here */}
-      {isOrderAwaitingPayment(order) && <PayOrderButton order={order} />}
+      <div className="flex w-full gap-2 text-base font-bold tracking-wide">
+        {/* An online booking left unpaid can still be checked out from here */}
+        {isOrderAwaitingPayment(order) && <PayOrderButton order={order} />}
 
-      {/* Buttons group for order actions */}
-      <OrderButtonsGroup dict={dict} order={order} master={master} />
-    </CardAnimations>
+        {/* Buttons group for order actions */}
+        <OrderButtonsGroup dict={dict} order={order} master={master} />
+      </div>
+    </VisitCardAnimations>
   );
 };
 

@@ -5,7 +5,8 @@ const TTL_MS = 604800 * 1000;
 
 /**
  * Shape of a real token: epoch-ms issue time, then a UUID.
- * @param issuedAt
+ * @param   {number} issuedAt epoch-ms
+ * @returns {string}          a token
  */
 const tokenIssuedAt = (issuedAt: number): string =>
   `${issuedAt}-31ed638b-5a45-47d2-b1ed-0925f605e056`;

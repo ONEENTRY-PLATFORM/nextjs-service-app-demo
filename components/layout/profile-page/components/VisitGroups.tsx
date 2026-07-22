@@ -76,6 +76,14 @@ const VisitGroups = ({
   return (
     <div className="w-full">
       {groups.map(({ master, orders }, i) => {
+        /**
+         * Running card index across the whole section: the entrance stagger has
+         * to keep counting from group to group, otherwise every master row would
+         * restart at zero and all groups would lead in on top of each other.
+         */
+        const base = groups
+          .slice(0, i)
+          .reduce((n, group) => n + group.orders.length + 1, 0);
         /** Find the master data by matching master id. */
         const masterData = masters?.find(
           (m: IAdminEntity) => m.id === Number(master),
@@ -90,13 +98,14 @@ const VisitGroups = ({
           >
             <MasterCard
               attributeValues={attributeValues}
+              index={base}
               {...(masterData ? { masterId: masterData.id } : {})}
             />
             <div className="mb-4 flex w-[calc(100%-160px)] flex-col gap-3 max-md:w-full">
               {orders.map((order: IOrderByMarkerEntity, j: number) => (
                 <OrderCard
                   key={j}
-                  index={j}
+                  index={base + j + 1}
                   dict={dict}
                   order={order}
                   master={masterData as IAdminEntity}

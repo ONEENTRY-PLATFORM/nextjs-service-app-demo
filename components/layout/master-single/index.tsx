@@ -9,6 +9,7 @@ import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { entityLinks } from '@/app/utils/entityLinks';
 import { salonFromPage } from '@/app/utils/salonFromPage';
 import { REVIEWS } from '@/components/layout/reviews-page/data';
+import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 
 import MasterAnimations from './animations/MasterAnimations';
 import BackLink from './components/BackLink';
@@ -49,9 +50,7 @@ const MasterSingleLayout = async ({
 
   /** Basic display attributes (all optional — fall back gracefully). */
   const name = (attrs.master_name?.value as string | undefined) ?? '';
-  const imgArr = attrs.master_image?.value as
-    Array<{ downloadLink?: string }> | undefined;
-  const imageSrc = imgArr?.[0]?.downloadLink ?? '';
+  const imageSrc = fileDisplayUrl(attrs.master_image?.value);
   const rating = Number(attrs.master_rating?.value) || 0;
   const experience =
     (attrs.master_expirience?.value as string | undefined) ?? '';
