@@ -5,7 +5,6 @@ import typescriptPlugin from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
-import nextPlugin from '@next/eslint-plugin-next';
 import prettierPlugin from 'eslint-plugin-prettier';
 import tailwindcssPlugin from 'eslint-plugin-tailwindcss';
 import simpleImportSortPlugin from 'eslint-plugin-simple-import-sort';
@@ -52,7 +51,6 @@ const eslintConfig = defineConfig([
     files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
     ignores: ['node_modules/**', '.next/**', 'out/**', '.claude/**'],
     languageOptions: {
-      ...reactPlugin.configs.flat.languageOptions,
       parser: typescriptParser,
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -80,21 +78,28 @@ const eslintConfig = defineConfig([
         cssConfigPath: './app/globals.css',
       },
     },
+    // `@next/next` is registered by `eslint-config-next` above — registering the
+    // plugin again here under the name `next` was inert (its rules are all in the
+    // `@next/next/*` namespace) and made the config depend on a package that is
+    // not in package.json, resolved only by hoisting.
     plugins: {
       prettier: prettierPlugin,
       react: reactPlugin,
-      next: nextPlugin,
       'react-hooks': reactHooksPlugin,
       tailwindcss: tailwindcssPlugin,
       'simple-import-sort': simpleImportSortPlugin,
       jsdoc: jsdocPlugin,
     },
     rules: {
-      // bring in recommended configs as base
+      // Bring in recommended configs as base.
+      // NOTE: `reactPlugin.configs.flat` is a MAP of configs, not a config —
+      // spreading `.rules` / `.languageOptions` off it yielded `undefined` and
+      // silently applied nothing. The react rules this project actually wants are
+      // set explicitly below. `@next/next` recommended + core-web-vitals come from
+      // `eslint-config-next` at the top of this file, so re-spreading them here
+      // was duplication.
       ...typescriptPlugin.configs.recommended.rules,
       ...prettierPlugin.configs.recommended.rules,
-      ...nextPlugin.configs.recommended.rules,
-      ...reactPlugin.configs.flat.rules,
       ...reactHooksPlugin.configs['recommended-latest'].rules,
       // eslint-plugin-tailwindcss v4: only `recommended` flat config remains
       // ('flat/recommended' was removed with the 4.x stable release)

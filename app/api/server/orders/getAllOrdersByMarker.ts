@@ -6,6 +6,10 @@ import { withTimeout } from '@/app/api/utils/withTimeout';
 
 /**
  * Getting all orders from the orders storage object created by the user.
+ *
+ * ⚠️ Currently UNUSED — no module imports this wrapper: orders are user-scoped, so they are read client-side through `useGetAllOrdersByMarkerQuery`.
+ * Kept per project convention; the split between the server wrappers and the
+ * RTK Query endpoints was settled in favour of the latter here.
  * @param   {object}          props        - Parameter object.
  * @param   {string}          props.marker - The text identifier of the order storage object.
  * @param   {number}          props.offset - Offset parameter. Default 0.

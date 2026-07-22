@@ -108,6 +108,18 @@ const TitleAnimations = ({
         );
       }
 
+      /**
+       * On a client-side navigation the heading mounts already inside the
+       * viewport with `readyState` already true. ScrollTrigger only fires
+       * `onEnter` on a scroll crossing, so a heading created in the active zone
+       * would stay stuck at its hidden `fromTo` start. Play it once up front in
+       * that case; scroll toggles then take over as usual.
+       */
+      if (triggerTl.scrollTrigger?.isActive) {
+        setInView(true);
+        triggerTl.play();
+      }
+
       return () => {
         triggerTl.kill();
       };

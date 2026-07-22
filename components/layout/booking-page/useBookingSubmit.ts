@@ -5,7 +5,10 @@ import type { IOrderData } from 'oneentry/dist/orders/ordersInterfaces';
 import { useContext, useState } from 'react';
 
 import { getApi, isError } from '@/app/api/api/api';
-import { RTKApi, useUpdateOrderMutation } from '@/app/api/api/RTKApi';
+import {
+  useCreateOrderMutation,
+  useUpdateOrderMutation,
+} from '@/app/api/api/RTKApi';
 import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
@@ -81,6 +84,7 @@ export const useBookingSubmit = ({
   const { isAuth } = useContext(AuthContext);
   const { setOpen, setComponent } = useContext(OpenDrawerContext);
   const activeId = useAppSelector(selectActiveItemId);
+  const [createOrder] = useCreateOrderMutation();
   const [updateOrder] = useUpdateOrderMutation();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -201,24 +205,25 @@ export const useBookingSubmit = ({
         products,
         formData,
       };
-      const createdOrder = await getApi().Orders.createOrder(
-        ORDERS_STORAGE_MARKER,
-        body,
-      );
 
-      if (isError(createdOrder)) {
-        setError(createdOrder.message);
+      /**
+       * Going through the RTK mutation rather than the raw SDK call is what
+       * refetches the profile's order list on arrival: the `Orders` invalidation
+       * is declared on the endpoint, so it cannot be forgotten on a new branch.
+       * `unwrap()` rejects with the SDK's own error object, hence the local
+       * catch — the outer one would flatten it to a generic message.
+       */
+      let createdOrder;
+      try {
+        createdOrder = await createOrder({
+          marker: ORDERS_STORAGE_MARKER,
+          body,
+        }).unwrap();
+      } catch (e) {
+        setError(isError(e) ? e.message : 'Failed to create the appointment');
         return;
       }
 
-      /**
-       * `createOrder` is a raw SDK call, not an RTK mutation, so it carries no
-       * `invalidatesTags` — invalidate `Orders` by hand so the profile's order
-       * list refetches on arrival (the cancel/save mutations do this for free).
-       * Without it the redirect lands on a cached list and the new appointment
-       * only shows after a manual reload.
-       */
-      dispatch(RTKApi.util.invalidateTags(['Orders']));
       dispatch(removeAllServices());
 
       /**

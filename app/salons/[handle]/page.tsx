@@ -4,8 +4,7 @@ import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
-import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import SalonPageContent from '@/components/layout/salon-page';
 import {
   DEFAULT_SALON_CONTENT,
@@ -124,23 +123,5 @@ export async function generateMetadata({
   params: Promise<{ handle: string }>;
 }): Promise<Metadata> {
   const { handle } = await params;
-  const { page, isError } = await getPageByUrl(handle);
-
-  if (isError || !page) {
-    return {};
-  }
-
-  const { localizeInfos } = page;
-  const description = getPagePlainContent(page) || localizeInfos?.title;
-  return {
-    title: localizeInfos?.title,
-    description,
-    alternates: { canonical: `/salons/${handle}` },
-    openGraph: {
-      ...(await pageOpenGraph(`/salons/${handle}`)),
-      type: 'article',
-      title: localizeInfos?.title,
-      description,
-    },
-  };
+  return cmsPageMetadata({ pageUrl: handle, path: `/salons/${handle}` });
 }

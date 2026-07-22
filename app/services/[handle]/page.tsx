@@ -6,9 +6,9 @@ import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesBy
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import PromoBanner from '@/components/layout/services-page/PromoBanner';
 import ServicesCatalog from '@/components/layout/services-page/ServicesCatalog';
@@ -168,27 +168,5 @@ export async function generateMetadata({
   }>;
 }): Promise<Metadata> {
   const { handle } = await params;
-
-  /** get page by Url */
-  const { page, isError } = await getPageByUrl(handle);
-
-  if (isError || !page) {
-    return {};
-  }
-
-  /** extract data from page */
-  const { localizeInfos } = page;
-  const description = getPagePlainContent(page) || localizeInfos?.title;
-
-  return {
-    title: localizeInfos?.title,
-    description,
-    alternates: { canonical: `/services/${handle}` },
-    openGraph: {
-      ...(await pageOpenGraph(`/services/${handle}`)),
-      type: 'article',
-      title: localizeInfos?.title,
-      description,
-    },
-  };
+  return cmsPageMetadata({ pageUrl: handle, path: `/services/${handle}` });
 }

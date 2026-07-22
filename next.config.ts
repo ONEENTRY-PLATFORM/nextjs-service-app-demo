@@ -1,6 +1,5 @@
 import bundleAnalyzer from '@next/bundle-analyzer';
 import type { NextConfig } from 'next';
-import path from 'path';
 
 /**
  * Bundle analyzer — opt-in via `npm run analyze`, inert during normal builds,
@@ -19,7 +18,6 @@ const nextConfig: NextConfig = {
       dynamic: 30,
       static: 180,
     },
-    optimizeCss: true,
     optimizePackageImports: [
       'gsap',
       '@gsap/react',
@@ -34,9 +32,9 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   reactStrictMode: true,
-  sassOptions: {
-    includePaths: [path.join(process.cwd(), 'styles')],
-  },
+  // No `sassOptions.includePaths`: it pointed at `<repo>/styles`, which does not
+  // exist. The single SCSS file lives in `app/styles/` and is imported by its
+  // own path, so no search path is needed.
   images: {
     formats: ['image/avif', 'image/webp'],
     // OneEntry file URLs are content-addressable, so a long TTL is safe (30 days).

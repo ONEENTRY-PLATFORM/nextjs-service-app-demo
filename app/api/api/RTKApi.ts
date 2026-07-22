@@ -41,6 +41,11 @@ interface SingleOrderProps {
   body: IOrderData;
 }
 
+interface CreateOrderProps {
+  marker: string;
+  body: IOrderData;
+}
+
 /** Page size of a single orders request when paging the whole storage. */
 const ORDERS_PAGE_LIMIT = 100;
 
@@ -52,6 +57,13 @@ const ORDERS_PAGE_LIMIT = 100;
  * It uses Redux Toolkit Query to handle data fetching, caching, and state management.
  * The service includes endpoints for products, pages, blocks, forms, orders, users,
  * accounts, and sessions.
+ *
+ * WHERE A READ BELONGS. Anything a Server Component renders goes through the
+ * wrappers in `app/api/server/**` (they own the `unstable_cache` TTL and the
+ * revalidation tags). Anything read in the browser — user-scoped data, or data
+ * that refetches after a mutation — belongs here. Several `app/api/server/**`
+ * wrappers duplicate endpoints below and ended up unused because of this rule;
+ * they carry a `⚠️ Currently UNUSED` note rather than being deleted.
  *
  * NOTE: per-endpoint `keepUnusedDataFor` values are CSR cache lifetimes only.
  * If ISR is enabled later (page-level `export const revalidate`), re-tune these
@@ -471,6 +483,26 @@ export const RTKApi = createApi({
       invalidatesTags: ['User'],
     }),
     /**
+     * Create order.
+     * Creates an appointment in the given order storage. Living here rather than
+     * as a raw SDK call is what ties the `Orders` invalidation to the write, so
+     * the profile's order list refetches on arrival instead of showing a cached
+     * list until a manual reload.
+     * @param marker - Text identifier of the order storage object
+     * @param body   - Data of the order to create
+     * @returns      Base orders entity
+     */
+    createOrder: build.mutation<IBaseOrdersEntity, CreateOrderProps>({
+      queryFn: async ({ marker, body }) => {
+        const result = await getApi().Orders.createOrder(marker, body);
+        if (isError(result)) {
+          return { error: result };
+        }
+        return { data: result as IBaseOrdersEntity };
+      },
+      invalidatesTags: ['Orders'],
+    }),
+    /**
      * Update order.
      * Updates an order with new data.
      * @param id     - ID of the order object
@@ -495,6 +527,16 @@ export const RTKApi = createApi({
   }),
 });
 
+/**
+ * Generated hooks.
+ *
+ * ⚠️ Currently UNUSED (no consumer outside this file): `useGetBlockByMarkerQuery`,
+ * `useGetBlocksByPageUrlQuery`, `useGetProductByIdQuery`, `useGetProductsQuery`,
+ * `useGetProductsByPageUrlQuery`, `useGetPaymentSessionByIdQuery` and its lazy
+ * twin. Blocks and products are read server-side (see the note on {@link RTKApi});
+ * the payment-session reads were superseded by the redirect flow in
+ * `useBookingSubmit`. Kept per project convention, not dead-code candidates.
+ */
 export const {
   useGetAdminsQuery,
   useGetBlockByMarkerQuery,
@@ -515,5 +557,6 @@ export const {
   useGetProductsByIdsQuery,
   useSearchProductsQuery,
   useUpdateUserStateMutation,
+  useCreateOrderMutation,
   useUpdateOrderMutation,
 } = RTKApi;

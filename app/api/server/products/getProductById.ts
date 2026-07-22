@@ -41,6 +41,10 @@ const getProductByIdCached = cache(getProductByIdImpl);
 /**
  * Get product by ID from the OneEntry API
  *
+ * ⚠️ Currently UNUSED — no module imports this wrapper: single products are read through the catalog lists, never one at a time.
+ * Kept per project convention; the split between the server wrappers and the
+ * RTK Query endpoints was settled in favour of the latter here.
+ *
  * This function fetches a specific product by its ID from the OneEntry API.
  * It handles error cases and returns a consistent response format.
  *

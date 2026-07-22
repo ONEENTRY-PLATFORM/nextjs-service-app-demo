@@ -5,8 +5,7 @@ import type { JSX } from 'react';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import PaymentCanceled from '@/components/pages/PaymentCanceled';
 import PaymentSuccess from '@/components/pages/PaymentSuccess';
 
@@ -93,23 +92,10 @@ export async function generateMetadata({
   }>;
 }): Promise<Metadata> {
   const { handle } = await params;
-
-  /** Fetch page data based on the URL handle */
-  const { page, isError } = await getPageByUrl(handle);
-  /** Return default metadata or handle not found appropriately */
-  if (isError || !page) {
-    return {};
-  }
-
-  const { localizeInfos } = page;
-
-  return {
-    title: localizeInfos?.title || 'Default Title',
-    description: getPagePlainContent(page) || 'Default Description',
-    alternates: { canonical: `/${handle}` },
-    openGraph: {
-      ...(await pageOpenGraph(`/${handle}`)),
-      type: 'article',
-    },
-  };
+  return cmsPageMetadata({
+    pageUrl: handle,
+    path: `/${handle}`,
+    fallbackTitle: 'Default Title',
+    fallbackDescription: 'Default Description',
+  });
 }

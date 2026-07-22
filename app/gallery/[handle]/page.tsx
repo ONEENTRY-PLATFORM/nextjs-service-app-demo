@@ -4,9 +4,9 @@ import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import GalleryPageContent from '@/components/layout/gallery-page';
 import GalleryUnavailable from '@/components/layout/gallery-page/components/GalleryUnavailable';
@@ -126,26 +126,5 @@ export async function generateMetadata({
   params: Promise<{ handle: string }>;
 }): Promise<Metadata> {
   const { handle } = await params;
-  /** get page by Url */
-  const { page, isError } = await getPageByUrl(handle);
-
-  if (isError || !page) {
-    return {};
-  }
-
-  /** extract data from page */
-  const { localizeInfos } = page;
-  const description = getPagePlainContent(page) || localizeInfos?.title;
-
-  return {
-    title: localizeInfos?.title,
-    description,
-    alternates: { canonical: `/gallery/${handle}` },
-    openGraph: {
-      ...(await pageOpenGraph(`/gallery/${handle}`)),
-      type: 'article',
-      title: localizeInfos?.title,
-      description,
-    },
-  };
+  return cmsPageMetadata({ pageUrl: handle, path: `/gallery/${handle}` });
 }

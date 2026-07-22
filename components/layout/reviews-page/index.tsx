@@ -1,13 +1,13 @@
 'use client';
 
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import type { JSX } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
+import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
 
 import CategoryChips from './components/CategoryChips';
 import MasterFilter from './components/MasterFilter';
@@ -113,16 +113,8 @@ const ReviewsPageContent = ({
     ? (filtered.reduce((n, r) => n + r.rating, 0) / filtered.length).toFixed(1)
     : '—';
 
-  /**
-   * Changing a filter remounts the review grid and changes the page height,
-   * leaving every ScrollTrigger's cached start/end stale — cards that stay in
-   * view can freeze at their hidden entrance state. Recompute trigger positions
-   * once the new grid has laid out (next frame), like the services catalog.
-   */
-  useEffect(() => {
-    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
-    return () => cancelAnimationFrame(id);
-  }, [filtered]);
+  /** Changing a filter remounts the review grid */
+  useScrollTriggerRefresh(filtered);
 
   return (
     <div className="mx-auto max-w-7xl px-3 md:px-8" data-testid="reviews-page">

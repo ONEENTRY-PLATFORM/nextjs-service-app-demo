@@ -1,11 +1,11 @@
 'use client';
 
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import type { JSX } from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
+import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
 
 import type { GalleryTab } from './components/GalleryFilterBar';
 import GalleryFilterBar from './components/GalleryFilterBar';
@@ -152,16 +152,8 @@ const GalleryPageContent = ({
   const lightboxItem =
     lightboxIndex !== null ? filtered[lightboxIndex] : undefined;
 
-  /**
-   * Changing a filter remounts the photo grid and changes the page height,
-   * leaving every ScrollTrigger's cached start/end stale — cells that stay in
-   * view can freeze at their hidden entrance state. Recompute trigger positions
-   * once the new grid has laid out (next frame), like the services catalog.
-   */
-  useEffect(() => {
-    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
-    return () => cancelAnimationFrame(id);
-  }, [filtered]);
+  /** Changing a filter remounts the photo grid */
+  useScrollTriggerRefresh(filtered);
 
   return (
     <div data-testid="gallery-page">

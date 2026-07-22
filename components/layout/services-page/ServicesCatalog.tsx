@@ -1,12 +1,12 @@
 'use client';
 
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { Search, X } from 'lucide-react';
 import type { JSX } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
+import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
 
 import CategoryTabs from './CategoryTabs';
 import { DARK, MUTED, PINK } from './constants';
@@ -123,17 +123,8 @@ const ServicesCatalog = ({
     );
   }, [services, mainCat, subCat, query, subTitleByUrl]);
 
-  /**
-   * Switching the category/subcategory/search remounts the card grid and changes
-   * the page height, which leaves every ScrollTrigger's cached start/end stale —
-   * so cards that are actually in view can stay stuck at their hidden entrance
-   * state. Recompute all trigger positions once the new grid has laid out (next
-   * frame), letting the in-view cards fire their reveal.
-   */
-  useEffect(() => {
-    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
-    return () => cancelAnimationFrame(id);
-  }, [filtered]);
+  /** Switching the category/subcategory/search remounts the card grid */
+  useScrollTriggerRefresh(filtered);
 
   return (
     <section

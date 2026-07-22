@@ -43,6 +43,10 @@ const getBlocksCached = cache(getBlocksImpl);
 
 /**
  * Get blocks by type.
+ *
+ * ⚠️ Currently UNUSED — no module imports this wrapper: RTK Query (`getBlocksByPageUrl` / `getBlockByMarker`) covers every block read the app performs.
+ * Kept per project convention; the split between the server wrappers and the
+ * RTK Query endpoints was settled in favour of the latter here.
  * @param   {object}          type      - Object containing the type information
  * @param   {string}          type.type - Block type identifier
  * @returns {Promise<object>}           Blocks array

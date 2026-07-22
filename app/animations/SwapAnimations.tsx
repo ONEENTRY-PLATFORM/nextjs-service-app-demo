@@ -1,9 +1,10 @@
 'use client';
 
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import type { CSSProperties, JSX, ReactNode } from 'react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+
+import { useScrollTriggerRefresh } from './utils/useScrollTriggerRefresh';
 
 /**
  * SwapAnimations — exit-then-enter wrapper for content that is replaced in
@@ -105,10 +106,7 @@ const SwapAnimations = ({
   }, [committed.key]);
 
   /** New content means a new page height — re-measure the scroll triggers */
-  useEffect(() => {
-    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
-    return () => cancelAnimationFrame(id);
-  }, [committed.key]);
+  useScrollTriggerRefresh(committed.key);
 
   return (
     <div className={className} style={style} ref={ref}>

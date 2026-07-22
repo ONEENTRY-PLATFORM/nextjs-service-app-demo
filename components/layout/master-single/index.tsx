@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
@@ -6,7 +5,6 @@ import { type JSX, memo } from 'react';
 
 import { getPageById } from '@/app/api/server/pages/getPageById';
 import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
-import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { REVIEWS } from '@/components/layout/reviews-page/data';
 
@@ -27,33 +25,21 @@ import SalonChip from './components/SalonChip';
  * strip, a "Back to Specialists" link, then a two-column profile card
  * (portrait + salon chips on the left, name/role/rating/experience/bio/booking
  * on the right). All CMS attributes are optional — the section degrades
- * gracefully when values are missing and only 404s when the admin itself is
- * absent.
+ * gracefully when values are missing. The master is resolved by the route,
+ * which also owns the 404 for an unknown id.
  * @param   {object}               props                    - Component properties.
- * @param   {string}               props.handle             - Master identifier (numeric admin id).
+ * @param   {IAdminEntity}         props.master             - Master (admin entity) resolved by the route.
  * @param   {object}               props.searchData         - Search parameters.
  * @param   {string}               props.searchData.service - Service (subcategory) page id, when navigated with context.
  * @returns {Promise<JSX.Element>}                          JSX.Element representing the master single page.
  */
 const MasterSingleLayout = async ({
-  handle,
+  master,
   searchData,
 }: {
-  handle: string;
+  master: IAdminEntity;
   searchData: { service: string };
 }): Promise<JSX.Element> => {
-  /** Fetch admin information including masters data */
-  const { admins } = await getMastersList();
-  /** Find the specific master by handle (ID) */
-  const master = admins?.find(
-    (admin: IAdminEntity) => admin.id === Number(handle),
-  );
-
-  /** Only a real master is required — 404 solely when the admin is missing. */
-  if (!master) {
-    return notFound();
-  }
-
   /** Dictionary (booking button label) set upstream via ServerProvider. */
   const [dict] = ServerProvider<IAttributeValues>('dict');
 

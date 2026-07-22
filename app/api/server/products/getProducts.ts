@@ -72,6 +72,10 @@ const getProductsCached = cache(getProductsImpl);
 /**
  * Get all products with pagination and filter
  *
+ * ⚠️ Currently UNUSED — no module imports this wrapper: the catalog reads products through `getProductsByPageUrl` / `getProductsByIds`.
+ * Kept per project convention; the split between the server wrappers and the
+ * RTK Query endpoints was settled in favour of the latter here.
+ *
  * Fetches products from the OneEntry API with support for pagination, filtering,
  * and search parameters. Returns both the products and total count for pagination.
  * @param   {object}          props                              - Configuration object for the product fetching

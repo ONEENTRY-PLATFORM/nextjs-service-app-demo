@@ -106,6 +106,18 @@ const ReviewsAnimations = ({
         );
       }
 
+      /**
+       * On a client-side navigation the block mounts already inside the viewport
+       * with `readyState` already true. ScrollTrigger only fires `onEnter` on a
+       * scroll crossing, so a block created in the active zone would stay stuck
+       * at its hidden `fromTo` start. Play it once up front in that case; scroll
+       * toggles then take over as usual.
+       */
+      if (triggerTl.scrollTrigger?.isActive) {
+        setInView(true);
+        triggerTl.play();
+      }
+
       /** Clean up timeline when component unmounts */
       return () => {
         triggerTl.kill();

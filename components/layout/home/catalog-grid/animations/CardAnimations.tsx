@@ -144,6 +144,18 @@ const CardAnimations = ({
       triggerTl.timeScale(0.5);
       setTriggerRef(triggerTl);
 
+      /**
+       * On a client-side navigation the tile mounts already inside the viewport
+       * with `readyState` already true. ScrollTrigger only fires `onEnter` on a
+       * scroll crossing, so a tile created in the active zone would stay stuck
+       * undrawn. Play it once up front in that case; scroll toggles then take
+       * over as usual.
+       */
+      if (triggerTl.scrollTrigger?.isActive) {
+        setInView(true);
+        triggerTl.play();
+      }
+
       return () => triggerTl.kill();
     },
     { dependencies: [readyState], scope: ref },

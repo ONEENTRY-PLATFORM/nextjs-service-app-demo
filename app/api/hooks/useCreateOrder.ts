@@ -15,6 +15,11 @@ import { removeOrder } from '@/app/store/reducers/OrderSlice';
  *
  * This hook provides functionality for creating orders and managing payment sessions.
  * It handles both cash payments and online payments through the OneEntry API.
+ *
+ * ⚠️ Currently UNUSED — superseded by `useBookingSubmit`, which builds the order
+ * body from the wizard selection instead of `OrderSlice`. It is the only importer
+ * of `OrderSlice`, so that slice is dead through this file alone. Kept per
+ * project convention; deleting the pair is a separate, explicit decision.
  * @returns {object} Object containing order-related functions and state
  */
 

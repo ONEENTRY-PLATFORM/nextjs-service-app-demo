@@ -47,6 +47,10 @@ const getRelatedProductsByIdCached = cache(getRelatedProductsByIdImpl);
 /**
  * Get all related product page objects with API.Products
  *
+ * ⚠️ Currently UNUSED — no module imports this wrapper: the design has no "related services" section.
+ * Kept per project convention; the split between the server wrappers and the
+ * RTK Query endpoints was settled in favour of the latter here.
+ *
  * Wrapped in React `cache()` over a cross-request `unstable_cache`.
  * @param   {number}          id - Product page identifier for which to find relationship.
  * @returns {Promise<object>}    Promise that resolves to an object containing products, error status, and total count

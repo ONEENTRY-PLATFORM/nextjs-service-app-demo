@@ -2,7 +2,6 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 
 import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
-import { getMastersList } from '@/app/api/utils/getMastersList';
 import SectionHeading from '@/components/shared/SectionHeading';
 
 import PortfolioGallery from './components/PortfolioGallery';
@@ -14,30 +13,17 @@ import PortfolioGallery from './components/PortfolioGallery';
  * photo pages and flattens their `gallery_photos` into `{ img, thumb, preview,
  * alt }`. Presentation follows the reference design — a centered "Portfolio"
  * heading above a responsive grid backed by a custom lightbox. Renders nothing
- * when the master or their portfolio is unavailable.
- * @param   {object}               props            - Props for the component.
- * @param   {string}               props.handle     - Handle of the portfolio (master id).
- * @param   {object}               props.searchData - Route search params (unused; kept for the call site).
- * @returns {Promise<JSX.Element>}                  React component.
+ * when the master's portfolio is unavailable; the master itself is resolved by
+ * the route, which owns the 404 for an unknown id.
+ * @param   {object}               props        - Props for the component.
+ * @param   {IAdminEntity}         props.master - Master (admin entity) resolved by the route.
+ * @returns {Promise<JSX.Element>}              React component.
  */
 const PortfolioGridLayout = async ({
-  handle,
+  master,
 }: {
-  handle: string;
-  searchData?: Record<string, string | string[] | undefined> | undefined;
+  master: IAdminEntity;
 }): Promise<JSX.Element> => {
-  /** Fetch admin information including masters data */
-  const { admins } = await getMastersList();
-  /** Find the specific master by handle (ID) */
-  const master = admins?.find(
-    (admin: IAdminEntity) => admin.id === Number(handle),
-  );
-
-  /** Return empty fragment if the master is not found */
-  if (!master) {
-    return <></>;
-  }
-
   /** Guard the attribute bag: `attributeValues` can be absent on a bare entity. */
   const masterAttrs = master.attributeValues || {};
 

@@ -63,19 +63,6 @@ const cartReducer = persistReducer(
 );
 
 /**
- * Persist formFieldsReducer
- */
-const formFieldsReducer = persistReducer(
-  {
-    key: 'form-fields',
-    storage: storage,
-    version: version,
-    whitelist: ['fields'],
-  },
-  formFieldsSlice,
-);
-
-/**
  * Persist orderReducer
  */
 const orderReducer = persistReducer(
@@ -90,11 +77,17 @@ const orderReducer = persistReducer(
 
 /**
  * Combine reducers
+ *
+ * `formFieldsReducer` is deliberately NOT persisted: the slice is a flat bag of
+ * every form's field values keyed by marker, including password inputs, so
+ * persisting it wrote plaintext credentials to localStorage where nothing ever
+ * cleared them. In-memory it still serves its real purpose — handing values
+ * between the auth forms, which mount one at a time.
  */
 const rootReducer = combineReducers({
   cartReducer,
   orderReducer,
-  formFieldsReducer,
+  formFieldsReducer: formFieldsSlice,
   animationsSlice,
   [RTKApi.reducerPath]: RTKApi.reducer,
 });

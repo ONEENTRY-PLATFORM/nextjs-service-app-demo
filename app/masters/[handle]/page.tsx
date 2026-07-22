@@ -1,15 +1,14 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 import { Suspense } from 'react';
 
-import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import MasterSingleLayout from '@/components/layout/master-single';
 import MasterLoader from '@/components/layout/master-single/components/MasterLoader';
@@ -45,34 +44,39 @@ export default async function MasterPageLayout({
   ]);
   ServerProvider('dict', dict);
 
-  /** Get admin info for structured data */
+  /**
+   * Resolve the master here rather than inside the section components: the
+   * route owns the 404 decision, like every other dynamic route. Deciding it
+   * further down — behind a Suspense boundary — let the shell stream first, so
+   * an id outside `generateStaticParams` flashed the loader before 404ing.
+   */
   const adminId = parseInt(handle, 10);
   const admin = admins?.find((a: IAdminEntity) => a.id === adminId);
 
+  if (!admin) {
+    notFound();
+  }
+
   /** Generate structured data for master profile */
-  const masterName = admin?.attributeValues?.master_name?.value;
-  const structuredData = admin
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'Person',
-        name: masterName,
-        url: `${getSiteUrl()}/masters/${handle}`,
-      }
-    : null;
+  const masterName = admin.attributeValues?.master_name?.value;
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: masterName,
+    url: `${getSiteUrl()}/masters/${handle}`,
+  };
 
   return (
     <>
-      {structuredData && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: serializeJsonLd(structuredData),
-          }}
-        />
-      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(structuredData),
+        }}
+      />
       <Suspense fallback={<MasterLoader />}>
         <MasterSingleLayout
-          handle={handle}
+          master={admin}
           searchData={
             searchData
               ? { service: searchData.service as string }
@@ -81,7 +85,7 @@ export default async function MasterPageLayout({
         />
       </Suspense>
       <Suspense fallback={<PortfolioGridLoader />}>
-        <PortfolioGridLayout handle={handle} searchData={searchData} />
+        <PortfolioGridLayout master={admin} />
       </Suspense>
     </>
   );
@@ -119,40 +123,23 @@ export async function generateMetadata({
 }: {
   params: Promise<{ handle: string }>;
 }): Promise<Metadata> {
-  /** Handle, page and admin reads are independent — run in parallel. */
-  const [{ handle }, { page, isError }, { admins }] = await Promise.all([
+  /** Handle and admin reads are independent — run in parallel. */
+  const [{ handle }, { admins }] = await Promise.all([
     params,
-    getPageByUrl('masters'),
     getMastersList(),
   ]);
 
-  if (isError || !page) {
-    return {};
-  }
-
   /** Get admin info for person data */
   const adminId = parseInt(handle, 10);
-
   const admin = admins?.find((a: IAdminEntity) => a.id === adminId);
-
-  /** extract data from page */
-  const { localizeInfos } = page;
   const masterName = admin?.attributeValues?.master_name?.value;
 
-  const title = masterName
-    ? `${masterName} - ${localizeInfos?.title}`
-    : localizeInfos?.title;
-  const description = getPagePlainContent(page) || localizeInfos?.title;
-
-  return {
-    title,
-    description,
-    alternates: { canonical: `/masters/${handle}` },
-    openGraph: {
-      ...(await pageOpenGraph(`/masters/${handle}`)),
-      type: 'profile',
-      title,
-      description,
-    },
-  };
+  return cmsPageMetadata({
+    pageUrl: 'masters',
+    path: `/masters/${handle}`,
+    ...(typeof masterName === 'string' && masterName
+      ? { titlePrefix: masterName }
+      : {}),
+    ogType: 'profile',
+  });
 }

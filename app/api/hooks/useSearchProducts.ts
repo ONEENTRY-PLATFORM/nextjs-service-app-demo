@@ -14,8 +14,10 @@ import { useSearchProductsQuery } from '@/app/api/api/RTKApi';
  * a fresh API call, and two subscribers on the same term share one request —
  * neither was true of the previous `useEffect` + `useState` implementation.
  *
- * Imported straight from `RTKApi` rather than the `@/app/api` barrel: the barrel
- * re-exports this very hook, so going through it would close an import cycle.
+ * Imported straight from `RTKApi`: there is no `@/app/api` barrel in the tree
+ * (CLAUDE.md still describes one). A barrel here would also be the wrong shape —
+ * it would re-export the server wrappers, which pull in `next/cache`, alongside
+ * client hooks like this one.
  * @param   {object} props      - Configuration object for the search
  * @param   {string} props.name - The product name or partial name to search for
  * @returns {object}            An object containing search results and control functions

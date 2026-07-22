@@ -9,9 +9,9 @@ import { getBlocksByPageUrl } from '@/app/api/server/blocks/getBlocksByPageUrl';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
-import { pageOpenGraph } from '@/app/utils/pageOpenGraph';
 import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
 import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
 
@@ -77,32 +77,13 @@ const OffersFeed = nextDynamic(
  * @returns {Promise<Metadata>} metadata
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const { page, isError } = await getHomePage();
-
-  if (isError || !page) {
-    return {
-      title: 'OneEntry Beauty',
-      description: 'OneEntry next-js Beauty description',
-    };
-  }
-
-  return {
-    title: page.localizeInfos?.title || 'OneEntry Beauty',
-    description:
-      getPagePlainContent(page) ||
-      page.localizeInfos?.title ||
-      'OneEntry next-js Beauty description',
-    alternates: { canonical: '/' },
-    openGraph: {
-      ...(await pageOpenGraph('/')),
-      type: 'website',
-      title: page.localizeInfos?.title || 'OneEntry Beauty',
-      description:
-        getPagePlainContent(page) ||
-        page.localizeInfos?.title ||
-        'OneEntry next-js Beauty description',
-    },
-  };
+  return cmsPageMetadata({
+    pageUrl: 'home',
+    path: '/',
+    fallbackTitle: 'OneEntry Beauty',
+    fallbackDescription: 'OneEntry next-js Beauty description',
+    ogType: 'website',
+  });
 }
 
 /**

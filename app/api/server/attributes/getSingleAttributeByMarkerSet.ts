@@ -57,6 +57,10 @@ const getSingleAttributeByMarkerSetCached = cache(
 
 /**
  * Get a single attribute with data from the attribute sets.
+ *
+ * ⚠️ Currently UNUSED — no module imports this wrapper: attribute sets are read as part of the page/product payload, never on their own.
+ * Kept per project convention; the split between the server wrappers and the
+ * RTK Query endpoints was settled in favour of the latter here.
  * @param   {object}                                props                 - Object with parameters.
  * @param   {string}                                props.attributeMarker - Text identifier (marker) of the attribute in the set.
  * @param   {string}                                props.setMarker       - Text identifier (marker) of the attribute set.

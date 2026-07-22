@@ -41,6 +41,10 @@ const getFormByMarkerCached = cache(getFormByMarkerImpl);
 /**
  * Get form by marker.
  *
+ * ⚠️ Currently UNUSED — no module imports this wrapper: every form is read client-side through `useGetFormByMarkerQuery`.
+ * Kept per project convention; the split between the server wrappers and the
+ * RTK Query endpoints was settled in favour of the latter here.
+ *
  * Wrapped in React `cache()` over a cross-request `unstable_cache`.
  * @param   {string}          marker - Menu marker
  * @returns {Promise<object>}        a single form object

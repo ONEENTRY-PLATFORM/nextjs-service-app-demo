@@ -1,12 +1,12 @@
 'use client';
 
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { X } from 'lucide-react';
 import type { JSX } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import SwapAnimations from '@/app/animations/SwapAnimations';
+import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
 
 import MobileSpecialistList from './components/MobileSpecialistList';
 import SalonFilter from './components/SalonFilter';
@@ -83,16 +83,8 @@ const MastersPageContent = ({
     setQuery('');
   };
 
-  /**
-   * Changing a filter remounts the card sections and changes the page height,
-   * leaving every ScrollTrigger's cached start/end stale — cards that stay in
-   * view can freeze at their hidden entrance state. Recompute trigger positions
-   * once the new sections have laid out (next frame), like the services catalog.
-   */
-  useEffect(() => {
-    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
-    return () => cancelAnimationFrame(id);
-  }, [sections]);
+  /** Changing a filter remounts the card sections */
+  useScrollTriggerRefresh(sections);
 
   return (
     <div data-testid="masters-page">
