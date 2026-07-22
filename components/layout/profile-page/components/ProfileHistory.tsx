@@ -17,6 +17,7 @@ import {
   ORDERS_STORAGE_MARKER,
 } from '@/app/store/orderMarkers';
 import { AuthContext } from '@/app/store/providers/AuthContext';
+import { parseOrderInterval } from '@/app/utils/parseOrderInterval';
 import productDurationMinutes from '@/app/utils/productDurationMinutes';
 
 import VisitGroups from './VisitGroups';
@@ -30,14 +31,10 @@ import VisitSection from './VisitSection';
  * @returns {number}                     Milliseconds since epoch
  */
 const visitTime = (order: IOrderByMarkerEntity): number => {
-  const interval = order.formData?.find((f) => f.marker === 'interval')?.value;
-  const start = Array.isArray(interval)
-    ? (interval as unknown[]).flat()[0]
-    : undefined;
-  const parsed = typeof start === 'string' ? Date.parse(start) : NaN;
-  return Number.isNaN(parsed)
-    ? Date.parse(String(order.createdDate ?? '')) || 0
-    : parsed;
+  const { start } = parseOrderInterval(order);
+  return start
+    ? start.getTime()
+    : Date.parse(String(order.createdDate ?? '')) || 0;
 };
 
 /**

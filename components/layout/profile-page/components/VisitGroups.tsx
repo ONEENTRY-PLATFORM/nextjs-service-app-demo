@@ -3,6 +3,7 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
 import type { JSX } from 'react';
 
+import { ORDER_FIELD_MASTER } from '@/app/store/orderMarkers';
 import OrderCard from '@/components/layout/profile-page/components/order-card';
 
 import MasterCard from './master-card';
@@ -24,7 +25,7 @@ const groupOrdersByMaster = (
 ): GroupedOrder[] => {
   const grouped = orders.reduce<Record<number, GroupedOrder>>((acc, order) => {
     const masterField = order.formData.find(
-      (field) => field.marker === 'master',
+      (field) => field.marker === ORDER_FIELD_MASTER,
     );
     const masterId = (masterField?.value as number[] | undefined)?.[0] || 0;
     if (!acc[masterId]) {

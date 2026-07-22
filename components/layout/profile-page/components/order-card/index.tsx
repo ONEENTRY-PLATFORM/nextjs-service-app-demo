@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { isError } from '@/app/api/api/api';
 import { getPageById } from '@/app/api/server/pages/getPageById';
 import {
+  ORDER_FIELD_SALON,
   ORDERS_STATUS_CANCELED,
   ORDERS_STATUS_COMPLETED,
 } from '@/app/store/orderMarkers';
@@ -75,7 +76,9 @@ const OrderCard = ({
    * look for `order_salon` — the same guess the booking side wrote with, so both
    * halves were wrong together and the salon line rendered blank.
    */
-  const salonEntity = order.formData.find((el) => el.marker === 'salon');
+  const salonEntity = order.formData.find(
+    (el) => el.marker === ORDER_FIELD_SALON,
+  );
   const salonId = (salonEntity?.value as number[] | undefined)?.[0];
 
   /** Load salon data when salon ID changes */

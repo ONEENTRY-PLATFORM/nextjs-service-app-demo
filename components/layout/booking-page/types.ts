@@ -32,8 +32,20 @@ export interface BookingService {
   category: string;
   /** Service name */
   name: string;
-  /** Human duration line, e.g. `60 min` (may be empty) */
+  /**
+   * Human duration line, e.g. `60 min` (may be empty) — DISPLAY ONLY.
+   *
+   * Never parse this back into a number: the project's canonical formatter
+   * (`formatMinutes`) renders 90 as `1 h 30 min`, so any future "let's unify the
+   * formatting" change would silently turn a 90-minute visit into a 1-minute
+   * one. The slot maths and the order's end time read `durationMinutes`.
+   */
   duration: string;
+  /**
+   * Duration in minutes as the CMS stores it; `null` when the service carries
+   * no duration. This is the value the booking arithmetic uses.
+   */
+  durationMinutes: number | null;
   /** Price, `null` when not set in the CMS */
   price: number | null;
   /** Currency code from the CMS (`'AED'`); `''` when unset or for demo services */

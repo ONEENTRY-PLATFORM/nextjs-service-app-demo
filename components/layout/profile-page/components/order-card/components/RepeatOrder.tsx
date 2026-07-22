@@ -4,6 +4,7 @@ import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces
 import type { JSX } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
+import { ORDER_FIELD_SALON } from '@/app/store/orderMarkers';
 import {
   addServiceToCart,
   selectActiveItemId,
@@ -50,7 +51,7 @@ const RepeatOrder = ({
      * repeated order silently lost its salon even once the marker was right.
      */
     const salonEntity = orderData?.formData?.find(
-      (field: { marker: string }) => field?.marker === 'salon',
+      (field: { marker: string }) => field?.marker === ORDER_FIELD_SALON,
     );
     const salonId = (salonEntity?.value as number[] | undefined)?.[0];
 

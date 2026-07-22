@@ -15,6 +15,9 @@ import {
   ORDERS_STATUS_CANCELED,
   ORDERS_STORAGE_MARKER,
 } from '@/app/store/orderMarkers';
+import { formatUtcDate } from '@/app/utils/formatUtcDate';
+import { formatUtcTime } from '@/app/utils/formatUtcTime';
+import { parseOrderInterval } from '@/app/utils/parseOrderInterval';
 
 import CancelConfirmModal from './CancelConfirmModal';
 import CancelSuccessModal from './CancelSuccessModal';
@@ -108,25 +111,10 @@ const CancelOrderButton = ({
    */
   const masterName =
     (master?.attributeValues?.master_name?.value as string | undefined) ?? '';
-  const intervalField = orderData?.formData.find(
-    (el: { marker: string }) => el.marker === 'interval',
-  );
-  const startTime = (intervalField?.value as string[][] | undefined)?.[0]?.[0];
-  const startDate = startTime ? new Date(startTime) : null;
-  const dateLine =
-    startDate && !Number.isNaN(startDate.getTime())
-      ? `${startDate.getUTCDate().toString().padStart(2, '0')}.${(
-          startDate.getUTCMonth() + 1
-        )
-          .toString()
-          .padStart(2, '0')}.${startDate.getUTCFullYear()} at ${startDate
-          .getUTCHours()
-          .toString()
-          .padStart(2, '0')}:${startDate
-          .getUTCMinutes()
-          .toString()
-          .padStart(2, '0')}`
-      : '';
+  const { start } = parseOrderInterval(orderData);
+  const dateLine = start
+    ? `${formatUtcDate(start)} at ${formatUtcTime(start)}`
+    : '';
   const subtitle = [masterName, dateLine].filter(Boolean).join(' · ');
 
   /* Render the cancel button and its dialogs */

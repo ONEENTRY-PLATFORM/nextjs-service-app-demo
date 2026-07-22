@@ -168,7 +168,7 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
         {/** Display password reset description text */}
         <div className="relative box-border flex shrink-0 flex-col gap-2.5">
           <p className="max-w-full text-xs text-gray-400">
-            {new_password_desc?.value}
+            {new_password_desc?.value as string | undefined}
           </p>
         </div>
         {/** Render reset password form fields */}
@@ -179,7 +179,7 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
         </div>
         {/** Display submit button for password reset */}
         <FormSubmitButton
-          title={change_password_text?.value}
+          title={(change_password_text?.value as string | undefined) ?? ''}
           isLoading={isLoading}
           index={10}
         />

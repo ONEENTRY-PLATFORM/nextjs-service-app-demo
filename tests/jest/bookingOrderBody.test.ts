@@ -18,6 +18,7 @@ const service = (over: Partial<BookingService> = {}): BookingService =>
     category: 'Hair',
     name: 'Haircut',
     duration: '60 min',
+    durationMinutes: 60,
     price: 370,
     currency: 'AED',
     productId: 101,
@@ -44,8 +45,8 @@ describe('toBookingInterval', () => {
       date: '2026-6-21',
       time: '10:00',
       services: [
-        service({ duration: '90 min' }),
-        service({ duration: '30 min' }),
+        service({ duration: '90 min', durationMinutes: 90 }),
+        service({ duration: '30 min', durationMinutes: 30 }),
       ],
     });
 

@@ -199,7 +199,7 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
         <TermsConsent checked={agree} onChange={setAgree} />
         {/** Render submit button for form submission */}
         <SubmitButton
-          title={sign_up_text?.value}
+          title={(sign_up_text?.value as string | undefined) ?? ''}
           isLoading={loading || isLoading}
           index={10}
         />
