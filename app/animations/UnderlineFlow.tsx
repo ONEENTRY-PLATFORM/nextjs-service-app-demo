@@ -58,6 +58,8 @@ const UnderlineFlow = ({
   const placed = useRef<number | null>(null);
   const [hovered, setHovered] = useState<number | null>(null);
   const [measureToken, setMeasureToken] = useState(0);
+  /** The items themselves were replaced — the bar has to travel, not jump */
+  const contentDirty = useRef(false);
 
   /** Hover wins over the active item, the active item wins over nothing */
   const target = hovered ?? active;
@@ -126,6 +128,29 @@ const UnderlineFlow = ({
     return () => observer.disconnect();
   }, []);
 
+  /**
+   * Re-measure when the items are swapped for a different set — a tab row that
+   * switches to another category keeps its own width, so the resize observer
+   * above never hears about it while every item underneath has moved.
+   */
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) {
+      return;
+    }
+    const observer = new MutationObserver(() => {
+      contentDirty.current = true;
+      setMeasureToken((token) => token + 1);
+    });
+    observer.observe(list, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   useGSAP(
     () => {
       const bar = barRef.current;
@@ -149,20 +174,50 @@ const UnderlineFlow = ({
       const right = itemBox.right - hostBox.left;
       const top = itemBox.bottom - hostBox.top - BAR_HEIGHT;
       const edge = edges.current;
+      /** A swapped item set moves the bar; a plain re-measure only re-seats it */
+      const swapped = contentDirty.current;
+      contentDirty.current = false;
+
+      /**
+       * Drop the bar onto the target without travelling. Any tween in flight is
+       * killed first: it owns the same edge object and would keep writing its
+       * own values over the ones just seated.
+       * @param {boolean} fade - Fade the bar in instead of showing it outright
+       */
+      const seatBar = (fade: boolean): void => {
+        gsap.killTweensOf(edge);
+        edge.left = left;
+        edge.right = right;
+        edge.top = top;
+        gsap.set(bar, { x: left, y: top, width: right - left });
+        if (fade) {
+          gsap.to(bar, { autoAlpha: 1, duration: 0.3, ease: 'power1.out' });
+        } else {
+          gsap.set(bar, { autoAlpha: 1 });
+        }
+      };
 
       /** First appearance, or a return from hiding — show it in place */
       if (placed.current === null) {
         placed.current = target;
-        edges.current = { left, right, top };
-        gsap.set(bar, { x: left, y: top, width: right - left });
-        gsap.to(bar, { autoAlpha: 1, duration: 0.3, ease: 'power1.out' });
+        seatBar(true);
+        return;
+      }
+
+      /** Already there — a re-render that moved nothing */
+      if (
+        placed.current === target &&
+        Math.abs(edge.left - left) < 0.5 &&
+        Math.abs(edge.right - right) < 0.5 &&
+        Math.abs(edge.top - top) < 0.5
+      ) {
+        gsap.set(bar, { autoAlpha: 1 });
         return;
       }
 
       /** Same item, new geometry (resize, late font) — follow it without a tween */
-      if (placed.current === target) {
-        edges.current = { left, right, top };
-        gsap.set(bar, { x: left, y: top, width: right - left, autoAlpha: 1 });
+      if (placed.current === target && !swapped) {
+        seatBar(false);
         return;
       }
 

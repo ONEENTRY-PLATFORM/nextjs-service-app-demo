@@ -6,13 +6,14 @@ import type { JSX, ReactNode } from 'react';
 import UnderlineFlow from '@/app/animations/UnderlineFlow';
 
 /**
- * NavUnderline — the desktop main menu list with the flowing underline of
- * {@link UnderlineFlow}, resting on the item of the current page.
+ * NavUnderline — the desktop main menu list carried by {@link UnderlineFlow}:
+ * one underline flows between the items on hover and settles on the item of the
+ * page currently open.
  *
- * All the bar does is follow the pointer and fall back to the active item, so
- * the only thing this wrapper adds is the route lookup: `hrefs` must be in the
- * same order as `children`, it is what tells the bar which item is the current
- * page. A route that is not in the menu leaves the bar hidden.
+ * All this adds to the shared wrapper is the route lookup, which is why it lives
+ * on the client: `hrefs` must be in the same order as `children`, and the entry
+ * matching the current pathname is where the bar rests. A route outside the menu
+ * simply leaves no active item and the bar stays hidden until something is hovered.
  * @param   {object}      props             - Component properties
  * @param   {ReactNode}   props.children    - Menu items, one `li` per href
  * @param   {string[]}    props.hrefs       - Item hrefs in render order, used to find the active one

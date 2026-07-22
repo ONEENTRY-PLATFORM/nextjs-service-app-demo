@@ -4,6 +4,8 @@ import type { JSX } from 'react';
 import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
 import { entityPageIds } from '@/app/utils/entityLinks';
 import SectionHeading from '@/components/shared/SectionHeading';
+import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
+import { imageFileList } from '@/components/utils/imageFileList';
 
 import PortfolioGallery from './components/PortfolioGallery';
 
@@ -58,20 +60,13 @@ const PortfolioGridLayout = async ({
    */
   const portfolioImages =
     childPages?.flatMap((page) => {
-      const photos = page.attributeValues?.gallery_photos?.value as
-        | Array<{
-            downloadLink: string;
-            defaultPreview?: string;
-            previewLink?: Record<string, string[]>;
-          }>
-        | undefined;
-      return (photos ?? []).map((imgSrc) => {
-        const preset = imgSrc.defaultPreview || 'default';
-        const pv = imgSrc.previewLink?.[preset];
+      const photos = imageFileList(page.attributeValues?.gallery_photos?.value);
+      return photos.map((imgSrc) => {
+        const { full, blur } = getGalleryImageUrls(imgSrc);
         return {
-          img: imgSrc.downloadLink,
-          thumb: imgSrc.downloadLink,
-          preview: pv?.[0] || '',
+          img: full,
+          thumb: full,
+          preview: blur ?? '',
           /** CMS portfolio photos carry no caption — name the specialist. */
           alt: masterName
             ? `Portfolio work by ${masterName}`

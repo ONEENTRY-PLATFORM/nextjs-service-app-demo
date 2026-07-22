@@ -45,10 +45,18 @@ export default async function SalonDetailLayout({
 }): Promise<JSX.Element> {
   const { handle } = await params;
 
-  /** The salon page and the gallery are independent — run in parallel. */
+  /**
+   * The salon page and the gallery are independent — run in parallel.
+   *
+   * The gallery is decorative and must never decide the route's status code: it
+   * resolves in the same `Promise.all` as the page read, so before the `.catch`
+   * a failing gallery rejected the pair and Next answered **500 on an unknown
+   * handle that owed a 404** (caught by `not-found.spec.ts`, which asserts the
+   * status is below 500).
+   */
   const [{ page, isError }, items] = await Promise.all([
     getPageByUrl(handle),
-    getCmsGalleryItems(),
+    getCmsGalleryItems().catch(() => []),
   ]);
 
   if (!page || isError) {

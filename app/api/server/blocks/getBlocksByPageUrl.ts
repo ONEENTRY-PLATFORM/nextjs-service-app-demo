@@ -4,6 +4,7 @@ import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import { cache } from 'react';
 
 import { getApi, isError } from '@/app/api/api/api';
+import { expectCmsArray } from '@/app/api/utils/expectCmsArray';
 import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
@@ -33,7 +34,10 @@ const getBlocksByPageUrlImpl = unstable_cache(
     if (isError(data)) {
       return { isError: true, error: data };
     }
-    return { isError: false, blocks: data };
+    return {
+      isError: false,
+      blocks: expectCmsArray<IBlockEntity>(data, 'getBlocksByPageUrl'),
+    };
   },
   ['oneentry-blocks-by-page-url'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-blocks'] },

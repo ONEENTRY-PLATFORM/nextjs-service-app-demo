@@ -53,10 +53,17 @@ export default async function GallerySingleLayout({
   }>;
 }): Promise<JSX.Element> {
   const { handle } = await params;
-  /** The page read and the CMS gallery fetch are independent — run in parallel. */
+  /**
+   * The page read and the CMS gallery fetch are independent — run in parallel.
+   *
+   * The photos must never decide the route's status code: they resolve in the
+   * same `Promise.all` as the page read, so before the `.catch` a failing
+   * gallery rejected the pair and Next answered **500 for an unknown category
+   * that owed a 404** — the route never reached the `missing` branch below.
+   */
   const [resolved, items] = await Promise.all([
     resolveCmsPage(handle),
-    getCmsGalleryItems(),
+    getCmsGalleryItems().catch(() => []),
   ]);
 
   /**

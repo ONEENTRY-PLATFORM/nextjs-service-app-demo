@@ -8,7 +8,7 @@ import { getMastersList } from '@/app/api/utils/getMastersList';
 import masterNamesById from '@/app/gallery/masterNamesById';
 import SectionTitle from '@/components/shared/SectionTitle';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
-import type { OneEntryImageFile } from '@/components/utils/OneEntryImageFile';
+import { imageFileList } from '@/components/utils/imageFileList';
 import { shuffleArray } from '@/components/utils/shuffleArray';
 
 import GalleryGrid from './components/GalleryGrid';
@@ -127,9 +127,7 @@ function extractPhotosFromPage(
       masterLink?.title ||
       '';
     /** Get photos array from page gallery photos attribute with fallback to empty array */
-    const photos =
-      (page?.attributeValues?.gallery_photos?.value as
-        OneEntryImageFile[] | undefined) || [];
+    const photos = imageFileList(page?.attributeValues?.gallery_photos?.value);
     /**
      * Open the Gallery page filtered to the tile's main category, like the
      * static-html home gallery (`onGalleryClick`). The gallery category

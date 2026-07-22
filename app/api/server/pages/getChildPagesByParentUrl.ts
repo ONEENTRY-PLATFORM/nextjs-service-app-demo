@@ -4,6 +4,7 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import { cache } from 'react';
 
 import { getApi, isError } from '@/app/api/api/api';
+import { expectCmsArray } from '@/app/api/utils/expectCmsArray';
 import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
@@ -29,7 +30,10 @@ const getChildPagesByParentUrlImpl = unstable_cache(
     if (isError(data)) {
       return { isError: true, error: data };
     }
-    return { isError: false, pages: data };
+    return {
+      isError: false,
+      pages: expectCmsArray<IPagesEntity>(data, 'getChildPagesByParentUrl'),
+    };
   },
   ['oneentry-child-pages-by-parent-url'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-pages'] },

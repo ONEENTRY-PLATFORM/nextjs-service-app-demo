@@ -317,10 +317,12 @@ test.describe('Profile — visit history', () => {
     await expect(page.getByTestId('order-cancel-success')).toHaveCount(0);
   });
 
-  test('a refused cancellation shows the error dialog, not the success one', async ({
+  test('a paid order that cannot be cancelled offers a refund, not a dead end', async ({
     page,
   }) => {
-    // The live failure this covers: a paid order the API refuses to cancel
+    // The live failure this covers: a paid order the API refuses to cancel.
+    // `isPaidOrderError` matches /paid|payment/i, so this message takes the
+    // refund branch rather than the plain error dialog.
     await mockOrders(
       page,
       "Can't update the order. Payment sessions 3 could not be canceled — the order may have been paid.",
@@ -343,11 +345,53 @@ test.describe('Profile — visit history', () => {
       .getByTestId('order-cancel-yes')
       .click();
 
+    const refund = page.getByTestId('order-refund-request');
+    await expect(refund).toBeVisible({ timeout: 30_000 });
+    // The guest-facing rewrite, not the API's `updateOrder` wording
+    await expect(refund).toContainText('already been paid');
+    await expect(refund).not.toContainText('Payment sessions');
+    // Neither the dead-end error dialog nor a false success
+    await expect(page.getByTestId('order-cancel-error')).toHaveCount(0);
+    await expect(page.getByTestId('order-cancel-success')).toHaveCount(0);
+
+    // Dismiss, never confirm: `order-refund-confirm` POSTs to
+    // `/api/content/orders/{id}/refund`, which `mockOrders` does not intercept —
+    // confirming here would send a live request for a fixture order id.
+    await refund.getByTestId('order-refund-dismiss').click();
+    await expect(page.getByTestId('order-refund-request')).toHaveCount(0);
+  });
+
+  test('a refusal that is not about payment still shows the error dialog', async ({
+    page,
+  }) => {
+    // Guards the branch above: a message without "paid"/"payment" must NOT be
+    // rerouted into the refund offer.
+    await mockOrders(
+      page,
+      "Can't update the order. Order is locked by the salon.",
+    );
+    await signInTestUser(page);
+    await expect(
+      page
+        .getByTestId('profile-visits-upcoming')
+        .getByTestId('order-services')
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
+
+    await page
+      .getByTestId('profile-visits-upcoming')
+      .getByTestId('order-cancel')
+      .first()
+      .click();
+    await page
+      .getByTestId('order-cancel-confirm')
+      .getByTestId('order-cancel-yes')
+      .click();
+
     const error = page.getByTestId('order-cancel-error');
     await expect(error).toBeVisible({ timeout: 30_000 });
-    // The guest-facing rewrite, not the API's `updateOrder` wording
-    await expect(error).toContainText('already been paid');
-    await expect(error).not.toContainText('Payment sessions');
+    await expect(error).toContainText('locked by the salon');
+    await expect(page.getByTestId('order-refund-request')).toHaveCount(0);
     await expect(page.getByTestId('order-cancel-success')).toHaveCount(0);
 
     await error.getByTestId('order-cancel-error-close').click();

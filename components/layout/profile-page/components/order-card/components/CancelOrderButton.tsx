@@ -19,6 +19,7 @@ import {
 } from '@/app/store/orderMarkers';
 import { formatOrderCancelError } from '@/app/utils/formatOrderCancelError';
 import { formatOrderTotal } from '@/app/utils/formatOrderTotal';
+import { formatRefundError } from '@/app/utils/formatRefundError';
 import { formatUtcDate } from '@/app/utils/formatUtcDate';
 import { formatUtcTime } from '@/app/utils/formatUtcTime';
 import { isPaidOrderError } from '@/app/utils/isPaidOrderError';
@@ -156,7 +157,7 @@ const CancelOrderButton = ({
       }).unwrap();
     } catch (e) {
       setErrorTitle('Refund not requested');
-      setErrorMessage(formatOrderCancelError(e));
+      setErrorMessage(formatRefundError(e));
       setStage('error');
       return;
     }

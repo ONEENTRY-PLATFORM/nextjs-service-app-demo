@@ -5,6 +5,7 @@ import type { IFilterParams } from 'oneentry/dist/products/productsInterfaces';
 import { cache } from 'react';
 
 import { getApi, isError } from '@/app/api/api/api';
+import { expectCmsArray } from '@/app/api/utils/expectCmsArray';
 import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
 
 /**
@@ -38,7 +39,10 @@ const getAdminsInfoImpl = unstable_cache(
     if (isError(data)) {
       return { isError: true, error: data };
     }
-    return { isError: false, admins: data };
+    return {
+      isError: false,
+      admins: expectCmsArray<IAdminEntity>(data, 'getAdminsInfo'),
+    };
   },
   ['oneentry-admins-info'],
   { revalidate: 60, tags: ['oneentry', 'oneentry-admins'] },

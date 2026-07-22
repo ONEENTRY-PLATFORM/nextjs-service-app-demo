@@ -12,7 +12,7 @@ import type {
 } from '@/components/layout/gallery-page/taxonomy';
 import { DISC_ROLE } from '@/components/layout/gallery-page/taxonomy';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
-import type { OneEntryImageFile } from '@/components/utils/OneEntryImageFile';
+import { imageFileList } from '@/components/utils/imageFileList';
 
 /**
  * Gallery category `pageUrl` (`gallery-hair`) → main-category filter value.
@@ -144,9 +144,9 @@ const getCmsGalleryItems = async (): Promise<GalleryItem[]> => {
       /** Salons of that master; empty hides the photo from salon pages */
       const salon =
         masterId === undefined ? [] : (salonsById.get(masterId) ?? []);
-      const images =
-        (photoPage.attributeValues?.gallery_photos?.value as
-          OneEntryImageFile[] | undefined) ?? [];
+      const images = imageFileList(
+        photoPage.attributeValues?.gallery_photos?.value,
+      );
 
       for (const image of images) {
         const { full, blur } = getGalleryImageUrls(image);
