@@ -16,8 +16,17 @@ import { hasCreds, signInTestUser } from './fixtures/helpers';
 // is the same path plus `/{id}` (PUT).
 const ORDERS_LIST_RE = /\/api\/content\/orders-storage\/marker\/[^/]+\/orders/;
 
-/** Fixture order ids, one per status bucket. */
-const ORDER_ID = { upcoming: 900001, completed: 900002, canceled: 900003 };
+/** Payment session endpoints of the SDK (`payments/paymentsApi`). */
+const SESSION_BY_ORDER_RE = /\/api\/content\/payments\/sessions\/order\/\d+/;
+const CREATE_SESSION_RE = /\/api\/content\/payments\/sessions$/;
+
+/** Fixture order ids: one per status bucket, plus the unpaid online booking. */
+const ORDER_ID = {
+  upcoming: 900001,
+  completed: 900002,
+  canceled: 900003,
+  unpaid: 900004,
+};
 
 /**
  * Build one fixture order for a status bucket.
@@ -26,22 +35,38 @@ const ORDER_ID = { upcoming: 900001, completed: 900002, canceled: 900003 };
  * booked products (title + duration lookup key), and the `interval` /
  * `master` form fields. `salon` is deliberately omitted — the card's salon
  * lookup is an extra request that adds nothing to the flows under test.
- * @param   {number} id          - Order id
- * @param   {string} status      - Order status identifier (`upcoming` / `completed` / `canceled`)
- * @param   {string} statusTitle - Human-readable status, shown in the badge
- * @returns {object}             Order entity as the orders API returns it
+ *
+ * The payment half defaults to a settled cash booking, which is what the
+ * status flows want; the unpaid-online case passes its own (`stripe` +
+ * `isCompleted: false`, the shape a real abandoned Stripe checkout leaves —
+ * see `.claude/temp/inspect-order-payment.mjs`).
+ * @param   {number}         id                  - Order id
+ * @param   {string}         status              - Order status identifier (`upcoming` / `completed` / `canceled`)
+ * @param   {string}         statusTitle         - Human-readable status, shown in the badge
+ * @param   {object}         [payment]           - Payment account + settlement state of the order
+ * @param   {string}         payment.identifier  - Payment account marker (`cash` / `stripe`)
+ * @param   {string}         payment.title       - Localized payment account title
+ * @param   {boolean | null} payment.isCompleted - Whether the gateway reported the order paid
+ * @returns {object}                             Order entity as the orders API returns it
  */
 const makeOrder = (
   id: number,
   status: string,
   statusTitle: string,
+  payment: {
+    identifier: string;
+    title: string;
+    isCompleted: boolean | null;
+  } = { identifier: 'cash', title: 'Cash', isCompleted: null },
 ): Record<string, unknown> => ({
   id,
   statusIdentifier: status,
   statusLocalizeInfos: { title: statusTitle },
   createdDate: '2026-07-01T10:00:00.000Z',
   formIdentifier: 'order',
-  paymentAccountIdentifier: 'cash',
+  paymentAccountIdentifier: payment.identifier,
+  paymentAccountLocalizeInfos: { title: payment.title },
+  isCompleted: payment.isCompleted,
   totalSum: '370',
   currency: 'AED',
   products: [{ id: 71, title: 'E2E fixture service', quantity: 1 }],
@@ -55,9 +80,14 @@ const makeOrder = (
   ],
 });
 
-/** The three fixture orders, one per bucket. */
+/** One order per bucket, with a second upcoming one left unpaid on Stripe. */
 const FIXTURE_ORDERS = [
   makeOrder(ORDER_ID.upcoming, 'upcoming', 'Upcoming'),
+  makeOrder(ORDER_ID.unpaid, 'upcoming', 'Upcoming', {
+    identifier: 'stripe',
+    title: 'Stripe',
+    isCompleted: false,
+  }),
   makeOrder(ORDER_ID.completed, 'completed', 'Completed'),
   makeOrder(ORDER_ID.canceled, 'canceled', 'Canceled'),
 ];
@@ -67,21 +97,34 @@ const FIXTURE_ORDERS = [
  *
  * Everything else (getMe, catalog, masters…) passes through untouched, so the
  * page renders against the live CMS apart from the history itself.
- * @param   {Page}          page - Playwright page
- * @returns {Promise<void>}      Resolves once the route is installed
+ * @param   {Page}          page          - Playwright page
+ * @param   {string}        [updateError] - Reject updates with this API error message instead of acknowledging them
+ * @returns {Promise<void>}               Resolves once the route is installed
  */
-const mockOrders = async (page: Page): Promise<void> => {
+const mockOrders = async (page: Page, updateError?: string): Promise<void> => {
   await page.route(ORDERS_LIST_RE, async (route) => {
     const method = route.request().method();
     if (method === 'GET') {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ items: FIXTURE_ORDERS, total: 3 }),
+        body: JSON.stringify({
+          items: FIXTURE_ORDERS,
+          total: FIXTURE_ORDERS.length,
+        }),
       });
       return;
     }
     if (method === 'PUT') {
+      if (updateError) {
+        // A refused cancellation, in the API's own error envelope
+        await route.fulfill({
+          status: 400,
+          contentType: 'application/json',
+          body: JSON.stringify({ statusCode: 400, message: updateError }),
+        });
+        return;
+      }
       // The cancel/save mutations — acknowledge without touching the CMS
       await route.fulfill({
         status: 200,
@@ -91,6 +134,50 @@ const mockOrders = async (page: Page): Promise<void> => {
       return;
     }
     await route.fallback();
+  });
+};
+
+/**
+ * Answer the payment-session endpoints the "Pay" button walks through.
+ *
+ * The order has no live session (`[]`), so the button always falls through to
+ * `createSession` — the branch that decides where the client is sent.
+ * @param   {Page}          page           - Playwright page
+ * @param   {object}        result         - What `createSession` should answer with
+ * @param   {string}        [result.url]   - Checkout URL of the created session
+ * @param   {string}        [result.error] - API error message instead of a session
+ * @returns {Promise<void>}                Resolves once the routes are installed
+ */
+const mockPayments = async (
+  page: Page,
+  result: { url?: string; error?: string },
+): Promise<void> => {
+  await page.route(SESSION_BY_ORDER_RE, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: '[]',
+    });
+  });
+  await page.route(CREATE_SESSION_RE, async (route) => {
+    if (result.error) {
+      await route.fulfill({
+        status: 400,
+        contentType: 'application/json',
+        body: JSON.stringify({ statusCode: 400, message: result.error }),
+      });
+      return;
+    }
+    await route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: 1,
+        status: 'waiting',
+        orderId: ORDER_ID.unpaid,
+        paymentUrl: result.url,
+      }),
+    });
   });
 };
 
@@ -129,11 +216,16 @@ test.describe('Profile — visit history', () => {
     await mockOrders(page);
     await signInTestUser(page);
 
-    for (const status of ['upcoming', 'completed', 'canceled']) {
+    // Two upcoming fixtures (one of them the unpaid online booking), one each
+    // in the other buckets
+    for (const [status, count] of [
+      ['upcoming', '2'],
+      ['completed', '1'],
+      ['canceled', '1'],
+    ] as const) {
       const section = page.getByTestId(`profile-visits-${status}`);
       await expect(section).toBeVisible({ timeout: 30_000 });
-      // Each bucket holds exactly one fixture order
-      await expect(section.getByRole('button').first()).toContainText('1');
+      await expect(section.getByRole('button').first()).toContainText(count);
     }
 
     // Upcoming is the only bucket expanded by default → its card is on screen
@@ -223,6 +315,85 @@ test.describe('Profile — visit history', () => {
 
     await success.getByTestId('order-cancel-done').click();
     await expect(page.getByTestId('order-cancel-success')).toHaveCount(0);
+  });
+
+  test('a refused cancellation shows the error dialog, not the success one', async ({
+    page,
+  }) => {
+    // The live failure this covers: a paid order the API refuses to cancel
+    await mockOrders(
+      page,
+      "Can't update the order. Payment sessions 3 could not be canceled — the order may have been paid.",
+    );
+    await signInTestUser(page);
+    await expect(
+      page
+        .getByTestId('profile-visits-upcoming')
+        .getByTestId('order-services')
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
+
+    await page
+      .getByTestId('profile-visits-upcoming')
+      .getByTestId('order-cancel')
+      .first()
+      .click();
+    await page
+      .getByTestId('order-cancel-confirm')
+      .getByTestId('order-cancel-yes')
+      .click();
+
+    const error = page.getByTestId('order-cancel-error');
+    await expect(error).toBeVisible({ timeout: 30_000 });
+    // The guest-facing rewrite, not the API's `updateOrder` wording
+    await expect(error).toContainText('already been paid');
+    await expect(error).not.toContainText('Payment sessions');
+    await expect(page.getByTestId('order-cancel-success')).toHaveCount(0);
+
+    await error.getByTestId('order-cancel-error-close').click();
+    await expect(page.getByTestId('order-cancel-error')).toHaveCount(0);
+  });
+
+  test('every visit shows its total; only the unpaid online one offers Pay', async ({
+    page,
+  }) => {
+    await openBucket(page, 'upcoming');
+
+    const section = page.getByTestId('profile-visits-upcoming');
+    // Both upcoming cards state the amount and how it is paid
+    await expect(section.getByTestId('order-total').first()).toContainText(
+      '370',
+    );
+    await expect(section.getByTestId('order-total').first()).toContainText(
+      'Cash',
+    );
+    // …but only the stripe one that was never completed can be paid now
+    await expect(section.getByTestId('order-pay')).toHaveCount(1);
+    await expect(section.getByTestId('order-pay')).toContainText('Pay');
+  });
+
+  test('Pay sends the client to the gateway, and surfaces a refusal', async ({
+    page,
+  }) => {
+    await openBucket(page, 'upcoming');
+
+    // First attempt: the gateway refuses to open a session
+    await mockPayments(page, {
+      error: 'Your payment account is not connected',
+    });
+    const payButton = page
+      .getByTestId('profile-visits-upcoming')
+      .getByTestId('order-pay');
+    await payButton.click();
+    await expect(page.getByTestId('order-pay-error')).toContainText(
+      'not connected',
+    );
+
+    // Second attempt: a session with a checkout URL → the client leaves for it.
+    // `/contacts` stands in for the gateway host, which the test cannot reach
+    await mockPayments(page, { url: '/contacts' });
+    await payButton.click();
+    await expect(page).toHaveURL(/\/contacts$/, { timeout: 30_000 });
   });
 
   test('a completed visit offers Book Again and Leave a review', async ({

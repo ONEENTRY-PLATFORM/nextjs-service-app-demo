@@ -8,18 +8,19 @@ import type {
 } from 'oneentry/dist/orders/ordersInterfaces';
 import type { JSX } from 'react';
 import { useCallback, useState } from 'react';
-import { toast } from 'react-toastify';
 
 import { useUpdateOrderMutation } from '@/app/api/api/RTKApi';
 import {
   ORDERS_STATUS_CANCELED,
   ORDERS_STORAGE_MARKER,
 } from '@/app/store/orderMarkers';
+import { formatOrderCancelError } from '@/app/utils/formatOrderCancelError';
 import { formatUtcDate } from '@/app/utils/formatUtcDate';
 import { formatUtcTime } from '@/app/utils/formatUtcTime';
 import { parseOrderInterval } from '@/app/utils/parseOrderInterval';
 
 import CancelConfirmModal from './CancelConfirmModal';
+import CancelErrorModal from './CancelErrorModal';
 import CancelSuccessModal from './CancelSuccessModal';
 
 /**
@@ -46,7 +47,7 @@ const CancelOrderButton = ({
   orderData?: IOrderByMarkerEntity;
   master?: IAdminEntity | undefined;
 }): JSX.Element => {
-  const [updateOrder] = useUpdateOrderMutation();
+  const [updateOrder, { isLoading }] = useUpdateOrderMutation();
   /**
    * Label of the action. `cancel_booking_text` is the marker for THIS button;
    * the generic `cancel_text` ("Cancel") is the dictionary's dialog/dismiss
@@ -54,8 +55,10 @@ const CancelOrderButton = ({
    * "Cancel booking". Until the marker exists in the CMS the fallback carries it.
    */
   const { cancel_booking_text } = dict;
-  /** Dialog stage: confirmation → success (null = no dialog) */
-  const [stage, setStage] = useState<'confirm' | 'done' | null>(null);
+  /** Dialog stage: confirmation → success or error (null = no dialog) */
+  const [stage, setStage] = useState<'confirm' | 'done' | 'error' | null>(null);
+  /** Reason the server refused the cancellation, shown by the error dialog */
+  const [errorMessage, setErrorMessage] = useState('');
 
   /** Memoized function to handle order cancellation */
   const cancelOrderHandle = useCallback(async () => {
@@ -92,12 +95,13 @@ const CancelOrderButton = ({
         body: formData,
       }).unwrap();
     } catch (e) {
-      /** Surface a failed cancellation instead of falsely reporting success */
-      const message =
-        (e as { message?: string } | undefined)?.message ??
-        'Could not cancel the order';
-      toast.error(message);
-      setStage(null);
+      /**
+       * Surface a failed cancellation instead of falsely reporting success.
+       * A paid order is the common case here and the guest has to act on it
+       * (call the salon), so it gets a dialog rather than a passing toast.
+       */
+      setErrorMessage(formatOrderCancelError(e));
+      setStage('error');
       return;
     }
 
@@ -131,11 +135,18 @@ const CancelOrderButton = ({
       {stage === 'confirm' && (
         <CancelConfirmModal
           subtitle={subtitle}
+          isPending={isLoading}
           onKeep={() => setStage(null)}
           onConfirm={cancelOrderHandle}
         />
       )}
       {stage === 'done' && <CancelSuccessModal onDone={() => setStage(null)} />}
+      {stage === 'error' && (
+        <CancelErrorModal
+          message={errorMessage}
+          onClose={() => setStage(null)}
+        />
+      )}
     </>
   );
 };

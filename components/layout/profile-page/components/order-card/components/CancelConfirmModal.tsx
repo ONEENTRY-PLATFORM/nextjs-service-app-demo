@@ -13,16 +13,19 @@ import { useDialogA11y } from '@/components/shared/useDialogA11y';
  * outlined "Yes, cancel" button pair.
  * @param   {object}      props           - Component properties
  * @param   {string}      props.subtitle  - Visit line ("Master · date at time"), empty hides it
+ * @param   {boolean}     props.isPending - Cancellation request in flight — blocks a second submit
  * @param   {() => void}  props.onKeep    - Keep the appointment (close without cancelling)
  * @param   {() => void}  props.onConfirm - Proceed with the cancellation
  * @returns {JSX.Element}                 JSX.Element representing the confirmation dialog
  */
 const CancelConfirmModal = ({
   subtitle,
+  isPending,
   onKeep,
   onConfirm,
 }: {
   subtitle: string;
+  isPending: boolean;
   onKeep: () => void;
   onConfirm: () => void;
 }): JSX.Element => {
@@ -68,10 +71,11 @@ const CancelConfirmModal = ({
             </button>
             <button
               onClick={onConfirm}
+              disabled={isPending}
               data-testid="order-cancel-yes"
-              className="flex-1 rounded-xl border border-slate-150 py-2.5 text-sm font-medium text-neutral-300 transition-all hover:bg-gray-50"
+              className="flex-1 rounded-xl border border-slate-150 py-2.5 text-sm font-medium text-neutral-300 transition-all hover:bg-gray-50 disabled:opacity-60"
             >
-              Yes, cancel
+              {isPending ? 'Cancelling…' : 'Yes, cancel'}
             </button>
           </div>
         </div>

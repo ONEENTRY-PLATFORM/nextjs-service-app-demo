@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 
 import { isError } from '@/app/api/api/api';
 import { getPageById } from '@/app/api/server/pages/getPageById';
+import { isOrderAwaitingPayment } from '@/app/api/utils/isOrderAwaitingPayment';
 import {
   ORDER_FIELD_SALON,
   ORDERS_STATUS_CANCELED,
@@ -19,6 +20,8 @@ import StatusBadge from '../StatusBadge';
 import OrderButtonsGroup from './components/OrderButtonsGroup';
 import OrderDateTime from './components/OrderDateTime';
 import OrderServiceList from './components/OrderServiceList';
+import OrderTotal from './components/OrderTotal';
+import PayOrderButton from './components/PayOrderButton';
 
 /**
  * Fetches salon data by ID
@@ -152,7 +155,13 @@ const OrderCard = ({
 
         {/* Date and time section */}
         <OrderDateTime order={order} />
+
+        {/* What the visit costs and how it is being paid for */}
+        <OrderTotal order={order} />
       </div>
+
+      {/* An online booking left unpaid can still be checked out from here */}
+      {isOrderAwaitingPayment(order) && <PayOrderButton order={order} />}
 
       {/* Buttons group for order actions */}
       <OrderButtonsGroup dict={dict} order={order} master={master} />
