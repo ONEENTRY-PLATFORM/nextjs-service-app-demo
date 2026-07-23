@@ -39,22 +39,25 @@ const storage =
  *
  * v2: CartSlice was normalized from holding full OneEntry entities
  * (`IPagesEntity`/`IProductsEntity`/`IAdminEntity`) to holding only IDs.
- * Any v1 snapshot in localStorage has an incompatible shape, so the cart is
- * reset to its initial state on first load after the upgrade.
+ * v3: the vestigial multi-row model (`servicesData: CartItem[]` + `activeItemId`)
+ * was flattened to the three selection IDs held directly. Either older snapshot
+ * has an incompatible shape, so the cart resets to its initial state.
  */
 const cartMigrations = {
   2: (): PersistedState => undefined,
+  3: (): PersistedState => undefined,
 };
 
 /**
- * Persist cartReducer
+ * Persist cartReducer — only the selection IDs; `version` is a runtime hydration
+ * marker and must not be restored from storage.
  */
 const cartReducer = persistReducer(
   {
     key: 'cart-slice',
     storage: storage,
-    version: 2,
-    whitelist: ['servicesData'],
+    version: 3,
+    whitelist: ['salonId', 'productId', 'masterId'],
     migrate: createMigrate(cartMigrations, { debug: false }),
   },
   cartSlice,

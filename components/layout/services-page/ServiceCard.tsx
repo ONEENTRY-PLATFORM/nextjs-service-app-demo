@@ -6,11 +6,8 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import { PRODUCT_STATUS_IN_STOCK } from '@/app/api/utils/productStatusMarkers';
-import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
-import {
-  addServiceToCart,
-  selectActiveItemId,
-} from '@/app/store/reducers/CartSlice';
+import { useAppDispatch } from '@/app/store/hooks';
+import { addServiceToCart } from '@/app/store/reducers/CartSlice';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
 import type { ServiceItem } from './types';
@@ -39,9 +36,7 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
   /** Get router instance for navigation */
   const router = useTransitionRouter();
   /** Get dispatch function for Redux actions */
-  const dispatch = useAppDispatch();
-  /** Active cart row index */
-  const activeId = useAppSelector(selectActiveItemId);
+  const dispatch = useAppDispatch();
 
   /**
    * A service is unavailable when it has no price OR the CMS flags it as not
@@ -61,12 +56,9 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
   const handleBook = () => {
     dispatch(
       addServiceToCart({
-        id: activeId,
-        serviceId: service.categoryId,
         productId: service.id,
         salonId: null,
         masterId: null,
-        date: null,
       }),
     );
     router.push('/booking');

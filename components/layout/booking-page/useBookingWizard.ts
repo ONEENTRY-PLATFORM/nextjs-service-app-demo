@@ -1,9 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useReducer, useState } from 'react';
 
 import { useHydrated } from '@/app/store/useHydrated';
 
+import {
+  initialBookingState,
+  makeBookingReducer,
+} from './bookingReducer';
 import bookingStepKeys from './bookingStepKeys';
 import { ANY_MASTER } from './constants';
 import { scrollToBookingTop } from './scrollToBookingTop';
@@ -126,21 +130,25 @@ export interface BookingWizardState
 export const useBookingWizard = (data: BookingData): BookingWizardState => {
   const { salons, services, masters } = data;
 
-  const [flow, setFlow] = useState<BookingFlow | null>(null);
-  const [stepIdx, setStepIdx] = useState(0);
-  const [salon, setSalon] = useState<number | null>(null);
-  /** Ids of the chosen services — one appointment can bundle several */
-  const [serviceIds, setServiceIds] = useState<string[]>([]);
-  const [master, setMaster] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('All');
-  /** True when the service was preselected upstream — hide the Service step */
-  const [serviceLocked, setServiceLocked] = useState(false);
-  /** Jump to the Date & Time step once the step list settles (repeat flow) */
-  const [pendingDateTime, setPendingDateTime] = useState(false);
-  /** The user's own interaction wins over a late cart rehydration */
-  const [touched, setTouched] = useState(false);
+  /**
+   * All wizard state in one reducer (was 12 `useState` cells). The reducer is
+   * curried over `data` because its transitions and step order depend on the
+   * rosters; `data` is server-provided and stable, so the memo rarely rebuilds.
+   */
+  const reducer = useMemo(() => makeBookingReducer(data), [data]);
+  const [state, dispatch] = useReducer(reducer, initialBookingState);
+  const {
+    flow,
+    stepIdx,
+    salon,
+    serviceIds,
+    master,
+    date,
+    time,
+    categoryFilter,
+    serviceLocked,
+    touched,
+  } = state;
 
   const payment = useBookingPayment();
 
@@ -164,16 +172,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     reschedule,
     queryProductIds,
     touched,
-    setters: {
-      setFlow,
-      setMaster,
-      setServiceIds,
-      setSalon,
-      setCategoryFilter,
-      setStepIdx,
-      setServiceLocked,
-      setPendingDateTime,
-    },
+    preselect: (preset) => dispatch({ type: 'PRESELECT', preset }),
   });
 
   /** ── Derived entities ────────────────────────────────────────────────── */
@@ -221,7 +220,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     time &&
     !slotFits(time, schedule.durationMinutes, schedule.closeMinutes)
   ) {
-    setTime('');
+    dispatch({ type: 'DROP_TIME' });
   }
 
   const stepKeys = useMemo<StepKey[]>(
@@ -229,12 +228,6 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     [flow, serviceLocked, master, masters, salons],
   );
   const currentStepKey = stepKeys[stepIdx];
-
-  /** Once the step list reflects the preselected master, jump to Date & Time */
-  if (pendingDateTime && stepKeys.length > 0) {
-    setPendingDateTime(false);
-    setStepIdx(stepKeys.length - 1);
-  }
 
   /**
    * Land on Date & Time with today already picked, so the step opens on a grid
@@ -244,7 +237,7 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
    */
   const hydrated = useHydrated();
   if (hydrated && currentStepKey === 'datetime' && !date) {
-    setDate(todayDateKey());
+    dispatch({ type: 'SET_DATE_TODAY', date: todayDateKey() });
   }
 
   const stepDone: Record<StepKey, boolean> = {
@@ -265,124 +258,51 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     setMobileSummary(false);
   }
 
-  /** ── Handlers (mock `BookingPage` handlers) ──────────────────────────── */
-
+  /** ── Handlers ────────────────────────────────────────────────────────── */
   /**
-   * Advance to the next step, unless already on the last one. Steps differ in
-   * height, so the block's top is brought back into view with the new step.
+   * Handlers are thin: each dispatches one action (the transition logic lives in
+   * the reducer) and adds any DOM side effect the reducer must not — the scroll
+   * back to the block top after a step change, since steps differ in height.
    */
+
+  /** Advance to the next step, unless already on the last one. */
   const handleNext = () => {
-    if (!isLastStep) setStepIdx((s) => s + 1);
+    dispatch({ type: 'NEXT' });
     scrollToBookingTop();
   };
   /** Step back; from the first step this exits the flow to the entry screen. */
   const handleBack = () => {
-    setTouched(true);
-    if (stepIdx > 0) setStepIdx((s) => s - 1);
-    else setFlow(null);
+    dispatch({ type: 'BACK' });
     scrollToBookingTop();
   };
   /** Clear every selection and return to the flow-choice entry screen. */
-  const resetFlow = () => {
-    setTouched(true);
-    setFlow(null);
-    setStepIdx(0);
-    setSalon(null);
-    setServiceIds([]);
-    setMaster('');
-    setDate('');
-    setTime('');
-    setCategoryFilter('All');
-    setServiceLocked(false);
-  };
+  const resetFlow = () => dispatch({ type: 'RESET' });
   /**
    * Enter a booking flow from the entry screen, resetting step/category state.
    * @param {BookingFlow} f - The chosen flow (`salon-first` / `specialist-first`)
    */
-  const startFlow = (f: BookingFlow) => {
-    setTouched(true);
-    setFlow(f);
-    setStepIdx(0);
-    setCategoryFilter('All');
-    setServiceLocked(false);
-  };
+  const startFlow = (f: BookingFlow) => dispatch({ type: 'START_FLOW', flow: f });
 
   /**
    * Pick a studio; invalidates a chosen specialist who doesn't work there.
-   * @param {string} id - Salon id
+   * @param {number} id - Salon id
    */
-  const selectSalon = (id: number) => {
-    setTouched(true);
-    setSalon(id);
-    /** Invalidate a chosen master who doesn't work at this studio */
-    if (master && master !== ANY_MASTER) {
-      const m = masters.find((x) => x.id === master);
-      if (m && m.salonIds.length > 0 && !m.salonIds.includes(id)) setMaster('');
-    }
-  };
+  const selectSalon = (id: number) => dispatch({ type: 'SELECT_SALON', id });
   /**
    * Toggle a service in or out of the multi-selection; syncs the category tab
-   * (a single category → that pill, a mixed pick → "All") and invalidates a
-   * chosen specialist who performs NONE of the remaining picks.
+   * and invalidates a chosen specialist who performs NONE of the remaining picks.
    * @param {string} id - Service id
    */
-  const selectService = (id: string) => {
-    setTouched(true);
-    const next = serviceIds.includes(id)
-      ? serviceIds.filter((x) => x !== id)
-      : [...serviceIds, id];
-    setServiceIds(next);
-    /**
-     * Sync the category tab so the specialist step lands narrowed: a single
-     * shared category selects that pill, a mix (or an empty pick) falls to All.
-     */
-    const cats = [
-      ...new Set(
-        next
-          .map((sid) => services.find((x) => x.id === sid)?.category)
-          .filter((c): c is string => Boolean(c)),
-      ),
-    ];
-    setCategoryFilter(cats.length === 1 ? (cats[0] ?? 'All') : 'All');
-    /** Invalidate a chosen master who performs none of the remaining picks */
-    if (master && master !== ANY_MASTER && next.length > 0) {
-      const m = masters.find((x) => x.id === master);
-      if (
-        m &&
-        m.serviceIds.length > 0 &&
-        !next.some((sid) => m.serviceIds.includes(sid))
-      ) {
-        setMaster('');
-      }
-    }
-  };
+  const selectService = (id: string) =>
+    dispatch({ type: 'SELECT_SERVICE', id });
   /** Clear every chosen service and unlock the (preselected) service step. */
-  const clearService = () => {
-    setTouched(true);
-    setServiceIds([]);
-    setServiceLocked(false);
-    setCategoryFilter('All');
-  };
+  const clearService = () => dispatch({ type: 'CLEAR_SERVICE' });
   /**
    * Pick a specialist; auto-picks their single studio and invalidates a studio
-   * the specialist cannot cover. The picked services are left untouched — a
-   * specialist qualifies by performing at least one of them, and the order
-   * still bundles every picked service.
+   * the specialist cannot cover.
    * @param {string} id - Specialist id (or the "any specialist" sentinel)
    */
-  const selectMaster = (id: string) => {
-    setTouched(true);
-    setMaster(id);
-    if (id && id !== ANY_MASTER) {
-      const m = masters.find((x) => x.id === id);
-      /** Invalidate a chosen studio the specialist doesn't work at */
-      if (salon && m && m.salonIds.length > 0 && !m.salonIds.includes(salon)) {
-        setSalon(null);
-      }
-      /** Auto-pick a single studio — skips the Salon step entirely */
-      if (m?.salonIds.length === 1) setSalon(m.salonIds[0] ?? null);
-    }
-  };
+  const selectMaster = (id: string) => dispatch({ type: 'SELECT_MASTER', id });
 
   /** Submit the assembled selection to the booking/checkout flow. */
   const handleConfirm = () => {
@@ -397,42 +317,29 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   /** Close the success modal and reset the wizard for a new booking. */
   const handleCloseSuccess = () => {
     closeSuccess();
-    resetFlow();
+    dispatch({ type: 'RESET' });
   };
   /**
    * Jump directly to a step by index (step-bar navigation).
    * @param {number} idx - Target step index
    */
-  const goStep = (idx: number) => {
-    setTouched(true);
-    setStepIdx(idx);
-  };
+  const goStep = (idx: number) => dispatch({ type: 'GO_STEP', idx });
   /**
    * Change the active service category tab.
    * @param {string} cat - Category label (or `All`)
    */
-  const onCategoryChange = (cat: string) => {
-    setTouched(true);
-    setCategoryFilter(cat);
-  };
+  const onCategoryChange = (cat: string) =>
+    dispatch({ type: 'SET_CATEGORY', category: cat });
   /**
    * Pick an appointment day; clears the time (slots differ per day).
    * @param {string} d - Date key `year-monthIndex-day`
    */
-  const onDate = (d: string) => {
-    setTouched(true);
-    setDate(d);
-    /** A new day has its own slots — drop a time that may not exist on it */
-    setTime('');
-  };
+  const onDate = (d: string) => dispatch({ type: 'SET_DATE', date: d });
   /**
    * Pick an appointment time slot.
    * @param {string} t - Time slot `HH:MM`
    */
-  const onTime = (t: string) => {
-    setTouched(true);
-    setTime(t);
-  };
+  const onTime = (t: string) => dispatch({ type: 'SET_TIME', time: t });
 
   return {
     ...filters,

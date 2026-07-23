@@ -3,12 +3,9 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
 import type { JSX } from 'react';
 
-import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
+import { useAppDispatch } from '@/app/store/hooks';
 import { ORDER_FIELD_SALON } from '@/app/store/orderMarkers';
-import {
-  addServiceToCart,
-  selectActiveItemId,
-} from '@/app/store/reducers/CartSlice';
+import { addServiceToCart } from '@/app/store/reducers/CartSlice';
 
 /**
  * Main functional component to handle repeating an order
@@ -27,9 +24,7 @@ const RepeatOrder = ({
   /** Initialize dispatch function for Redux actions */
   const dispatch = useAppDispatch();
   /** Initialize router for navigation */
-  const router = useTransitionRouter();
-  /** Active cart row index */
-  const activeId = useAppSelector(selectActiveItemId);
+  const router = useTransitionRouter();
   /** Destructure book again text from dictionary */
   const { book_again_text } = dict;
 
@@ -60,10 +55,8 @@ const RepeatOrder = ({
     /** Dispatch IDs-only payload to cart; read sites hydrate the entities */
     dispatch(
       addServiceToCart({
-        id: activeId,
         salonId: salonId ?? null,
         productId: productId ?? null,
-        serviceId: null,
         masterId: null,
       }),
     );

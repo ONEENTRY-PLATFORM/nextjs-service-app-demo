@@ -3,26 +3,12 @@
 import { useState } from 'react';
 
 import { useAppSelector } from '@/app/store/hooks';
-import {
-  selectActiveItemId,
-  selectCartData,
-} from '@/app/store/reducers/CartSlice';
+import { selectCartSelection } from '@/app/store/reducers/CartSlice';
 import { useHydrated } from '@/app/store/useHydrated';
 
-import type { BookingData, BookingFlow, BookingService } from './types';
+import type { PreselectPreset } from './bookingReducer';
+import type { BookingData, BookingService } from './types';
 import type { ReschedulePrefill } from './useReschedulePrefill';
-
-/** The wizard setters a preselection drives. */
-export interface BookingPreselectSetters {
-  setFlow: (flow: BookingFlow) => void;
-  setMaster: (id: string) => void;
-  setServiceIds: (ids: string[]) => void;
-  setSalon: (id: number | null) => void;
-  setCategoryFilter: (category: string) => void;
-  setStepIdx: (idx: number) => void;
-  setServiceLocked: (locked: boolean) => void;
-  setPendingDateTime: (pending: boolean) => void;
-}
 
 /**
  * useBookingPreselect — applies the preselection carried by the reschedule
@@ -40,31 +26,29 @@ export interface BookingPreselectSetters {
  * The preselection is applied while rendering (React's "adjust state on prop
  * change" pattern, no effect): once per distinct cart content and never over a
  * flow the user has already started themselves.
- * @param {object}                  input                 - Hook input
- * @param {BookingData}             input.data            - Salons, services and specialists from the CMS
- * @param {ReschedulePrefill}       input.reschedule      - The `?reschedule={orderId}` prefill
- * @param {number[]}                input.queryProductIds - The `?services=` prefill (an offer's bundled services)
- * @param {boolean}                 input.touched         - The user has already interacted with the wizard
- * @param {BookingPreselectSetters} input.setters         - Wizard setters the preselection drives
+ * @param {object}                            input                 - Hook input
+ * @param {BookingData}                       input.data            - Salons, services and specialists from the CMS
+ * @param {ReschedulePrefill}                 input.reschedule      - The `?reschedule={orderId}` prefill
+ * @param {number[]}                          input.queryProductIds - The `?services=` prefill (an offer's bundled services)
+ * @param {boolean}                           input.touched         - The user has already interacted with the wizard
+ * @param {(preset: PreselectPreset) => void} input.preselect       - Applies the resolved preselection (one `PRESELECT`)
  */
 export const useBookingPreselect = ({
   data,
   reschedule,
   queryProductIds,
   touched,
-  setters,
+  preselect,
 }: {
   data: BookingData;
   reschedule: ReschedulePrefill;
   queryProductIds: number[];
   touched: boolean;
-  setters: BookingPreselectSetters;
+  preselect: (preset: PreselectPreset) => void;
 }): void => {
   const { salons, services, masters } = data;
 
-  const activeId = useAppSelector(selectActiveItemId);
-  const cartItems = useAppSelector(selectCartData);
-  const cartItem = cartItems.find((item) => item.id === activeId);
+  const cartItem = useAppSelector(selectCartSelection);
 
   /**
    * A reschedule wins over the cart: it names the appointment being moved, and
@@ -121,26 +105,39 @@ export const useBookingPreselect = ({
     /** Skip — the user is already in a flow of their own */
   } else if (preMaster && preService) {
     /** Repeat/reschedule: everything known → jump to Date & Time */
-    setters.setFlow('specialist-first');
-    setters.setMaster(preMaster.id);
-    setters.setServiceIds(preServices.map((s) => s.id));
-    setters.setSalon(preSalon?.id ?? preMaster.salonIds[0] ?? null);
-    setters.setCategoryFilter(preCategory);
-    setters.setPendingDateTime(true);
+    preselect({
+      patch: {
+        flow: 'specialist-first',
+        master: preMaster.id,
+        serviceIds: preServices.map((s) => s.id),
+        salon: preSalon?.id ?? preMaster.salonIds[0] ?? null,
+        categoryFilter: preCategory,
+      },
+      stepIdx: 'last',
+    });
   } else if (preMaster) {
     /** From a specialist profile → specialist-first, land on the next step */
-    setters.setFlow('specialist-first');
-    setters.setMaster(preMaster.id);
-    setters.setSalon(
-      preMaster.salonIds.length === 1 ? (preMaster.salonIds[0] ?? null) : null,
-    );
-    setters.setStepIdx(1);
+    preselect({
+      patch: {
+        flow: 'specialist-first',
+        master: preMaster.id,
+        salon:
+          preMaster.salonIds.length === 1
+            ? (preMaster.salonIds[0] ?? null)
+            : null,
+      },
+      stepIdx: 1,
+    });
   } else if (preService) {
     /** From Services & Prices / an offer → salon-first, service locked */
-    setters.setFlow('salon-first');
-    setters.setServiceIds(preServices.map((s) => s.id));
-    setters.setServiceLocked(true);
-    setters.setCategoryFilter(preCategory);
-    setters.setStepIdx(0);
+    preselect({
+      patch: {
+        flow: 'salon-first',
+        serviceIds: preServices.map((s) => s.id),
+        serviceLocked: true,
+        categoryFilter: preCategory,
+      },
+      stepIdx: 0,
+    });
   }
 };

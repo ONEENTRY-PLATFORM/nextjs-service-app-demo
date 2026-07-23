@@ -6,11 +6,8 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
-import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
-import {
-  addServiceToCart,
-  selectActiveItemId,
-} from '@/app/store/reducers/CartSlice';
+import { useAppDispatch } from '@/app/store/hooks';
+import { addServiceToCart } from '@/app/store/reducers/CartSlice';
 
 /**
  * BookingButton component to handle booking actions.
@@ -37,9 +34,7 @@ const BookingButton = ({
   /** Get dispatch function for Redux actions */
   const dispatch = useAppDispatch();
   /** Extract booking text from dictionary */
-  const { book_online_text } = dict;
-  /** Active cart row index */
-  const activeId = useAppSelector(selectActiveItemId);
+  const { book_online_text } = dict;
 
   /** Handle booking action */
   const onApplyHandle = () => {
@@ -48,8 +43,6 @@ const BookingButton = ({
       /** Add service and master to cart */
       dispatch(
         addServiceToCart({
-          id: activeId,
-          serviceId: service?.id ?? null,
           masterId: master?.id ?? null,
           salonId: null,
           productId: null,

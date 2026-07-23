@@ -6,11 +6,8 @@ import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces'
 import type { Dispatch, JSX, SetStateAction } from 'react';
 
 import { useGetPageByIdQuery } from '@/app/api/api/RTKApi';
-import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
-import {
-  addServiceToCart,
-  selectActiveItemId,
-} from '@/app/store/reducers/CartSlice';
+import { useAppDispatch } from '@/app/store/hooks';
+import { addServiceToCart } from '@/app/store/reducers/CartSlice';
 
 /**
  * ProductRow component to display a single product in the search results.
@@ -38,9 +35,7 @@ const ProductRow = ({
   setState: Dispatch<SetStateAction<boolean>>;
 }): JSX.Element | null => {
   /** Get dispatch function for Redux actions */
-  const dispatch = useAppDispatch();
-  /** Active cart row index */
-  const activeId = useAppSelector(selectActiveItemId);
+  const dispatch = useAppDispatch();
   /** The product's catalog page — cached and deduped across rows by RTK Query */
   const { data: pageData } = useGetPageByIdQuery(
     { id: pageId },
@@ -55,9 +50,7 @@ const ProductRow = ({
     /** Add selected product to the shopping cart */
     dispatch(
       addServiceToCart({
-        id: activeId,
         productId: product.id,
-        serviceId: pageData?.id ?? null,
         salonId: null,
         masterId: null,
       }),

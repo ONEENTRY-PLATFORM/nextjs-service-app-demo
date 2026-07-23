@@ -10,7 +10,7 @@ import {
   useUpdateOrderMutation,
 } from '@/app/api/api/RTKApi';
 import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
-import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
+import { useAppDispatch } from '@/app/store/hooks';
 import {
   ORDERS_FORM_IDENTIFIER,
   ORDERS_STORAGE_MARKER,
@@ -20,7 +20,6 @@ import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import {
   addServiceToCart,
   removeAllServices,
-  selectActiveItemId,
 } from '@/app/store/reducers/CartSlice';
 import { toErrorMessage } from '@/app/utils/toErrorMessage';
 
@@ -84,7 +83,6 @@ export const useBookingSubmit = ({
   const dispatch = useAppDispatch();
   const { isAuth } = useContext(AuthContext);
   const { setOpen, setComponent } = useContext(OpenDrawerContext);
-  const activeId = useAppSelector(selectActiveItemId);
   const [createOrder] = useCreateOrderMutation();
   const [updateOrder] = useUpdateOrderMutation();
 
@@ -119,9 +117,7 @@ export const useBookingSubmit = ({
       const firstService = sel.services[0];
       dispatch(
         addServiceToCart({
-          id: activeId,
           salonId: Number(sel.salon?.id) || null,
-          serviceId: firstService?.categoryId ?? null,
           productId: firstService?.productId ?? null,
           masterId: sel.master?.adminId ?? null,
         }),
