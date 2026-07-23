@@ -1,7 +1,7 @@
 {
   "name": "oneentry-next-beauty",
-  "version": "0.1.8",
-  "private": true,
+  "version": "0.1.9",
+  "private": false,
   "scripts": {
     "dev": "next dev -p 3700",
     "build": "next build",

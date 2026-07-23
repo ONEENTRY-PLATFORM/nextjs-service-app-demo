@@ -4,6 +4,8 @@ import { Star } from 'lucide-react';
 import type { JSX } from 'react';
 import { useState } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 /**
  * StarPicker — the 5-star rating picker from the static-html `ReviewModal`:
  * large lucide stars (32px) that fill PINK on hover/selection and scale up
@@ -20,6 +22,7 @@ const StarPicker = ({
   rating: number;
   onRate: (value: number) => void;
 }): JSX.Element => {
+  const dict = useDict();
   /** Star index currently hovered (0 = none) — previews the rating */
   const [hoverRating, setHoverRating] = useState(0);
 
@@ -34,7 +37,10 @@ const StarPicker = ({
             onMouseEnter={() => setHoverRating(i)}
             onMouseLeave={() => setHoverRating(0)}
             className="transition-transform hover:scale-110"
-            aria-label={`Rate ${i} star${i > 1 ? 's' : ''}`}
+            aria-label={(
+              (dict?.rate_star_aria?.value as string | undefined) ||
+              'Rate %n% star(s)'
+            ).replace('%n%', String(i))}
           >
             <Star
               size={32}

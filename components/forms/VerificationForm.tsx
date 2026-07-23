@@ -96,7 +96,10 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
        */
       const email = fields.email_reg?.value;
       if (!email) {
-        throw new Error('E-mail is missing — please start over');
+        throw new Error(
+          (dict?.err_email_missing?.value as string | undefined) ||
+            'E-mail is missing — please start over',
+        );
       }
 
       /** Handle password reset verification flow */
@@ -114,10 +117,17 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
           otp,
         );
         if (isError(result)) {
-          throw new Error(result.message || 'Verification failed');
+          throw new Error(
+            result.message ||
+              (dict?.err_verify_failed?.value as string | undefined) ||
+              'Verification failed',
+          );
         }
         if (!result) {
-          throw new Error('Invalid verification code');
+          throw new Error(
+            (dict?.err_invalid_code?.value as string | undefined) ||
+              'Invalid verification code',
+          );
         }
         /** Switch to reset password form so the user can set a new password */
         setDirection('forward');
@@ -135,10 +145,17 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
           otp,
         );
         if (isError(result)) {
-          throw new Error(result.message || 'Activation failed');
+          throw new Error(
+            result.message ||
+              (dict?.err_activation_failed?.value as string | undefined) ||
+              'Activation failed',
+          );
         }
         if (!result) {
-          throw new Error('Invalid verification code');
+          throw new Error(
+            (dict?.err_invalid_code?.value as string | undefined) ||
+              'Invalid verification code',
+          );
         }
 
         /**
@@ -148,7 +165,10 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
          */
         const password = fields.password_reg?.value;
         if (!password) {
-          throw new Error('Password is missing — please sign up again');
+          throw new Error(
+            (dict?.err_password_missing?.value as string | undefined) ||
+              'Password is missing — please sign up again',
+          );
         }
 
         /**
@@ -164,7 +184,11 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
           ],
         });
         if (isError(authResult)) {
-          throw new Error(authResult.message || 'Sign-in failed');
+          throw new Error(
+            authResult.message ||
+              (dict?.err_sign_in_failed?.value as string | undefined) ||
+              'Sign-in failed',
+          );
         }
         login({
           accessToken: authResult.accessToken,
@@ -198,6 +222,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
     setComponent,
     setDirection,
     setOpen,
+    dict,
   ]);
 
   /**
@@ -247,7 +272,11 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
         action === 'activateUser' ? EVENT_REGISTRATION : EVENT_PASSWORD_RESET,
       );
       if (isError(result)) {
-        throw new Error(result.message || 'Could not resend the code');
+        throw new Error(
+          result.message ||
+            (dict?.err_resend_failed?.value as string | undefined) ||
+            'Could not resend the code',
+        );
       }
       /** Block repeat resends for the provider's code TTL */
       setCooldown(resendCooldownSec);
@@ -258,7 +287,7 @@ const VerificationForm = ({ dict }: FormProps): JSX.Element => {
       /** Always stop loading state */
       setLoading(false);
     }
-  }, [fields.email_reg, cooldown, resendCooldownSec, action]);
+  }, [fields.email_reg, cooldown, resendCooldownSec, action, dict]);
 
   return (
     <FormAnimations className={''} isLoading={isLoading} isActive={true}>

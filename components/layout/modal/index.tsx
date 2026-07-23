@@ -68,6 +68,7 @@ const useTitleData = ({
     reset_password_text,
     forgot_password_text,
     verification,
+    calendar_text,
   } = dict;
 
   /**
@@ -78,7 +79,7 @@ const useTitleData = ({
   const titlesData: Array<{ component: string; value: string | undefined }> = [
     {
       component: 'CalendarForm',
-      value: 'Calendar',
+      value: (calendar_text?.value as string | undefined) || 'Calendar',
     },
     {
       component: 'ForgotPasswordForm',

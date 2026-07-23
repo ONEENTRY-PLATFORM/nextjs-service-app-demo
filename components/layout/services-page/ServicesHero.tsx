@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import HeroAnimations from '@/app/animations/HeroAnimations';
@@ -6,6 +7,7 @@ import HeroBg from '@/app/animations/HeroBg';
 import HeroDescription from '@/app/animations/HeroDescription';
 import HeroKicker from '@/app/animations/HeroKicker';
 import HeroTitle from '@/app/animations/HeroTitle';
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 import StatsStrip from './StatsStrip';
 
@@ -37,6 +39,7 @@ const ServicesHero = ({
   subtitle?: string | undefined;
   stats?: Array<[string | number, string]> | undefined;
 }): JSX.Element => {
+  const [dict] = ServerProvider<IAttributeValues>('dict');
   return (
     <HeroAnimations className="relative overflow-hidden">
       <div className="relative flex h-64 items-center justify-center overflow-hidden md:h-80">
@@ -55,7 +58,8 @@ const ServicesHero = ({
         </div>
         <div className="relative px-4 text-center">
           <HeroKicker className="mb-2 text-xs tracking-[0.45em] text-white/75 uppercase">
-            Beauty Studio
+            {(dict?.services_hero_kicker?.value as string | undefined) ||
+              'Beauty Studio'}
           </HeroKicker>
           <HeroTitle
             className="font-black tracking-widest text-white uppercase"

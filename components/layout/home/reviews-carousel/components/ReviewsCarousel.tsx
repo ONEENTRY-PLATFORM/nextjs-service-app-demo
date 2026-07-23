@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { JSX } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
 import { reviewsData } from '@/components/data/reviewsData';
 
 import ReviewsAnimations from '../animations/ReviewsAnimations';
@@ -24,6 +25,8 @@ const AUTOPLAY_DELAY = 5000;
  * @returns {JSX.Element} React component that renders the reviews slider
  */
 const ReviewsCarousel = (): JSX.Element => {
+  /** UI-text dictionary (system_content) with English fallbacks */
+  const dict = useDict();
   /** Index of the currently displayed review */
   const [index, setIndex] = useState(0);
   /** Whether autoplay is paused (e.g. while hovering) */
@@ -71,7 +74,10 @@ const ReviewsCarousel = (): JSX.Element => {
         <button
           type="button"
           onClick={prev}
-          aria-label="Previous review"
+          aria-label={
+            (dict?.previous_review_aria?.value as string | undefined) ||
+            'Previous review'
+          }
           className="arrow absolute top-1/2 left-4 hidden -translate-y-1/2 text-accent-pink transition-opacity hover:opacity-70 md:block"
         >
           <svg width="22" height="42" viewBox="0 0 25.6872 44.5" fill="none">
@@ -92,7 +98,10 @@ const ReviewsCarousel = (): JSX.Element => {
           <button
             type="button"
             onClick={prev}
-            aria-label="Previous review"
+            aria-label={
+              (dict?.previous_review_aria?.value as string | undefined) ||
+              'Previous review'
+            }
             className="text-accent-pink transition-opacity hover:opacity-70 md:hidden"
           >
             <ChevronLeft size={22} />
@@ -103,7 +112,7 @@ const ReviewsCarousel = (): JSX.Element => {
                 type="button"
                 key={item.title}
                 onClick={() => setIndex(i)}
-                aria-label={`Go to review ${i + 1}`}
+                aria-label={`${(dict?.go_to_review_aria?.value as string | undefined) || 'Go to review'} ${i + 1}`}
                 className="size-2 rounded-full transition-all"
                 style={{
                   background: i === index ? PINK : '#ddd',
@@ -115,7 +124,10 @@ const ReviewsCarousel = (): JSX.Element => {
           <button
             type="button"
             onClick={next}
-            aria-label="Next review"
+            aria-label={
+              (dict?.next_review_aria?.value as string | undefined) ||
+              'Next review'
+            }
             className="text-accent-pink transition-opacity hover:opacity-70 md:hidden"
           >
             <ChevronRight size={22} />
@@ -126,7 +138,10 @@ const ReviewsCarousel = (): JSX.Element => {
         <button
           type="button"
           onClick={next}
-          aria-label="Next review"
+          aria-label={
+            (dict?.next_review_aria?.value as string | undefined) ||
+            'Next review'
+          }
           className="arrow absolute top-1/2 right-4 hidden -translate-y-1/2 rotate-180 text-accent-pink transition-opacity hover:opacity-70 md:block"
         >
           <svg width="22" height="42" viewBox="0 0 25.6872 44.5" fill="none">
@@ -146,7 +161,8 @@ const ReviewsCarousel = (): JSX.Element => {
           href="/reviews"
           className="inline-flex items-center gap-1.5 text-base font-bold tracking-wider text-accent-pink uppercase underline decoration-accent-pink underline-offset-4 transition-opacity hover:opacity-70"
         >
-          View all reviews
+          {(dict?.view_all_reviews_text?.value as string | undefined) ||
+            'View all reviews'}
         </Link>
       </div>
     </ReviewsAnimations>

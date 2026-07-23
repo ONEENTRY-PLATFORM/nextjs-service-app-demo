@@ -1,9 +1,11 @@
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import type { JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { offerTermsData } from '@/components/data/offerTermsData';
 
 import OfferDetailCard from './OfferDetailCard';
@@ -35,73 +37,80 @@ const OffersPageContent = ({
 }: {
   title: string;
   offers: IProductsEntity[];
-}): JSX.Element => (
-  <div className="bg-white" data-testid="offers-page">
-    {/* Gradient accent strip */}
-    <div className="h-1.25 bg-gradient-stats" />
+}): JSX.Element => {
+  const [dict] = ServerProvider<IAttributeValues>('dict');
+  return (
+    <div className="bg-white" data-testid="offers-page">
+      {/* Gradient accent strip */}
+      <div className="h-1.25 bg-gradient-stats" />
 
-    {/* Back link */}
-    <div className="page-shell pt-6">
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
-      >
-        <ArrowLeft size={16} /> Back to Home
-      </Link>
-    </div>
-
-    {/* Heading */}
-    <RevealAnimations className="page-shell pt-8 pb-2 text-center">
-      <h1
-        className="inline-block border-b border-ink pb-2 font-light tracking-fine text-ink uppercase"
-        style={{ fontSize: 'clamp(1.6rem, 3vw, 2.4rem)' }}
-      >
-        {title}
-      </h1>
-    </RevealAnimations>
-
-    {/* Offer details */}
-    <div
-      className="page-shell flex flex-col gap-8 py-10"
-      data-testid="offers-list"
-    >
-      {offers.length > 0 ? (
-        offers.map((offer, index) => (
-          <OfferDetailCard key={offer.id} product={offer} index={index} />
-        ))
-      ) : (
-        <p
-          className="text-center text-base text-neutral-300"
-          data-testid="offers-empty"
+      {/* Back link */}
+      <div className="page-shell pt-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
         >
-          No special offers available right now — check back soon.
-        </p>
-      )}
-    </div>
-
-    {/* Terms */}
-    <RevealAnimations className="page-shell pb-16">
-      <div className="rounded-2xl p-6" style={{ background: '#f7f7fb' }}>
-        <p className="mb-3 text-sm font-black tracking-widest text-ink uppercase">
-          Good to know
-        </p>
-        <ul className="space-y-2">
-          {offerTermsData.map((term) => (
-            <li
-              key={term}
-              className="flex items-start gap-2.5 text-sm text-slate-400"
-            >
-              <span
-                className="mt-1.5 inline-block shrink-0 rounded-full"
-                style={{ width: 5, height: 5, background: PINK }}
-              />
-              {term}
-            </li>
-          ))}
-        </ul>
+          <ArrowLeft size={16} />{' '}
+          {(dict?.back_to_home_text?.value as string | undefined) ||
+            'Back to Home'}
+        </Link>
       </div>
-    </RevealAnimations>
-  </div>
-);
+
+      {/* Heading */}
+      <RevealAnimations className="page-shell pt-8 pb-2 text-center">
+        <h1
+          className="inline-block border-b border-ink pb-2 font-light tracking-fine text-ink uppercase"
+          style={{ fontSize: 'clamp(1.6rem, 3vw, 2.4rem)' }}
+        >
+          {title}
+        </h1>
+      </RevealAnimations>
+
+      {/* Offer details */}
+      <div
+        className="page-shell flex flex-col gap-8 py-10"
+        data-testid="offers-list"
+      >
+        {offers.length > 0 ? (
+          offers.map((offer, index) => (
+            <OfferDetailCard key={offer.id} product={offer} index={index} />
+          ))
+        ) : (
+          <p
+            className="text-center text-base text-neutral-300"
+            data-testid="offers-empty"
+          >
+            {(dict?.no_offers_text?.value as string | undefined) ||
+              'No special offers available right now — check back soon.'}
+          </p>
+        )}
+      </div>
+
+      {/* Terms */}
+      <RevealAnimations className="page-shell pb-16">
+        <div className="rounded-2xl p-6" style={{ background: '#f7f7fb' }}>
+          <p className="mb-3 text-sm font-black tracking-widest text-ink uppercase">
+            {(dict?.offer_good_to_know_text?.value as string | undefined) ||
+              'Good to know'}
+          </p>
+          <ul className="space-y-2">
+            {offerTermsData.map((term) => (
+              <li
+                key={term}
+                className="flex items-start gap-2.5 text-sm text-slate-400"
+              >
+                <span
+                  className="mt-1.5 inline-block shrink-0 rounded-full"
+                  style={{ width: 5, height: 5, background: PINK }}
+                />
+                {term}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </RevealAnimations>
+    </div>
+  );
+};
 
 export default OffersPageContent;

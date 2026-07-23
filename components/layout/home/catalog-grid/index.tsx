@@ -1,7 +1,9 @@
 import parse from 'html-react-parser';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import wrapCharactersInSpan from '@/components/hooks/wrapCharactersInSpan';
 import SectionTitle from '@/components/shared/SectionTitle';
 
@@ -19,8 +21,13 @@ const CatalogSection = ({
 }: {
   block?: IBlockEntity | undefined;
 }): JSX.Element => {
+  /** UI-text dictionary (system_content) with English fallbacks */
+  const [dict] = ServerProvider<IAttributeValues>('dict');
   /** Extract title from block's localized information */
-  const title = block?.localizeInfos?.title ?? 'Service';
+  const title =
+    block?.localizeInfos?.title ??
+    (dict?.home_catalog_title?.value as string | undefined) ??
+    'Service';
 
   /** Wrap title words in spans for animation effects */
   const title1 = wrapCharactersInSpan('Beauty');

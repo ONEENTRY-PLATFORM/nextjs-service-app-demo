@@ -3,6 +3,7 @@
 import type { JSX } from 'react';
 
 import GridItemAnimations from '@/app/animations/GridItemAnimations';
+import { useDict } from '@/app/store/providers/useDict';
 
 import type { MasterItem } from '../taxonomy';
 import MasterCard from './MasterCard';
@@ -23,58 +24,67 @@ const SpecialistSections = ({
 }: {
   sections: MasterItem[][];
   onClearAll: () => void;
-}): JSX.Element => (
-  <div className="hidden pb-4 md:block">
-    {sections.length === 0 ? (
-      <div data-testid="masters-empty" className="page-shell py-16 text-center">
-        <p className="text-sm text-neutral-300">
-          No specialists match the current filter.
-        </p>
-        <button
-          data-testid="masters-clear-filters"
-          onClick={onClearAll}
-          className="mt-3 rounded-full bg-fuchsia-500/10 px-5 py-2 text-xs font-bold tracking-wider text-accent-pink uppercase transition-colors hover:bg-fuchsia-500/20"
-        >
-          Clear filters
-        </button>
-      </div>
-    ) : (
-      sections.map((group, idx) => (
-        <section
-          key={group[0]?.section ?? String(idx)}
-          className="py-5 md:py-7"
-        >
-          <div
-            data-testid="specialist-section"
-            data-section={group[0]?.section ?? String(idx)}
-            className="page-shell flex flex-wrap justify-center gap-8 md:gap-12 lg:gap-17.5"
-          >
-            {group.map((master, i) => (
-              <GridItemAnimations
-                key={master.id}
-                index={i}
-                columns={4}
-                className="shrink-0"
-              >
-                <MasterCard item={master} />
-              </GridItemAnimations>
-            ))}
-          </div>
+}): JSX.Element => {
+  const dict = useDict();
 
-          {/* Soft divider between profession sections (except last) */}
-          {idx < sections.length - 1 && (
+  return (
+    <div className="hidden pb-4 md:block">
+      {sections.length === 0 ? (
+        <div
+          data-testid="masters-empty"
+          className="page-shell py-16 text-center"
+        >
+          <p className="text-sm text-neutral-300">
+            {(dict?.no_specialists_filter_text?.value as string | undefined) ||
+              'No specialists match the current filter.'}
+          </p>
+          <button
+            data-testid="masters-clear-filters"
+            onClick={onClearAll}
+            className="mt-3 rounded-full bg-fuchsia-500/10 px-5 py-2 text-xs font-bold tracking-wider text-accent-pink uppercase transition-colors hover:bg-fuchsia-500/20"
+          >
+            {(dict?.clear_filters_text?.value as string | undefined) ||
+              'Clear filters'}
+          </button>
+        </div>
+      ) : (
+        sections.map((group, idx) => (
+          <section
+            key={group[0]?.section ?? String(idx)}
+            className="py-5 md:py-7"
+          >
             <div
-              className="mx-auto mt-5 h-px w-3/5"
-              style={{
-                background:
-                  'linear-gradient(90deg, transparent, #f7f7fb 20%, #f7f7fb 80%, transparent)',
-              }}
-            />
-          )}
-        </section>
-      ))
-    )}
-  </div>
-);
+              data-testid="specialist-section"
+              data-section={group[0]?.section ?? String(idx)}
+              className="page-shell flex flex-wrap justify-center gap-8 md:gap-12 lg:gap-17.5"
+            >
+              {group.map((master, i) => (
+                <GridItemAnimations
+                  key={master.id}
+                  index={i}
+                  columns={4}
+                  className="shrink-0"
+                >
+                  <MasterCard item={master} />
+                </GridItemAnimations>
+              ))}
+            </div>
+
+            {/* Soft divider between profession sections (except last) */}
+            {idx < sections.length - 1 && (
+              <div
+                className="mx-auto mt-5 h-px w-3/5"
+                style={{
+                  background:
+                    'linear-gradient(90deg, transparent, #f7f7fb 20%, #f7f7fb 80%, transparent)',
+                }}
+              />
+            )}
+          </section>
+        ))
+      )}
+    </div>
+  );
+};
 
 export default SpecialistSections;

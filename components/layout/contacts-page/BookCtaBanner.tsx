@@ -1,5 +1,8 @@
 import Link from 'next/link';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
+
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 /**
  * BookCtaBanner component — the "Ready to visit us?" gradient banner at the
@@ -9,6 +12,8 @@ import type { JSX } from 'react';
  * @returns {JSX.Element} Booking CTA banner section
  */
 const BookCtaBanner = (): JSX.Element => {
+  const [dict] = ServerProvider<IAttributeValues>('dict');
+
   return (
     <section className="py-6 md:py-10">
       <div className="page-shell">
@@ -27,11 +32,12 @@ const BookCtaBanner = (): JSX.Element => {
               className="mb-1 font-black text-white"
               style={{ fontSize: 'clamp(1.3rem,2.5vw,1.8rem)' }}
             >
-              Ready to visit us?
+              {(dict?.ready_to_visit_title?.value as string | undefined) ||
+                'Ready to visit us?'}
             </h3>
             <p className="max-w-sm text-base text-white/80">
-              Book your appointment online in just a few taps — choose your
-              studio, service and master.
+              {(dict?.ready_to_visit_desc?.value as string | undefined) ||
+                'Book your appointment online in just a few taps — choose your studio, service and master.'}
             </p>
           </div>
 
@@ -45,7 +51,7 @@ const BookCtaBanner = (): JSX.Element => {
               backdropFilter: 'blur(8px)',
             }}
           >
-            Book Online
+            {(dict?.book_text?.value as string | undefined) || 'Book Online'}
           </Link>
         </div>
       </div>

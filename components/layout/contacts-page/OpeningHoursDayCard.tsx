@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
 import type { OpeningHoursRow } from '@/app/utils/parseOpeningTime';
 
 /**
@@ -18,6 +19,8 @@ const OpeningHoursDayCard = ({
   row: OpeningHoursRow;
   isToday: boolean;
 }): JSX.Element => {
+  const dict = useDict();
+
   return (
     <div
       data-testid="opening-hours-day"
@@ -53,7 +56,7 @@ const OpeningHoursDayCard = ({
           className="rounded-full px-2 py-0.5 text-[10px] font-black tracking-widest text-white uppercase"
           style={{ background: 'rgba(255,255,255,0.25)' }}
         >
-          Today
+          {(dict?.today_text?.value as string | undefined) || 'Today'}
         </span>
       )}
     </div>

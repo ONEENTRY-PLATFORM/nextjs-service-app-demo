@@ -7,6 +7,7 @@ import { useContext } from 'react';
 import { logOutUser } from '@/app/api/server/users/logOutUser';
 import { readAuthProviderMarker } from '@/app/store/auth/authStorage';
 import { AuthContext } from '@/app/store/providers/AuthContext';
+import { useDict } from '@/app/store/providers/useDict';
 
 /**
  * Logout menu item button.
@@ -14,6 +15,8 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
  */
 const LogoutMenuItem = (): JSX.Element => {
   const { logout } = useContext(AuthContext);
+  /** UI-text dictionary for the localized label */
+  const dict = useDict();
   /**
    * Plain Next router, NOT `useTransitionRouter`.
    *
@@ -49,7 +52,7 @@ const LogoutMenuItem = (): JSX.Element => {
       onClick={handleLogout}
       data-testid="logout-button"
     >
-      <div>Logout</div>
+      <div>{(dict?.logout_text?.value as string | undefined) || 'Logout'}</div>
     </button>
   );
 };

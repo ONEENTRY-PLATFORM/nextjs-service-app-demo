@@ -4,6 +4,8 @@ import { ChevronDown, MapPin } from 'lucide-react';
 import type { JSX } from 'react';
 import { useState } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import { DARK, MUTED, PINK } from './constants';
 import type { ServicesSalon } from './types';
 
@@ -26,6 +28,7 @@ const SalonSelector = ({
   selected: string | null;
   onSelect: (url: string | null) => void;
 }): JSX.Element | null => {
+  const dict = useDict();
   /** Mobile salon dropdown open state */
   const [salonOpen, setSalonOpen] = useState(false);
 
@@ -62,7 +65,9 @@ const SalonSelector = ({
               <div className="mb-1 flex items-center gap-2">
                 <MapPin size={14} />
                 <span className="text-base font-bold">
-                  Studio {index + 1} — {s.title}
+                  {(dict?.studio_label_prefix?.value as string | undefined) ||
+                    'Studio'}{' '}
+                  {index + 1} — {s.title}
                 </span>
               </div>
               {s.address && <p className="text-sm opacity-80">{s.address}</p>}
@@ -84,8 +89,9 @@ const SalonSelector = ({
           <span className="flex items-center gap-2 text-base font-semibold text-slate-400">
             <MapPin size={14} color={PINK} />
             {activeSalon
-              ? `Studio ${salons.indexOf(activeSalon) + 1} — ${activeSalon.title}`
-              : 'All studios'}
+              ? `${(dict?.studio_label_prefix?.value as string | undefined) || 'Studio'} ${salons.indexOf(activeSalon) + 1} — ${activeSalon.title}`
+              : (dict?.all_studios_text?.value as string | undefined) ||
+                'All studios'}
           </span>
           <ChevronDown
             size={16}
@@ -120,7 +126,8 @@ const SalonSelector = ({
                   background: !selected ? `${PINK}0d` : 'transparent',
                 }}
               >
-                All studios
+                {(dict?.all_studios_text?.value as string | undefined) ||
+                  'All studios'}
               </button>
               {salons.map((s, index) => {
                 const active = s.url === selected;
@@ -141,7 +148,9 @@ const SalonSelector = ({
                       className="block text-base font-semibold"
                       style={{ color: active ? PINK : DARK }}
                     >
-                      Salon {index + 1} — {s.title}
+                      {(dict?.salon_label_prefix?.value as
+                        string | undefined) || 'Salon'}{' '}
+                      {index + 1} — {s.title}
                     </span>
                     {s.address && (
                       <span className="block text-sm text-neutral-300">

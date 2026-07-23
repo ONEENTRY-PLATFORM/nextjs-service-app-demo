@@ -2,6 +2,8 @@
 
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import todayDateKey from '../utils/todayDateKey';
 import MonthCalendar from './MonthCalendar';
 import TimeSlotGrid from './TimeSlotGrid';
@@ -43,13 +45,15 @@ const DateTimeStep = ({
   durationMinutes: number;
   closeMinutes: number | null;
 }): JSX.Element => {
+  const dict = useDict();
   const today = new Date();
   const todayKey = todayDateKey();
 
   return (
     <div className="space-y-5" data-testid="booking-step-datetime">
       <h3 className="text-lg font-light text-slate-400">
-        Pick date &amp; time
+        {(dict?.booking_pick_datetime_text?.value as string | undefined) ||
+          'Pick date & time'}
       </h3>
       <MonthCalendar
         today={today}

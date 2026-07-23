@@ -7,6 +7,7 @@ import type { JSX } from 'react';
 import { useContext, useEffect, useRef } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
+import { useDict } from '@/app/store/providers/useDict';
 import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 import { flatMenuToNested } from '@/components/utils/flatMenuToNested';
@@ -25,6 +26,8 @@ import MobileMenu from './components/MobileMenu';
 const OffscreenModal = ({ menu }: { menu: IMenusEntity }): JSX.Element => {
   /** Get current pathname for route change detection */
   const pathname = usePathname();
+  /** UI-text dictionary for the localized aria-label and logo alt text */
+  const dict = useDict();
   /** Get modal state and control functions from context */
   const { open, setOpen, component, setTransition } =
     useContext(OpenDrawerContext);
@@ -82,7 +85,9 @@ const OffscreenModal = ({ menu }: { menu: IMenusEntity }): JSX.Element => {
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Menu"
+        aria-label={
+          (dict?.mobile_menu_aria?.value as string | undefined) || 'Menu'
+        }
         className="fixed inset-0 z-50 flex size-full max-w-90 flex-col bg-white pb-6"
       >
         <div className="p-6">
@@ -92,7 +97,7 @@ const OffscreenModal = ({ menu }: { menu: IMenusEntity }): JSX.Element => {
               src={'/images/thalia-logo.svg'}
               width={110}
               height={70}
-              alt={'Thalia'}
+              alt={(dict?.site_name?.value as string | undefined) || 'Thalia'}
               loading="lazy"
               className="h-auto max-w-full shrink-0 max-sm:mb-5"
             />

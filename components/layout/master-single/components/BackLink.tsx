@@ -1,6 +1,9 @@
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
+
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 /**
  * BackLink component — a link back to the specialists listing.
@@ -12,12 +15,16 @@ import type { JSX } from 'react';
  * @returns {JSX.Element} JSX.Element representing the back link.
  */
 const BackLink = (): JSX.Element => {
+  const [dict] = ServerProvider<IAttributeValues>('dict');
+
   return (
     <Link
       href="/masters"
       className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
     >
-      <ArrowLeft size={16} /> Back to Specialist
+      <ArrowLeft size={16} />{' '}
+      {(dict?.back_to_specialist_text?.value as string | undefined) ||
+        'Back to Specialist'}
     </Link>
   );
 };

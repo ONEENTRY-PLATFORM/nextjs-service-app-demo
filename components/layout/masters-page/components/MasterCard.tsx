@@ -4,6 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import type { MasterItem } from '../taxonomy';
 
 /**
@@ -20,6 +22,7 @@ import type { MasterItem } from '../taxonomy';
  * @returns {JSX.Element}            Specialist photo card
  */
 const MasterCard = ({ item }: { item: MasterItem }): JSX.Element => {
+  const dict = useDict();
   const className =
     'group relative block h-80 w-59.5 shrink-0 overflow-hidden rounded-[15px] bg-accent-purple text-left transition-transform duration-300 hover:-translate-y-1';
   const style = { boxShadow: '0 10px 30px rgba(124,42,232,0.18)' };
@@ -58,7 +61,8 @@ const MasterCard = ({ item }: { item: MasterItem }): JSX.Element => {
           {item.role}
         </p>
         <span className="mt-1.5 inline-block w-fit text-sm font-semibold whitespace-nowrap text-white underline decoration-white/90 underline-offset-3 transition-opacity group-hover:opacity-80">
-          Check a profile
+          {(dict?.check_a_profile_text?.value as string | undefined) ||
+            'Check a profile'}
         </span>
       </div>
     </>

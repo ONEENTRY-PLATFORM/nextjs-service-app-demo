@@ -1,4 +1,7 @@
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
+
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 /**
  * MasterExperience component — the specialist's working experience line.
@@ -14,13 +17,17 @@ const MasterExperience = ({
 }: {
   experience: string;
 }): JSX.Element | null => {
+  const [dict] = ServerProvider<IAttributeValues>('dict');
+
   if (!experience) {
     return null;
   }
 
   return (
     <p className="item mt-2 text-sm text-slate-400">
-      Working experience: <span className="font-bold">{experience}</span>
+      {(dict?.working_experience_label?.value as string | undefined) ||
+        'Working experience:'}{' '}
+      <span className="font-bold">{experience}</span>
     </p>
   );
 };

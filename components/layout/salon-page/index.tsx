@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
+import { useDict } from '@/app/store/providers/useDict';
 
 import SalonLightbox from './components/SalonLightbox';
 import SalonPhotoGallery from './components/SalonPhotoGallery';
@@ -22,6 +23,7 @@ import type { SalonDetail } from './types';
  * @returns {JSX.Element}             Salon detail page content
  */
 const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
+  const dict = useDict();
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const c = salon.color;
 
@@ -36,7 +38,9 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
           href="/contacts"
           className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
         >
-          <ArrowLeft size={16} /> Back to Contacts
+          <ArrowLeft size={16} />{' '}
+          {(dict?.back_to_contacts_text?.value as string | undefined) ||
+            'Back to Contacts'}
         </Link>
       </div>
 
@@ -60,7 +64,8 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
                 data-testid="salon-no-photos"
                 className="py-10 text-center text-sm text-neutral-300"
               >
-                This salon has no photos yet.
+                {(dict?.salon_no_photos_text?.value as string | undefined) ||
+                  'This salon has no photos yet.'}
               </p>
             )}
           </RevealAnimations>
@@ -75,7 +80,8 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
               className="mb-3 text-sm font-black tracking-[0.25em] uppercase"
               style={{ color: c }}
             >
-              About this studio
+              {(dict?.about_studio_text?.value as string | undefined) ||
+                'About this studio'}
             </p>
             {salon.about.map((para, i) => (
               <p

@@ -1,4 +1,4 @@
-import type { ILocalizeInfo } from 'oneentry/dist/base/utils';
+import type { IAttributeValues, ILocalizeInfo } from 'oneentry/dist/base/utils';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import masterNamesById from '@/app/gallery/masterNamesById';
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import SectionTitle from '@/components/shared/SectionTitle';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
 import { imageFileList } from '@/components/utils/imageFileList';
@@ -45,8 +46,13 @@ const GalleryFeed = async ({
   /** Shuffle the CMS gallery cards and take the mock's six-tile strip */
   const feedCards = shuffleArray(galleryData).slice(0, 6);
 
+  /** UI-text dictionary (system_content) with English fallbacks */
+  const [dict] = ServerProvider<IAttributeValues>('dict');
   /** Section heading; falls back to the mock's "Gallery" when the block is not filled */
-  const title = block?.localizeInfos?.title || 'Gallery';
+  const title =
+    block?.localizeInfos?.title ||
+    (dict?.home_gallery_title?.value as string | undefined) ||
+    'Gallery';
 
   /**
    * Nothing in the CMS gallery tree → drop the whole strip rather than render a

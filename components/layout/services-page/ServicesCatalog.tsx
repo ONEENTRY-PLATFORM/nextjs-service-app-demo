@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
+import { useDict } from '@/app/store/providers/useDict';
 
 import CategoryTabs from './CategoryTabs';
 import { DARK, MUTED, PINK } from './constants';
@@ -50,6 +51,7 @@ const ServicesCatalog = ({
   initialCategory?: string | undefined;
   initialSubcategory?: string | undefined;
 }): JSX.Element => {
+  const dict = useDict();
   const firstCategory = categories[0];
   /** Pre-selected category — the deep-linked one when valid, else the first */
   const startCat =
@@ -150,7 +152,10 @@ const ServicesCatalog = ({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by service…"
+              placeholder={
+                (dict?.search_by_service_placeholder?.value as
+                  string | undefined) || 'Search by service…'
+              }
               className="w-full rounded-xl bg-white px-11 py-3 text-base transition-colors outline-none"
               style={{
                 border: '1.5px solid #e8e8f0',
@@ -167,7 +172,10 @@ const ServicesCatalog = ({
             {searching && (
               <button
                 onClick={() => setQuery('')}
-                aria-label="Clear search"
+                aria-label={
+                  (dict?.clear_search_text?.value as string | undefined) ||
+                  'Clear search'
+                }
                 className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-neutral-300 transition-colors"
               >
                 <X size={16} />
@@ -187,8 +195,14 @@ const ServicesCatalog = ({
 
           {searching && (
             <p className="mb-2 text-sm text-neutral-300">
-              {filtered.length} {filtered.length === 1 ? 'result' : 'results'}{' '}
-              for “{query.trim()}”
+              {filtered.length}{' '}
+              {filtered.length === 1
+                ? (dict?.results_word_singular?.value as string | undefined) ||
+                  'result'
+                : (dict?.results_word_plural?.value as string | undefined) ||
+                  'results'}{' '}
+              {(dict?.for_word?.value as string | undefined) || 'for'} “
+              {query.trim()}”
             </p>
           )}
         </RevealAnimations>
@@ -211,8 +225,12 @@ const ServicesCatalog = ({
             className="mt-6 text-center text-base text-neutral-300"
           >
             {searching
-              ? `No services match “${query.trim()}”.`
-              : 'No services in this section.'}
+              ? (
+                  (dict?.no_services_match_text?.value as string | undefined) ||
+                  'No services match “%q%”.'
+                ).replace('%q%', query.trim())
+              : (dict?.no_services_section_text?.value as string | undefined) ||
+                'No services in this section.'}
           </p>
         )}
       </div>

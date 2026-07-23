@@ -84,7 +84,13 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
   const [isError, setError] = useState('');
 
   /** Extract localized text values from dictionary */
-  const { new_password_desc, change_password_text } = dict;
+  const {
+    new_password_desc,
+    change_password_text,
+    password_label,
+    confirm_password_label,
+    err_change_password_failed,
+  } = dict;
 
   /**
    * The two password inputs of the reset step: the CMS password field
@@ -95,10 +101,21 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
   const passwordFields = useMemo(() => {
     const passwordAttr = attributes.find(isPasswordField);
     const confirmAttr = attributes.find(isConfirmPasswordField);
-    return passwordAttr && confirmAttr
-      ? [passwordAttr, confirmAttr]
-      : resetPasswordFormFields;
-  }, [attributes]);
+    if (passwordAttr && confirmAttr) {
+      return [passwordAttr, confirmAttr];
+    }
+    return [
+      passwordField(
+        'password_reg',
+        (password_label?.value as string | undefined) || 'Password',
+      ),
+      passwordField(
+        'password_confirm',
+        (confirm_password_label?.value as string | undefined) ||
+          'Confirm password',
+      ),
+    ];
+  }, [attributes, password_label, confirm_password_label]);
 
   /** Markers of the new-password and confirm-password inputs. */
   const passwordMarker = passwordFields[0]?.marker ?? 'password_reg';
@@ -137,7 +154,11 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
       );
 
       if (isSdkError(result)) {
-        setError(result.message || 'Could not change the password');
+        setError(
+          result.message ||
+            (err_change_password_failed?.value as string | undefined) ||
+            'Could not change the password',
+        );
         return;
       }
       /** Redirect to sign in form only on a confirmed success */
@@ -147,7 +168,10 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
         setComponent('SignInForm');
         setAction('');
       } else {
-        setError('Could not change the password. Please try again.');
+        setError(
+          (err_change_password_failed?.value as string | undefined) ||
+            'Could not change the password. Please try again.',
+        );
       }
     } catch (error) {
       /** Set error message if password change fails */

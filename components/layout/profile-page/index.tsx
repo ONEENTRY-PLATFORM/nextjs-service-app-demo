@@ -46,7 +46,10 @@ const ProfilePageLayout = ({
   const [mobileTab, setMobileTab] = useState<ProfileTab>('profile');
 
   /** Section labels from dictionary with fallbacks */
-  const profileTitle = page?.localizeInfos?.title || 'Profile';
+  const profileTitle =
+    page?.localizeInfos?.title ||
+    (dict.profile_title?.value as string | undefined) ||
+    'Profile';
   const historyOfVisitsText =
     (dict.history_of_visits_text?.value as string | undefined) ||
     'History of visits';
@@ -76,7 +79,9 @@ const ProfilePageLayout = ({
         active={mobileTab}
         onChange={setMobileTab}
         profileLabel={profileTitle}
-        historyLabel="History"
+        historyLabel={
+          (dict.profile_history_tab?.value as string | undefined) || 'History'
+        }
       />
 
       {/* 40 / 60 split on large screens; stacked / toggled on mobile */}

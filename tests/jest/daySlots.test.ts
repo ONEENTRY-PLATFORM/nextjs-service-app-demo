@@ -1,6 +1,6 @@
 import type { IAttributeValue } from 'oneentry/dist/base/utils';
 
-import daySlots from '@/components/layout/booking-page/daySlots';
+import daySlots from '@/components/layout/booking-page/utils/daySlots';
 
 /**
  * Build a `timeInterval` attribute anchored to a single day (no recurrence), so

@@ -3,6 +3,7 @@
 import type { JSX } from 'react';
 import { useSyncExternalStore } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
 import type { OpeningHoursRow } from '@/app/utils/parseOpeningTime';
 import summarizeOpeningHours from '@/app/utils/summarizeOpeningHours';
 import SectionHeading from '@/components/shared/SectionHeading';
@@ -40,6 +41,7 @@ const getTodayIdx = (): number => {
  * @returns {JSX.Element}                  Opening hours section
  */
 const OpeningHours = ({ rows }: { rows: OpeningHoursRow[] }): JSX.Element => {
+  const dict = useDict();
   /** -1 on the server, the real weekday after hydration — no SSR mismatch */
   const todayIdx = useSyncExternalStore(subscribeNever, getTodayIdx, () => -1);
 
@@ -55,7 +57,10 @@ const OpeningHours = ({ rows }: { rows: OpeningHoursRow[] }): JSX.Element => {
   return (
     <section className="bg-slate-50 py-6 md:py-10" data-testid="opening-hours">
       <div className="page-shell">
-        <SectionHeading className="mb-6 md:mb-10">Opening Hours</SectionHeading>
+        <SectionHeading className="mb-6 md:mb-10">
+          {(dict?.opening_hours_title?.value as string | undefined) ||
+            'Opening Hours'}
+        </SectionHeading>
 
         {/* Mobile + tablet: a single card for the whole week */}
         <div className="lg:hidden">

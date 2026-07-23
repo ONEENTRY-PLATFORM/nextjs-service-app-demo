@@ -1,6 +1,7 @@
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
 import { formatOrderTotal } from '@/app/utils/formatOrderTotal';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
@@ -21,6 +22,8 @@ const OrderTotal = ({
 }: {
   order: IOrderByMarkerEntity;
 }): JSX.Element | null => {
+  const dict = useDict();
+
   const total = formatOrderTotal(order.totalSum);
   if (total === null) {
     return null;
@@ -35,7 +38,8 @@ const OrderTotal = ({
       data-testid="order-total"
     >
       <span className="text-sm text-neutral-300">
-        Total{method ? ` · ${method}` : ''}
+        {(dict?.total_text?.value as string | undefined) || 'Total'}
+        {method ? ` · ${method}` : ''}
       </span>
       <span className="text-base font-bold text-slate-400">
         <CurrencySymbol currency={order.currency} />

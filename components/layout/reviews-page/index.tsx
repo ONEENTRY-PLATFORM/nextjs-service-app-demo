@@ -8,6 +8,7 @@ import { useMemo, useState } from 'react';
 import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
+import { useDict } from '@/app/store/providers/useDict';
 
 import CategoryChips from './components/CategoryChips';
 import MasterFilter from './components/MasterFilter';
@@ -40,6 +41,7 @@ const ReviewsPageContent = ({
 }: {
   initialMaster?: string | undefined;
 }): JSX.Element => {
+  const dict = useDict();
   /** Selected salon id — `null` = all studios. */
   const [salonId, setSalonId] = useState<string | null>(
     initialMaster ? (MASTER_SALON[initialMaster] ?? null) : null,
@@ -124,7 +126,8 @@ const ReviewsPageContent = ({
           href="/"
           className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
         >
-          <ArrowLeft size={16} /> Back
+          <ArrowLeft size={16} />{' '}
+          {(dict?.back_text?.value as string | undefined) || 'Back'}
         </Link>
       </div>
 
@@ -138,13 +141,18 @@ const ReviewsPageContent = ({
             letterSpacing: '0.08em',
           }}
         >
-          Reviews
+          {(dict?.reviews_title?.value as string | undefined) || 'Reviews'}
         </h1>
         <div className="mt-4 flex items-center justify-center gap-3">
           <Stars rating={Math.round(Number(avg))} />
           <span className="text-sm font-bold text-slate-400">{avg}</span>
           <span className="text-sm text-neutral-300">
-            · {filtered.length} {filtered.length === 1 ? 'review' : 'reviews'}
+            · {filtered.length}{' '}
+            {filtered.length === 1
+              ? (dict?.reviews_word_singular?.value as string | undefined) ||
+                'review'
+              : (dict?.reviews_word_plural?.value as string | undefined) ||
+                'reviews'}
           </span>
         </div>
       </RevealAnimations>
@@ -181,7 +189,8 @@ const ReviewsPageContent = ({
 
         {filtered.length === 0 && (
           <p className="py-12 text-center text-sm text-neutral-300">
-            No reviews for this specialist yet.
+            {(dict?.no_reviews_specialist_text?.value as string | undefined) ||
+              'No reviews for this specialist yet.'}
           </p>
         )}
       </div>

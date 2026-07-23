@@ -1,8 +1,10 @@
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
 import HeroAnimations from '@/app/animations/HeroAnimations';
 import { getBlockSlides } from '@/app/api/server/blocks/getBlockSlides';
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 import type { HeroSlide } from './components/HeroSlider';
 import HeroSlider from './components/HeroSlider';
@@ -65,8 +67,11 @@ const HomeHero = async ({
     ? slides.time * (slides.timeInterval === 'ms' ? 1 : 1000)
     : 5000;
 
+  /** UI-text dictionary (system_content) with English fallbacks */
+  const [dict] = ServerProvider<IAttributeValues>('dict');
   const alt =
     (block.localizeInfos?.title as string | undefined) ||
+    (dict?.site_name?.value as string | undefined) ||
     'Thalia Beauty Studio';
 
   /** Render home hero banner carousel */

@@ -1,7 +1,7 @@
 import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 
 import { buildSignUpBody } from '@/components/forms/buildSignUpBody';
-import { isSignUpVisibleField } from '@/components/forms/isSignUpVisibleField';
+import { isSignUpVisibleField } from '@/components/forms/fieldFlags/isSignUpVisibleField';
 
 /**
  * field — a minimal CMS form attribute for the tests.

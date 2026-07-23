@@ -8,8 +8,10 @@ import {
   Phone,
   Twitter,
 } from 'lucide-react';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { contactInfoData } from '@/components/data/contactInfoData';
 import { socialData } from '@/components/data/socialData';
 
@@ -37,6 +39,8 @@ const SOCIAL_ICONS = {
  * @returns {JSX.Element} Info sidebar with contact rows and social links
  */
 const ContactInfoCard = (): JSX.Element => {
+  const [dict] = ServerProvider<IAttributeValues>('dict');
+
   return (
     <div className="flex h-full flex-col gap-5">
       {/* Info cards */}
@@ -45,7 +49,7 @@ const ContactInfoCard = (): JSX.Element => {
         style={{ boxShadow: '0 4px 32px rgba(237,33,241,0.08)' }}
       >
         <p className="mb-6 ml-2 text-sm font-black tracking-[0.25em] text-accent-cyan uppercase md:ml-0">
-          Reach out
+          {(dict?.reach_out_text?.value as string | undefined) || 'Reach out'}
         </p>
         <div className="flex flex-1 flex-col justify-center space-y-4">
           {contactInfoData.map(({ icon, label, value, color, href }) => {
@@ -91,7 +95,7 @@ const ContactInfoCard = (): JSX.Element => {
         style={{ boxShadow: '0 4px 32px rgba(237,33,241,0.08)' }}
       >
         <p className="mb-4 ml-2 text-sm font-black tracking-[0.2em] text-slate-400 uppercase md:ml-0">
-          Follow us
+          {(dict?.follow_us_text?.value as string | undefined) || 'Follow us'}
         </p>
         <div className="flex gap-3">
           {socialData.map(({ title, icon, link }) => {

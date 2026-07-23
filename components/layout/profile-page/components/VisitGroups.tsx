@@ -68,7 +68,7 @@ const VisitGroups = ({
         className="py-2 text-sm text-neutral-300"
         data-testid="profile-visits-empty"
       >
-        No visits yet
+        {(dict.no_visits_text?.value as string | undefined) || 'No visits yet'}
       </p>
     );
   }

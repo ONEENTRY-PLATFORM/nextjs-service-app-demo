@@ -3,6 +3,7 @@
 import type { JSX } from 'react';
 import { useMemo } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
 import LightboxArrow from '@/components/shared/lightbox/LightboxArrow';
 import LightboxCloseButton from '@/components/shared/lightbox/LightboxCloseButton';
 import LightboxCounter from '@/components/shared/lightbox/LightboxCounter';
@@ -41,6 +42,7 @@ const SalonLightbox = ({
   onClose: () => void;
   onSelect: (i: number) => void;
 }): JSX.Element => {
+  const dict = useDict();
   const total = photos.length;
   const onPrev = () => onSelect((index - 1 + total) % total);
   const onNext = () => onSelect((index + 1) % total);
@@ -59,7 +61,10 @@ const SalonLightbox = ({
   return (
     <LightboxOverlay
       dialogRef={dialogRef}
-      label="Salon photo viewer"
+      label={
+        (dict?.salon_photo_viewer_aria?.value as string | undefined) ||
+        'Salon photo viewer'
+      }
       className="p-4"
       style={{ background: 'rgba(6,0,14,0.94)', backdropFilter: 'blur(16px)' }}
       onClose={onClose}
@@ -74,7 +79,7 @@ const SalonLightbox = ({
       <LightboxArrow
         side="prev"
         onClick={onPrev}
-        label="Previous"
+        label={(dict?.previous_text?.value as string | undefined) || 'Previous'}
         className="left-6 transition-colors hover:bg-white/10"
         style={ARROW_STYLE}
       />
@@ -95,7 +100,7 @@ const SalonLightbox = ({
       <LightboxArrow
         side="next"
         onClick={onNext}
-        label="Next"
+        label={(dict?.next_text?.value as string | undefined) || 'Next'}
         className="right-6 transition-colors hover:bg-white/10"
         style={ARROW_STYLE}
       />

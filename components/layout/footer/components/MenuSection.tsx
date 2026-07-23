@@ -95,7 +95,12 @@ const MenuSection = async ({
 }: {
   dict: IAttributeValues;
 }): Promise<JSX.Element> => {
-  const { opening_time_text, follow_us_text } = dict;
+  const {
+    opening_time_text,
+    follow_us_text,
+    footer_services_title,
+    footer_about_title,
+  } = dict;
 
   /** All three fetches are independent — run in parallel. */
   const [servicesResult, aboutResult, openingResult] = await Promise.all([
@@ -111,8 +116,14 @@ const MenuSection = async ({
     parseOpeningTime(openingResult.block?.attributeValues?.opening_time?.value),
   );
 
-  const servicesTitle = servicesResult.menu?.localizeInfos?.title ?? 'Services';
-  const aboutTitle = aboutResult.menu?.localizeInfos?.title ?? 'About us';
+  const servicesTitle =
+    servicesResult.menu?.localizeInfos?.title ??
+    (footer_services_title?.value as string | undefined) ??
+    'Services';
+  const aboutTitle =
+    aboutResult.menu?.localizeInfos?.title ??
+    (footer_about_title?.value as string | undefined) ??
+    'About us';
   const openingTitle =
     (opening_time_text?.value as string | undefined) ?? 'Opening Time';
   const followTitle =

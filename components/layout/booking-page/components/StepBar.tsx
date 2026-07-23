@@ -3,15 +3,24 @@
 import { Calendar, Check, MapPin, Scissors, User } from 'lucide-react';
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import { BRAND_GRADIENT, CYAN, MUTED, PINK } from '../constants';
 import type { StepKey } from '../types';
 
-/** Label and icon per wizard step (mock `BookingPage.tsx` → `STEP_DEFS`) */
-const STEP_DEFS: Record<StepKey, { label: string; Icon: typeof MapPin }> = {
-  salon: { label: 'Studio', Icon: MapPin },
-  service: { label: 'Service', Icon: Scissors },
-  specialist: { label: 'Specialist', Icon: User },
-  datetime: { label: 'Date & Time', Icon: Calendar },
+/** Label, dictionary marker and icon per wizard step (mock `BookingPage.tsx` → `STEP_DEFS`) */
+const STEP_DEFS: Record<
+  StepKey,
+  { label: string; marker: string; Icon: typeof MapPin }
+> = {
+  salon: { label: 'Studio', marker: 'studio_text', Icon: MapPin },
+  service: { label: 'Service', marker: 'service_text', Icon: Scissors },
+  specialist: { label: 'Specialist', marker: 'specialist_text', Icon: User },
+  datetime: {
+    label: 'Date & Time',
+    marker: 'booking_step_datetime_label',
+    Icon: Calendar,
+  },
 };
 
 /**
@@ -34,6 +43,8 @@ const StepBar = ({
   currentIdx: number;
   onGo: (idx: number) => void;
 }): JSX.Element => {
+  const dict = useDict();
+
   return (
     <div className="flex w-full items-center justify-center gap-0">
       {steps.map((key, idx) => {
@@ -73,7 +84,7 @@ const StepBar = ({
                 style={{ color: active ? PINK : done ? CYAN : MUTED }}
                 className="hidden text-sm font-medium whitespace-nowrap sm:block"
               >
-                {def.label}
+                {(dict?.[def.marker]?.value as string | undefined) || def.label}
               </span>
             </button>
             {idx < steps.length - 1 && (

@@ -1,6 +1,8 @@
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { isOfferProduct } from '@/app/utils/isOfferProduct';
 import SectionTitle from '@/components/shared/SectionTitle';
 
@@ -32,8 +34,13 @@ const OffersFeedBlock = ({
     return null;
   }
 
+  /** UI-text dictionary (system_content) with English fallbacks */
+  const [dict] = ServerProvider<IAttributeValues>('dict');
   /** Section heading; falls back to the mock's "Best Offers" when the block is not filled */
-  const title = block?.localizeInfos?.title || 'Best Offers';
+  const title =
+    block?.localizeInfos?.title ||
+    (dict?.home_offers_title?.value as string | undefined) ||
+    'Best Offers';
 
   return (
     <section

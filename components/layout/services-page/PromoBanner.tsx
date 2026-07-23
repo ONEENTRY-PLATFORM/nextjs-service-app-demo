@@ -1,8 +1,10 @@
 import { Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 /**
  * PromoBanner component — the "First Visit? Get 15% Off" gradient banner at
@@ -16,6 +18,7 @@ import RevealAnimations from '@/app/animations/RevealAnimations';
  * @returns {JSX.Element} Promo banner section
  */
 const PromoBanner = (): JSX.Element => {
+  const [dict] = ServerProvider<IAttributeValues>('dict');
   return (
     <section className="py-10">
       <RevealAnimations className="page-shell">
@@ -34,18 +37,20 @@ const PromoBanner = (): JSX.Element => {
               className="mb-3 inline-block rounded-full px-3 py-1 text-xs font-bold tracking-widest uppercase"
               style={{ background: 'rgba(255,255,255,0.25)', color: '#fff' }}
             >
-              <Sparkles size={17} className="-mt-0.5 mr-1 inline" /> Limited
-              Offer
+              <Sparkles size={17} className="-mt-0.5 mr-1 inline" />{' '}
+              {(dict?.promo_limited_offer_text?.value as string | undefined) ||
+                'Limited Offer'}
             </span>
             <h3
               className="mb-1 font-black text-white"
               style={{ fontSize: 'clamp(1.3rem,2.5vw,1.8rem)' }}
             >
-              First Visit? Get 15% Off
+              {(dict?.promo_first_visit_title?.value as string | undefined) ||
+                'First Visit? Get 15% Off'}
             </h3>
             <p className="max-w-sm text-base text-white/80">
-              Book any service for your first visit and enjoy an exclusive
-              welcome discount.
+              {(dict?.promo_first_visit_desc?.value as string | undefined) ||
+                'Book any service for your first visit and enjoy an exclusive welcome discount.'}
             </p>
           </div>
 
@@ -59,7 +64,7 @@ const PromoBanner = (): JSX.Element => {
               backdropFilter: 'blur(8px)',
             }}
           >
-            Book Now
+            {(dict?.book_now_text?.value as string | undefined) || 'Book Now'}
           </Link>
         </div>
       </RevealAnimations>

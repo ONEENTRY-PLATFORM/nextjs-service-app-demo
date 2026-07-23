@@ -4,6 +4,7 @@ import type { JSX, UIEvent } from 'react';
 import { useState } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
+import { useDict } from '@/app/store/providers/useDict';
 import SectionHeading from '@/components/shared/SectionHeading';
 
 import SalonCard from './SalonCard';
@@ -26,6 +27,7 @@ const SalonLocations = ({
 }: {
   salons: ContactSalon[];
 }): JSX.Element => {
+  const dict = useDict();
   /** Index of the card closest to the scroll position — drives the dots */
   const [activeLoc, setActiveLoc] = useState(0);
 
@@ -52,14 +54,18 @@ const SalonLocations = ({
       style={{ background: 'linear-gradient(180deg,#f7f7fb 0%,#fff 60%)' }}
     >
       <div className="page-shell">
-        <SectionHeading className="mb-6 md:mb-10">Our Locations</SectionHeading>
+        <SectionHeading className="mb-6 md:mb-10">
+          {(dict?.our_locations_title?.value as string | undefined) ||
+            'Our Locations'}
+        </SectionHeading>
 
         {salons.length === 0 ? (
           <p
             data-testid="contacts-salons-empty"
             className="py-8 text-center text-base text-neutral-300"
           >
-            No salon locations available at the moment.
+            {(dict?.no_locations_text?.value as string | undefined) ||
+              'No salon locations available at the moment.'}
           </p>
         ) : (
           <RevealAnimations fade>

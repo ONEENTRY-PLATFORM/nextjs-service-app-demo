@@ -7,6 +7,7 @@ import type { JSX } from 'react';
 import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
+import { useDict } from '@/app/store/providers/useDict';
 
 /**
  * MobileNavPanel — inline expanding navigation panel under the header row.
@@ -28,6 +29,8 @@ const MobileNavPanel = ({
   const pathname = usePathname();
   /** Panel open state shared with the hamburger trigger */
   const { open, component, setOpen } = useContext(OpenDrawerContext);
+  /** UI-text dictionary for the localized aria-label */
+  const dict = useDict();
   const isOpen = open && component === 'MobileMenu';
 
   return (
@@ -38,7 +41,9 @@ const MobileNavPanel = ({
       )}
     >
       <nav
-        aria-label="Mobile menu"
+        aria-label={
+          (dict?.mobile_menu_aria?.value as string | undefined) || 'Mobile menu'
+        }
         data-testid="mobile-nav-panel"
         className="min-h-0 overflow-hidden"
       >

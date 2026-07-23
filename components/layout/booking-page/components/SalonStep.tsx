@@ -3,6 +3,8 @@
 import { Check, MapPin } from 'lucide-react';
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import { MUTED, PINK } from '../constants';
 import type { BookingSalon } from '../types';
 
@@ -26,9 +28,14 @@ const SalonStep = ({
   selected: number | null;
   onSelect: (id: number) => void;
 }): JSX.Element => {
+  const dict = useDict();
+
   return (
     <div className="space-y-3" data-testid="booking-step-salon">
-      <h3 className="text-lg font-light text-slate-400">Choose your studio</h3>
+      <h3 className="text-lg font-light text-slate-400">
+        {(dict?.booking_choose_studio_text?.value as string | undefined) ||
+          'Choose your studio'}
+      </h3>
       <div className="grid gap-3">
         {salons.map((s) => {
           const active = selected === s.id;

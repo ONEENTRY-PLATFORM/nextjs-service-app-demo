@@ -7,6 +7,7 @@ import { useState } from 'react';
 
 import { PRODUCT_STATUS_IN_STOCK } from '@/app/api/utils/productStatusMarkers';
 import { useAppDispatch } from '@/app/store/hooks';
+import { useDict } from '@/app/store/providers/useDict';
 import { addServiceToCart } from '@/app/store/reducers/CartSlice';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
@@ -32,6 +33,7 @@ const MUTED = '#a8a9b5';
  * @returns {JSX.Element}               Service card
  */
 const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
+  const dict = useDict();
   const [hovered, setHovered] = useState(false);
   /** Get router instance for navigation */
   const router = useTransitionRouter();
@@ -99,7 +101,8 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
               className="rounded-md px-2 py-1 text-[10px] font-bold tracking-wide uppercase"
               style={{ background: `${MUTED}22`, color: MUTED }}
             >
-              Not available
+              {(dict?.not_available_text?.value as string | undefined) ||
+                'Not available'}
             </span>
           ) : (
             <div className="flex items-end leading-none">
@@ -122,7 +125,8 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
       >
         {service.duration !== null ? (
           <span className="inline-flex items-center gap-1 text-sm whitespace-nowrap text-neutral-300">
-            <Clock size={17} /> {service.duration} min
+            <Clock size={17} /> {service.duration}{' '}
+            {(dict?.min_text?.value as string | undefined) || 'min'}
           </span>
         ) : (
           <span />
@@ -147,7 +151,7 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
             cursor: unavailable ? 'not-allowed' : 'pointer',
           }}
         >
-          Book
+          {(dict?.book_short_text?.value as string | undefined) || 'Book'}
         </button>
       </div>
     </div>

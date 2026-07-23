@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
+import { useDict } from '@/app/store/providers/useDict';
 
 /**
  * Mobile menu trigger button component.
@@ -18,6 +19,8 @@ const MobileMenuTrigger = (): JSX.Element => {
   /** Get context functions to control the mobile panel state */
   const { open, setOpen, component, setComponent } =
     useContext(OpenDrawerContext);
+  /** UI-text dictionary for the localized aria-label */
+  const dict = useDict();
   const isOpen = open && component === 'MobileMenu';
 
   /** Toggle the inline mobile navigation panel */
@@ -34,7 +37,11 @@ const MobileMenuTrigger = (): JSX.Element => {
   return (
     <button
       onClick={handleClick}
-      aria-label={isOpen ? 'Close menu' : 'Open menu'}
+      aria-label={
+        isOpen
+          ? (dict?.close_menu_aria?.value as string | undefined) || 'Close menu'
+          : (dict?.open_menu_aria?.value as string | undefined) || 'Open menu'
+      }
       aria-expanded={isOpen}
       data-testid="mobile-nav-toggle"
       className="p-2 text-slate-400 lg:hidden"

@@ -4,6 +4,8 @@ import { Scissors, Search } from 'lucide-react';
 import type { JSX } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import { ANY_MASTER, anySpecialistImg, MUTED, PINK } from '../constants';
 import type { BookingMaster, BookingSalon, BookingService } from '../types';
 import AnySpecialistCard from './AnySpecialistCard';
@@ -66,6 +68,8 @@ const SpecialistStep = ({
   salons: BookingSalon[];
   selectedSalon?: BookingSalon | undefined;
 }): JSX.Element => {
+  const dict = useDict();
+
   /**
    * Desktop only: cap the card grid to 2 rows + scroll, so a long roster
    * doesn't stretch the page. The 2-row height is measured from a real card.
@@ -163,7 +167,8 @@ const SpecialistStep = ({
   return (
     <div className="space-y-4" data-testid="booking-step-specialist">
       <h3 className="text-lg font-light text-slate-400">
-        Choose your specialist
+        {(dict?.booking_choose_specialist_text?.value as string | undefined) ||
+          'Choose your specialist'}
       </h3>
 
       <CategoryPills
@@ -181,7 +186,10 @@ const SpecialistStep = ({
         <input
           value={specSearch}
           onChange={(e) => setSpecSearch(e.target.value)}
-          placeholder="Search specialist by name"
+          placeholder={
+            (dict?.booking_search_specialist_placeholder?.value as
+              string | undefined) || 'Search specialist by name'
+          }
           className="flex-1 bg-transparent text-sm text-slate-400 outline-none"
         />
       </div>
@@ -197,7 +205,7 @@ const SpecialistStep = ({
             <span className="truncate text-base font-semibold text-slate-400">
               {services.length === 1
                 ? services[0]?.name
-                : `${services.length} services`}
+                : `${services.length} ${(dict?.booking_services_suffix?.value as string | undefined) || 'services'}`}
             </span>
             <span className="text-sm whitespace-nowrap text-neutral-300">
               {services.length === 1 && services[0]?.duration && (
@@ -210,7 +218,7 @@ const SpecialistStep = ({
             onClick={onClearService}
             className="text-sm font-bold tracking-wider text-fuchsia-500 uppercase"
           >
-            Change
+            {(dict?.change_text?.value as string | undefined) || 'Change'}
           </button>
         </div>
       )}
@@ -222,8 +230,14 @@ const SpecialistStep = ({
           data-testid="booking-specialists-empty"
         >
           {categoryFilter === 'All'
-            ? 'No specialists match the previous selections. Try a different studio or service.'
-            : `No ${categoryFilter} specialists match. Try another category.`}
+            ? (dict?.booking_no_specialists_text?.value as
+                string | undefined) ||
+              'No specialists match the previous selections. Try a different studio or service.'
+            : (
+                (dict?.booking_no_cat_specialists_text?.value as
+                  string | undefined) ||
+                'No %cat% specialists match. Try another category.'
+              ).replace('%cat%', categoryFilter)}
         </p>
       )}
 
@@ -263,7 +277,10 @@ const SpecialistStep = ({
             className="col-span-full py-6 text-center text-base text-neutral-300"
             data-testid="booking-specialists-search-empty"
           >
-            No specialists match “{specSearch}”.
+            {(
+              (dict?.booking_no_search_specialists_text?.value as
+                string | undefined) || 'No specialists match “%q%”.'
+            ).replace('%q%', specSearch)}
           </p>
         )}
       </div>

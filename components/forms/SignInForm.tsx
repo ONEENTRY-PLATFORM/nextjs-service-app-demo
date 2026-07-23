@@ -63,6 +63,8 @@ const SignInForm = ({
     forgot_password_text,
     create_account_text,
     sign_in_text,
+    err_auth_failed,
+    you_signed_in_text,
   } = dict;
 
   /** CMS form definition (ordered fields) plus the live values */
@@ -136,7 +138,11 @@ const SignInForm = ({
       const result = await getApi().AuthProvider.auth(tab, body);
 
       if (isError(result)) {
-        throw new Error(result.message || 'Authentication failed');
+        throw new Error(
+          result.message ||
+            (err_auth_failed?.value as string | undefined) ||
+            'Authentication failed',
+        );
       }
 
       /** Write tokens into the current SDK instance and fetch the user. */
@@ -151,9 +157,17 @@ const SignInForm = ({
       /** Clear any previous error messages */
       setError('');
       /** Show success notification */
-      toast('You signed in!');
+      toast(
+        (you_signed_in_text?.value as string | undefined) || 'You signed in!',
+      );
     } catch (err) {
-      setError(toErrorMessage(err, 'Authentication failed'));
+      setError(
+        toErrorMessage(
+          err,
+          (err_auth_failed?.value as string | undefined) ||
+            'Authentication failed',
+        ),
+      );
     } finally {
       /** Reset loading state after authentication attempt */
       setLoading(false);

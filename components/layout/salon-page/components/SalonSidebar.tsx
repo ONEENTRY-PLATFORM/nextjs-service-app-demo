@@ -1,6 +1,8 @@
 import { Clock, MapPin, Phone } from 'lucide-react';
 import type { ComponentType, JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import type { SalonDetail } from '../types';
 
 /**
@@ -66,6 +68,7 @@ const Row = ({
  * @returns {JSX.Element}             Sidebar with the info card and map
  */
 const SalonSidebar = ({ salon }: { salon: SalonDetail }): JSX.Element => {
+  const dict = useDict();
   const c = salon.color;
   return (
     <aside className="flex flex-col gap-4">
@@ -74,17 +77,38 @@ const SalonSidebar = ({ salon }: { salon: SalonDetail }): JSX.Element => {
         style={{ border: `1.5px solid ${c}22`, boxShadow: `0 4px 24px ${c}10` }}
       >
         <div className="flex flex-col gap-3">
-          <Row icon={MapPin} color={c} label="Address" value={salon.address} />
+          <Row
+            icon={MapPin}
+            color={c}
+            label={
+              (dict?.salon_address_label?.value as string | undefined) ||
+              'Address'
+            }
+            value={salon.address}
+          />
           {salon.phone && (
             <Row
               icon={Phone}
               color={c}
-              label="Phone"
+              label={
+                (dict?.salon_phone_label?.value as string | undefined) ||
+                'Phone'
+              }
               value={salon.phone}
               href={`tel:${salon.tel}`}
             />
           )}
-          <Row icon={Clock} color={c} label="Hours" value="Daily 10:00–22:00" />
+          <Row
+            icon={Clock}
+            color={c}
+            label={
+              (dict?.salon_hours_label?.value as string | undefined) || 'Hours'
+            }
+            value={
+              (dict?.salon_hours_value?.value as string | undefined) ||
+              'Daily 10:00–22:00'
+            }
+          />
         </div>
       </div>
 

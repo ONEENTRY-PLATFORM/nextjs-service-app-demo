@@ -31,7 +31,10 @@ const ProfileCard = ({
   user?: IUserEntity | undefined;
 }): JSX.Element => {
   /** Card title from CMS with an English fallback. */
-  const title = page.localizeInfos?.title || 'Profile';
+  const title =
+    page.localizeInfos?.title ||
+    (dict.profile_title?.value as string | undefined) ||
+    'Profile';
   /** Best-effort display name for the avatar and name row. */
   const name = getUserDisplayName(user);
   /** Sign-out label from the dictionary with an English fallback. */

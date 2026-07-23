@@ -1,13 +1,13 @@
 import { renderHook } from '@testing-library/react';
 
 import { ANY_MASTER } from '@/components/layout/booking-page/constants';
+import { useBookingFilters } from '@/components/layout/booking-page/hooks/useBookingFilters';
 import type {
   BookingData,
   BookingMaster,
   BookingSalon,
   BookingService,
 } from '@/components/layout/booking-page/types';
-import { useBookingFilters } from '@/components/layout/booking-page/useBookingFilters';
 
 /**
  * Minimal service stub.

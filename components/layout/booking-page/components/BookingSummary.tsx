@@ -4,6 +4,8 @@ import { Calendar, MapPin, Scissors, User } from 'lucide-react';
 import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces';
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import { BRAND_GRADIENT, MONTHS, MUTED, PINK, PINK2 } from '../constants';
 import type {
   BookingFlow,
@@ -79,6 +81,8 @@ const BookingSummary = ({
   error: string;
   onReset: () => void;
 }): JSX.Element => {
+  const dict = useDict();
+
   const hasAny = Boolean(
     salon || services.length || master || masterAny || date,
   );
@@ -122,33 +126,40 @@ const BookingSummary = ({
       >
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold tracking-wide text-white uppercase opacity-80">
-            Booking Summary
+            {(dict?.booking_summary_title?.value as string | undefined) ||
+              'Booking Summary'}
           </p>
           {flow && (
             <button
               onClick={onReset}
               className="rounded-full border border-white/70 px-3.5 py-1.5 text-sm font-bold tracking-wider text-white uppercase opacity-90 hover:opacity-100 md:rounded-none md:border-0 md:p-0 md:opacity-80"
             >
-              Reset
+              {(dict?.reset_text?.value as string | undefined) || 'Reset'}
             </button>
           )}
         </div>
-        <p className="mt-1 text-2xl font-bold text-white">Your Appointment</p>
+        <p className="mt-1 text-2xl font-bold text-white">
+          {(dict?.booking_your_appointment_text?.value as string | undefined) ||
+            'Your Appointment'}
+        </p>
         {flow && (
           <p
             data-testid="booking-summary-flow"
             className="mt-1 hidden text-sm tracking-widest text-white/80 uppercase md:block"
           >
             {flow === 'specialist-first'
-              ? 'Choose-a-specialist flow'
-              : 'Studio-first flow'}
+              ? (dict?.booking_flow_specialist_text?.value as
+                  string | undefined) || 'Choose-a-specialist flow'
+              : (dict?.booking_flow_studio_text?.value as string | undefined) ||
+                'Studio-first flow'}
           </p>
         )}
       </div>
       <div className="flex flex-col space-y-4 rounded-b-3xl bg-white p-6 md:flex-1 md:p-8">
         {!flow && (
           <p className="flex flex-1 items-center justify-center text-center text-base text-neutral-300">
-            Choose how to start to see your booking details
+            {(dict?.booking_choose_start_hint?.value as string | undefined) ||
+              'Choose how to start to see your booking details'}
           </p>
         )}
         {/* The picked rows stay in view while the (much taller) step column
@@ -156,13 +167,17 @@ const BookingSummary = ({
         <div className="flex flex-col space-y-4 xl:sticky xl:top-24">
           {flow && !hasAny && (
             <p className="py-6 text-center text-base text-neutral-300">
-              Complete the steps to see your booking details
+              {(dict?.booking_complete_steps_hint?.value as
+                string | undefined) ||
+                'Complete the steps to see your booking details'}
             </p>
           )}
           {salon && (
             <SummaryRow
               icon={<MapPin size={15} />}
-              label="Studio"
+              label={
+                (dict?.studio_text?.value as string | undefined) || 'Studio'
+              }
               value={salon.name}
               sub={salon.address}
             />
@@ -171,7 +186,9 @@ const BookingSummary = ({
             <SummaryRow
               key={service.id}
               icon={<Scissors size={15} />}
-              label="Service"
+              label={
+                (dict?.service_text?.value as string | undefined) || 'Service'
+              }
               value={service.name}
               sub={
                 <>
@@ -185,24 +202,38 @@ const BookingSummary = ({
           {masterAny && !master && (
             <SummaryRow
               icon={<User size={15} />}
-              label="Specialist"
-              value="Any specialist"
-              sub="Best available match"
+              label={
+                (dict?.specialist_text?.value as string | undefined) ||
+                'Specialist'
+              }
+              value={
+                (dict?.booking_any_specialist_text?.value as
+                  string | undefined) || 'Any specialist'
+              }
+              sub={
+                (dict?.booking_best_match_text?.value as string | undefined) ||
+                'Best available match'
+              }
             />
           )}
           {date && (
             <SummaryRow
               icon={<Calendar size={15} />}
-              label="Date"
+              label={(dict?.date_text?.value as string | undefined) || 'Date'}
               value={formatDate(date)}
-              sub={time ? `at ${time}` : 'Time not selected'}
+              sub={
+                time
+                  ? `${(dict?.booking_at_prefix?.value as string | undefined) || 'at'} ${time}`
+                  : (dict?.booking_time_not_selected_text?.value as
+                      string | undefined) || 'Time not selected'
+              }
             />
           )}
           {total !== null && (
             <div className="border-t pt-4" style={{ borderColor: '#e8e8f0' }}>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-neutral-300">
-                  Total
+                  {(dict?.total_text?.value as string | undefined) || 'Total'}
                 </span>
                 <span className="text-xl font-bold whitespace-nowrap text-slate-400">
                   <Price amount={total} currency={totalCurrency} />
@@ -227,8 +258,11 @@ const BookingSummary = ({
                 at the bottom — aligning with the Continue button on the left */}
               {!ready && stepsRemaining > 0 && (
                 <p className="mb-2 text-center text-sm text-neutral-300">
-                  {stepsRemaining} more step{stepsRemaining > 1 ? 's' : ''} to
-                  complete
+                  {(
+                    (dict?.booking_more_steps_text?.value as
+                      string | undefined) ||
+                    `${stepsRemaining} more step${stepsRemaining > 1 ? 's' : ''} to complete`
+                  ).replace('%n%', String(stepsRemaining))}
                 </p>
               )}
               {error && (
@@ -247,12 +281,20 @@ const BookingSummary = ({
                 }}
               >
                 {isLoading
-                  ? 'Booking…'
+                  ? (dict?.booking_progress_text?.value as
+                      string | undefined) || 'Booking…'
                   : ready
                     ? isLoggedIn
-                      ? 'Book Appointment'
-                      : 'Sign in to book'
-                    : `Step ${currentIdx + 1} of ${totalSteps}`}
+                      ? (dict?.book_appointment_text?.value as
+                          string | undefined) || 'Book Appointment'
+                      : (dict?.sign_in_to_book_text?.value as
+                          string | undefined) || 'Sign in to book'
+                    : (
+                        (dict?.booking_step_of_text?.value as
+                          string | undefined) || 'Step %x% of %y%'
+                      )
+                        .replace('%x%', String(currentIdx + 1))
+                        .replace('%y%', String(totalSteps))}
               </button>
             </div>
           </div>

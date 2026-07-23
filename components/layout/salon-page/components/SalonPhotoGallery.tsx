@@ -4,6 +4,8 @@ import NextImage from 'next/image';
 import type { JSX, UIEvent } from 'react';
 import { useState } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import type { SalonPhoto } from '../types';
 
 /**
@@ -41,6 +43,7 @@ const SalonPhotoGallery = ({
   accent: string;
   onOpen: (i: number) => void;
 }): JSX.Element => {
+  const dict = useDict();
   const [active, setActive] = useState(0);
   const hero = photos[0];
   const rest = photos.slice(1);
@@ -79,7 +82,7 @@ const SalonPhotoGallery = ({
             <button
               key={i}
               onClick={() => onOpen(i)}
-              aria-label={`Open salon photo ${i + 1}`}
+              aria-label={`${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} ${i + 1}`}
               className="relative aspect-5/4 w-[86%] shrink-0 snap-center overflow-hidden rounded-2xl"
             >
               <NextImage
@@ -112,7 +115,7 @@ const SalonPhotoGallery = ({
         {hero && (
           <button
             onClick={() => onOpen(0)}
-            aria-label="Open salon photo 1"
+            aria-label={`${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} 1`}
             className="group relative aspect-5/4 overflow-hidden rounded-2xl lg:aspect-auto lg:h-full lg:min-h-100"
           >
             <NextImage
@@ -142,8 +145,11 @@ const SalonPhotoGallery = ({
                 onClick={() => onOpen(i + 1)}
                 aria-label={
                   isLastWithMore
-                    ? `View ${moreCount} more salon photos`
-                    : `Open salon photo ${i + 2}`
+                    ? (
+                        (dict?.view_more_photos_aria?.value as
+                          string | undefined) || 'View %n% more salon photos'
+                      ).replace('%n%', String(moreCount))
+                    : `${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} ${i + 2}`
                 }
                 className="group relative aspect-5/4 overflow-hidden rounded-2xl"
               >

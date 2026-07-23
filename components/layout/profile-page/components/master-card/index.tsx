@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
 import StarsGroup from '@/components/shared/StarsGroup';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 
@@ -28,11 +29,14 @@ const MasterCard = ({
   masterId?: number | undefined;
   index?: number | undefined;
 }): JSX.Element => {
+  const dict = useDict();
+
   /** Extract master's image source, name, role and rating from attribute values */
   const imgSrc = fileDisplayUrl(attributeValues?.master_image?.value);
   const masterName = attributeValues?.master_name?.value as string | undefined;
   const masterRole =
     (attributeValues?.master_short_description?.value as string | undefined) ||
+    (dict?.specialist_text?.value as string | undefined) ||
     'Specialist';
   const masterRating =
     (attributeValues?.master_rating?.value as number | undefined) ?? 0;

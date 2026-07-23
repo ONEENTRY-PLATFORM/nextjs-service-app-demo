@@ -100,7 +100,10 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
   /** Counters strip: the hours cell only works while the week is uniform. */
   const openingSummary = summarizeOpeningHours(openingRows);
 
-  const title = page?.localizeInfos?.title ?? 'Contacts';
+  const title =
+    page?.localizeInfos?.title ??
+    (dict?.contacts_title?.value as string | undefined) ??
+    'Contacts';
 
   return (
     <div className="bg-white" data-testid="contacts-page">
@@ -110,11 +113,24 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
       {/* Hero + stats strip (desktop only) — revealed together as one header */}
       <ContactsHero
         title={title}
-        subtitle={`${salons.length} locations · Always happy to see you`}
+        subtitle={`${salons.length} ${
+          (dict?.contacts_locations_suffix?.value as string | undefined) ||
+          'locations · Always happy to see you'
+        }`}
         stats={[
-          [salons.length, 'Locations'],
+          [
+            salons.length,
+            (dict?.services_stat_locations?.value as string | undefined) ||
+              'Locations',
+          ],
           ...(openingSummary
-            ? ([['Daily', openingSummary.hours]] as Array<[string, string]>)
+            ? ([
+                [
+                  (dict?.stat_daily_text?.value as string | undefined) ||
+                    'Daily',
+                  openingSummary.hours,
+                ],
+              ] as Array<[string, string]>)
             : []),
           ['Dubai', 'UAE'],
         ]}
@@ -127,7 +143,8 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
       <section className="bg-white pt-2 pb-6 md:pt-6 md:pb-10">
         <div className="page-shell">
           <SectionHeading className="mb-6 md:mb-10">
-            Get in Touch
+            {(dict?.get_in_touch_title?.value as string | undefined) ||
+              'Get in Touch'}
           </SectionHeading>
           <RevealAnimations className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-5">
             <div className="lg:col-span-3">

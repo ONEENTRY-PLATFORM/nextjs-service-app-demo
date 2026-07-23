@@ -1,8 +1,10 @@
 import { Link } from 'next-transition-router';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX, Key } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 import CatalogCard from './CatalogCard';
 import CategoryTile, { CATEGORY_TILES } from './CategoryTile';
@@ -17,11 +19,18 @@ import CategoryTile, { CATEGORY_TILES } from './CategoryTile';
  * @returns {Promise<JSX.Element>} JSX.Element representing the grid of catalog cards or error message
  */
 const CatalogGrid = async (): Promise<JSX.Element> => {
+  /** UI-text dictionary (system_content) with English fallbacks */
+  const [dict] = ServerProvider<IAttributeValues>('dict');
   /** Fetch child pages by parent URL for services category */
   const { pages, isError } = await getChildPagesByParentUrl('services');
   /** Show error message if pages failed to load */
   if (!pages || isError) {
-    return <div data-testid="catalog-error">Error loading pages.</div>;
+    return (
+      <div data-testid="catalog-error">
+        {(dict?.error_loading_pages_text?.value as string | undefined) ||
+          'Error loading pages.'}
+      </div>
+    );
   }
 
   /** Placeholder tiles until the service categories are created in the CMS */

@@ -37,7 +37,7 @@ export const ForgotPasswordForm = ({
   const [isError, setError] = useState<string>('');
 
   /** Extract localized text values from dictionary */
-  const { reset_descr, send_text } = dict;
+  const { reset_descr, send_text, err_send_code_failed } = dict;
 
   /** Get form data with RTK from API */
   const { attributes, fields, isLoading, hasForm } = useCmsForm('reg');
@@ -67,7 +67,11 @@ export const ForgotPasswordForm = ({
         EVENT_PASSWORD_RESET,
       );
       if (isSdkError(result)) {
-        setError(result.message || 'Could not send the verification code');
+        setError(
+          result.message ||
+            (err_send_code_failed?.value as string | undefined) ||
+            'Could not send the verification code',
+        );
         /** A 400 means a code is already active — let the user enter it. */
         if (result.statusCode === 400) {
           setComponent('VerificationForm');

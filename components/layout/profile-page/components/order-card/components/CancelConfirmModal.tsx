@@ -3,6 +3,7 @@
 import { X } from 'lucide-react';
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
 import DialogPortal from '@/components/shared/DialogPortal';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 
@@ -29,6 +30,8 @@ const CancelConfirmModal = ({
   onKeep: () => void;
   onConfirm: () => void;
 }): JSX.Element => {
+  const dict = useDict();
+
   /** Dialog a11y: focus trap/restore, scroll lock and Escape → keep. */
   const dialogRef = useDialogA11y({ isOpen: true, onClose: onKeep });
 
@@ -39,7 +42,10 @@ const CancelConfirmModal = ({
         data-testid="order-cancel-confirm"
         role="dialog"
         aria-modal="true"
-        aria-label="Cancel this appointment?"
+        aria-label={
+          (dict?.cancel_this_appointment_title?.value as string | undefined) ||
+          'Cancel this appointment?'
+        }
         className="fixed inset-0 z-300 flex items-center justify-center p-4"
         style={{ background: 'rgba(20,20,30,0.45)' }}
         onClick={(e) => {
@@ -53,13 +59,15 @@ const CancelConfirmModal = ({
             <X size={26} color="#ed21f1" />
           </div>
           <h3 className="mb-1 text-lg font-bold text-slate-400">
-            Cancel this appointment?
+            {(dict?.cancel_this_appointment_title?.value as
+              string | undefined) || 'Cancel this appointment?'}
           </h3>
           {subtitle ? (
             <p className="mb-2 text-sm text-neutral-300">{subtitle}</p>
           ) : null}
           <p className="mb-5 text-base text-neutral-300">
-            Free cancellation up to 24 hours before your appointment.
+            {(dict?.free_cancellation_text?.value as string | undefined) ||
+              'Free cancellation up to 24 hours before your appointment.'}
           </p>
           <div className="flex gap-2">
             <button
@@ -67,7 +75,8 @@ const CancelConfirmModal = ({
               data-testid="order-cancel-keep"
               className="flex-1 rounded-xl bg-gradient-brand py-2.5 text-base font-bold text-white transition-all hover:opacity-90"
             >
-              Keep appointment
+              {(dict?.keep_appointment_text?.value as string | undefined) ||
+                'Keep appointment'}
             </button>
             <button
               onClick={onConfirm}
@@ -75,7 +84,11 @@ const CancelConfirmModal = ({
               data-testid="order-cancel-yes"
               className="flex-1 rounded-xl border border-slate-150 py-2.5 text-sm font-medium text-neutral-300 transition-all hover:bg-gray-50 disabled:opacity-60"
             >
-              {isPending ? 'Cancelling…' : 'Yes, cancel'}
+              {isPending
+                ? (dict?.cancelling_text?.value as string | undefined) ||
+                  'Cancelling…'
+                : (dict?.yes_cancel_text?.value as string | undefined) ||
+                  'Yes, cancel'}
             </button>
           </div>
         </div>

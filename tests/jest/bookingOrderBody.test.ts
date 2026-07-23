@@ -1,11 +1,11 @@
-import { buildOrderFormData } from '@/components/layout/booking-page/buildOrderFormData';
-import { buildOrderProducts } from '@/components/layout/booking-page/buildOrderProducts';
-import { toBookingInterval } from '@/components/layout/booking-page/toBookingInterval';
 import type {
   BookingMaster,
   BookingSalon,
   BookingService,
 } from '@/components/layout/booking-page/types';
+import { buildOrderFormData } from '@/components/layout/booking-page/utils/buildOrderFormData';
+import { buildOrderProducts } from '@/components/layout/booking-page/utils/buildOrderProducts';
+import { toBookingInterval } from '@/components/layout/booking-page/utils/toBookingInterval';
 
 /**
  * service — a minimal bookable service for the tests.

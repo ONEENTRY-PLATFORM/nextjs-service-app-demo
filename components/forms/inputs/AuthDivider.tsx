@@ -1,4 +1,8 @@
+'use client';
+
 import type { JSX } from 'react';
+
+import { useDict } from '@/app/store/providers/useDict';
 
 /**
  * "or continue with" hairline divider between the credential form and the
@@ -6,18 +10,21 @@ import type { JSX } from 'react';
  * A template addition — the static-html mock has no social sign-in at all;
  * kept because Google OAuth is wired through the CMS auth providers.
  * @param   {object}      props      - Component props
- * @param   {string}      props.text - Divider label (default "or continue with")
+ * @param   {string}      props.text - Divider label; falls back to the CMS dictionary, then "or continue with"
  * @returns {JSX.Element}            The divider row
  */
-const AuthDivider = ({
-  text = 'or continue with',
-}: {
-  text?: string;
-}): JSX.Element => {
+const AuthDivider = ({ text }: { text?: string }): JSX.Element => {
+  /** UI-text dictionary for the localized divider label */
+  const dict = useDict();
+  const label =
+    text ??
+    (dict?.or_continue_with_text?.value as string | undefined) ??
+    'or continue with';
+
   return (
     <div className="flex items-center gap-3">
       <span className="h-px flex-1 bg-slate-150" />
-      <span className="text-sm text-neutral-300">{text}</span>
+      <span className="text-sm text-neutral-300">{label}</span>
       <span className="h-px flex-1 bg-slate-150" />
     </div>
   );

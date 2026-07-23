@@ -9,6 +9,7 @@ import { LANG_CODE } from '@/app/api/api/api';
 import { getMenuByMarker } from '@/app/api/server/menus/getMenuByMarker';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { AuthProvider } from '@/app/store/providers/AuthProvider';
+import { DictProvider } from '@/app/store/providers/DictProvider';
 import { OpenDrawerProvider } from '@/app/store/providers/OpenDrawerContext';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import StoreProvider from '@/app/store/providers/StoreProvider';
@@ -163,10 +164,13 @@ export default async function RootLayout({
           className={`${lato.variable} ${leagueGothic.variable} flex min-h-screen flex-col`}
         >
           <main className="flex grow flex-col items-center justify-center gap-3 p-8 text-center">
-            <h1 className="text-2xl font-bold">Site temporarily unavailable</h1>
+            <h1 className="text-2xl font-bold">
+              {(dict?.site_unavailable_title?.value as string | undefined) ||
+                'Site temporarily unavailable'}
+            </h1>
             <p className="text-base text-neutral-600">
-              The content service is currently unavailable. Please try again
-              later.
+              {(dict?.site_unavailable_desc?.value as string | undefined) ||
+                'The content service is currently unavailable. Please try again later.'}
             </p>
           </main>
         </body>
@@ -189,21 +193,27 @@ export default async function RootLayout({
         <StoreProvider>
           <AuthProvider>
             <OpenDrawerProvider>
-              <Header menu={safeMenu} />
-              <TransitionProvider>
-                {/* Spacer matching the fixed header height (h-20) */}
-                <div className="h-20"></div>
-                {/* `overflow-x-clip`, not `overflow-hidden`: it still contains
-                    horizontal overflow, but keeps the viewport as the scroll
-                    container so `position: sticky` works inside pages. */}
-                <main className="flex grow flex-col overflow-x-clip">
-                  {children}
-                </main>
-                <Footer dict={dict} />
-              </TransitionProvider>
-              <BottomMenu />
-              {/* Mounts (and downloads) only the popup that is actually open. */}
-              <PopupRoot dict={dict} />
+              {/* Dictionary for the client half of the tree — server components
+                  still read it via `ServerProvider('dict')`, client ones via
+                  `useDict()`. Wraps Header/children/Footer/PopupRoot so every
+                  client component can read localized copy without a `dict` prop. */}
+              <DictProvider dict={dict}>
+                <Header menu={safeMenu} />
+                <TransitionProvider>
+                  {/* Spacer matching the fixed header height (h-20) */}
+                  <div className="h-20"></div>
+                  {/* `overflow-x-clip`, not `overflow-hidden`: it still contains
+                      horizontal overflow, but keeps the viewport as the scroll
+                      container so `position: sticky` works inside pages. */}
+                  <main className="flex grow flex-col overflow-x-clip">
+                    {children}
+                  </main>
+                  <Footer dict={dict} />
+                </TransitionProvider>
+                <BottomMenu />
+                {/* Mounts (and downloads) only the popup that is actually open. */}
+                <PopupRoot dict={dict} />
+              </DictProvider>
             </OpenDrawerProvider>
           </AuthProvider>
           <IntroAnimations />

@@ -3,6 +3,8 @@
 import { Send } from 'lucide-react';
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import ErrorMessage from '../../forms/inputs/ErrorMessage';
 import FormReCaptcha from '../../forms/inputs/FormReCaptcha';
 import ContactFormField from './contact-form/ContactFormField';
@@ -19,6 +21,7 @@ import { useContactForm } from './contact-form/useContactForm';
  * @returns {JSX.Element} Contact form card
  */
 const ContactFormCard = (): JSX.Element => {
+  const dict = useDict();
   const {
     fields,
     set,
@@ -38,7 +41,7 @@ const ContactFormCard = (): JSX.Element => {
       style={{ boxShadow: '0 4px 32px rgba(237,33,241,0.08)' }}
     >
       <p className="mb-6 ml-2 text-sm font-black tracking-[0.25em] text-accent-pink uppercase md:ml-0">
-        Write to us
+        {(dict?.write_to_us_text?.value as string | undefined) || 'Write to us'}
       </p>
 
       {sent ? (
@@ -52,7 +55,8 @@ const ContactFormCard = (): JSX.Element => {
           {/* Success copy comes from the form's own CMS settings when set. */}
           <p className="text-lg font-bold text-slate-400">{successMessage}</p>
           <p className="text-sm text-neutral-300">
-            We&apos;ll get back to you within 24 hours.
+            {(dict?.contact_success_sub_text?.value as string | undefined) ||
+              "We'll get back to you within 24 hours."}
           </p>
         </div>
       ) : (
@@ -64,35 +68,56 @@ const ContactFormCard = (): JSX.Element => {
           <div className="space-y-5">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <ContactFormField
-                label="Your name"
+                label={
+                  (dict?.contact_name_label?.value as string | undefined) ||
+                  'Your name'
+                }
                 value={fields.name}
                 onChange={set('name')}
-                placeholder="Jane Doe"
+                placeholder={
+                  (dict?.contact_name_placeholder?.value as
+                    string | undefined) || 'Jane Doe'
+                }
                 type="text"
               />
               <ContactFormField
-                label="Phone"
+                label={
+                  (dict?.phone_text?.value as string | undefined) || 'Phone'
+                }
                 value={fields.phone}
                 onChange={set('phone')}
-                placeholder="+971 50 123 4567"
+                placeholder={
+                  (dict?.contact_phone_placeholder?.value as
+                    string | undefined) || '+971 50 123 4567'
+                }
                 type="tel"
               />
             </div>
             <ContactFormField
-              label="E-mail"
+              label={
+                (dict?.contact_email_label?.value as string | undefined) ||
+                'E-mail'
+              }
               value={fields.email}
               onChange={set('email')}
-              placeholder="you@example.com"
+              placeholder={
+                (dict?.contact_email_placeholder?.value as
+                  string | undefined) || 'you@example.com'
+              }
               type="email"
             />
             <div>
               <label className="mb-2.5 block text-base font-normal text-neutral-300">
-                Message
+                {(dict?.contact_message_label?.value as string | undefined) ||
+                  'Message'}
               </label>
               <textarea
                 value={fields.contact_text}
                 onChange={(e) => set('contact_text')(e.target.value)}
-                placeholder="How can we help you?"
+                placeholder={
+                  (dict?.contact_message_placeholder?.value as
+                    string | undefined) || 'How can we help you?'
+                }
                 rows={4}
                 className="w-full resize-none rounded-2xl border border-slate-240 px-4 py-3 text-base text-slate-400 transition-all outline-none focus:border-accent-pink"
               />
@@ -116,7 +141,11 @@ const ContactFormCard = (): JSX.Element => {
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-brand py-3.5 text-base font-bold tracking-wider text-white uppercase transition-transform duration-200 hover:scale-102 active:scale-95 disabled:opacity-70 md:mt-auto"
             style={{ boxShadow: '0 8px 24px #ed21f144' }}
           >
-            <Send size={15} /> {loading ? 'Sending…' : 'Send Message'}
+            <Send size={15} />{' '}
+            {loading
+              ? (dict?.sending_text?.value as string | undefined) || 'Sending…'
+              : (dict?.send_message_text?.value as string | undefined) ||
+                'Send Message'}
           </button>
         </form>
       )}

@@ -76,7 +76,10 @@ const CancelOrderButton = ({
   /** Reason the server refused the cancellation, shown by the error dialog */
   const [errorMessage, setErrorMessage] = useState('');
   /** Headline of the error dialog — the refund branch fails under its own name */
-  const [errorTitle, setErrorTitle] = useState('Appointment not cancelled');
+  const [errorTitle, setErrorTitle] = useState(
+    (dict.appointment_not_cancelled_title?.value as string | undefined) ||
+      'Appointment not cancelled',
+  );
 
   /** Memoized function to handle order cancellation */
   const cancelOrderHandle = useCallback(async () => {
@@ -123,7 +126,10 @@ const CancelOrderButton = ({
         setStage('refund');
         return;
       }
-      setErrorTitle('Appointment not cancelled');
+      setErrorTitle(
+        (dict.appointment_not_cancelled_title?.value as string | undefined) ||
+          'Appointment not cancelled',
+      );
       setErrorMessage(formatOrderCancelError(e));
       setStage('error');
       return;
@@ -131,7 +137,7 @@ const CancelOrderButton = ({
 
     /** The list refreshes itself — show the mock's success dialog. */
     setStage('done');
-  }, [orderData, updateOrder]);
+  }, [orderData, updateOrder, dict]);
 
   /**
    * Ask the salon to refund the paid appointment.
@@ -156,14 +162,17 @@ const CancelOrderButton = ({
         body: { products, note: 'Cancellation requested from the profile' },
       }).unwrap();
     } catch (e) {
-      setErrorTitle('Refund not requested');
+      setErrorTitle(
+        (dict.refund_not_requested_title?.value as string | undefined) ||
+          'Refund not requested',
+      );
       setErrorMessage(formatRefundError(e));
       setStage('error');
       return;
     }
 
     setStage('refund-done');
-  }, [orderData, createRefundRequest]);
+  }, [orderData, createRefundRequest, dict]);
 
   /**
    * Confirm-dialog visit line, mock format: "Master · DD.MM.YYYY at HH:MM".

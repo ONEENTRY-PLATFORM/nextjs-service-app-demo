@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import SwapAnimations from '@/app/animations/SwapAnimations';
 import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
+import { useDict } from '@/app/store/providers/useDict';
 
 import MobileSpecialistList from './components/MobileSpecialistList';
 import SalonFilter from './components/SalonFilter';
@@ -37,6 +38,7 @@ const MastersPageContent = ({
   masters: MasterItem[];
   salons: SalonOption[];
 }): JSX.Element => {
+  const dict = useDict();
   const [mainCat, setMainCat] = useState<MastersMainCategory>('HAIR');
   /** Selected salon id; `null` = all salons */
   const [salonId, setSalonId] = useState<number | null>(null);
@@ -133,7 +135,11 @@ const MastersPageContent = ({
         <div className="mt-5 flex items-center justify-center gap-4">
           <p className="text-sm text-neutral-300">
             {rendered.length}{' '}
-            {rendered.length === 1 ? 'specialist' : 'specialists'}
+            {rendered.length === 1
+              ? (dict?.specialists_word_singular?.value as
+                  string | undefined) || 'specialist'
+              : (dict?.specialists_word_plural?.value as string | undefined) ||
+                'specialists'}
           </p>
           {hasActiveFilter && (
             <button
@@ -141,7 +147,9 @@ const MastersPageContent = ({
               onClick={clearAll}
               className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-bold tracking-wider text-accent-pink uppercase transition-colors hover:bg-fuchsia-500/10"
             >
-              <X size={17} /> Clear all
+              <X size={17} />{' '}
+              {(dict?.clear_all_text?.value as string | undefined) ||
+                'Clear all'}
             </button>
           )}
         </div>

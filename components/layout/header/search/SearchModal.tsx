@@ -5,6 +5,8 @@ import type { JSX } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useDebounce } from 'use-debounce';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import SearchResultsList from './SearchResultsList';
 
 /**
@@ -17,6 +19,8 @@ import SearchResultsList from './SearchResultsList';
  * @returns {JSX.Element}                   JSX.Element representing the search icon and popup
  */
 const SearchModal = ({ placeholder }: { placeholder: string }): JSX.Element => {
+  /** UI-text dictionary for the localized empty-state copy and aria-label */
+  const dict = useDict();
   const [open, setOpen] = useState(false);
   const [term, setTerm] = useState('');
   const [debouncedTerm] = useDebounce(term.trim(), 300);
@@ -74,7 +78,10 @@ const SearchModal = ({ placeholder }: { placeholder: string }): JSX.Element => {
               />
               <button
                 onClick={close}
-                aria-label="Close search"
+                aria-label={
+                  (dict?.close_search_aria?.value as string | undefined) ||
+                  'Close search'
+                }
                 className="rounded-lg p-1.5 text-neutral-300 transition-colors hover:bg-gray-100"
               >
                 <X size={18} />
@@ -85,7 +92,9 @@ const SearchModal = ({ placeholder }: { placeholder: string }): JSX.Element => {
             <div className="max-h-[60vh] overflow-y-auto">
               {!debouncedTerm ? (
                 <p className="px-5 py-8 text-center text-sm text-neutral-300">
-                  Start typing to find a service or a specialist.
+                  {(dict?.search_start_typing_text?.value as
+                    string | undefined) ||
+                    'Start typing to find a service or a specialist.'}
                 </p>
               ) : (
                 <SearchResultsList

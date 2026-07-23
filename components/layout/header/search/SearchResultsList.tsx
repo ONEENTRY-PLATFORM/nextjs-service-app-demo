@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 
 import { useGetAdminsQuery } from '@/app/api/api/RTKApi';
 import { useSearchProducts } from '@/app/api/hooks/useSearchProducts';
+import { useDict } from '@/app/store/providers/useDict';
 import { isOfferProduct } from '@/app/utils/isOfferProduct';
 import Spinner from '@/components/shared/Spinner';
 
@@ -28,6 +29,8 @@ const SearchResultsList = ({
   searchValue: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }): JSX.Element => {
+  /** UI-text dictionary for the localized section titles and empty state */
+  const dict = useDict();
   /** Fetch products based on search value using custom hook */
   const { loading, products } = useSearchProducts({ name: searchValue });
   /** All masters — cached by RTK Query, filtered locally by the search term */
@@ -74,7 +77,10 @@ const SearchResultsList = ({
         data-testid="search-empty"
         className="px-5 py-8 text-center text-sm text-neutral-300"
       >
-        Nothing found for “{searchValue}”.
+        {(
+          (dict?.search_nothing_found_text?.value as string | undefined) ||
+          'Nothing found for “%q%”.'
+        ).replace('%q%', searchValue)}
       </p>
     ) : (
       <></>
@@ -86,7 +92,8 @@ const SearchResultsList = ({
       {specialists.length > 0 && (
         <div className="py-1">
           <p className="px-5 py-1.5 text-sm font-black tracking-widest text-neutral-300 uppercase">
-            Specialists
+            {(dict?.specialists_text?.value as string | undefined) ||
+              'Specialists'}
           </p>
           {specialists.map((admin) => (
             <SpecialistRow key={admin.id} admin={admin} setOpen={setOpen} />
@@ -97,7 +104,7 @@ const SearchResultsList = ({
       {services.length > 0 && (
         <div className="py-1">
           <p className="px-5 py-1.5 text-sm font-black tracking-widest text-neutral-300 uppercase">
-            Services
+            {(dict?.services_text?.value as string | undefined) || 'Services'}
           </p>
           {/* Each row resolves (and caches) its own catalog page — see ProductRow. */}
           {services.map((product) => {

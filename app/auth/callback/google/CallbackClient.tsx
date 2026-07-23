@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { getApi } from '@/app/api/api/api';
 import { googleOAuthAction } from '@/app/api/server/auth/googleOAuthAction';
 import { AuthContext } from '@/app/store/providers/AuthContext';
+import { useDict } from '@/app/store/providers/useDict';
 import { parseOAuthState } from '@/app/utils/parseOAuthState';
 import Spinner from '@/components/shared/Spinner';
 
@@ -31,6 +32,7 @@ const CallbackClient = (): JSX.Element => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { login } = useContext(AuthContext);
+  const dict = useDict();
   const [error, setError] = useState<string | null>(null);
   /** StrictMode / re-render guard — the code is single-use, exchange it once. */
   const processed = useRef(false);
@@ -47,7 +49,11 @@ const CallbackClient = (): JSX.Element => {
     if (errorParam || !code) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setError(
-        errorParam ? 'Authorization was canceled' : 'No authorization code',
+        errorParam
+          ? (dict?.err_auth_canceled?.value as string | undefined) ||
+              'Authorization was canceled'
+          : (dict?.err_no_auth_code?.value as string | undefined) ||
+              'No authorization code',
       );
       setTimeout(() => router.push(returnPath), 2500);
       return;
@@ -69,7 +75,9 @@ const CallbackClient = (): JSX.Element => {
         const rawMessage = result.error?.message;
         const message = Array.isArray(rawMessage)
           ? rawMessage.join('; ')
-          : (rawMessage ?? 'Google sign-in failed');
+          : (rawMessage ??
+            ((dict?.err_google_sign_in?.value as string | undefined) ||
+              'Google sign-in failed'));
         setError(message);
         setTimeout(() => router.push(returnPath), 3000);
         return;
@@ -81,10 +89,13 @@ const CallbackClient = (): JSX.Element => {
         refreshToken: result.token.refreshToken,
         authProviderMarker: 'google',
       });
-      toast('You signed in!');
+      toast(
+        (dict?.you_signed_in_text?.value as string | undefined) ||
+          'You signed in!',
+      );
       router.push(returnPath);
     })();
-  }, [searchParams, router, login]);
+  }, [searchParams, router, login, dict]);
 
   if (error) {
     return (
@@ -95,7 +106,10 @@ const CallbackClient = (): JSX.Element => {
         <p data-testid="oauth-error" className="text-lg text-red-500">
           {error}
         </p>
-        <p className="text-sm text-neutral-300">Redirecting…</p>
+        <p className="text-sm text-neutral-300">
+          {(dict?.redirecting_text?.value as string | undefined) ||
+            'Redirecting…'}
+        </p>
       </div>
     );
   }
@@ -109,7 +123,7 @@ const CallbackClient = (): JSX.Element => {
         <Spinner />
       </div>
       <p data-testid="oauth-loading" className="text-xl text-slate-400">
-        Logging in…
+        {(dict?.logging_in_text?.value as string | undefined) || 'Logging in…'}
       </p>
     </div>
   );

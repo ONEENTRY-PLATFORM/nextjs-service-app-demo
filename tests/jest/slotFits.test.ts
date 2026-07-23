@@ -1,7 +1,7 @@
 import formatMinutes from '@/app/utils/formatMinutes';
-import slotFits from '@/components/layout/booking-page/slotFits';
-import totalServiceMinutes from '@/components/layout/booking-page/totalServiceMinutes';
 import type { BookingService } from '@/components/layout/booking-page/types';
+import slotFits from '@/components/layout/booking-page/utils/slotFits';
+import totalServiceMinutes from '@/components/layout/booking-page/utils/totalServiceMinutes';
 
 /**
  * Minimal `BookingService` stub — only `durationMinutes` matters for the total.

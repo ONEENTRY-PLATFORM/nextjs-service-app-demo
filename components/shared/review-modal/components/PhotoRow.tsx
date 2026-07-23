@@ -4,6 +4,8 @@ import { ArrowRight, Plus, X } from 'lucide-react';
 import type { JSX } from 'react';
 import { useRef } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 /** Maximum number of photos attachable to a review (static-html mock) */
 const MAX_PHOTOS = 5;
 
@@ -24,6 +26,7 @@ const PhotoRow = ({
   photos: string[];
   onChange: (next: string[]) => void;
 }): JSX.Element => {
+  const dict = useDict();
   /** Hidden file input opened by the add button */
   const fileRef = useRef<HTMLInputElement | null>(null);
 
@@ -77,7 +80,10 @@ const PhotoRow = ({
           <button
             onClick={() => removePhoto(idx)}
             className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full border-[1.5px] border-fuchsia-500 bg-white text-fuchsia-500 opacity-0 transition-opacity group-hover:opacity-100"
-            aria-label="Remove photo"
+            aria-label={
+              (dict?.remove_photo_aria?.value as string | undefined) ||
+              'Remove photo'
+            }
           >
             <X size={16} />
           </button>
@@ -87,7 +93,9 @@ const PhotoRow = ({
         <button
           onClick={() => fileRef.current?.click()}
           className="flex size-16 shrink-0 items-center justify-center rounded-xl border-[1.5px] border-dashed border-fuchsia-500 bg-fuchsia-500/7 text-fuchsia-500 transition-colors"
-          aria-label="Add photo"
+          aria-label={
+            (dict?.add_photo_aria?.value as string | undefined) || 'Add photo'
+          }
         >
           {photos.length === 0 ? <Plus size={22} /> : <ArrowRight size={20} />}
         </button>

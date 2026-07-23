@@ -1,5 +1,7 @@
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import SectionTitle from '@/components/shared/SectionTitle';
 
 import ReviewsCarousel from './components/ReviewsCarousel';
@@ -9,8 +11,11 @@ import ReviewsCarousel from './components/ReviewsCarousel';
  * @returns {JSX.Element} React component
  */
 const ReviewsCarouselLayout = (): JSX.Element => {
+  /** UI-text dictionary (system_content) with English fallbacks */
+  const [dict] = ServerProvider<IAttributeValues>('dict');
   /** Define title for the reviews section */
-  const title = 'Reviews';
+  const title =
+    (dict?.home_reviews_title?.value as string | undefined) || 'Reviews';
 
   return (
     <div

@@ -3,6 +3,7 @@
 import { AlertTriangle } from 'lucide-react';
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
 import DialogPortal from '@/components/shared/DialogPortal';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 
@@ -23,15 +24,23 @@ import { useDialogA11y } from '@/components/shared/useDialogA11y';
  */
 const CancelErrorModal = ({
   message,
-  title = 'Appointment not cancelled',
+  title,
   onClose,
 }: {
   message: string;
   title?: string;
   onClose: () => void;
 }): JSX.Element => {
+  const dict = useDict();
+
   /** Dialog a11y: focus trap/restore, scroll lock and Escape → close. */
   const dialogRef = useDialogA11y({ isOpen: true, onClose });
+
+  /** Headline: the caller's title, else the dictionary's cancellation wording. */
+  const resolvedTitle =
+    title ||
+    (dict?.appointment_not_cancelled_title?.value as string | undefined) ||
+    'Appointment not cancelled';
 
   return (
     <DialogPortal>
@@ -40,7 +49,7 @@ const CancelErrorModal = ({
         data-testid="order-cancel-error"
         role="alertdialog"
         aria-modal="true"
-        aria-label={title}
+        aria-label={resolvedTitle}
         className="fixed inset-0 z-300 flex items-center justify-center p-4"
         style={{ background: 'rgba(20,20,30,0.45)' }}
         onClick={(e) => {
@@ -53,14 +62,16 @@ const CancelErrorModal = ({
           <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-amber-50">
             <AlertTriangle size={30} color="#d97706" />
           </div>
-          <h3 className="mb-1 text-lg font-bold text-slate-400">{title}</h3>
+          <h3 className="mb-1 text-lg font-bold text-slate-400">
+            {resolvedTitle}
+          </h3>
           <p className="mb-5 text-base text-neutral-300">{message}</p>
           <button
             onClick={onClose}
             data-testid="order-cancel-error-close"
             className="w-full rounded-xl bg-gradient-brand py-2.5 text-base font-bold text-white transition-all hover:opacity-90"
           >
-            Close
+            {(dict?.close_text?.value as string | undefined) || 'Close'}
           </button>
         </div>
       </div>

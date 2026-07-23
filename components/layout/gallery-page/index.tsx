@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from 'react';
 import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
+import { useDict } from '@/app/store/providers/useDict';
 
 import type { GalleryTab } from './components/GalleryFilterBar';
 import GalleryFilterBar from './components/GalleryFilterBar';
@@ -33,6 +34,7 @@ const GalleryPageContent = ({
   items: GalleryItem[];
   initialCategory?: GalleryMainCategory | undefined;
 }): JSX.Element => {
+  const dict = useDict();
   const [liked, setLiked] = useState<Set<string>>(new Set());
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -199,14 +201,16 @@ const GalleryPageContent = ({
       ) : (
         <div data-testid="gallery-empty" className="px-4 py-20 text-center">
           <p className="text-sm text-neutral-300">
-            No portfolio yet for this combination.
+            {(dict?.no_portfolio_text?.value as string | undefined) ||
+              'No portfolio yet for this combination.'}
           </p>
           <button
             data-testid="gallery-clear-filters"
             onClick={clearAll}
             className="mt-3 rounded-full bg-fuchsia-500/10 px-5 py-2 text-xs font-bold tracking-wider text-accent-pink uppercase transition-colors hover:bg-fuchsia-500/20"
           >
-            Clear filters
+            {(dict?.clear_filters_text?.value as string | undefined) ||
+              'Clear filters'}
           </button>
         </div>
       )}

@@ -4,6 +4,7 @@ import { Share2 } from 'lucide-react';
 import type { JSX } from 'react';
 import { useMemo } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
 import LightboxArrow from '@/components/shared/lightbox/LightboxArrow';
 import LightboxCloseButton from '@/components/shared/lightbox/LightboxCloseButton';
 import LightboxCounter from '@/components/shared/lightbox/LightboxCounter';
@@ -49,6 +50,7 @@ const GalleryLightbox = ({
   onNext: () => void;
   onSelect: (index: number) => void;
 }): JSX.Element => {
+  const dict = useDict();
   const item = items[index];
 
   const urls = useMemo(() => items.map((photo) => photo.url), [items]);
@@ -60,14 +62,15 @@ const GalleryLightbox = ({
     onClose,
   });
 
+  const photoWord = (dict?.photo_word?.value as string | undefined) || 'Photo';
   const thumbs = useMemo(
     () =>
       items.map((photo, i) => ({
         key: photo.id,
         src: photo.url,
-        label: `Photo ${i + 1}`,
+        label: `${photoWord} ${i + 1}`,
       })),
-    [items],
+    [items, photoWord],
   );
 
   if (!item) {
@@ -78,7 +81,11 @@ const GalleryLightbox = ({
     <LightboxOverlay
       dialogRef={dialogRef}
       testId="gallery-lightbox"
-      label={item.title ? `Photo: ${item.title}` : 'Photo viewer'}
+      label={
+        item.title
+          ? `${(dict?.photo_word?.value as string | undefined) || 'Photo'}: ${item.title}`
+          : 'Photo viewer'
+      }
       className="backdrop-blur-2xl"
       style={{ background: 'rgba(6,0,14,0.94)' }}
       onClose={onClose}
@@ -89,7 +96,10 @@ const GalleryLightbox = ({
       <LightboxArrow
         side="prev"
         onClick={onPrev}
-        label="Previous photo"
+        label={
+          (dict?.previous_photo_aria?.value as string | undefined) ||
+          'Previous photo'
+        }
         className="left-4 backdrop-blur-xs transition-transform hover:scale-110 active:scale-95 md:left-8"
         style={ARROW_STYLE}
       />
@@ -116,7 +126,9 @@ const GalleryLightbox = ({
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <button
-              aria-label="Share"
+              aria-label={
+                (dict?.share_aria?.value as string | undefined) || 'Share'
+              }
               className="flex size-9 items-center justify-center rounded-xl transition-colors hover:bg-white/10"
               style={{ border: '1.5px solid rgba(255,255,255,0.14)' }}
             >
@@ -131,7 +143,9 @@ const GalleryLightbox = ({
       <LightboxArrow
         side="next"
         onClick={onNext}
-        label="Next photo"
+        label={
+          (dict?.next_photo_aria?.value as string | undefined) || 'Next photo'
+        }
         className="right-4 backdrop-blur-xs transition-transform hover:scale-110 active:scale-95 md:right-8"
         style={ARROW_STYLE}
       />

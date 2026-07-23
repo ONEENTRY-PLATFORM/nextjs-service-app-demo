@@ -137,7 +137,10 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
      */
     const notificationEmail = fields.email_reg?.value || user?.identifier || '';
     if (!notificationEmail) {
-      setError('Your account has no e-mail on file — cannot save.');
+      setError(
+        (dict?.err_no_email_on_file?.value as string | undefined) ||
+          'Your account has no e-mail on file — cannot save.',
+      );
       return;
     }
     /** Attempt to update user data */
@@ -178,7 +181,9 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
       /** Saved — collapse the card back to its read-only rows */
       setEditing(false);
       /** Show success notification */
-      toast('Data saved!');
+      toast(
+        (dict?.toast_data_saved?.value as string | undefined) || 'Data saved!',
+      );
     } catch (error) {
       /** Set error message if update fails */
       setError(toErrorMessage(error));
@@ -215,9 +220,7 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
         ))}
         <div className="mt-5">
           <ProfileEditButton
-            title={
-              (dict?.edit_button_text?.value as string | undefined) || 'Edit'
-            }
+            title={(dict?.edit_text?.value as string | undefined) || 'Edit'}
             onClick={() => setEditing(true)}
           />
         </div>
@@ -274,9 +277,7 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
           index={10}
         />
         <ProfileCancelButton
-          title={
-            (dict?.cancel_button_text?.value as string | undefined) || 'Cancel'
-          }
+          title={(dict?.cancel_text?.value as string | undefined) || 'Cancel'}
           onClick={() => setEditing(false)}
         />
       </div>

@@ -1,5 +1,8 @@
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 import { Suspense } from 'react';
+
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 import CallbackClient from './CallbackClient';
 
@@ -15,11 +18,14 @@ import CallbackClient from './CallbackClient';
  * @returns {JSX.Element} The callback page
  */
 const GoogleAuthCallbackPage = (): JSX.Element => {
+  const [dict] = ServerProvider<IAttributeValues>('dict');
+
   return (
     <Suspense
       fallback={
         <div className="flex min-h-[60vh] items-center justify-center text-xl text-slate-400">
-          Logging in…
+          {(dict?.logging_in_text?.value as string | undefined) ||
+            'Logging in…'}
         </div>
       }
     >

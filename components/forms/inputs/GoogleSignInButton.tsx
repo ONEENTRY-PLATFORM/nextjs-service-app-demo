@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import { getApi, isError } from '@/app/api/api/api';
+import { useDict } from '@/app/store/providers/useDict';
 import { buildOAuthState } from '@/app/utils/buildOAuthState';
 import GoogleIcon from '@/components/icons/google';
 
@@ -21,14 +22,16 @@ import GoogleIcon from '@/components/icons/google';
  * the `googleOAuthAction` Server Action and sends the user back to the page they
  * started from (carried through the redirect in the OAuth `state` param).
  * @param   {object}      props       - Component props
- * @param   {string}      props.title - Button label (default "Sign in with Google")
+ * @param   {string}      props.title - Button label; falls back to the CMS dictionary, then "Sign in with Google"
  * @returns {JSX.Element}             The Google sign-in button
  */
-const GoogleSignInButton = ({
-  title = 'Sign in with Google',
-}: {
-  title?: string;
-}): JSX.Element => {
+const GoogleSignInButton = ({ title }: { title?: string }): JSX.Element => {
+  /** UI-text dictionary for the localized button label */
+  const dict = useDict();
+  const label =
+    title ??
+    (dict?.google_sign_in_text?.value as string | undefined) ??
+    'Sign in with Google';
   /** Disable the button between the click and the full-page redirect. */
   const [loading, setLoading] = useState(false);
 
@@ -79,7 +82,7 @@ const GoogleSignInButton = ({
       className="flex w-full items-center justify-center gap-3 rounded-xl border border-solid border-slate-150 bg-white px-10 py-3 text-base font-medium text-slate-400 transition-transform duration-150 hover:scale-102 hover:border-fuchsia-300 focus-visible:outline-fuchsia-500 active:scale-97 disabled:opacity-60"
     >
       <GoogleIcon size={20} />
-      {title}
+      {label}
     </button>
   );
 };

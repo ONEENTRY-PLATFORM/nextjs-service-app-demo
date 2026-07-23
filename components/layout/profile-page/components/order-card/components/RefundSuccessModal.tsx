@@ -3,6 +3,7 @@
 import { Check } from 'lucide-react';
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
 import DialogPortal from '@/components/shared/DialogPortal';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 
@@ -21,6 +22,8 @@ const RefundSuccessModal = ({
 }: {
   onDone: () => void;
 }): JSX.Element => {
+  const dict = useDict();
+
   /** Dialog a11y: focus trap/restore, scroll lock and Escape → close. */
   const dialogRef = useDialogA11y({ isOpen: true, onClose: onDone });
 
@@ -31,7 +34,10 @@ const RefundSuccessModal = ({
         data-testid="order-refund-success"
         role="dialog"
         aria-modal="true"
-        aria-label="Refund requested"
+        aria-label={
+          (dict?.refund_requested_title?.value as string | undefined) ||
+          'Refund requested'
+        }
         className="fixed inset-0 z-300 flex items-center justify-center p-4"
         style={{ background: 'rgba(20,20,30,0.45)' }}
         onClick={(e) => {
@@ -45,19 +51,19 @@ const RefundSuccessModal = ({
             <Check size={30} color="#fff" />
           </div>
           <h3 className="mb-1 text-lg font-bold text-slate-400">
-            Refund requested
+            {(dict?.refund_requested_title?.value as string | undefined) ||
+              'Refund requested'}
           </h3>
           <p className="mb-5 text-base text-neutral-300">
-            The salon has received your refund request. They will confirm it and
-            return the money to your payment method — the appointment stays in
-            your list until then.
+            {(dict?.refund_requested_desc?.value as string | undefined) ||
+              'The salon has received your refund request. They will confirm it and return the money to your payment method — the appointment stays in your list until then.'}
           </p>
           <button
             onClick={onDone}
             data-testid="order-refund-done"
             className="w-full rounded-xl bg-gradient-brand py-2.5 text-base font-bold text-white transition-all hover:opacity-90"
           >
-            Done
+            {(dict?.done_text?.value as string | undefined) || 'Done'}
           </button>
         </div>
       </div>

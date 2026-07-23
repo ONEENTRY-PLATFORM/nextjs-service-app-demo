@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
+import { useDict } from '@/app/store/providers/useDict';
 import DialogPortal from '@/components/shared/DialogPortal';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 
@@ -24,6 +25,7 @@ import StarPicker from './components/StarPicker';
  * @returns {JSX.Element}               JSX.Element representing the review modal
  */
 const ReviewModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
+  const dict = useDict();
   const [rating, setRating] = useState(0);
   const [text, setText] = useState('');
   const [photos, setPhotos] = useState<string[]>([]);
@@ -39,7 +41,10 @@ const ReviewModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
     if (!ready) {
       return;
     }
-    toast('Thank you for your review!');
+    toast(
+      (dict?.review_thank_you_toast?.value as string | undefined) ||
+        'Thank you for your review!',
+    );
     onClose();
   };
 
@@ -50,7 +55,10 @@ const ReviewModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
         data-testid="review-modal"
         role="dialog"
         aria-modal="true"
-        aria-label="Leave a review"
+        aria-label={
+          (dict?.leave_review_text?.value as string | undefined) ||
+          'Leave a review'
+        }
         className="fixed inset-0 z-300 flex items-center justify-center p-4"
         style={{
           background: 'rgba(20,0,30,0.55)',
@@ -73,11 +81,15 @@ const ReviewModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
               background: 'linear-gradient(135deg,#9B4FB2 0%,#ed21f1 100%)',
             }}
           >
-            <h2 className="text-[2rem] font-light text-white">Reviews</h2>
+            <h2 className="text-[2rem] font-light text-white">
+              {(dict?.reviews_label?.value as string | undefined) || 'Reviews'}
+            </h2>
             <button
               onClick={onClose}
               className="absolute top-5 right-5 flex size-9 items-center justify-center rounded-full border-2 border-white/70 transition-opacity hover:opacity-80"
-              aria-label="Close"
+              aria-label={
+                (dict?.close_text?.value as string | undefined) || 'Close'
+              }
             >
               <X size={16} color="#fff" />
             </button>
@@ -86,7 +98,8 @@ const ReviewModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
           {/* Body */}
           <div className="flex flex-col gap-5 overflow-y-auto px-5 py-7 md:px-8">
             <p className="text-base text-slate-400">
-              Please leave a review about your visit
+              {(dict?.review_prompt_text?.value as string | undefined) ||
+                'Please leave a review about your visit'}
             </p>
 
             <StarPicker rating={rating} onRate={setRating} />
@@ -98,7 +111,10 @@ const ReviewModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="Tell us about your visit…"
+                placeholder={
+                  (dict?.review_placeholder?.value as string | undefined) ||
+                  'Tell us about your visit…'
+                }
                 rows={5}
                 className="w-full resize-none bg-transparent text-base text-slate-400 outline-none placeholder:opacity-70"
               />
@@ -115,7 +131,7 @@ const ReviewModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
                   : 'cursor-not-allowed bg-slate-50 text-neutral-300')
               }
             >
-              Confirm
+              {(dict?.confirm_text?.value as string | undefined) || 'Confirm'}
             </button>
           </div>
         </div>

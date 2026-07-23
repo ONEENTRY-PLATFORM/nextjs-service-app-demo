@@ -1,5 +1,8 @@
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
+
+import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 import PromoBanner from './PromoBanner';
 import ServicesCatalog from './ServicesCatalog';
@@ -45,11 +48,15 @@ const ServicesPageContent = ({
   initialSubcategory?: string | undefined;
   resetKey?: string | undefined;
 }): JSX.Element => {
+  const [dict] = ServerProvider<IAttributeValues>('dict');
   /**
    * A missing or errored page only drops the custom heading — the hero, catalog
    * (with its own empty state) and promo banner still render.
    */
-  const title = page?.localizeInfos?.title ?? 'Services & Prices';
+  const title =
+    page?.localizeInfos?.title ??
+    ((dict?.services_title?.value as string | undefined) ||
+      'Services & Prices');
   /** Stats line under the hero title — only when the CMS has services */
   const subtitle =
     services.length > 0
@@ -59,9 +66,21 @@ const ServicesPageContent = ({
   const stats: Array<[string | number, string]> | undefined =
     services.length > 0
       ? [
-          [services.length, 'Services'],
-          [salons.length, 'Locations'],
-          [categories.length, 'Categories'],
+          [
+            services.length,
+            (dict?.services_stat_services?.value as string | undefined) ||
+              'Services',
+          ],
+          [
+            salons.length,
+            (dict?.services_stat_locations?.value as string | undefined) ||
+              'Locations',
+          ],
+          [
+            categories.length,
+            (dict?.services_stat_categories?.value as string | undefined) ||
+              'Categories',
+          ],
         ]
       : undefined;
 

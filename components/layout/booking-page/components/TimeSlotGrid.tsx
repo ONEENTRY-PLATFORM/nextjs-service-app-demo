@@ -2,6 +2,7 @@
 
 import type { JSX } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
 import formatMinutes from '@/app/utils/formatMinutes';
 
 import FadeStaggerGroup from '../animations/FadeStaggerGroup';
@@ -52,6 +53,8 @@ const TimeSlotGrid = ({
   durationMinutes: number;
   closeMinutes: number | null;
 }): JSX.Element => {
+  const dict = useDict();
+
   /**
    * Booked slots to strike through. Always empty for now: the public SDK only
    * returns the signed-in client's own orders, so other clients' bookings — the
@@ -95,14 +98,19 @@ const TimeSlotGrid = ({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-        <p className="text-sm font-medium text-slate-400">Available times</p>
+        <p className="text-sm font-medium text-slate-400">
+          {(dict?.booking_available_times_text?.value as string | undefined) ||
+            'Available times'}
+        </p>
         {showDurationHint && (
           <p
             className="text-xs text-neutral-300"
             data-testid="booking-duration-hint"
           >
-            Your visit takes {formatMinutes(durationMinutes)} — later starts are
-            unavailable
+            {(
+              (dict?.booking_visit_hint?.value as string | undefined) ||
+              'Your visit takes %d% — later starts are unavailable'
+            ).replace('%d%', formatMinutes(durationMinutes))}
           </p>
         )}
       </div>
@@ -112,7 +120,8 @@ const TimeSlotGrid = ({
           style={{ background: `${PINK}08`, color: MUTED }}
           data-testid="booking-no-slots"
         >
-          No available times on this day. Please pick another date.
+          {(dict?.booking_no_times_text?.value as string | undefined) ||
+            'No available times on this day. Please pick another date.'}
         </p>
       ) : noSlotFits ? (
         <p
@@ -120,9 +129,11 @@ const TimeSlotGrid = ({
           style={{ background: `${PINK}08`, color: MUTED }}
           data-testid="booking-no-fitting-slots"
         >
-          No start on this day leaves enough time for the whole{' '}
-          {formatMinutes(durationMinutes)} visit before closing. Please pick
-          another date or fewer services.
+          {(
+            (dict?.booking_no_fitting_slots_text?.value as
+              string | undefined) ||
+            'No start on this day leaves enough time for the whole %d% visit before closing. Please pick another date or fewer services.'
+          ).replace('%d%', formatMinutes(durationMinutes))}
         </p>
       ) : (
         <FadeStaggerGroup

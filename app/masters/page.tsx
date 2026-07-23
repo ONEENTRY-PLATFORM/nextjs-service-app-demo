@@ -42,16 +42,19 @@ const CATEGORY_BY_PAGEURL: Record<string, MastersMainCategory> = {
  * @param   {IAdminEntity}                     props.admin               - CMS admin entity
  * @param   {Map<number, MastersMainCategory>} props.categoryByServiceId - Services child page id → main category
  * @param   {Map<number, string>}              props.salonNameById       - Salon page id → salon title
+ * @param   {string}                           props.specialistText      - Role fallback when `master_short_description` is empty
  * @returns {MasterItem | null}                                          Normalized specialist or `null` when `master_name` is empty
  */
 const toMasterItem = ({
   admin,
   categoryByServiceId,
   salonNameById,
+  specialistText,
 }: {
   admin: IAdminEntity;
   categoryByServiceId: Map<number, MastersMainCategory>;
   salonNameById: Map<number, string>;
+  specialistText: string;
 }): MasterItem | null => {
   const attrs = admin.attributeValues ?? {};
   const name = (attrs.master_name?.value as string | undefined) ?? '';
@@ -82,7 +85,7 @@ const toMasterItem = ({
 
   const shortDescription =
     (attrs.master_short_description?.value as string | undefined) ||
-    'Specialist';
+    specialistText;
   const firstServiceId = serviceParentIds[0];
 
   return {
@@ -165,10 +168,17 @@ const MastersPageLayout = async (): Promise<JSX.Element> => {
     cmsSalons.map((salon) => [salon.id, salon.name]),
   );
 
+  const specialistText =
+    (dict?.specialist_text?.value as string | undefined) || 'Specialist';
   const cmsMasters =
     admins
       ?.map((admin: IAdminEntity) =>
-        toMasterItem({ admin, categoryByServiceId, salonNameById }),
+        toMasterItem({
+          admin,
+          categoryByServiceId,
+          salonNameById,
+          specialistText,
+        }),
       )
       .filter((master): master is MasterItem => master !== null) ?? [];
 

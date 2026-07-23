@@ -29,6 +29,7 @@ import {
  * @returns {JSX.Element}                             JSX.Element - A button component for saving orders
  */
 const SaveOrderButton = ({
+  dict,
   orderData,
   setEditState,
 }: {
@@ -69,7 +70,8 @@ const SaveOrderButton = ({
       /** On failure keep the edit form open and surface the error */
       const message =
         (e as { message?: string } | undefined)?.message ??
-        'Could not save the order';
+        ((dict.err_save_order?.value as string | undefined) ||
+          'Could not save the order');
       toast.error(message);
       return;
     }
@@ -85,7 +87,7 @@ const SaveOrderButton = ({
       type="button"
       className="flex-1 rounded-lg bg-gradient-brand py-2 text-base font-bold text-white transition-all hover:opacity-90"
     >
-      {'Save'}
+      {(dict.save_button_text?.value as string | undefined) || 'Save'}
     </button>
   );
 };

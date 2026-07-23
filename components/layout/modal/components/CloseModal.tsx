@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
+import { useDict } from '@/app/store/providers/useDict';
 
 /**
  * Close modal button
@@ -12,13 +13,15 @@ import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 const CloseModal = (): JSX.Element => {
   /** Get setTransition function from OpenDrawerContext to control modal state */
   const { setTransition } = useContext(OpenDrawerContext);
+  /** UI-text dictionary for the localized aria-label */
+  const dict = useDict();
 
   /* Render close button for modal with animation on hover */
   return (
     <button
       onClick={() => setTransition('close')}
       className="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-solid border-white/70 transition-transform hover:rotate-90"
-      aria-label="Close"
+      aria-label={(dict?.close_text?.value as string | undefined) || 'Close'}
     >
       <svg
         width="18"

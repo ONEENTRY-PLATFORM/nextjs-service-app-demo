@@ -7,6 +7,7 @@ import type { CSSProperties, JSX } from 'react';
 import { useEffect, useState } from 'react';
 
 import { useHeroRef } from '@/app/animations/hero/useHeroRef';
+import { useDict } from '@/app/store/providers/useDict';
 
 import HeroSlideOverlayDesktop from './HeroSlideOverlayDesktop';
 import HeroSlideOverlayMobile from './HeroSlideOverlayMobile';
@@ -45,6 +46,7 @@ const HeroSlider = ({
   intervalMs: number;
   alt: string;
 }): JSX.Element => {
+  const dict = useDict();
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = slides.length;
@@ -74,7 +76,9 @@ const HeroSlider = ({
       className="relative aspect-390/535 min-h-133.75 w-full overflow-hidden bg-[linear-gradient(90deg,#c082ff_0%,#ed21f1_90%)] select-none md:aspect-auto md:h-140 lg:aspect-1920/600 lg:h-auto lg:min-h-150"
       style={{ '--hero-u': 'clamp(15px, 1vw, 19.2px)' } as CSSProperties}
       aria-roledescription="carousel"
-      aria-label="Promotions"
+      aria-label={
+        (dict?.promotions_aria?.value as string | undefined) || 'Promotions'
+      }
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -140,7 +144,9 @@ const HeroSlider = ({
           className="absolute right-[3.33em] bottom-[2.83em] z-10 hidden h-[2.5em] w-[12.5em] items-center justify-center rounded-[0.83em] bg-white/80 font-normal tracking-widest text-charcoal uppercase transition-colors hover:bg-white lg:inline-flex"
           style={{ fontSize: 'calc(var(--hero-u) * 1.25)' }}
         >
-          {current.buttonText || 'Discover More'}
+          {current.buttonText ||
+            (dict?.discover_more_text?.value as string | undefined) ||
+            'Discover More'}
         </Link>
       )}
 
@@ -148,14 +154,20 @@ const HeroSlider = ({
         <>
           {/* Prev / next arrows */}
           <button
-            aria-label="Previous slide"
+            aria-label={
+              (dict?.previous_slide_aria?.value as string | undefined) ||
+              'Previous slide'
+            }
             onClick={() => setIdx((idx - 1 + count) % count)}
             className="absolute top-1/2 left-3 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/35 md:left-5"
           >
             <ChevronLeft size={22} />
           </button>
           <button
-            aria-label="Next slide"
+            aria-label={
+              (dict?.next_slide_aria?.value as string | undefined) ||
+              'Next slide'
+            }
             onClick={() => setIdx((idx + 1) % count)}
             className="absolute top-1/2 right-3 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/35 md:right-5"
           >
@@ -167,7 +179,7 @@ const HeroSlider = ({
             {slides.map((_, i) => (
               <button
                 key={i}
-                aria-label={`Go to slide ${i + 1}`}
+                aria-label={`${(dict?.go_to_slide_aria?.value as string | undefined) || 'Go to slide'} ${i + 1}`}
                 onClick={() => setIdx(i)}
                 className={
                   'h-2 rounded-full transition-all duration-300 ' +

@@ -4,6 +4,8 @@ import { Check, Clock } from 'lucide-react';
 import type { JSX } from 'react';
 import { useMemo, useState } from 'react';
 
+import { useDict } from '@/app/store/providers/useDict';
+
 import { CATEGORY_ORDER, DARK, MUTED, PINK } from '../constants';
 import type { BookingService } from '../types';
 import CategoryPills from './CategoryPills';
@@ -31,6 +33,8 @@ const ServiceStep = ({
   selectedIds: string[];
   onToggle: (id: string) => void;
 }): JSX.Element => {
+  const dict = useDict();
+
   /** Category pills the available services actually cover, canonical order */
   const availableCats = useMemo(() => {
     const present = new Set(services.map((s) => s.category));
@@ -54,13 +58,18 @@ const ServiceStep = ({
   return (
     <div className="space-y-4" data-testid="booking-step-service">
       <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-lg font-light text-slate-400">Choose services</h3>
+        <h3 className="text-lg font-light text-slate-400">
+          {(dict?.booking_choose_services_text?.value as string | undefined) ||
+            'Choose services'}
+        </h3>
         {selectedIds.length > 0 && (
           <span
             className="text-sm font-semibold whitespace-nowrap text-fuchsia-500"
             data-testid="booking-services-count"
           >
-            {selectedIds.length} selected
+            {selectedIds.length}{' '}
+            {(dict?.booking_selected_suffix?.value as string | undefined) ||
+              'selected'}
           </span>
         )}
       </div>
@@ -76,7 +85,8 @@ const ServiceStep = ({
             style={{ background: `${PINK}08`, color: MUTED }}
             data-testid="booking-services-empty"
           >
-            No services available yet — please check back soon.
+            {(dict?.booking_no_services_text?.value as string | undefined) ||
+              'No services available yet — please check back soon.'}
           </p>
         )}
         {filtered.map((s) => {

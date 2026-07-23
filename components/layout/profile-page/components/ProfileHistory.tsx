@@ -140,7 +140,10 @@ const ProfileHistory = ({
     <div className="w-full divide-y divide-slate-150">
       <div className="pb-4">
         <VisitSection
-          title="Upcoming"
+          title={
+            (dict.profile_upcoming_text?.value as string | undefined) ||
+            'Upcoming'
+          }
           status="upcoming"
           count={buckets.upcoming.length}
           defaultOpen
@@ -156,7 +159,10 @@ const ProfileHistory = ({
 
       <div className="py-4">
         <VisitSection
-          title="Completed"
+          title={
+            (dict.profile_completed_text?.value as string | undefined) ||
+            'Completed'
+          }
           status="completed"
           count={buckets.completed.length}
         >
@@ -171,7 +177,10 @@ const ProfileHistory = ({
 
       <div className="pt-4">
         <VisitSection
-          title="Canceled"
+          title={
+            (dict.profile_canceled_text?.value as string | undefined) ||
+            'Canceled'
+          }
           status="canceled"
           count={buckets.canceled.length}
         >

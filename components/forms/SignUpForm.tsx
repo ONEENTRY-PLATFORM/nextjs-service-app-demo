@@ -52,7 +52,12 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
     useContext(OpenDrawerContext);
 
   /** Extract localized text values from dictionary */
-  const { sign_up_text, sign_in_text, create_account_desc } = dict;
+  const {
+    sign_up_text,
+    sign_in_text,
+    create_account_desc,
+    err_passwords_no_match,
+  } = dict;
 
   /** CMS form definition (ordered fields) plus the live values */
   const { attributes, fields, isLoading } = useCmsForm('reg');
@@ -95,7 +100,10 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
         confirmField &&
         value(passwordField.marker) !== value(confirmField.marker)
       ) {
-        setError('Passwords do not match');
+        setError(
+          (err_passwords_no_match?.value as string | undefined) ||
+            'Passwords do not match',
+        );
         return;
       }
 
@@ -177,6 +185,7 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
       setAction,
       providerMarker,
       signUpFormIdentifier,
+      err_passwords_no_match,
     ],
   );
 

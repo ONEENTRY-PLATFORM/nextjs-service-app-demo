@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import { resolveOrderPaymentUrl } from '@/app/api/utils/resolveOrderPaymentUrl';
+import { useDict } from '@/app/store/providers/useDict';
 import { formatOrderTotal } from '@/app/utils/formatOrderTotal';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
@@ -30,6 +31,8 @@ const PayOrderButton = ({
 }: {
   order: IOrderByMarkerEntity;
 }): JSX.Element => {
+  const dict = useDict();
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -42,7 +45,11 @@ const PayOrderButton = ({
 
     const { url, error: reason } = await resolveOrderPaymentUrl(order.id);
     if (!url) {
-      setError(reason || 'Could not open the checkout. Please try again.');
+      setError(
+        reason ||
+          (dict?.err_open_checkout?.value as string | undefined) ||
+          'Could not open the checkout. Please try again.',
+      );
       setIsLoading(false);
       return;
     }
@@ -61,10 +68,11 @@ const PayOrderButton = ({
         className="flex-1 rounded-lg bg-gradient-brand px-3.5 py-2 text-base font-bold text-white transition-all hover:opacity-90 disabled:opacity-60"
       >
         {isLoading ? (
+          (dict?.opening_checkout_text?.value as string | undefined) ||
           'Opening checkout…'
         ) : (
           <>
-            Pay
+            {(dict?.pay_text?.value as string | undefined) || 'Pay'}
             {total ? (
               <>
                 {' '}
