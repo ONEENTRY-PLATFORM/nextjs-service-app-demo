@@ -43,6 +43,7 @@ This project is designed for developers using OneEntry Headless CMS who need a q
 - **Dynamic Catalog Updates:** Reload the catalog, with direct editing capabilities in the CMS.
 - **Advanced Filtering:** Apply a variety of filters to the product catalog for better organization and search.
 - **Editable Block Content:** Support for user-editable block content.
+- **CMS-Editable UI Copy:** All interface text — labels, headings, empty states, messages — is managed via the `system_content` dictionary in the admin panel, with English fallbacks in code (see [UI Text Dictionary](docs/Dictionary.md)).
 - **Product Recommendations:** Display various selections of products.
 - **Feedback Forms:** Include customizable feedback forms with captcha protection to prevent spam.
 - **Order Creation and Purchases:** Complete transactions using [Stripe] for secure, seamless payments.
@@ -69,6 +70,7 @@ For detailed information about specific aspects of the project, please refer to 
 - [Appointment Booking Flow](docs/OrderFlow.md) - How the appointment booking process works
 - [State Management](docs/StateManagement.md) - Redux Toolkit and state management approach
 - [User State](docs/UserState.md) - How user state is implemented and synchronized
+- [UI Text Dictionary](docs/Dictionary.md) - How UI copy is stored in the `system_content` attribute set and read via `getDictionary` / `useDict`
 
 ## Environment Variables
 
@@ -149,7 +151,7 @@ To deploy this project run
 |                                 |                                            |
 | `@/app`                         | Next.js app entry points                   |
 | `@/app/layout.tsx`              | Main layout                                |
-| `@/app/dictionaries.tsx`        | Dictionaries for translations              |
+| `@/app/api/utils/dictionaries.ts` | UI-text dictionary reader (`system_content`) |
 | `@/app/animations`              | Gsap animations transition providers       |
 | `@/app/api`                     | API, methods and hooks definition          |
 | `@/app/store`                   | Redux-Toolkit management and core reducers |
