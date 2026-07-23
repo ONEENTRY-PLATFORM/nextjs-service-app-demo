@@ -456,7 +456,7 @@ test.describe('Profile — visit history', () => {
 
     const confirmBtn = review.getByRole('button', { name: 'Confirm' });
     await expect(confirmBtn).toBeDisabled();
-    await review.getByRole('button', { name: 'Rate 5 stars' }).click();
+    await review.getByRole('button', { name: 'Rate 5 star(s)' }).click();
     await review.getByRole('textbox').fill('Great visit, thank you!');
     await expect(confirmBtn).toBeEnabled();
 

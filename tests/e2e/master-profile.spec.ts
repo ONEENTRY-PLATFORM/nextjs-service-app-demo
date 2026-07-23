@@ -100,7 +100,7 @@ test.describe('Master profile — details', () => {
     // Confirm unlocks only once a rating AND text are given (client-only flow)
     const confirm = review.getByRole('button', { name: 'Confirm' });
     await expect(confirm).toBeDisabled();
-    await review.getByRole('button', { name: 'Rate 4 stars' }).click();
+    await review.getByRole('button', { name: 'Rate 4 star(s)' }).click();
     await expect(confirm).toBeDisabled();
     await review.getByRole('textbox').fill('Lovely work, thank you!');
     await expect(confirm).toBeEnabled();
