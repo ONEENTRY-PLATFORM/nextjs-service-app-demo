@@ -66,7 +66,7 @@ const GalleryFilterBar = ({
   hasActiveFilter: boolean;
   onClearAll: () => void;
 }): JSX.Element => (
-  <div className="mx-auto max-w-7xl px-3 pt-8 pb-6 md:px-8">
+  <div className="page-shell pt-8 pb-6">
     {/* Tabs: Service | Specialist */}
     <div className="mb-5 flex items-center justify-center gap-10">
       {(['service', 'specialist'] as const).map((t) => {

@@ -70,7 +70,7 @@ const HomeCtaBanner = ({
 
   return (
     <section className="bg-white py-4 xl:py-10 md:py-6">
-      <RevealAnimations className="mx-auto w-full max-w-7xl px-3 md:px-8">
+      <RevealAnimations className="page-shell w-full">
         <div className="relative w-full overflow-hidden rounded-3xl">
           {/* Mobile banner */}
           {/* eslint-disable-next-line @next/next/no-img-element */}

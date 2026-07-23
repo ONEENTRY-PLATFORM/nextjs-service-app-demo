@@ -26,10 +26,7 @@ const SpecialistSections = ({
 }): JSX.Element => (
   <div className="hidden pb-4 md:block">
     {sections.length === 0 ? (
-      <div
-        data-testid="masters-empty"
-        className="mx-auto max-w-7xl px-3 py-16 text-center md:px-8"
-      >
+      <div data-testid="masters-empty" className="page-shell py-16 text-center">
         <p className="text-sm text-neutral-300">
           No specialists match the current filter.
         </p>
@@ -50,7 +47,7 @@ const SpecialistSections = ({
           <div
             data-testid="specialist-section"
             data-section={group[0]?.section ?? String(idx)}
-            className="mx-auto flex max-w-7xl flex-wrap justify-center gap-8 px-3 md:gap-12 md:px-8 lg:gap-17.5"
+            className="page-shell flex flex-wrap justify-center gap-8 md:gap-12 lg:gap-17.5"
           >
             {group.map((master, i) => (
               <GridItemAnimations

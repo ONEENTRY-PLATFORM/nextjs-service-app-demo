@@ -4,15 +4,9 @@ import { useMemo, useReducer, useState } from 'react';
 
 import { useHydrated } from '@/app/store/useHydrated';
 
-import {
-  initialBookingState,
-  makeBookingReducer,
-} from './bookingReducer';
-import bookingStepKeys from './bookingStepKeys';
-import { ANY_MASTER } from './constants';
-import { scrollToBookingTop } from './scrollToBookingTop';
-import slotFits from './slotFits';
-import todayDateKey from './todayDateKey';
+import { initialBookingState, makeBookingReducer } from '../bookingReducer';
+import bookingStepKeys from '../bookingStepKeys';
+import { ANY_MASTER } from '../constants';
 import type {
   BookingData,
   BookingFlow,
@@ -20,7 +14,10 @@ import type {
   BookingSalon,
   BookingService,
   StepKey,
-} from './types';
+} from '../types';
+import { scrollToBookingTop } from '../utils/scrollToBookingTop';
+import slotFits from '../utils/slotFits';
+import todayDateKey from '../utils/todayDateKey';
 import type { BookingFiltersState } from './useBookingFilters';
 import { useBookingFilters } from './useBookingFilters';
 import type { BookingPaymentState } from './useBookingPayment';
@@ -275,13 +272,14 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
     dispatch({ type: 'BACK' });
     scrollToBookingTop();
   };
-  /** Clear every selection and return to the flow-choice entry screen. */
+  /* Clear every selection and return to the flow-choice entry screen. */
   const resetFlow = () => dispatch({ type: 'RESET' });
   /**
    * Enter a booking flow from the entry screen, resetting step/category state.
    * @param {BookingFlow} f - The chosen flow (`salon-first` / `specialist-first`)
    */
-  const startFlow = (f: BookingFlow) => dispatch({ type: 'START_FLOW', flow: f });
+  const startFlow = (f: BookingFlow) =>
+    dispatch({ type: 'START_FLOW', flow: f });
 
   /**
    * Pick a studio; invalidates a chosen specialist who doesn't work there.

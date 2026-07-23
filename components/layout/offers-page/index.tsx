@@ -41,7 +41,7 @@ const OffersPageContent = ({
     <div className="h-1.25 bg-gradient-stats" />
 
     {/* Back link */}
-    <div className="mx-auto max-w-7xl px-3 pt-6 md:px-8">
+    <div className="page-shell pt-6">
       <Link
         href="/"
         className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
@@ -51,7 +51,7 @@ const OffersPageContent = ({
     </div>
 
     {/* Heading */}
-    <RevealAnimations className="mx-auto max-w-7xl px-3 pt-8 pb-2 text-center md:px-8">
+    <RevealAnimations className="page-shell pt-8 pb-2 text-center">
       <h1
         className="inline-block border-b border-ink pb-2 font-light tracking-fine text-ink uppercase"
         style={{ fontSize: 'clamp(1.6rem, 3vw, 2.4rem)' }}
@@ -62,7 +62,7 @@ const OffersPageContent = ({
 
     {/* Offer details */}
     <div
-      className="mx-auto flex max-w-7xl flex-col gap-8 px-3 py-10 md:px-8"
+      className="page-shell flex flex-col gap-8 py-10"
       data-testid="offers-list"
     >
       {offers.length > 0 ? (
@@ -80,7 +80,7 @@ const OffersPageContent = ({
     </div>
 
     {/* Terms */}
-    <RevealAnimations className="mx-auto max-w-7xl px-3 pb-16 md:px-8">
+    <RevealAnimations className="page-shell pb-16">
       <div className="rounded-2xl p-6" style={{ background: '#f7f7fb' }}>
         <p className="mb-3 text-sm font-black tracking-widest text-ink uppercase">
           Good to know

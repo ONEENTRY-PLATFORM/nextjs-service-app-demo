@@ -1,4 +1,4 @@
-import type { BookingService } from './types';
+import type { BookingService } from '../types';
 
 /** One line of a booking order. */
 export interface OrderProduct {

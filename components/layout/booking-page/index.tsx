@@ -14,9 +14,9 @@ import SpecialistStep from './components/SpecialistStep';
 import StepBar from './components/StepBar';
 import SuccessModal from './components/SuccessModal';
 import { BRAND_GRADIENT, MUTED, PINK } from './constants';
-import { scrollToBookingTop } from './scrollToBookingTop';
+import { useBookingWizard } from './hooks/useBookingWizard';
 import type { BookingData } from './types';
-import { useBookingWizard } from './useBookingWizard';
+import { scrollToBookingTop } from './utils/scrollToBookingTop';
 
 /**
  * BookingWizard — the interactive booking flow ported from the static-html
@@ -98,7 +98,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
         overflowAnchor: 'none',
       }}
     >
-      <div className="mx-auto w-full max-w-7xl px-3 md:px-8">
+      <div className="page-shell w-full">
         {flow && (
           <div className="mb-6 md:mb-10">
             <StepBar steps={stepKeys} currentIdx={stepIdx} onGo={goStep} />

@@ -18,7 +18,7 @@ import RevealAnimations from '@/app/animations/RevealAnimations';
 const PromoBanner = (): JSX.Element => {
   return (
     <section className="py-10">
-      <RevealAnimations className="mx-auto max-w-7xl px-3 md:px-8">
+      <RevealAnimations className="page-shell">
         <div className="relative flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-gradient-promo px-8 py-10 transition-transform duration-300 hover:scale-101 md:flex-row">
           <div
             className="absolute -top-12 -right-12 size-48 rounded-full opacity-20"

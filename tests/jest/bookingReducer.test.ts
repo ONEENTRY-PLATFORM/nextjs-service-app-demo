@@ -50,7 +50,11 @@ const master = (
 
 const data: BookingData = {
   salons: [salon(1), salon(2), salon(3)],
-  services: [service('sv1', 'Hair'), service('sv2', 'Hair'), service('sv3', 'Face')],
+  services: [
+    service('sv1', 'Hair'),
+    service('sv2', 'Hair'),
+    service('sv3', 'Face'),
+  ],
   masters: [
     master('m-multi', [1, 2], ['sv1', 'sv2']),
     master('m-single', [1], ['sv1']),
@@ -59,7 +63,7 @@ const data: BookingData = {
 };
 
 const reduce = makeBookingReducer(data);
-/** Fold a sequence of actions from a starting state. */
+/* Fold a sequence of actions from a starting state. */
 const run = (
   from: BookingState,
   ...actions: Parameters<typeof reduce>[1][]
@@ -110,7 +114,9 @@ describe('bookingReducer', () => {
 
     it('invalidates a chosen master who does not work at the new salon', () => {
       const withMaster = { ...base, master: 'm-single' }; // works only at salon 1
-      expect(reduce(withMaster, { type: 'SELECT_SALON', id: 2 }).master).toBe('');
+      expect(reduce(withMaster, { type: 'SELECT_SALON', id: 2 }).master).toBe(
+        '',
+      );
     });
 
     it('keeps a master who does work at the new salon', () => {
@@ -137,9 +143,9 @@ describe('bookingReducer', () => {
     it('toggles a service in and back out', () => {
       const added = reduce(base, { type: 'SELECT_SERVICE', id: 'sv1' });
       expect(added.serviceIds).toEqual(['sv1']);
-      expect(reduce(added, { type: 'SELECT_SERVICE', id: 'sv1' }).serviceIds).toEqual(
-        [],
-      );
+      expect(
+        reduce(added, { type: 'SELECT_SERVICE', id: 'sv1' }).serviceIds,
+      ).toEqual([]);
     });
 
     it('syncs the category to the single shared one, else All', () => {
@@ -187,28 +193,30 @@ describe('bookingReducer', () => {
     });
 
     it('auto-picks the studio of a single-salon specialist', () => {
-      expect(reduce(base, { type: 'SELECT_MASTER', id: 'm-single' }).salon).toBe(1);
+      expect(
+        reduce(base, { type: 'SELECT_MASTER', id: 'm-single' }).salon,
+      ).toBe(1);
     });
 
     it('clears a chosen studio the specialist cannot cover', () => {
       const withSalon = { ...base, salon: 3 }; // m-multi works at 1 & 2
-      expect(reduce(withSalon, { type: 'SELECT_MASTER', id: 'm-multi' }).salon).toBe(
-        null,
-      );
+      expect(
+        reduce(withSalon, { type: 'SELECT_MASTER', id: 'm-multi' }).salon,
+      ).toBe(null);
     });
 
     it('keeps a chosen studio the specialist covers', () => {
       const withSalon = { ...base, salon: 2 };
-      expect(reduce(withSalon, { type: 'SELECT_MASTER', id: 'm-multi' }).salon).toBe(
-        2,
-      );
+      expect(
+        reduce(withSalon, { type: 'SELECT_MASTER', id: 'm-multi' }).salon,
+      ).toBe(2);
     });
 
     it('does not touch the studio for "any specialist"', () => {
       const withSalon = { ...base, salon: 3 };
-      expect(reduce(withSalon, { type: 'SELECT_MASTER', id: ANY_MASTER }).salon).toBe(
-        3,
-      );
+      expect(
+        reduce(withSalon, { type: 'SELECT_MASTER', id: ANY_MASTER }).salon,
+      ).toBe(3);
     });
   });
 

@@ -24,7 +24,8 @@ const RepeatOrder = ({
   /** Initialize dispatch function for Redux actions */
   const dispatch = useAppDispatch();
   /** Initialize router for navigation */
-  const router = useTransitionRouter();
+  const router = useTransitionRouter();
+
   /** Destructure book again text from dictionary */
   const { book_again_text } = dict;
 

@@ -54,7 +54,7 @@ const OpeningHours = ({ rows }: { rows: OpeningHoursRow[] }): JSX.Element => {
 
   return (
     <section className="bg-slate-50 py-6 md:py-10" data-testid="opening-hours">
-      <div className="mx-auto max-w-7xl px-3 md:px-8">
+      <div className="page-shell">
         <SectionHeading className="mb-6 md:mb-10">Opening Hours</SectionHeading>
 
         {/* Mobile + tablet: a single card for the whole week */}

@@ -89,10 +89,7 @@ const MastersPageContent = ({
   return (
     <div data-testid="masters-page">
       {/* ── Filter block — fade-only reveal (holds dropdown/scroll controls) ── */}
-      <RevealAnimations
-        fade
-        className="mx-auto max-w-7xl px-3 pt-8 pb-4 md:px-8"
-      >
+      <RevealAnimations fade className="page-shell pt-8 pb-4">
         <SalonFilter
           salons={salons}
           selectedId={salonId}

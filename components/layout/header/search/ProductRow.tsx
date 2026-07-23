@@ -35,7 +35,8 @@ const ProductRow = ({
   setState: Dispatch<SetStateAction<boolean>>;
 }): JSX.Element | null => {
   /** Get dispatch function for Redux actions */
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
+
   /** The product's catalog page — cached and deduped across rows by RTK Query */
   const { data: pageData } = useGetPageByIdQuery(
     { id: pageId },

@@ -51,7 +51,7 @@ const SalonLocations = ({
       className="pt-6 pb-2 md:pt-10 md:pb-6"
       style={{ background: 'linear-gradient(180deg,#f7f7fb 0%,#fff 60%)' }}
     >
-      <div className="mx-auto max-w-7xl px-3 md:px-8">
+      <div className="page-shell">
         <SectionHeading className="mb-6 md:mb-10">Our Locations</SectionHeading>
 
         {salons.length === 0 ? (

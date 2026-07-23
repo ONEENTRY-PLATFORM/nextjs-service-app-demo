@@ -30,7 +30,10 @@ describe('CartSlice', () => {
     });
 
     it('clears a field when null is passed, leaving the others', () => {
-      let state = reducer(init(), addServiceToCart({ salonId: 11, masterId: 7 }));
+      let state = reducer(
+        init(),
+        addServiceToCart({ salonId: 11, masterId: 7 }),
+      );
       state = reducer(state, addServiceToCart({ masterId: null }));
       expect(state.salonId).toBe(11);
       expect(state.masterId).toBeUndefined();
@@ -44,7 +47,10 @@ describe('CartSlice', () => {
 
     /** The clear-on-null contract producers rely on: a product pick drops any stale salon/master. */
     it('a product pick can clear a salon and master left from an earlier flow', () => {
-      let state = reducer(init(), addServiceToCart({ salonId: 3, masterId: 8 }));
+      let state = reducer(
+        init(),
+        addServiceToCart({ salonId: 3, masterId: 8 }),
+      );
       state = reducer(
         state,
         addServiceToCart({ productId: 42, salonId: null, masterId: null }),
@@ -70,7 +76,10 @@ describe('CartSlice', () => {
 
   describe('selectCartSelection', () => {
     it('reads the three selection ids', () => {
-      const state = reducer(init(), addServiceToCart({ salonId: 5, masterId: 9 }));
+      const state = reducer(
+        init(),
+        addServiceToCart({ salonId: 5, masterId: 9 }),
+      );
       expect(selectCartSelection({ cartReducer: state })).toEqual({
         salonId: 5,
         productId: undefined,

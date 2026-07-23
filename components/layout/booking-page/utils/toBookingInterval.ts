@@ -1,5 +1,5 @@
+import type { BookingService } from '../types';
 import totalServiceMinutes from './totalServiceMinutes';
-import type { BookingService } from './types';
 
 /**
  * toBookingInterval — turns the wizard's date key and time slot into the

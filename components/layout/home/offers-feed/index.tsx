@@ -40,7 +40,7 @@ const OffersFeedBlock = ({
       className="flex w-full justify-center bg-white py-4 xl:py-10 md:py-6"
       data-testid="home-offers"
     >
-      <div className="mx-auto mb-6 w-full max-w-7xl flex-col px-3 md:px-8">
+      <div className="page-shell mb-6 w-full flex-col">
         <div className="flex w-full flex-col items-center justify-center">
           <SectionTitle title={title} delay={0.25} className="mb-6 md:mb-10" />
           <OffersFeed products={products} />

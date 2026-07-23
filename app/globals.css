@@ -154,21 +154,10 @@ input.border-b {
   }
 }
 
-/* footer */
-#footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  background-image: linear-gradient(
-    90deg,
-    var(--color-violet-400) -2.98%,
-    var(--color-fuchsia-500) 89.65%
-  );
-}
-#footer.bg-white {
-  background-color: white;
-  background-image: none;
+/* Page rail: the max-width + horizontal padding shared by every page container
+   (was `mx-auto max-w-7xl px-3 md:px-8` repeated across ~24 sites). */
+@utility page-shell {
+  @apply mx-auto max-w-7xl px-3 md:px-8;
 }
 
 address {
@@ -181,13 +170,6 @@ address {
     90deg,
     var(--color-violet-300) -2.98%,
     var(--color-fuchsia-400) 89.65%
-  );
-}
-@utility bg-gradient-2 {
-  background-image: linear-gradient(
-    90deg,
-    var(--color-violet-350) -2.98%,
-    var(--color-fuchsia-500) 89.65%
   );
 }
 
@@ -253,25 +235,6 @@ address {
   );
 }
 
-/* gradient-line */
-@utility gradient-bg-line-20 {
-  height: 20px;
-  background: linear-gradient(
-    90deg,
-    var(--color-violet-400) -2.98%,
-    var(--color-fuchsia-500) 89.65%
-  );
-}
-@utility gradient-bg-line-100 {
-  height: 100px;
-  background: linear-gradient(
-    90deg,
-    var(--color-violet-400) -2.98%,
-    var(--color-fuchsia-500) 89.65%
-  );
-}
-
-/* gallery */
 /* GSAP animation start state */
 @utility fade-in {
   opacity: 0;

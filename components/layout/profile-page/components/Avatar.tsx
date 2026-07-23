@@ -20,7 +20,7 @@ const Avatar = ({
 
   return (
     <div
-      className="bg-gradient-brand relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full text-xl font-bold text-white"
+      className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-brand text-xl font-bold text-white"
       style={{ boxShadow: '0 4px 16px #ed21f144' }}
     >
       {photo ? (

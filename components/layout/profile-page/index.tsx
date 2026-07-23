@@ -11,8 +11,7 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
 import AuthError from '@/components/pages/AuthError';
 import SpinnerLoader from '@/components/shared/SpinnerLoader';
 
-import FromAnimations from './animations/FromAnimations';
-import HistoryAnimations from './animations/HistoryAnimations';
+import StageFadeAnimations from './animations/StageFadeAnimations';
 import MobileTabs, { type ProfileTab } from './components/MobileTabs';
 import ProfileCard from './components/ProfileCard';
 import VisitHistorySkeleton from './components/VisitHistorySkeleton';
@@ -83,14 +82,15 @@ const ProfilePageLayout = ({
       {/* 40 / 60 split on large screens; stacked / toggled on mobile */}
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-5">
         {/* Profile card */}
-        <FromAnimations
+        <StageFadeAnimations
           className={`lg:col-span-2 lg:block ${mobileTab === 'profile' ? 'block' : 'hidden'}`}
         >
           <ProfileCard dict={dict} page={page} user={user} />
-        </FromAnimations>
+        </StageFadeAnimations>
 
         {/* Visit history */}
-        <HistoryAnimations
+        <StageFadeAnimations
+          durations={{ load: 0.5, enter: 0.6, leave: 0.4 }}
           className={`lg:col-span-3 lg:block ${mobileTab === 'history' ? 'block' : 'hidden'}`}
         >
           <div
@@ -109,7 +109,7 @@ const ProfilePageLayout = ({
               <ProfileHistory dict={dict} masters={masters} />
             </Suspense>
           </div>
-        </HistoryAnimations>
+        </StageFadeAnimations>
       </div>
     </div>
   );

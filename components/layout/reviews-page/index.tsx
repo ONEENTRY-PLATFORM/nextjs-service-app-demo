@@ -117,7 +117,7 @@ const ReviewsPageContent = ({
   useScrollTriggerRefresh(filtered);
 
   return (
-    <div className="mx-auto max-w-7xl px-3 md:px-8" data-testid="reviews-page">
+    <div className="page-shell" data-testid="reviews-page">
       {/* Back link */}
       <div className="pt-6">
         <Link

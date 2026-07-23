@@ -2,14 +2,14 @@
 
 import { useMemo } from 'react';
 
-import { ANY_MASTER, CATEGORY_ORDER } from './constants';
+import { ANY_MASTER, CATEGORY_ORDER } from '../constants';
 import type {
   BookingData,
   BookingFlow,
   BookingMaster,
   BookingSalon,
   BookingService,
-} from './types';
+} from '../types';
 
 /** The current selection the cross-filters narrow the rosters by. */
 export interface BookingFiltersInput {

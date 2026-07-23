@@ -6,8 +6,8 @@ import { useAppSelector } from '@/app/store/hooks';
 import { selectCartSelection } from '@/app/store/reducers/CartSlice';
 import { useHydrated } from '@/app/store/useHydrated';
 
-import type { PreselectPreset } from './bookingReducer';
-import type { BookingData, BookingService } from './types';
+import type { PreselectPreset } from '../bookingReducer';
+import type { BookingData, BookingService } from '../types';
 import type { ReschedulePrefill } from './useReschedulePrefill';
 
 /**

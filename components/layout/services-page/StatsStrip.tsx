@@ -18,7 +18,7 @@ const StatsStrip = ({
   return (
     <div className="bg-gradient-stats">
       <div
-        className={`mx-auto grid max-w-7xl ${columns} gap-2 px-3 py-4 text-center text-white md:px-8`}
+        className={`page-shell grid ${columns} gap-2 py-4 text-center text-white`}
       >
         {stats.map(([value, label]) => (
           <div key={label} className="py-1">

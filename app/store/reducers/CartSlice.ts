@@ -109,9 +109,9 @@ export const { addServiceToCart, removeAllServices, setCartVersion } =
  * Select the booking pre-selection (salon / product / master IDs).
  *
  * Read sites hydrate the entities themselves through RTK Query hooks.
- * @param   {object}        state                  - The Redux store state.
- * @param   {CartState}     state.cartReducer      - The cart reducer state.
- * @returns {CartSelection}                        The current selection IDs.
+ * @param   {object}        state             - The Redux store state.
+ * @param   {CartState}     state.cartReducer - The cart reducer state.
+ * @returns {CartSelection}                   The current selection IDs.
  */
 export const selectCartSelection = (state: {
   cartReducer: CartState;

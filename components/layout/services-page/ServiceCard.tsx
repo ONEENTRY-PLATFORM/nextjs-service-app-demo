@@ -36,7 +36,7 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
   /** Get router instance for navigation */
   const router = useTransitionRouter();
   /** Get dispatch function for Redux actions */
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   /**
    * A service is unavailable when it has no price OR the CMS flags it as not

@@ -31,7 +31,7 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
       <div className="h-1.25 bg-gradient-stats" />
 
       {/* Back link */}
-      <div className="mx-auto max-w-7xl px-3 pt-6 md:px-8">
+      <div className="page-shell pt-6">
         <Link
           href="/contacts"
           className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
@@ -42,7 +42,7 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
 
       {/* Title + photo gallery */}
       <section className="pt-6 pb-10">
-        <div className="mx-auto max-w-7xl px-3 md:px-8">
+        <div className="page-shell">
           <RevealAnimations className="px-3 text-center lg:px-0 lg:text-left">
             <h1 className="inline-block border-b border-ink pb-1.5 text-[clamp(26px,4vw,2.6rem)] font-light tracking-fine text-ink uppercase">
               {salon.name}
@@ -69,7 +69,7 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
 
       {/* About + sidebar */}
       <section className="pb-10">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-3 md:px-8 lg:grid-cols-[1.6fr_1fr]">
+        <div className="page-shell grid grid-cols-1 gap-10 lg:grid-cols-[1.6fr_1fr]">
           <RevealAnimations className="px-3 lg:px-0">
             <p
               className="mb-3 text-sm font-black tracking-[0.25em] uppercase"

@@ -6,7 +6,7 @@ import {
   ORDER_FIELD_SALON,
 } from '@/app/store/orderMarkers';
 
-import type { BookingMaster, BookingSalon } from './types';
+import type { BookingMaster, BookingSalon } from '../types';
 
 /**
  * buildOrderFormData — the `formData` of a booking order.

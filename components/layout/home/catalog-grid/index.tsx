@@ -32,7 +32,7 @@ const CatalogSection = ({
       data-testid="home-catalog"
       className="relative flex min-h-0 shrink-0 flex-col justify-center overflow-hidden bg-white py-2 xl:min-h-112 xl:py-10 md:max-xl:min-h-80 md:max-xl:py-6"
     >
-      <div className="relative mx-auto flex w-full max-w-7xl shrink-0 grow flex-col self-stretch px-3 md:px-8">
+      <div className="relative page-shell flex w-full shrink-0 grow flex-col self-stretch">
         {/* title */}
         <SectionTitle title={title} className="mb-6 md:mb-10" />
         {/* pages */}

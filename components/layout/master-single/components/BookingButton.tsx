@@ -34,7 +34,7 @@ const BookingButton = ({
   /** Get dispatch function for Redux actions */
   const dispatch = useAppDispatch();
   /** Extract booking text from dictionary */
-  const { book_online_text } = dict;
+  const { book_online_text } = dict;
 
   /** Handle booking action */
   const onApplyHandle = () => {

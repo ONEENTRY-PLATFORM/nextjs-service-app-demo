@@ -125,7 +125,7 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
 
       {/* Get in touch */}
       <section className="bg-white pt-2 pb-6 md:pt-6 md:pb-10">
-        <div className="mx-auto max-w-7xl px-3 md:px-8">
+        <div className="page-shell">
           <SectionHeading className="mb-6 md:mb-10">
             Get in Touch
           </SectionHeading>

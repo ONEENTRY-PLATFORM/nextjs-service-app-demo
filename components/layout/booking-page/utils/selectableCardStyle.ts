@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 
-import { PINK } from './constants';
+import { PINK } from '../constants';
 
 /** Resting border of an unselected card (mock's neutral hairline). */
 const IDLE_BORDER = '#e8e8f0';

@@ -17,7 +17,7 @@ export default function Loading(): JSX.Element {
       {/* Gradient accent strip — same as the real page */}
       <div className="h-1.25 bg-gradient-stats" />
 
-      <div className="mx-auto w-full max-w-7xl px-3 md:px-8">
+      <div className="page-shell w-full">
         {/* Heading + master filter placeholder */}
         <div className="flex flex-col items-center gap-5 py-8">
           <div className="h-7 w-48 animate-pulse rounded bg-slate-200" />

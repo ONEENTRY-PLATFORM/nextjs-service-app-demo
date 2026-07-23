@@ -9,8 +9,8 @@ import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { entityLinks, entityPageIds } from '@/app/utils/entityLinks';
-import { salonLabel } from '@/app/utils/salonLabel';
 import { salonFromPage } from '@/app/utils/salonFromPage';
+import { salonLabel } from '@/app/utils/salonLabel';
 import MastersPageContent from '@/components/layout/masters-page';
 import type {
   MasterItem,

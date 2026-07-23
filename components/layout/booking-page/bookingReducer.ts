@@ -58,7 +58,12 @@ export const initialBookingState: BookingState = {
 type PreselectPatch = Partial<
   Pick<
     BookingState,
-    'flow' | 'master' | 'serviceIds' | 'salon' | 'categoryFilter' | 'serviceLocked'
+    | 'flow'
+    | 'master'
+    | 'serviceIds'
+    | 'salon'
+    | 'categoryFilter'
+    | 'serviceLocked'
   >
 >;
 
@@ -99,9 +104,9 @@ export type BookingAction =
 /**
  * Step list for a state — the same derivation the hook renders from, used inside
  * the reducer for `NEXT` bounds, the `'last'` preselect target and the clamp.
- * @param   {BookingState} state - Wizard state
- * @param   {BookingData}  data  - Salons, services and specialists
- * @returns {import('./types').StepKey[]} Step keys in order
+ * @param   {BookingState}                state - Wizard state
+ * @param   {BookingData}                 data  - Salons, services and specialists
+ * @returns {import('./types').StepKey[]}       Step keys in order
  */
 const keysOf = (state: BookingState, data: BookingData) =>
   bookingStepKeys({
@@ -115,9 +120,9 @@ const keysOf = (state: BookingState, data: BookingData) =>
 /**
  * Category pill implied by a service selection: a single shared category selects
  * that pill, a mixed pick (or an empty one) falls back to "All".
- * @param   {string[]}     serviceIds - Chosen service ids
- * @param   {BookingData}  data       - Salons, services and specialists
- * @returns {string}                  Category label, or `'All'`
+ * @param   {string[]}    serviceIds - Chosen service ids
+ * @param   {BookingData} data       - Salons, services and specialists
+ * @returns {string}                 Category label, or `'All'`
  */
 const categoryOf = (serviceIds: string[], data: BookingData): string => {
   const cats = [
@@ -177,7 +182,11 @@ const transition = (
         categoryFilter: categoryOf(serviceIds, data),
       };
       /** Invalidate a chosen master who performs none of the remaining picks */
-      if (state.master && state.master !== ANY_MASTER && serviceIds.length > 0) {
+      if (
+        state.master &&
+        state.master !== ANY_MASTER &&
+        serviceIds.length > 0
+      ) {
         const m = data.masters.find((x) => x.id === state.master);
         if (
           m &&
@@ -281,8 +290,8 @@ const transition = (
  * unrepresentable. In normal flows `stepIdx` is always valid, so the clamp is a
  * no-op; it only bites the transient where the step list shrank below the
  * cursor.
- * @param   {BookingData} data - Salons, services and specialists
- * @returns {(state: BookingState, action: BookingAction) => BookingState} Reducer
+ * @param   {BookingData}                                                  data - Salons, services and specialists
+ * @returns {(state: BookingState, action: BookingAction) => BookingState}      Reducer
  */
 export const makeBookingReducer =
   (data: BookingData) =>

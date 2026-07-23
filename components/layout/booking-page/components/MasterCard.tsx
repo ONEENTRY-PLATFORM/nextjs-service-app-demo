@@ -2,8 +2,8 @@ import { Star } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { CYAN, DESC_MIN_H } from '../constants';
-import { selectableCardStyle } from '../selectableCardStyle';
 import type { BookingMaster, BookingSalon } from '../types';
+import { selectableCardStyle } from '../utils/selectableCardStyle';
 import Portrait from './Portrait';
 import Price from './Price';
 import SalonChips from './SalonChips';

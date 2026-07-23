@@ -119,7 +119,7 @@ const MenuSection = async ({
     (follow_us_text?.value as string | undefined) ?? 'Follow us';
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-3 py-6 text-black md:px-8 md:pt-12">
+    <div className="page-shell w-full py-6 text-black md:pt-12">
       {/* Salons + Opening Time (desktop 4th column) */}
       <div className="grid grid-cols-1 gap-x-4 gap-y-0 xl:grid-cols-[1fr_1fr_1fr_9rem] sm:grid-cols-4 sm:gap-y-6">
         <SalonsGrid />

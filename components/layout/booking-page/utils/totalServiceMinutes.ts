@@ -1,4 +1,4 @@
-import type { BookingService } from './types';
+import type { BookingService } from '../types';
 
 /** Length assumed for a service the CMS carries no duration for. */
 const DEFAULT_SERVICE_MINUTES = 60;

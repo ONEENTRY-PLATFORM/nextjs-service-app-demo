@@ -13,7 +13,7 @@ import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { buildSignUpBody } from '@/components/forms/buildSignUpBody';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
-import { isSignUpVisibleField } from '@/components/forms/isSignUpVisibleField';
+import { isSignUpVisibleField } from '@/components/forms/fieldFlags/isSignUpVisibleField';
 import { useCmsForm } from '@/components/forms/useCmsForm';
 import { useCredentialProvider } from '@/components/forms/useCredentialProvider';
 
@@ -110,10 +110,7 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
 
       /** Attempt to register new user through API */
       try {
-        /**
-         * Call authentication provider to create new account (client-side
-         * so the real browser fingerprint is sent).
-         */
+        /* Call authentication provider to create new account */
         const res = await getApi().AuthProvider.signUp(
           providerMarker,
           signUpBody,

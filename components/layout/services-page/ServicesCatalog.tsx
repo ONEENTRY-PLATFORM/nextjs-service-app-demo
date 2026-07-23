@@ -132,7 +132,7 @@ const ServicesCatalog = ({
       className="py-10"
       style={{ background: 'linear-gradient(180deg,#f7f7fb 0%,#fff 50%)' }}
     >
-      <div className="mx-auto max-w-7xl px-3 md:px-8">
+      <div className="page-shell">
         {/* Filter cluster — fade-only reveal: it holds the mobile salon dropdown
             (position: fixed), which a lingering wrapper transform would break */}
         <RevealAnimations fade>

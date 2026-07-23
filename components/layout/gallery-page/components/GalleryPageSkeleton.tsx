@@ -19,7 +19,7 @@ const GalleryPageSkeleton = (): JSX.Element => {
       <div className="h-1.25 bg-gradient-stats" />
 
       {/* Filter bar placeholder: tabs, category pills and the photo counter */}
-      <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-5 px-3 py-6 md:px-8">
+      <div className="page-shell flex w-full flex-col items-center gap-5 py-6">
         <div className="h-5 w-44 animate-pulse rounded bg-slate-200" />
         <div className="flex flex-wrap justify-center gap-3">
           {Array.from({ length: 4 }).map((_, index) => (

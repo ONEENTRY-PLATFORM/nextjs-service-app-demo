@@ -129,12 +129,12 @@ const MasterSingleLayout = async ({
       <div className="h-1.25 w-full bg-gradient-stats" />
 
       {/* Back link on the site container rails */}
-      <div className="mx-auto max-w-7xl px-3 pt-6 md:px-8">
+      <div className="page-shell pt-6">
         <BackLink />
       </div>
 
       {/* Profile card */}
-      <div className="mx-auto max-w-7xl px-3 pt-10 pb-4 md:px-8 md:pb-12">
+      <div className="page-shell pt-10 pb-4 md:pb-12">
         <MasterAnimations className="grid grid-cols-1 items-start gap-8 md:grid-cols-[300px_1fr] md:gap-12">
           {/* Portrait column */}
           <div className="flex flex-col items-center md:items-start">

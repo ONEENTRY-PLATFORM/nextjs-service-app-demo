@@ -23,10 +23,10 @@ import {
 } from '@/app/store/reducers/CartSlice';
 import { toErrorMessage } from '@/app/utils/toErrorMessage';
 
-import { buildOrderFormData } from './buildOrderFormData';
-import { buildOrderProducts } from './buildOrderProducts';
-import { toBookingInterval } from './toBookingInterval';
-import type { BookingMaster, BookingSalon, BookingService } from './types';
+import type { BookingMaster, BookingSalon, BookingService } from '../types';
+import { buildOrderFormData } from '../utils/buildOrderFormData';
+import { buildOrderProducts } from '../utils/buildOrderProducts';
+import { toBookingInterval } from '../utils/toBookingInterval';
 
 /** Everything the wizard has picked by the time of the confirm click. */
 export interface BookingSelection {

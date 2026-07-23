@@ -2,11 +2,11 @@
 
 import { useMemo } from 'react';
 
-import { FALLBACK_CLOSE_MINUTES } from './constants';
-import dayCloseMinutes from './dayCloseMinutes';
-import daySlots from './daySlots';
-import totalServiceMinutes from './totalServiceMinutes';
-import type { BookingMaster, BookingSalon, BookingService } from './types';
+import { FALLBACK_CLOSE_MINUTES } from '../constants';
+import type { BookingMaster, BookingSalon, BookingService } from '../types';
+import dayCloseMinutes from '../utils/dayCloseMinutes';
+import daySlots from '../utils/daySlots';
+import totalServiceMinutes from '../utils/totalServiceMinutes';
 
 /** What the Date & Time step needs to know to draw its grid. */
 export interface BookingScheduleInput {
