@@ -106,19 +106,6 @@ const SpecialistStep = ({
     return () => window.removeEventListener('resize', measure);
   }, [masters, allowAny, categoryFilter, services]);
 
-  /**
-   * Reserve identical vertical rhythm across every card: the chips block gets
-   * a min-height equal to the max chip count found across all cards, so the
-   * divider lands at the same Y position everywhere.
-   */
-  const maxChipsAcross = Math.max(
-    allowAny ? salons.length : 0,
-    ...masters.map((m) => m.salonIds.length || salons.length),
-    1,
-  );
-  /** Each chip = 40px, gap-2 = 8px, container p-4 = 32px */
-  const chipsMinH = `${maxChipsAcross * 40 + (maxChipsAcross - 1) * 8 + 32}px`;
-
   const anySpecialties = ANY_LABEL[categoryFilter] ?? categoryFilter;
   /** Desktop name search (empty on mobile → no filtering there) */
   const q = specSearch.trim().toLowerCase();
@@ -255,7 +242,6 @@ const SpecialistStep = ({
             fromPrice={anyFromPrice}
             currency={servicesCurrency}
             salons={salons}
-            chipsMinH={chipsMinH}
           />
         )}
 
@@ -269,7 +255,6 @@ const SpecialistStep = ({
             price={cardPrice(m)}
             currency={servicesCurrency}
             showFrom={!hasServices}
-            chipsMinH={chipsMinH}
           />
         ))}
         {q && shownMasters.length === 0 && (

@@ -14,7 +14,7 @@ import SelectedCheckBadge from './SelectedCheckBadge';
 /**
  * MasterCard — a single specialist card of the specialist step: a compact
  * avatar row on mobile and a photo card with a rating pill on desktop. The
- * chips block reserves a shared min-height so dividers align across the grid.
+ * salon chips sit in a footer pinned to the bottom of the (grid-stretched) card.
  * @param   {object}         props            - Component properties
  * @param   {BookingMaster}  props.master     - Specialist to render
  * @param   {boolean}        props.active     - This card is the current selection
@@ -23,7 +23,6 @@ import SelectedCheckBadge from './SelectedCheckBadge';
  * @param   {number | null}  props.price      - Exact/`from` price (`null` hides the line)
  * @param   {string}         [props.currency] - Currency of `price` from the CMS
  * @param   {boolean}        props.showFrom   - Prefix the price with "from" (no chosen service)
- * @param   {string}         props.chipsMinH  - Shared chips min-height (desktop rhythm)
  * @returns {JSX.Element}                     Master card
  */
 const MasterCard = ({
@@ -34,7 +33,6 @@ const MasterCard = ({
   price,
   currency,
   showFrom,
-  chipsMinH,
 }: {
   master: BookingMaster;
   active: boolean;
@@ -44,7 +42,6 @@ const MasterCard = ({
   /** Kept optional to match `AnySpecialistCard`; `Price` falls back to AED. */
   currency?: string | undefined;
   showFrom: boolean;
-  chipsMinH: string;
 }): JSX.Element => {
   const dict = useDict();
 
@@ -193,10 +190,7 @@ const MasterCard = ({
 
           <div className="flex-1" />
           <div className="border-t" style={{ borderColor: '#e8e8f0' }} />
-          <div
-            className="flex flex-col gap-2 p-4"
-            style={{ minHeight: chipsMinH }}
-          >
+          <div className="flex flex-col gap-2 p-4">
             <SalonChips salons={salons} height={40} />
           </div>
         </div>

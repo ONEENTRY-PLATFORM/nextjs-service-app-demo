@@ -163,87 +163,91 @@ const BookingSummary = ({
           </p>
         )}
         {/* The picked rows stay in view while the (much taller) step column
-            scrolls past — pinned under the fixed header (`h-20`). */}
-        <div className="flex flex-col space-y-4 xl:sticky xl:top-24">
-          {flow && !hasAny && (
-            <p className="py-6 text-center text-base text-neutral-300">
-              {(dict?.booking_complete_steps_hint?.value as
-                string | undefined) ||
-                'Complete the steps to see your booking details'}
-            </p>
-          )}
-          {salon && (
-            <SummaryRow
-              icon={<MapPin size={15} />}
-              label={
-                (dict?.studio_text?.value as string | undefined) || 'Studio'
-              }
-              value={salon.name}
-              sub={salon.address}
-            />
-          )}
-          {services.map((service) => (
-            <SummaryRow
-              key={service.id}
-              icon={<Scissors size={15} />}
-              label={
-                (dict?.service_text?.value as string | undefined) || 'Service'
-              }
-              value={service.name}
-              sub={
-                <>
-                  {service.duration && <>{service.duration} · </>}
-                  <Price amount={service.price} currency={service.currency} />
-                </>
-              }
-            />
-          ))}
-          {master && <MasterSummaryCard master={master} />}
-          {masterAny && !master && (
-            <SummaryRow
-              icon={<User size={15} />}
-              label={
-                (dict?.specialist_text?.value as string | undefined) ||
-                'Specialist'
-              }
-              value={
-                (dict?.booking_any_specialist_text?.value as
-                  string | undefined) || 'Any specialist'
-              }
-              sub={
-                (dict?.booking_best_match_text?.value as string | undefined) ||
-                'Best available match'
-              }
-            />
-          )}
-          {date && (
-            <SummaryRow
-              icon={<Calendar size={15} />}
-              label={(dict?.date_text?.value as string | undefined) || 'Date'}
-              value={formatDate(date)}
-              sub={
-                time
-                  ? `${(dict?.booking_at_prefix?.value as string | undefined) || 'at'} ${time}`
-                  : (dict?.booking_time_not_selected_text?.value as
-                      string | undefined) || 'Time not selected'
-              }
-            />
-          )}
-          {total !== null && (
-            <div className="border-t pt-4" style={{ borderColor: '#e8e8f0' }}>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-neutral-300">
-                  {(dict?.total_text?.value as string | undefined) || 'Total'}
-                </span>
-                <span className="text-xl font-bold whitespace-nowrap text-slate-400">
-                  <Price amount={total} currency={totalCurrency} />
-                </span>
+            scrolls past — pinned under the fixed header (`h-20`). The flex-1
+            wrapper is the sticky element's containing block, so the rows stop
+            just above the payment block instead of sliding down over it. */}
+        <div className={flow ? 'flex-1' : ''}>
+          <div className="flex flex-col space-y-4 xl:sticky xl:top-24">
+            {flow && !hasAny && (
+              <p className="py-6 text-center text-base text-neutral-300">
+                {(dict?.booking_complete_steps_hint?.value as
+                  string | undefined) ||
+                  'Complete the steps to see your booking details'}
+              </p>
+            )}
+            {salon && (
+              <SummaryRow
+                icon={<MapPin size={15} />}
+                label={
+                  (dict?.studio_text?.value as string | undefined) || 'Studio'
+                }
+                value={salon.name}
+                sub={salon.address}
+              />
+            )}
+            {services.map((service) => (
+              <SummaryRow
+                key={service.id}
+                icon={<Scissors size={15} />}
+                label={
+                  (dict?.service_text?.value as string | undefined) || 'Service'
+                }
+                value={service.name}
+                sub={
+                  <>
+                    {service.duration && <>{service.duration} · </>}
+                    <Price amount={service.price} currency={service.currency} />
+                  </>
+                }
+              />
+            ))}
+            {master && <MasterSummaryCard master={master} />}
+            {masterAny && !master && (
+              <SummaryRow
+                icon={<User size={15} />}
+                label={
+                  (dict?.specialist_text?.value as string | undefined) ||
+                  'Specialist'
+                }
+                value={
+                  (dict?.booking_any_specialist_text?.value as
+                    string | undefined) || 'Any specialist'
+                }
+                sub={
+                  (dict?.booking_best_match_text?.value as string | undefined) ||
+                  'Best available match'
+                }
+              />
+            )}
+            {date && (
+              <SummaryRow
+                icon={<Calendar size={15} />}
+                label={(dict?.date_text?.value as string | undefined) || 'Date'}
+                value={formatDate(date)}
+                sub={
+                  time
+                    ? `${(dict?.booking_at_prefix?.value as string | undefined) || 'at'} ${time}`
+                    : (dict?.booking_time_not_selected_text?.value as
+                        string | undefined) || 'Time not selected'
+                }
+              />
+            )}
+            {total !== null && (
+              <div className="border-t pt-4" style={{ borderColor: '#e8e8f0' }}>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-neutral-300">
+                    {(dict?.total_text?.value as string | undefined) || 'Total'}
+                  </span>
+                  <span className="text-xl font-bold whitespace-nowrap text-slate-400">
+                    <Price amount={total} currency={totalCurrency} />
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
         {flow && (
-          <div className="flex flex-col gap-4 pt-2 md:mt-auto">
+          <div className="flex flex-col gap-4 pt-2">
             {/* Payment — only once the client is signed in and the salon offers
                 a real choice; PaymentMethodPicker renders nothing for one. */}
             {isLoggedIn && (

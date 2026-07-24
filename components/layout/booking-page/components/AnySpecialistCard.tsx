@@ -20,7 +20,6 @@ import SelectedCheckBadge from './SelectedCheckBadge';
  * @param   {number | null}  props.fromPrice   - Cheapest matching "from" price
  * @param   {string}         [props.currency]  - Currency of `fromPrice` from the CMS
  * @param   {BookingSalon[]} props.salons      - Salons listed as chips
- * @param   {string}         props.chipsMinH   - Shared chips min-height (desktop rhythm)
  * @returns {JSX.Element}                      Any-specialist card
  */
 const AnySpecialistCard = ({
@@ -31,7 +30,6 @@ const AnySpecialistCard = ({
   fromPrice,
   currency,
   salons,
-  chipsMinH,
 }: {
   active: boolean;
   onSelect: () => void;
@@ -40,7 +38,6 @@ const AnySpecialistCard = ({
   fromPrice: number | null;
   currency?: string | undefined;
   salons: BookingSalon[];
-  chipsMinH: string;
 }): JSX.Element => {
   const dict = useDict();
 
@@ -141,13 +138,10 @@ const AnySpecialistCard = ({
             )}
           </div>
 
-          {/* Spacer pushes divider to a consistent Y across all cards */}
+          {/* Spacer pins the salon chips to the bottom of the card */}
           <div className="flex-1" />
           <div className="border-t" style={{ borderColor: '#e8e8f0' }} />
-          <div
-            className="flex flex-col gap-2 p-4"
-            style={{ minHeight: chipsMinH }}
-          >
+          <div className="flex flex-col gap-2 p-4">
             <SalonChips salons={salons} height={40} />
           </div>
         </div>

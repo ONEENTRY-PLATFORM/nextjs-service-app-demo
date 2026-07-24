@@ -276,31 +276,37 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   const resetFlow = () => dispatch({ type: 'RESET' });
   /**
    * Enter a booking flow from the entry screen, resetting step/category state.
-   * @param {BookingFlow} f - The chosen flow (`salon-first` / `specialist-first`)
+   * @param   {BookingFlow} f - The chosen flow (`salon-first` / `specialist-first`)
+   * @returns {void}          -
    */
-  const startFlow = (f: BookingFlow) =>
+  const startFlow = (f: BookingFlow): void =>
     dispatch({ type: 'START_FLOW', flow: f });
 
   /**
    * Pick a studio; invalidates a chosen specialist who doesn't work there.
-   * @param {number} id - Salon id
+   * @param   {number} id - Salon id
+   * @returns {void}      -
    */
-  const selectSalon = (id: number) => dispatch({ type: 'SELECT_SALON', id });
+  const selectSalon = (id: number): void =>
+    dispatch({ type: 'SELECT_SALON', id });
   /**
    * Toggle a service in or out of the multi-selection; syncs the category tab
    * and invalidates a chosen specialist who performs NONE of the remaining picks.
-   * @param {string} id - Service id
+   * @param   {string} id - Service id
+   * @returns {void}      -
    */
-  const selectService = (id: string) =>
+  const selectService = (id: string): void =>
     dispatch({ type: 'SELECT_SERVICE', id });
-  /** Clear every chosen service and unlock the (preselected) service step. */
+  /* Clear every chosen service and unlock the (preselected) service step. */
   const clearService = () => dispatch({ type: 'CLEAR_SERVICE' });
   /**
    * Pick a specialist; auto-picks their single studio and invalidates a studio
    * the specialist cannot cover.
-   * @param {string} id - Specialist id (or the "any specialist" sentinel)
+   * @param   {string} id - Specialist id (or the "any specialist" sentinel)
+   * @returns {void}      -
    */
-  const selectMaster = (id: string) => dispatch({ type: 'SELECT_MASTER', id });
+  const selectMaster = (id: string): void =>
+    dispatch({ type: 'SELECT_MASTER', id });
 
   /** Submit the assembled selection to the booking/checkout flow. */
   const handleConfirm = () => {
@@ -319,23 +325,27 @@ export const useBookingWizard = (data: BookingData): BookingWizardState => {
   };
   /**
    * Jump directly to a step by index (step-bar navigation).
-   * @param {number} idx - Target step index
+   * @param   {number} idx - Target step index
+   * @returns {void}       -
    */
   const goStep = (idx: number) => dispatch({ type: 'GO_STEP', idx });
   /**
    * Change the active service category tab.
-   * @param {string} cat - Category label (or `All`)
+   * @param   {string} cat - Category label (or `All`)
+   * @returns {void}       -
    */
   const onCategoryChange = (cat: string) =>
     dispatch({ type: 'SET_CATEGORY', category: cat });
   /**
    * Pick an appointment day; clears the time (slots differ per day).
-   * @param {string} d - Date key `year-monthIndex-day`
+   * @param   {string} d - Date key `year-monthIndex-day`
+   * @returns {void}     -
    */
   const onDate = (d: string) => dispatch({ type: 'SET_DATE', date: d });
   /**
    * Pick an appointment time slot.
-   * @param {string} t - Time slot `HH:MM`
+   * @param   {string} t - Time slot `HH:MM`
+   * @returns {void}     -
    */
   const onTime = (t: string) => dispatch({ type: 'SET_TIME', time: t });
 
