@@ -1,7 +1,7 @@
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
-import type { OpeningHoursRow } from '@/app/utils/parseOpeningTime';
+import type { OpeningHoursRow } from '@/components/utils/parseOpeningTime';
 
 /**
  * OpeningHoursDayCard — one weekday card of the contacts "Opening Hours" grid

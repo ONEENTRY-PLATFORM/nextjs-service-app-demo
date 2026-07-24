@@ -2,7 +2,7 @@ import {
   entityLinks,
   entityPageIds,
   entityProductIds,
-} from '@/app/utils/entityLinks';
+} from '@/components/utils/entityLinks';
 
 const SALON_LINKS = [
   { title: 'Thalia Downtown', value: { id: 39, depth: 2 } },

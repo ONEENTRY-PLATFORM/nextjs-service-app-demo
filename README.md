@@ -1,57 +1,37 @@
 <img src="https://oneentry.cloud/img/git/oneenrty_light.png" alt="OneEntry Headless CMS" width="200" />
 
-# OneEntry next.js salon example
+# Thalia Beauty Studio — OneEntry Next.js example
 
-[App Promo Page](https://oneentry-free-template-e-commerce-nextjs.vercel.app 'DEMO')
+Thalia Beauty Studio is a beauty-salon website for a Dubai studio, built with **Next.js** and fully powered by **OneEntry Headless CMS**. Everything on the site — services and prices, special offers, the specialists roster, the gallery, salon locations, opening hours and all UI copy — is managed from the OneEntry admin panel.
 
-# OneEntry Headless CMS E-commerce Template
-
-This project is a demo version of an e-commerce salon, fully integrated with OneEntry Headless CMS. The primary goal of this project is to provide developers with a free, ready-to-use front-end template that demonstrates the capabilities of working with OneEntry.
-
-## Project Goals
-
-1. **Showcase OneEntry’s Capabilities**: This e-commerce template gives users a clear example of how OneEntry Headless CMS can be used to manage content and products on an online salon.
-
-2. **Simplify Development for Front-End Developers**: This project serves as a foundation that developers can use to quickly set up an e-commerce store. They can use the code as-is or customize it, adapting the design and adding their own features, which significantly reduces development time.
-
-3. **Ready-to-Use Solution for Quick Start**: This e-commerce template isn’t just an example—it’s a fully functional codebase that’s already integrated with OneEntry Headless CMS, ready to be tailored to fit specific project needs.
-
-## Key Features
-
-- **Full Control via Admin Panel**: Every element of the store—from product cards to category pages—is customizable and manageable through an intuitive admin panel. This setup allows for quick content updates and store adjustments without needing code changes.
-
-- **Flexible Content Management**: All content, including product descriptions, images, pricing, and promotions, is managed entirely through the OneEntry admin panel. This makes it easy to keep the store up-to-date, working exclusively through the admin interface.
-
-- **Quick Start & Easy Adaptation**: Developers can hit the ground running with this ready-made template and customize it as needed to meet specific business or branding requirements.
-
-- **Scalability Support**: With OneEntry Headless CMS, this store can easily scale, handling high traffic and growing data volumes, making it suitable for both small projects and larger stores.
-
-## Usage
-
-This project is designed for developers using OneEntry Headless CMS who need a quick and flexible way to launch an e-commerce store. It serves as a starting point for creating a custom online store with minimal time and effort on front-end development.
+The project doubles as a free, ready-to-use front-end template that shows how to drive a real, content-heavy site entirely from OneEntry.
 
 ## Demo
 
-[https://oneentry-nextjs-shop-demo.vercel.app](https://oneentry-nextjs-shop-demo.vercel.app 'DEMO')
+[https://demo-beauty.1entry.cloud](https://demo-beauty.1entry.cloud 'DEMO')
 
-## Features
+## Project Goals
 
-- **User creation:** Register users via different providers (email, phone) and customize which data to store.
-- **User Activation:** Activate users via code, such as through email verification.
-- **State Management:** Utilize Redux Toolkit and Server state for effective state management.
-- **Efficient Store Catalog:** Easily manage an unlimited number of products in the catalog.
-- **Dynamic Catalog Updates:** Reload the catalog, with direct editing capabilities in the CMS.
-- **Advanced Filtering:** Apply a variety of filters to the product catalog for better organization and search.
-- **Editable Block Content:** Support for user-editable block content.
-- **CMS-Editable UI Copy:** All interface text — labels, headings, empty states, messages — is managed via the `system_content` dictionary in the admin panel, with English fallbacks in code (see [UI Text Dictionary](docs/Dictionary.md)).
-- **Product Recommendations:** Display various selections of products.
-- **Feedback Forms:** Include customizable feedback forms with captcha protection to prevent spam.
-- **Order Creation and Purchases:** Complete transactions using [Stripe] for secure, seamless payments.
-- **Order History:** View past purchases and maintain a record of all transactions.
-- **Event Notifications:** Leverage events to notify users of updates, offers, or important news in real-time.
-- **TypeScript Integration:** The project is beginner-friendly and uses lightweight TypeScript for development.
-- **Tailwind:** User-friendly layout comprehensible to everyone.
-- **JsDoc:** BuiltIn VsCode jsDoc documentation.
+1. **Showcase OneEntry's capabilities** on a real-world site: a service catalogue, appointment booking, offers, a specialists directory and a CMS-driven UI-text dictionary.
+
+2. **Simplify development for front-end developers**: use the code as-is or adapt the design and add features, cutting front-end setup time.
+
+3. **Ready-to-use starting point**: a fully functional codebase already wired to OneEntry — tailor it to a specific salon or service business.
+
+## Key Features
+
+- **Full control via the admin panel** — pages, service cards, categories, offers, specialists and blocks are all editable in OneEntry, no code changes required.
+- **Appointment booking** — clients pick a service and specialist and book an appointment; orders and their statuses (`upcoming` / `completed` / `canceled`) are managed in the CMS.
+- **Service catalogue** — the full price list (services grouped by category: hair, face, body, nails) with durations and prices, driven from OneEntry products.
+- **Special offers** — curated promotions with sale prices and bundled services.
+- **Specialists directory** — masters (OneEntry admins) with ratings, experience, portfolios and the services they perform.
+- **Gallery & salon locations** — image galleries and multiple salon branches with addresses, phones and opening hours.
+- **CMS-editable UI copy** — every interface string (labels, headings, empty states, messages) lives in the `system_content` dictionary, with English fallbacks in code (see [UI Text Dictionary](docs/Dictionary.md)).
+- **Feedback & contact forms** — customizable forms with captcha protection to prevent spam.
+- **Payments** — secure checkout via [Stripe].
+- **Auth & user accounts** — registration and activation via email/phone (and Google OAuth), with a private profile and order history.
+- **State management** — Redux Toolkit plus server state.
+- **Modern stack** — Next.js 16, React 19, TypeScript, Tailwind CSS v4, GSAP animations, `lucide-react` icons.
 
 ## Project Documentation
 
@@ -74,69 +54,60 @@ For detailed information about specific aspects of the project, please refer to 
 
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file.
+To run this project, you will need to add the following environment variables to your `.env` file.
 
-`1. Rename .env_example to .env`
+1. Copy `.env.example` to `.env`
+2. Add the following environment variables:
 
-`2. Add the following environment variables`
-
-    `NEXT_PUBLIC_ONEENTRY_URL: https://xxx-xxx-xxx.oneentry.cloud`
-
-    `NEXT_PUBLIC_ONEENTRY_TOKEN: xxxxxGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....`
+```dotenv
+NEXT_PUBLIC_ONEENTRY_URL=https://xxx-xxx-xxx.oneentry.cloud
+NEXT_PUBLIC_ONEENTRY_TOKEN=xxxxxGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....
+```
 
 ## Run Locally
+
+Requires **Node.js ≥ 22.14.0**.
 
 Clone the project
 
 ```bash
-  git clone git@github.com:OneEntry/nextjs-shop-demo.git
+git clone https://github.com/kvasss/oneentry-next-beauty-v2.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd nextjs-shop-demo
+cd oneentry-next-beauty-v2
 ```
 
 Install dependencies
 
 ```bash
-  npm install
+npm install
 ```
 
-Start the server
+Start the dev server
 
 ```bash
-  next dev
+npm run dev
 ```
 
-Build app
+Open [http://localhost:3700](http://localhost:3700) with your browser to see the result.
+
+## Build
 
 ```bash
-  next build
+npm run build
+npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Installation
-
-Install oneentry-next-shop with npm
+## Quality Checks
 
 ```bash
-
-  cd nextjs-shop-demo
-
-  npm install
-
-  next dev
-````
-
-## Deployment
-
-To deploy this project run
-
-```bash
-  npm run deploy
+npm run lint        # ESLint
+npm run typecheck   # tsc --noEmit (app + jest configs)
+npm test            # Jest unit tests
+npm run test:e2e    # Playwright end-to-end tests
 ```
 
 ## License
@@ -145,24 +116,24 @@ To deploy this project run
 
 ### Important files and folders
 
-| File(s) / Folder(s)             | Description                                |
-| ------------------------------- | ------------------------------------------ |
-| `.env`                          | OneEntry project configuration         |
-|                                 |                                            |
-| `@/app`                         | Next.js app entry points                   |
-| `@/app/layout.tsx`              | Main layout                                |
-| `@/app/api/utils/dictionaries.ts` | UI-text dictionary reader (`system_content`) |
-| `@/app/animations`              | Gsap animations transition providers       |
-| `@/app/api`                     | API, methods and hooks definition          |
-| `@/app/store`                   | Redux-Toolkit management and core reducers |
-| `@/app/store/providers`         | React contexts and providers               |
-| `@/app/types`                   | Types for TypeScript                       |
-|                                 |                                            |
-| `@/components`                  | All app components                         |
-| `@/components/forms`            | All app forms                              |
-| `@/components/icons`            | Svg icons with additional props            |
-| `@/components/layout`           | All app layouts                            |
-| `@/components/pages`            | Simple app pages                           |
-| `@/components/shared`           | Shared between layouts components          |
-|                                 |                                            |
-| `/public`                       | Public content folder                      |
+| File(s) / Folder(s)               | Description                                   |
+| --------------------------------- | --------------------------------------------- |
+| `.env`                            | OneEntry project configuration                |
+|                                   |                                               |
+| `@/app`                           | Next.js app entry points                      |
+| `@/app/layout.tsx`                | Main layout                                   |
+| `@/app/api/utils/dictionaries.ts` | UI-text dictionary reader (`system_content`)  |
+| `@/app/animations`                | GSAP animations & transition providers        |
+| `@/app/api`                       | API, methods and hooks definition             |
+| `@/app/store`                     | Redux-Toolkit management and core reducers    |
+| `@/app/store/providers`           | React contexts and providers                  |
+| `@/app/types`                     | Types for TypeScript                          |
+|                                   |                                               |
+| `@/components`                    | All app components                            |
+| `@/components/forms`              | All app forms                                 |
+| `@/components/icons`              | Svg icons with additional props               |
+| `@/components/layout`             | All app layouts                               |
+| `@/components/pages`              | Simple app pages                              |
+| `@/components/shared`             | Shared between layouts components             |
+|                                   |                                               |
+| `/public`                         | Public content folder                         |

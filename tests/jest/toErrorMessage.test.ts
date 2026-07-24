@@ -1,4 +1,4 @@
-import { toErrorMessage } from '@/app/utils/toErrorMessage';
+import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 describe('toErrorMessage', () => {
   it('returns the message of a real Error', () => {

@@ -17,8 +17,8 @@ import {
   ORDERS_STORAGE_MARKER,
 } from '@/app/store/orderMarkers';
 import { AuthContext } from '@/app/store/providers/AuthContext';
-import { parseOrderInterval } from '@/app/utils/parseOrderInterval';
-import productDurationMinutes from '@/app/utils/productDurationMinutes';
+import { parseOrderInterval } from '@/components/layout/profile-page/utils/parseOrderInterval';
+import productDurationMinutes from '@/components/utils/productDurationMinutes';
 
 import VisitGroups from './VisitGroups';
 import VisitHistorySkeleton from './VisitHistorySkeleton';

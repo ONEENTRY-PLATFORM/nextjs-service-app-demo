@@ -2,7 +2,7 @@ import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
-import { formatOrderTotal } from '@/app/utils/formatOrderTotal';
+import { formatOrderTotal } from '@/components/layout/profile-page/utils/formatOrderTotal';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
 /**

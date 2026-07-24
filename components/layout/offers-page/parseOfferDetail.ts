@@ -1,6 +1,6 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
-import { parseOfferBase } from '@/app/utils/parseOfferBase';
+import { parseOfferBase } from '@/components/utils/parseOfferBase';
 
 /** The view-model of a full-width offer detail card, parsed from a product. */
 export interface OfferDetailView {

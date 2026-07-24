@@ -1,4 +1,4 @@
-import type { CmsSalon } from '@/app/utils/salonFromPage';
+import type { CmsSalon } from '@/components/utils/salonFromPage';
 
 /** Dialable phone and Google Maps URLs derived from a salon's address. */
 export interface SalonMapLinks {

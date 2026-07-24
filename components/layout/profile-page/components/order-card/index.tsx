@@ -13,7 +13,7 @@ import {
   ORDERS_STATUS_CANCELED,
   ORDERS_STATUS_COMPLETED,
 } from '@/app/store/orderMarkers';
-import { salonFromPage } from '@/app/utils/salonFromPage';
+import { salonFromPage } from '@/components/utils/salonFromPage';
 
 import VisitCardAnimations from '../../animations/VisitCardAnimations';
 import StatusBadge from '../StatusBadge';

@@ -4,9 +4,9 @@ import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces'
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getProductsByPageUrl } from '@/app/api/server/products/getProductsByPageUrl';
-import { isOfferProduct } from '@/app/utils/isOfferProduct';
-import productDurationMinutes from '@/app/utils/productDurationMinutes';
-import { salonFromPage } from '@/app/utils/salonFromPage';
+import { isOfferProduct } from '@/components/utils/isOfferProduct';
+import productDurationMinutes from '@/components/utils/productDurationMinutes';
+import { salonFromPage } from '@/components/utils/salonFromPage';
 import type {
   ServiceItem,
   ServicesCategory,

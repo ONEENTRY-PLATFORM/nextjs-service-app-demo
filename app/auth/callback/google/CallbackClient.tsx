@@ -9,7 +9,7 @@ import { getApi } from '@/app/api/api/api';
 import { googleOAuthAction } from '@/app/api/server/auth/googleOAuthAction';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { useDict } from '@/app/store/providers/useDict';
-import { parseOAuthState } from '@/app/utils/parseOAuthState';
+import { parseOAuthState } from '@/app/auth/callback/google/parseOAuthState';
 import Spinner from '@/components/shared/Spinner';
 
 /** Route path Google redirects back to — must equal the URI whitelisted in Console. */

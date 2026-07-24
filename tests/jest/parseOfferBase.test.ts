@@ -1,6 +1,6 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
-import { parseOfferBase } from '@/app/utils/parseOfferBase';
+import { parseOfferBase } from '@/components/utils/parseOfferBase';
 import { parseOffer } from '@/components/layout/home/offers-feed/components/parseOffer';
 import { parseOfferDetail } from '@/components/layout/offers-page/parseOfferDetail';
 

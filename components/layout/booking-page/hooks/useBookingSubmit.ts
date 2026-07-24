@@ -21,7 +21,7 @@ import {
   addServiceToCart,
   removeAllServices,
 } from '@/app/store/reducers/CartSlice';
-import { toErrorMessage } from '@/app/utils/toErrorMessage';
+import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import type { BookingMaster, BookingSalon, BookingService } from '../types';
 import { buildOrderFormData } from '../utils/buildOrderFormData';

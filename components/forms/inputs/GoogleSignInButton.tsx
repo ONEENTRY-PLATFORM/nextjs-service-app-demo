@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { getApi, isError } from '@/app/api/api/api';
 import { useDict } from '@/app/store/providers/useDict';
-import { buildOAuthState } from '@/app/utils/buildOAuthState';
+import { buildOAuthState } from '@/components/forms/buildOAuthState';
 import GoogleIcon from '@/components/icons/google';
 
 /**

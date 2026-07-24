@@ -17,13 +17,13 @@ import {
   ORDERS_STATUS_CANCELED,
   ORDERS_STORAGE_MARKER,
 } from '@/app/store/orderMarkers';
-import { formatOrderCancelError } from '@/app/utils/formatOrderCancelError';
-import { formatOrderTotal } from '@/app/utils/formatOrderTotal';
-import { formatRefundError } from '@/app/utils/formatRefundError';
-import { formatUtcDate } from '@/app/utils/formatUtcDate';
-import { formatUtcTime } from '@/app/utils/formatUtcTime';
-import { isPaidOrderError } from '@/app/utils/isPaidOrderError';
-import { parseOrderInterval } from '@/app/utils/parseOrderInterval';
+import { formatOrderCancelError } from '@/components/layout/profile-page/utils/formatOrderCancelError';
+import { formatOrderTotal } from '@/components/layout/profile-page/utils/formatOrderTotal';
+import { formatRefundError } from '@/components/layout/profile-page/utils/formatRefundError';
+import { formatUtcDate } from '@/components/layout/profile-page/utils/formatUtcDate';
+import { formatUtcTime } from '@/components/layout/profile-page/utils/formatUtcTime';
+import { isPaidOrderError } from '@/components/layout/profile-page/utils/isPaidOrderError';
+import { parseOrderInterval } from '@/components/layout/profile-page/utils/parseOrderInterval';
 
 import CancelConfirmModal from './CancelConfirmModal';
 import CancelErrorModal from './CancelErrorModal';

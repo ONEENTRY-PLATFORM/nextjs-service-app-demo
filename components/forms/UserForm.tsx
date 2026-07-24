@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import type { FormProps } from '@/app/types/global';
-import { toErrorMessage } from '@/app/utils/toErrorMessage';
+import { toErrorMessage } from '@/components/utils/toErrorMessage';
 import { buildProfileUpdateBody } from '@/components/forms/buildProfileUpdateBody';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';

@@ -5,18 +5,14 @@ import type { JSX } from 'react';
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
-import { salonFromPage } from '@/app/utils/salonFromPage';
+import { salonContentFromPage } from '@/components/layout/salon-page/utils/salonContentFromPage';
+import { salonFromPage } from '@/components/utils/salonFromPage';
 import { salonMapLinks } from '@/app/utils/salonMapLinks';
+import { salonPhotosFromPage } from '@/components/layout/salon-page/utils/salonPhotosFromPage';
 import SalonPageContent from '@/components/layout/salon-page';
-import {
-  DEFAULT_SALON_CONTENT,
-  SALON_COLOR,
-  SALON_CONTENT,
-} from '@/components/layout/salon-page/salonContent';
+import { SALON_COLOR } from '@/components/layout/salon-page/salonContent';
 import type { SalonDetail } from '@/components/layout/salon-page/types';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
-
-import getCmsGalleryItems from '../../gallery/getCmsGalleryItems';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it
@@ -29,11 +25,12 @@ export const revalidate = 300;
  * Salon detail page (`/salons/downtown`, `/salons/marina`, `/salons/jbr`).
  *
  * Ported from the static-html mock (`SalonPage.tsx`). Address/phone come from
- * the CMS salon page (`salon_address` / `salon_phone`); the photo gallery is
- * the gallery filtered to this salon — photos are tagged through their master
- * (`master_id` → `master_salon`), so untagged ones simply do not show up. The
- * About / highlights / accent color come from local content (`salonContent.ts`)
- * until they move to the CMS. 404s only when the salon page itself is missing.
+ * the CMS salon page (`salon_address` / `salon_phone`); the photos are the
+ * salon's own pictures from its `salon_images` (`groupOfImages`) attribute —
+ * the venue itself, not work from the gallery. The About paragraphs and
+ * highlight bullets are read from the page's rich-text body (`htmlContent`),
+ * falling back to local `salonContent.ts` copy when the CMS body is empty. Only
+ * the accent color stays local. 404s only when the salon page itself is missing.
  * @param   {object}                      props        - Page properties
  * @param   {Promise<{ handle: string }>} props.params - Route params (salon `pageUrl`)
  * @returns {Promise<JSX.Element>}                     Salon detail page
@@ -45,19 +42,7 @@ export default async function SalonDetailLayout({
 }): Promise<JSX.Element> {
   const { handle } = await params;
 
-  /**
-   * The salon page and the gallery are independent — run in parallel.
-   *
-   * The gallery is decorative and must never decide the route's status code: it
-   * resolves in the same `Promise.all` as the page read, so before the `.catch`
-   * a failing gallery rejected the pair and Next answered **500 on an unknown
-   * handle that owed a 404** (caught by `not-found.spec.ts`, which asserts the
-   * status is below 500).
-   */
-  const [{ page, isError }, items] = await Promise.all([
-    getPageByUrl(handle),
-    getCmsGalleryItems().catch(() => []),
-  ]);
+  const { page, isError } = await getPageByUrl(handle);
 
   if (!page || isError) {
     return notFound();
@@ -66,21 +51,11 @@ export default async function SalonDetailLayout({
   const salon = salonFromPage(page);
   const links = salonMapLinks(salon);
 
-  /**
-   * Photos of this salon. A photo reaches its salon through its master, so
-   * photos whose master has no salon carry no tag and are left out rather than
-   * shown under an arbitrary salon.
-   */
-  const photos = items
-    .filter((item) =>
-      item.salon.some(
-        (marker) => marker.toLowerCase() === handle.toLowerCase(),
-      ),
-    )
-    .map((item) => ({ url: item.url, preview: item.preview }))
-    .slice(0, 9);
+  /** The salon's own photos, from its `salon_images` attribute. */
+  const photos = salonPhotosFromPage(page);
 
-  const content = SALON_CONTENT[handle] ?? DEFAULT_SALON_CONTENT;
+  /** About paragraphs and highlight bullets, read from the CMS page body. */
+  const { about, highlights } = salonContentFromPage(page);
 
   const detail: SalonDetail = {
     name: salon.name,
@@ -88,8 +63,8 @@ export default async function SalonDetailLayout({
     phone: formatUaePhone(salon.phone),
     ...links,
     color: SALON_COLOR[handle] ?? '#ed21f1',
-    about: content.about,
-    highlights: content.highlights,
+    about,
+    highlights,
     photos,
   };
 

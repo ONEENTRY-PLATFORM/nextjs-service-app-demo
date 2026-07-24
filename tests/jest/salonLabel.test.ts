@@ -1,4 +1,4 @@
-import { salonLabel } from '@/app/utils/salonLabel';
+import { salonLabel } from '@/components/utils/salonLabel';
 
 describe('salonLabel', () => {
   it('drops the brand prefix the CMS titles carry', () => {

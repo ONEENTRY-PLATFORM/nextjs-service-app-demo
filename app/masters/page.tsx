@@ -8,9 +8,9 @@ import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
-import { entityLinks, entityPageIds } from '@/app/utils/entityLinks';
-import { salonFromPage } from '@/app/utils/salonFromPage';
-import { salonLabel } from '@/app/utils/salonLabel';
+import { entityLinks, entityPageIds } from '@/components/utils/entityLinks';
+import { salonFromPage } from '@/components/utils/salonFromPage';
+import { salonLabel } from '@/components/utils/salonLabel';
 import MastersPageContent from '@/components/layout/masters-page';
 import type {
   MasterItem,

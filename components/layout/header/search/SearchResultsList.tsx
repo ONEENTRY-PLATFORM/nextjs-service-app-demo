@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { useGetAdminsQuery } from '@/app/api/api/RTKApi';
 import { useSearchProducts } from '@/app/api/hooks/useSearchProducts';
 import { useDict } from '@/app/store/providers/useDict';
-import { isOfferProduct } from '@/app/utils/isOfferProduct';
+import { isOfferProduct } from '@/components/utils/isOfferProduct';
 import Spinner from '@/components/shared/Spinner';
 
 import { adminAttr } from './adminAttr';

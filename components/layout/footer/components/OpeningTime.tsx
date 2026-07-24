@@ -1,6 +1,6 @@
 import type { JSX } from 'react';
 
-import type { OpeningHoursRow } from '@/app/utils/parseOpeningTime';
+import type { OpeningHoursRow } from '@/components/utils/parseOpeningTime';
 
 /**
  * OpeningTime component to display opening hours (presentational).

@@ -1,7 +1,7 @@
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
 import type { JSX } from 'react';
 
-import formatMinutes from '@/app/utils/formatMinutes';
+import formatMinutes from '@/components/utils/formatMinutes';
 
 /**
  * OrderServiceList — every service the visit was booked for, each with how long

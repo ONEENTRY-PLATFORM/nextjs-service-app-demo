@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
 import { useGetFormByMarkerQuery } from '@/app/api/api/RTKApi';
-import { toErrorMessage } from '@/app/utils/toErrorMessage';
+import { toErrorMessage } from '@/components/utils/toErrorMessage';
 import { getFormAttributes } from '@/components/utils/getFormAttributes';
 
 import { buildContactAnswers } from './buildContactAnswers';

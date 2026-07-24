@@ -4,8 +4,8 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { getServicesCatalogData } from '@/app/services/catalog-data';
-import { entityPageIds, entityProductIds } from '@/app/utils/entityLinks';
-import { salonFromPage } from '@/app/utils/salonFromPage';
+import { entityPageIds, entityProductIds } from '@/components/utils/entityLinks';
+import { salonFromPage } from '@/components/utils/salonFromPage';
 import type {
   BookingData,
   BookingMaster,

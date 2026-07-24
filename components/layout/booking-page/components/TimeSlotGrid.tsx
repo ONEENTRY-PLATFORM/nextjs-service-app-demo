@@ -3,7 +3,7 @@
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
-import formatMinutes from '@/app/utils/formatMinutes';
+import formatMinutes from '@/components/utils/formatMinutes';
 
 import FadeStaggerGroup from '../animations/FadeStaggerGroup';
 import { MUTED, PINK, TIMES } from '../constants';

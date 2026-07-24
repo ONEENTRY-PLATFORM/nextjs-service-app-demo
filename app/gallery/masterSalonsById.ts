@@ -1,7 +1,7 @@
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
-import { entityPageIds } from '@/app/utils/entityLinks';
+import { entityPageIds } from '@/components/utils/entityLinks';
 
 /**
  * Salon markers of every master admin keyed by admin id.

@@ -1,4 +1,4 @@
-import { toErrorMessage } from '@/app/utils/toErrorMessage';
+import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import type { Preset, RequestResult } from './types';
 

@@ -6,8 +6,8 @@ import { type JSX, memo } from 'react';
 import { getPageById } from '@/app/api/server/pages/getPageById';
 import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { entityLinks } from '@/app/utils/entityLinks';
-import { salonFromPage } from '@/app/utils/salonFromPage';
+import { entityLinks } from '@/components/utils/entityLinks';
+import { salonFromPage } from '@/components/utils/salonFromPage';
 import { REVIEWS } from '@/components/layout/reviews-page/data';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 

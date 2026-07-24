@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import { resolveOrderPaymentUrl } from '@/app/api/utils/resolveOrderPaymentUrl';
 import { useDict } from '@/app/store/providers/useDict';
-import { formatOrderTotal } from '@/app/utils/formatOrderTotal';
+import { formatOrderTotal } from '@/components/layout/profile-page/utils/formatOrderTotal';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
 /**

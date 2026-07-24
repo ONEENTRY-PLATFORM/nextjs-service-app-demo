@@ -1,5 +1,5 @@
-import parseOpeningTime from '@/app/utils/parseOpeningTime';
-import summarizeOpeningHours from '@/app/utils/summarizeOpeningHours';
+import parseOpeningTime from '@/components/utils/parseOpeningTime';
+import summarizeOpeningHours from '@/components/utils/summarizeOpeningHours';
 
 /**
  * Build one `timeInterval` weekday group as the CMS returns it: an ISO

@@ -8,7 +8,7 @@ import { useContext, useEffect, useRef } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { useDict } from '@/app/store/providers/useDict';
-import { normalizeMenuPages } from '@/app/utils/normalizeMenuPages';
+import { normalizeMenuPages } from '@/components/utils/normalizeMenuPages';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 import { flatMenuToNested } from '@/components/utils/flatMenuToNested';
 

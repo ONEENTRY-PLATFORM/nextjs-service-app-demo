@@ -2,7 +2,7 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 
 import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
-import { entityPageIds } from '@/app/utils/entityLinks';
+import { entityPageIds } from '@/components/utils/entityLinks';
 import SectionHeading from '@/components/shared/SectionHeading';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
 import { imageFileList } from '@/components/utils/imageFileList';

@@ -2,7 +2,7 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
-import { salonFromPage } from '@/app/utils/salonFromPage';
+import { salonFromPage } from '@/components/utils/salonFromPage';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
 
 import SalonCell from './SalonCell';

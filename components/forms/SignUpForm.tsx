@@ -8,7 +8,7 @@ import { getApi, isError } from '@/app/api/api/api';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { FormProps } from '@/app/types/global';
-import { toErrorMessage } from '@/app/utils/toErrorMessage';
+import { toErrorMessage } from '@/components/utils/toErrorMessage';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { buildSignUpBody } from '@/components/forms/buildSignUpBody';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';

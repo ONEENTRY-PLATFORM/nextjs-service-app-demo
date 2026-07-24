@@ -1,8 +1,8 @@
 import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
 
-import { formatUtcDate } from '@/app/utils/formatUtcDate';
-import { formatUtcTime } from '@/app/utils/formatUtcTime';
-import { parseOrderInterval } from '@/app/utils/parseOrderInterval';
+import { formatUtcDate } from '@/components/layout/profile-page/utils/formatUtcDate';
+import { formatUtcTime } from '@/components/layout/profile-page/utils/formatUtcTime';
+import { parseOrderInterval } from '@/components/layout/profile-page/utils/parseOrderInterval';
 
 /**
  * Minimal order stub — only `formData` matters to the parser.

@@ -11,9 +11,9 @@ export type SalonPhoto = {
 
 /**
  * Plain serializable data shape for the salon detail page. Built on the server
- * from the CMS salon page (`salon_address`, `salon_phone`) plus local content
- * (photos scanned from `public/`, About/highlights copy) and passed into the
- * client page component, so it must stay JSON-safe.
+ * from the CMS salon page (`salon_address`, `salon_phone`, `salon_images`) plus
+ * local content (About/highlights copy) and passed into the client page
+ * component, so it must stay JSON-safe.
  */
 export type SalonDetail = {
   /** Salon display name, e.g. "Thalia Downtown" */
@@ -34,6 +34,6 @@ export type SalonDetail = {
   about: string[];
   /** Highlight bullet items */
   highlights: string[];
-  /** Photos of the gallery, with their blur placeholders */
+  /** The salon's own photos (`salon_images`), with their blur placeholders */
   photos: SalonPhoto[];
 };

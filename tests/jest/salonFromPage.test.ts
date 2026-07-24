@@ -1,6 +1,6 @@
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
-import { salonFromPage } from '@/app/utils/salonFromPage';
+import { salonFromPage } from '@/components/utils/salonFromPage';
 import { salonMapLinks } from '@/app/utils/salonMapLinks';
 
 /**

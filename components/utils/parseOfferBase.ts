@@ -1,6 +1,6 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
-import { entityLinks, entityProductIds } from '@/app/utils/entityLinks';
+import { entityLinks, entityProductIds } from '@/components/utils/entityLinks';
 import { offerAccentGradientsData } from '@/components/data/offerAccentGradientsData';
 import { offerCategoryAccentsData } from '@/components/data/offerCategoryAccentsData';
 

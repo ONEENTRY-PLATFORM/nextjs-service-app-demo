@@ -6,7 +6,7 @@ import { getProductsByPageUrl } from '@/app/api/server/products/getProductsByPag
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
-import { isOfferProduct } from '@/app/utils/isOfferProduct';
+import { isOfferProduct } from '@/components/utils/isOfferProduct';
 import OffersPageContent from '@/components/layout/offers-page';
 
 /**

@@ -1,6 +1,6 @@
 import type { JSX } from 'react';
 
-import { serializeJsonLd } from '@/app/utils/serializeJsonLd';
+import { serializeJsonLd } from '@/components/shared/serializeJsonLd';
 
 /**
  * JsonLd — inline a structured-data object as a `<script type="application/ld+json">`.

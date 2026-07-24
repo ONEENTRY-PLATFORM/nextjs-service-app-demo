@@ -1,6 +1,6 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
-import { parseOfferBase } from '@/app/utils/parseOfferBase';
+import { parseOfferBase } from '@/components/utils/parseOfferBase';
 
 /** The view-model of a special-offer card, parsed from a CMS product. */
 export interface OfferView {
