@@ -54,7 +54,7 @@ const GalleryLightbox = ({
   const item = items[index];
 
   const urls = useMemo(() => items.map((photo) => photo.url), [items]);
-  const { direction, dialogRef } = useLightboxNav({
+  const { direction, dialogRef, contentRef, requestClose } = useLightboxNav({
     urls,
     index,
     onPrev,
@@ -88,9 +88,9 @@ const GalleryLightbox = ({
       }
       className="backdrop-blur-2xl"
       style={{ background: 'rgba(6,0,14,0.94)' }}
-      onClose={onClose}
+      onClose={requestClose}
     >
-      <LightboxCloseButton onClose={onClose} />
+      <LightboxCloseButton onClose={requestClose} />
       <LightboxCounter index={index} total={items.length} />
 
       <LightboxArrow
@@ -105,7 +105,10 @@ const GalleryLightbox = ({
       />
 
       {/* Main image + caption + thumbnails */}
-      <div className="flex w-full max-w-2xl flex-col items-center gap-4 px-4 md:mx-20 md:px-0">
+      <div
+        ref={contentRef}
+        className="flex w-full max-w-2xl flex-col items-center gap-4 px-4 md:mx-20 md:px-0"
+      >
         <LightboxStage
           src={item.url}
           preview={item.preview}

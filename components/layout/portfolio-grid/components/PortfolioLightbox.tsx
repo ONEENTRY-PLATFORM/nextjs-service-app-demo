@@ -65,7 +65,7 @@ const PortfolioLightbox = ({
   const onNext = () => onSelect((index + 1) % count);
 
   const urls = useMemo(() => images.map((item) => item.img), [images]);
-  const { direction, dialogRef } = useLightboxNav({
+  const { direction, dialogRef, contentRef, requestClose } = useLightboxNav({
     urls,
     index,
     onPrev,
@@ -94,9 +94,9 @@ const PortfolioLightbox = ({
       testId="portfolio-lightbox"
       label={masterName ? `${masterName} — portfolio` : 'Portfolio viewer'}
       style={{ background: 'rgba(8,0,14,0.92)', backdropFilter: 'blur(12px)' }}
-      onClose={onClose}
+      onClose={requestClose}
     >
-      <LightboxCloseButton onClose={onClose} />
+      <LightboxCloseButton onClose={requestClose} />
       <LightboxCounter index={index} total={count} />
 
       <LightboxArrow
@@ -108,7 +108,10 @@ const PortfolioLightbox = ({
       />
 
       {/* Stage */}
-      <div className="flex w-full max-w-2xl flex-col items-center gap-4 px-4 md:mx-20 md:px-0">
+      <div
+        ref={contentRef}
+        className="flex w-full max-w-2xl flex-col items-center gap-4 px-4 md:mx-20 md:px-0"
+      >
         <LightboxStage
           src={current.img}
           preview={current.preview}

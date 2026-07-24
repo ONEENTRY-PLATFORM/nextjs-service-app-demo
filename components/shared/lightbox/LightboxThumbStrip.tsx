@@ -64,7 +64,7 @@ const LightboxThumbStrip = ({
   return (
     <div
       ref={scrollRef}
-      className="no-scrollbar mx-auto flex w-fit max-w-full gap-2 overflow-x-auto pb-1"
+      className="no-scrollbar mx-auto flex w-fit max-w-full gap-2 overflow-x-auto px-2 py-3"
     >
       {thumbs.map((thumb, thumbIndex) => {
         const active = thumbIndex === index;

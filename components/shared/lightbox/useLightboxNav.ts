@@ -1,11 +1,13 @@
 'use client';
 
 import type { RefObject } from 'react';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 import { useNeighborPreload } from '@/components/shared/useNeighborPreload';
 import { useSlideDirection } from '@/components/shared/useSlideDirection';
+
+import { useLightboxTransition } from './useLightboxTransition';
 
 /** What a lightbox needs wired up before it can render its chrome. */
 export interface LightboxNav {
@@ -13,6 +15,10 @@ export interface LightboxNav {
   direction: 1 | -1;
   /** Attach to the overlay element: focus trap, focus restore, scroll lock, Escape */
   dialogRef: RefObject<HTMLDivElement | null>;
+  /** Attach to the stage column — the element the open/close animation scales */
+  contentRef: RefObject<HTMLDivElement | null>;
+  /** Animated close: use for the close button, backdrop click and any dismiss */
+  requestClose: () => void;
 }
 
 /**
@@ -23,13 +29,18 @@ export interface LightboxNav {
  *
  * The key listener is skipped for an empty set, so a viewer rendered with no
  * photos cannot page into an out-of-range index.
+ *
+ * Closing is animated: Escape and the returned `requestClose` both route through
+ * `useLightboxTransition`, which plays the exit tween before `onClose` unmounts
+ * the viewer. A stable indirection (`closeRef`) lets the a11y hook — wired below,
+ * before the animated closer exists — still reach it.
  * @param   {object}      input         - Hook input
  * @param   {string[]}    input.urls    - Full-size URLs of every photo, in display order
  * @param   {number}      input.index   - Index of the photo on screen
  * @param   {() => void}  input.onPrev  - Show the previous photo
  * @param   {() => void}  input.onNext  - Show the next photo
- * @param   {() => void}  input.onClose - Close the viewer
- * @returns {LightboxNav}               Paging direction and the dialog ref
+ * @param   {() => void}  input.onClose - Close the viewer (run after the exit tween)
+ * @returns {LightboxNav}               Paging direction, the dialog/stage refs and the animated closer
  */
 export const useLightboxNav = ({
   urls,
@@ -48,6 +59,16 @@ export const useLightboxNav = ({
 
   useNeighborPreload(urls, index);
 
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * Escape closes through the a11y hook, which is created below — before the
+   * animated `requestClose` exists. This stable indirection forwards to whatever
+   * closer is current, so Escape animates the exit just like the close button.
+   */
+  const closeRef = useRef(onClose);
+  const routedClose = useCallback(() => closeRef.current(), []);
+
   const empty = urls.length === 0;
   useEffect(() => {
     if (empty) return;
@@ -59,7 +80,14 @@ export const useLightboxNav = ({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [empty, onPrev, onNext]);
 
-  const dialogRef = useDialogA11y({ isOpen: true, onClose });
+  const dialogRef = useDialogA11y({ isOpen: true, onClose: routedClose });
 
-  return { direction, dialogRef };
+  const { requestClose } = useLightboxTransition({
+    overlayRef: dialogRef,
+    contentRef,
+    onClose,
+  });
+  closeRef.current = requestClose;
+
+  return { direction, dialogRef, contentRef, requestClose };
 };
