@@ -8,6 +8,8 @@
 export interface ServicesSalon {
   /** CMS `pageUrl` marker of the salon page */
   url: string;
+  /** Numeric salon page id — the `salonId` a "Book" click puts in the cart */
+  id: number;
   /** Salon display name */
   title: string;
   /** Street address from the `salon_address` attribute (may be empty) */

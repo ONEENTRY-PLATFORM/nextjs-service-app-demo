@@ -140,7 +140,12 @@ export const getServicesCatalogData = async (): Promise<{
   const salons: ServicesSalon[] = (salonsResult.pages ?? []).map(
     (salonPage) => {
       const salon = salonFromPage(salonPage);
-      return { url: salon.url, title: salon.name, address: salon.address };
+      return {
+        url: salon.url,
+        id: salon.id,
+        title: salon.name,
+        address: salon.address,
+      };
     },
   );
 

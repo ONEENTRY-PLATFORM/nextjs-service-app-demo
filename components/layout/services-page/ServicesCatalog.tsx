@@ -2,7 +2,7 @@
 
 import { Search, X } from 'lucide-react';
 import type { JSX } from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
@@ -69,11 +69,33 @@ const ServicesCatalog = ({
   const [subCat, setSubCat] = useState<string | null>(startSub);
   /** Selected salon `pageUrl`; `null` = All studios */
   const [salon, setSalon] = useState<string | null>(salons[0]?.url ?? null);
+  /**
+   * Numeric id of the selected salon, `null` for "All studios" — what a "Book"
+   * click carries into the booking cart so the wizard preselects this studio.
+   */
+  const selectedSalonId = salons.find((s) => s.url === salon)?.id ?? null;
   /** Free-text service search */
   const [query, setQuery] = useState('');
 
   /**
-   * Switch the main category and snap the subcategory to its first valid one
+   * Mirror the current tab selection in the address bar as `/services/{handle}`
+   * via the History API, so the category is shareable and bookmarkable without
+   * a real navigation — the catalog stays mounted, keeping the salon selection
+   * and scroll position. `handle` is a category (`hair`) or subcategory
+   * (`haircut`) `pageUrl`; both are real static routes that re-derive the same
+   * selection on a hard load or back/forward.
+   * @param   {string} handle - Category or subcategory `pageUrl` marker
+   * @returns {void}
+   */
+  const syncUrl = (handle: string) => {
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', `/services/${handle}`);
+    }
+  };
+
+  /**
+   * Switch the main category, snap the subcategory to its first valid one and
+   * reflect the category in the route
    * @param   {string} url - Category `pageUrl` marker
    * @returns {void}
    */
@@ -84,7 +106,56 @@ const ServicesCatalog = ({
     setMainCat(url);
     const next = categories.find((c) => c.url === url);
     setSubCat(next?.subcategories[0]?.url ?? null);
+    syncUrl(url);
   };
+
+  /**
+   * Switch the subcategory and reflect it in the route
+   * @param   {string} url - Subcategory `pageUrl` marker
+   * @returns {void}
+   */
+  const handleSub = (url: string) => {
+    setSubCat(url);
+    syncUrl(url);
+  };
+
+  /**
+   * Keep the tabs in sync with the address bar on browser back/forward. The
+   * History-API `pushState` above updates the URL without a Next navigation, so
+   * a `popstate` would otherwise leave the URL and the selected tab out of step.
+   * `/services` (no handle) resets to the first category, `/services/{handle}`
+   * re-derives the category (and subcategory, when the handle is one).
+   */
+  useEffect(() => {
+    /**
+     * Re-derive the selected tabs from `window.location` on a history pop
+     * @returns {void}
+     */
+    const onPopState = () => {
+      const handle =
+        window.location.pathname.replace(/^\/services\/?/, '') || null;
+      if (!handle) {
+        setMainCat(firstCategory?.url ?? null);
+        setSubCat(firstCategory?.subcategories[0]?.url ?? null);
+        return;
+      }
+      const asCategory = categories.find((c) => c.url === handle);
+      if (asCategory) {
+        setMainCat(asCategory.url);
+        setSubCat(asCategory.subcategories[0]?.url ?? null);
+        return;
+      }
+      const parent = categories.find((c) =>
+        c.subcategories.some((s) => s.url === handle),
+      );
+      if (parent) {
+        setMainCat(parent.url);
+        setSubCat(handle);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [categories, firstCategory]);
 
   /** Subcategory url → lowercase display title, for the search predicate */
   const subTitleByUrl = useMemo(() => {
@@ -189,7 +260,7 @@ const ServicesCatalog = ({
               mainCat={mainCat}
               subCat={subCat}
               onMain={handleMain}
-              onSub={setSubCat}
+              onSub={handleSub}
             />
           )}
 
@@ -214,7 +285,7 @@ const ServicesCatalog = ({
         >
           {filtered.map((item, index) => (
             <GridItemAnimations key={item.id} index={index} className="h-full">
-              <ServiceCard service={item} />
+              <ServiceCard service={item} salonId={selectedSalonId} />
             </GridItemAnimations>
           ))}
         </div>

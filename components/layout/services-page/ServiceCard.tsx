@@ -27,12 +27,20 @@ const MUTED = '#a8a9b5';
  * with the brand gradient.
  *
  * The button puts the service into the booking cart and navigates to the
- * booking page — same flow as `OfferCard`.
- * @param   {object}      props         - Component properties
- * @param   {ServiceItem} props.service - Plain service data mapped from the CMS product
- * @returns {JSX.Element}               Service card
+ * booking page — same flow as `OfferCard`. The studio selected in the catalog
+ * rides along so the wizard opens with that salon preselected.
+ * @param   {object}          props         - Component properties
+ * @param   {ServiceItem}     props.service - Plain service data mapped from the CMS product
+ * @param   {number | null}   props.salonId - Numeric id of the studio selected in the catalog (`null` = All studios)
+ * @returns {JSX.Element}                   Service card
  */
-const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
+const ServiceCard = ({
+  service,
+  salonId,
+}: {
+  service: ServiceItem;
+  salonId: number | null;
+}): JSX.Element => {
   const dict = useDict();
   const [hovered, setHovered] = useState(false);
   /** Get router instance for navigation */
@@ -59,7 +67,7 @@ const ServiceCard = ({ service }: { service: ServiceItem }): JSX.Element => {
     dispatch(
       addServiceToCart({
         productId: service.id,
-        salonId: null,
+        salonId,
         masterId: null,
       }),
     );

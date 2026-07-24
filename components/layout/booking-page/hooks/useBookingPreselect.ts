@@ -129,13 +129,18 @@ export const useBookingPreselect = ({
       stepIdx: 1,
     });
   } else if (preService) {
-    /** From Services & Prices / an offer → salon-first, service locked */
+    /**
+     * From Services & Prices / an offer → salon-first, service locked. When the
+     * catalog carried a studio (a specific salon was selected there), preselect
+     * it on the salon step so the user lands with that studio already chosen.
+     */
     preselect({
       patch: {
         flow: 'salon-first',
         serviceIds: preServices.map((s) => s.id),
         serviceLocked: true,
         categoryFilter: preCategory,
+        ...(preSalon ? { salon: preSalon.id } : {}),
       },
       stepIdx: 0,
     });
