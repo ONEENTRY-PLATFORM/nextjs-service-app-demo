@@ -14,7 +14,7 @@ import SpinnerLoader from '@/components/shared/SpinnerLoader';
 import StageFadeAnimations from './animations/StageFadeAnimations';
 import MobileTabs, { type ProfileTab } from './components/MobileTabs';
 import ProfileCard from './components/ProfileCard';
-import VisitHistorySkeleton from './components/VisitHistorySkeleton';
+import VisitHistorySkeleton from './components/visit-section/VisitHistorySkeleton';
 
 const ProfileHistory = dynamic(() => import('./components/ProfileHistory'), {
   ssr: true,

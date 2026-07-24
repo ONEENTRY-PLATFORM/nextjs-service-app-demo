@@ -6,7 +6,7 @@ import type { JSX } from 'react';
 import { ORDER_FIELD_MASTER } from '@/app/store/orderMarkers';
 import OrderCard from '@/components/layout/profile-page/components/order-card';
 
-import MasterCard from './master-card';
+import MasterCard from '../master-card';
 
 /** A group of orders that share the same master. */
 interface GroupedOrder {

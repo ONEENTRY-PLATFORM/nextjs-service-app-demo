@@ -1,6 +1,7 @@
 import { Clock, MapPin, Phone } from 'lucide-react';
 import type { ComponentType, JSX } from 'react';
 
+import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useDict } from '@/app/store/providers/useDict';
 
 import type { SalonDetail } from '../types';
@@ -72,9 +73,11 @@ const SalonSidebar = ({ salon }: { salon: SalonDetail }): JSX.Element => {
   const c = salon.color;
   return (
     <aside className="flex flex-col gap-4">
-      <div
+      <RevealAnimations
         className="rounded-2xl bg-white p-5"
         style={{ border: `1.5px solid ${c}22`, boxShadow: `0 4px 24px ${c}10` }}
+        distance={30}
+        delay={0.05}
       >
         <div className="flex flex-col gap-3">
           <Row
@@ -110,9 +113,13 @@ const SalonSidebar = ({ salon }: { salon: SalonDetail }): JSX.Element => {
             }
           />
         </div>
-      </div>
+      </RevealAnimations>
 
-      <div
+      {/* Map — fade-only reveal: a lingering wrapper transform would become the
+          iframe's containing block and shift the embedded map */}
+      <RevealAnimations
+        fade
+        delay={0.15}
         className="h-60 overflow-hidden rounded-2xl"
         style={{ border: `1.5px solid ${c}33` }}
       >
@@ -123,7 +130,7 @@ const SalonSidebar = ({ salon }: { salon: SalonDetail }): JSX.Element => {
           style={{ filter: 'saturate(0.9) contrast(0.95)' }}
           loading="lazy"
         />
-      </div>
+      </RevealAnimations>
     </aside>
   );
 };

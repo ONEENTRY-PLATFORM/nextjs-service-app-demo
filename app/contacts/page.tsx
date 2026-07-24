@@ -93,6 +93,11 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
     .map(toContactSalon)
     .filter((salon): salon is ContactSalon => salon !== null);
 
+  /** "Reach out" phone/address come from the first salon that has an address. */
+  const primarySalon = (salonsResult.pages ?? [])
+    .map(salonFromPage)
+    .find((salon) => salon.address);
+
   /** CMS schedule — an empty week hides the "Opening Hours" section. */
   const openingRows = parseOpeningTime(
     openingResult.block?.attributeValues?.opening_time?.value,
@@ -151,7 +156,10 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
               <ContactFormCard />
             </div>
             <div className="lg:col-span-2">
-              <ContactInfoCard />
+              <ContactInfoCard
+                salon={primarySalon}
+                hours={openingSummary?.hours ?? null}
+              />
             </div>
           </RevealAnimations>
         </div>

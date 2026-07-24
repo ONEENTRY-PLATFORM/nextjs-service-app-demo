@@ -20,9 +20,9 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
 import { parseOrderInterval } from '@/components/layout/profile-page/utils/parseOrderInterval';
 import productDurationMinutes from '@/components/utils/productDurationMinutes';
 
-import VisitGroups from './VisitGroups';
-import VisitHistorySkeleton from './VisitHistorySkeleton';
-import VisitSection from './VisitSection';
+import VisitGroups from './visit-section/VisitGroups';
+import VisitHistorySkeleton from './visit-section/VisitHistorySkeleton';
+import VisitSection from './visit-section/VisitSection';
 
 /**
  * Visit timestamp of an order, used to order upcoming appointments.

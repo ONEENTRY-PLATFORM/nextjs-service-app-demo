@@ -4,7 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import type { JSX, ReactNode } from 'react';
 import { useState } from 'react';
 
-import VisitOpenContext from '../animations/VisitOpenContext';
+import VisitOpenContext from '../../animations/VisitOpenContext';
 
 /** Visit bucket statuses and their accent (dot / badge) colors. */
 const DOT_COLOR = {

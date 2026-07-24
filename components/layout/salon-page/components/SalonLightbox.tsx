@@ -48,7 +48,7 @@ const SalonLightbox = ({
   const onNext = () => onSelect((index + 1) % total);
 
   const urls = useMemo(() => photos.map((photo) => photo.url), [photos]);
-  const { direction, dialogRef } = useLightboxNav({
+  const { direction, dialogRef, contentRef, requestClose } = useLightboxNav({
     urls,
     index,
     onPrev,
@@ -67,9 +67,9 @@ const SalonLightbox = ({
       }
       className="p-4"
       style={{ background: 'rgba(6,0,14,0.94)', backdropFilter: 'blur(16px)' }}
-      onClose={onClose}
+      onClose={requestClose}
     >
-      <LightboxCloseButton onClose={onClose} size={18} />
+      <LightboxCloseButton onClose={requestClose} size={18} />
       <LightboxCounter
         index={index}
         total={total}
@@ -85,7 +85,10 @@ const SalonLightbox = ({
       />
 
       {photo && (
-        <div className="w-full max-w-xl px-4 md:mx-20 md:px-0">
+        <div
+          ref={contentRef}
+          className="w-full max-w-xl px-4 md:mx-20 md:px-0"
+        >
           <LightboxStage
             src={photo.url}
             preview={photo.preview}

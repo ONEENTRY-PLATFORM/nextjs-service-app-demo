@@ -12,15 +12,16 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { contactInfoData } from '@/components/data/contactInfoData';
 import { socialData } from '@/components/data/socialData';
+import { buildContactRows } from '@/components/layout/contacts-page/utils/buildContactRows';
+import type { CmsSalon } from '@/components/utils/salonFromPage';
 
-/** Lucide icon per the `icon` key of `contactInfoData` */
+/** Lucide icon and accent color per the `icon` key of a contact row */
 const INFO_ICONS = {
-  phone: Phone,
-  mail: Mail,
-  'map-pin': MapPin,
-  clock: Clock,
+  phone: { Icon: Phone, color: '#ed21f1' },
+  mail: { Icon: Mail, color: '#109aa9' },
+  'map-pin': { Icon: MapPin, color: '#9b4fb2' },
+  clock: { Icon: Clock, color: '#9b4fb2' },
 } as const;
 
 /** Lucide icon and accent color per the `icon` key of `socialData` */
@@ -30,16 +31,29 @@ const SOCIAL_ICONS = {
   twitter: { Icon: Twitter, color: '#109aa9' },
 } as const;
 
+/** Props for {@link ContactInfoCard} */
+interface ContactInfoCardProps {
+  /** Primary (head-office) salon — source of the phone and address rows */
+  salon: CmsSalon | undefined;
+  /** Collapsed week hours (`"10:00 – 22:00"`), or `null` when days differ */
+  hours: string | null;
+}
+
 /**
  * ContactInfoCard component — the "Reach out" info sidebar of the contacts
  * page as in the static-html mock (`ContactsPage.tsx` → ContactInfo): tinted
  * contact rows (phone, e-mail, head office, hours) and the "Follow us"
- * social card. Data comes from `components/data/` until it moves to the
- * CMS.
- * @returns {JSX.Element} Info sidebar with contact rows and social links
+ * social card. Phone/address/hours come from the CMS (`salons` + `opening_time`);
+ * the e-mail row and the social links are still local until the CMS gains them.
+ * @param   {ContactInfoCardProps} props - Primary salon and collapsed week hours
+ * @returns {JSX.Element}                Info sidebar with contact rows and social links
  */
-const ContactInfoCard = (): JSX.Element => {
+const ContactInfoCard = ({
+  salon,
+  hours,
+}: ContactInfoCardProps): JSX.Element => {
   const [dict] = ServerProvider<IAttributeValues>('dict');
+  const rows = buildContactRows({ salon, hours, dict });
 
   return (
     <div className="flex h-full flex-col gap-5">
@@ -52,9 +66,8 @@ const ContactInfoCard = (): JSX.Element => {
           {(dict?.reach_out_text?.value as string | undefined) || 'Reach out'}
         </p>
         <div className="flex flex-1 flex-col justify-center space-y-4">
-          {contactInfoData.map(({ icon, label, value, color, href }) => {
-            const iconKey = icon as keyof typeof INFO_ICONS;
-            const Icon = INFO_ICONS[iconKey] ?? Phone;
+          {rows.map(({ icon, label, value, href }) => {
+            const { Icon, color } = INFO_ICONS[icon];
             return (
               <a
                 key={label}

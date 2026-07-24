@@ -4,6 +4,8 @@ import NextImage from 'next/image';
 import type { JSX, UIEvent } from 'react';
 import { useState } from 'react';
 
+import GridItemAnimations from '@/app/animations/GridItemAnimations';
+import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useDict } from '@/app/store/providers/useDict';
 
 import type { SalonPhoto } from '../types';
@@ -71,8 +73,9 @@ const SalonPhotoGallery = ({
 
   return (
     <>
-      {/* Mobile: swipe carousel + dots */}
-      <div className="lg:hidden">
+      {/* Mobile: swipe carousel + dots — reveals as one block (the horizontal
+          snap track makes per-slide scroll triggers unreliable) */}
+      <RevealAnimations className="lg:hidden">
         <div
           onScroll={onScroll}
           className="-mx-3 flex snap-x snap-mandatory gap-2 overflow-x-auto px-3 [&::-webkit-scrollbar]:hidden"
@@ -108,31 +111,33 @@ const SalonPhotoGallery = ({
             />
           ))}
         </div>
-      </div>
+      </RevealAnimations>
 
-      {/* Desktop: hero + thumbnail grid */}
+      {/* Desktop: hero + thumbnail grid — each tile leads in on its own */}
       <div className="hidden gap-2 lg:grid lg:grid-cols-[1.4fr_1fr] lg:items-stretch">
         {hero && (
-          <button
-            onClick={() => onOpen(0)}
-            aria-label={`${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} 1`}
-            className="group relative aspect-5/4 overflow-hidden rounded-2xl lg:aspect-auto lg:h-full lg:min-h-100"
-          >
-            <NextImage
-              src={hero.url}
-              alt=""
-              fill
-              sizes="(min-width: 1024px) 40vw, 86vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              {...blurProps(hero)}
-            />
-            <div
-              className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              style={{
-                background: `linear-gradient(160deg, ${accent}44, transparent 60%)`,
-              }}
-            />
-          </button>
+          <GridItemAnimations index={0} columns={1} className="lg:h-full">
+            <button
+              onClick={() => onOpen(0)}
+              aria-label={`${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} 1`}
+              className="group relative aspect-5/4 w-full overflow-hidden rounded-2xl lg:aspect-auto lg:h-full lg:min-h-100"
+            >
+              <NextImage
+                src={hero.url}
+                alt=""
+                fill
+                sizes="(min-width: 1024px) 40vw, 86vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                {...blurProps(hero)}
+              />
+              <div
+                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{
+                  background: `linear-gradient(160deg, ${accent}44, transparent 60%)`,
+                }}
+              />
+            </button>
+          </GridItemAnimations>
         )}
 
         <div className="grid grid-cols-2 gap-2">
@@ -140,36 +145,37 @@ const SalonPhotoGallery = ({
             const isLastWithMore = i === 5 && rest.length > 6;
             const moreCount = rest.length - 6;
             return (
-              <button
-                key={i}
-                onClick={() => onOpen(i + 1)}
-                aria-label={
-                  isLastWithMore
-                    ? (
-                        (dict?.view_more_photos_aria?.value as
-                          string | undefined) || 'View %n% more salon photos'
-                      ).replace('%n%', String(moreCount))
-                    : `${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} ${i + 2}`
-                }
-                className="group relative aspect-5/4 overflow-hidden rounded-2xl"
-              >
-                <NextImage
-                  src={photo.url}
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 20vw, 86vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  {...blurProps(photo)}
-                />
-                {isLastWithMore && (
-                  <div
-                    className="absolute inset-0 flex items-center justify-center text-[1.4rem] font-black text-white"
-                    style={{ background: 'rgba(0,0,0,0.45)' }}
-                  >
-                    +{moreCount}
-                  </div>
-                )}
-              </button>
+              <GridItemAnimations key={i} index={i + 1} columns={2}>
+                <button
+                  onClick={() => onOpen(i + 1)}
+                  aria-label={
+                    isLastWithMore
+                      ? (
+                          (dict?.view_more_photos_aria?.value as
+                            string | undefined) || 'View %n% more salon photos'
+                        ).replace('%n%', String(moreCount))
+                      : `${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} ${i + 2}`
+                  }
+                  className="group relative aspect-5/4 w-full overflow-hidden rounded-2xl"
+                >
+                  <NextImage
+                    src={photo.url}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 20vw, 86vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    {...blurProps(photo)}
+                  />
+                  {isLastWithMore && (
+                    <div
+                      className="absolute inset-0 flex items-center justify-center text-[1.4rem] font-black text-white"
+                      style={{ background: 'rgba(0,0,0,0.45)' }}
+                    >
+                      +{moreCount}
+                    </div>
+                  )}
+                </button>
+              </GridItemAnimations>
             );
           })}
         </div>
