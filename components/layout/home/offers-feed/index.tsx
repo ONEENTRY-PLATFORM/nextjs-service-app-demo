@@ -3,8 +3,8 @@ import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { isOfferProduct } from '@/components/utils/isOfferProduct';
 import SectionTitle from '@/components/shared/SectionTitle';
+import { isOfferProduct } from '@/components/utils/isOfferProduct';
 
 import OffersFeed from './components/OffersFeed';
 

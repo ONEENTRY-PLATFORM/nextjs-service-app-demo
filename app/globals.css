@@ -95,6 +95,12 @@
   display: none;
 }
 
+/* Глобальный фокус-outline — брендовый фиолетовый */
+:focus-visible {
+  outline: 2px solid var(--color-accent-purple);
+  outline-offset: 2px;
+}
+
 html,
 body {
   @apply h-full;
@@ -158,6 +164,16 @@ input.border-b {
    (was `mx-auto max-w-7xl px-3 md:px-8` repeated across ~24 sites). */
 @utility page-shell {
   @apply mx-auto max-w-7xl px-3 md:px-8;
+}
+
+/* Hide the native scrollbar while keeping the element scrollable — used by the
+   lightbox thumbnail strip, which auto-centres the active thumb itself. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 address {

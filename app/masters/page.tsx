@@ -8,9 +8,6 @@ import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
-import { entityLinks, entityPageIds } from '@/components/utils/entityLinks';
-import { salonFromPage } from '@/components/utils/salonFromPage';
-import { salonLabel } from '@/components/utils/salonLabel';
 import MastersPageContent from '@/components/layout/masters-page';
 import type {
   MasterItem,
@@ -18,8 +15,11 @@ import type {
   SalonOption,
 } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
+import { entityLinks, entityPageIds } from '@/components/utils/entityLinks';
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
+import { salonFromPage } from '@/components/utils/salonFromPage';
+import { salonLabel } from '@/components/utils/salonLabel';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it

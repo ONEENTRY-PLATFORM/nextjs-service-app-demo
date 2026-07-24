@@ -10,11 +10,11 @@ import { toast } from 'react-toastify';
 import { getApi, isError } from '@/app/api/api/api';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
-import { toErrorMessage } from '@/components/utils/toErrorMessage';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import FormFieldAnimations from '@/components/forms/animations/FormFieldAnimations';
 import { useCmsForm } from '@/components/forms/useCmsForm';
 import { useCredentialProvider } from '@/components/forms/useCredentialProvider';
+import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import AuthDivider from './inputs/AuthDivider';
 import CreateAccountButton from './inputs/CreateAccountButton';

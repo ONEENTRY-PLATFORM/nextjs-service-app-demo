@@ -8,7 +8,6 @@ import { getApi, isError } from '@/app/api/api/api';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { FormProps } from '@/app/types/global';
-import { toErrorMessage } from '@/components/utils/toErrorMessage';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { buildSignUpBody } from '@/components/forms/buildSignUpBody';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
@@ -16,6 +15,7 @@ import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
 import { isSignUpVisibleField } from '@/components/forms/fieldFlags/isSignUpVisibleField';
 import { useCmsForm } from '@/components/forms/useCmsForm';
 import { useCredentialProvider } from '@/components/forms/useCredentialProvider';
+import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import AuthDivider from './inputs/AuthDivider';
 import ErrorMessage from './inputs/ErrorMessage';

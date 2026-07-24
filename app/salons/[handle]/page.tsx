@@ -5,14 +5,14 @@ import type { JSX } from 'react';
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
-import { salonContentFromPage } from '@/components/layout/salon-page/utils/salonContentFromPage';
-import { salonFromPage } from '@/components/utils/salonFromPage';
 import { salonMapLinks } from '@/app/utils/salonMapLinks';
-import { salonPhotosFromPage } from '@/components/layout/salon-page/utils/salonPhotosFromPage';
 import SalonPageContent from '@/components/layout/salon-page';
 import { SALON_COLOR } from '@/components/layout/salon-page/salonContent';
 import type { SalonDetail } from '@/components/layout/salon-page/types';
+import { salonContentFromPage } from '@/components/layout/salon-page/utils/salonContentFromPage';
+import { salonPhotosFromPage } from '@/components/layout/salon-page/utils/salonPhotosFromPage';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
+import { salonFromPage } from '@/components/utils/salonFromPage';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it

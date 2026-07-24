@@ -1,8 +1,8 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
-import { entityLinks, entityProductIds } from '@/components/utils/entityLinks';
 import { offerAccentGradientsData } from '@/components/data/offerAccentGradientsData';
 import { offerCategoryAccentsData } from '@/components/data/offerCategoryAccentsData';
+import { entityLinks, entityProductIds } from '@/components/utils/entityLinks';
 
 /** Accent used when the CMS carries neither a hex nor a known category. */
 const DEFAULT_ACCENT = '#ed21f1';

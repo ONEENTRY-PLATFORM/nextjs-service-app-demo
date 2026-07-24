@@ -12,13 +12,13 @@ import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { addField } from '@/app/store/reducers/FormFieldsSlice';
 import type { FormProps } from '@/app/types/global';
-import { toErrorMessage } from '@/components/utils/toErrorMessage';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import {
   EVENT_PASSWORD_RESET,
   EVENT_REGISTRATION,
 } from '@/components/forms/authEventMarkers';
 import { useCredentialProvider } from '@/components/forms/useCredentialProvider';
+import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import ErrorMessage from './inputs/ErrorMessage';
 import FormSubmitButton from './inputs/FormSubmitButton';

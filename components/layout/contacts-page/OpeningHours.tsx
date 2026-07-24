@@ -4,9 +4,9 @@ import type { JSX } from 'react';
 import { useSyncExternalStore } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import SectionHeading from '@/components/shared/SectionHeading';
 import type { OpeningHoursRow } from '@/components/utils/parseOpeningTime';
 import summarizeOpeningHours from '@/components/utils/summarizeOpeningHours';
-import SectionHeading from '@/components/shared/SectionHeading';
 
 import OpeningHoursDayCard from './OpeningHoursDayCard';
 

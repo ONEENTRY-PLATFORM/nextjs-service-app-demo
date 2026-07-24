@@ -9,10 +9,7 @@ import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
-import parseOpeningTime from '@/components/utils/parseOpeningTime';
-import { salonFromPage } from '@/components/utils/salonFromPage';
 import { salonMapLinks } from '@/app/utils/salonMapLinks';
-import summarizeOpeningHours from '@/components/utils/summarizeOpeningHours';
 import BookCtaBanner from '@/components/layout/contacts-page/BookCtaBanner';
 import ContactFormCard from '@/components/layout/contacts-page/ContactFormCard';
 import ContactInfoCard from '@/components/layout/contacts-page/ContactInfoCard';
@@ -22,6 +19,9 @@ import type { ContactSalon } from '@/components/layout/contacts-page/SalonLocati
 import SalonLocations from '@/components/layout/contacts-page/SalonLocations';
 import SectionHeading from '@/components/shared/SectionHeading';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
+import parseOpeningTime from '@/components/utils/parseOpeningTime';
+import { salonFromPage } from '@/components/utils/salonFromPage';
+import summarizeOpeningHours from '@/components/utils/summarizeOpeningHours';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it

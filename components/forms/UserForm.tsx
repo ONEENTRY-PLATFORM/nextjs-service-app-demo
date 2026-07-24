@@ -9,11 +9,11 @@ import { toast } from 'react-toastify';
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import type { FormProps } from '@/app/types/global';
-import { toErrorMessage } from '@/components/utils/toErrorMessage';
 import { buildProfileUpdateBody } from '@/components/forms/buildProfileUpdateBody';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
 import { useCmsForm } from '@/components/forms/useCmsForm';
+import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import AuthError from '../pages/AuthError';
 import SpinnerLoader from '../shared/SpinnerLoader';

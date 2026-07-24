@@ -1,7 +1,7 @@
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
-import { salonFromPage } from '@/components/utils/salonFromPage';
 import { salonMapLinks } from '@/app/utils/salonMapLinks';
+import { salonFromPage } from '@/components/utils/salonFromPage';
 
 /**
  * Build a salon page stub with only the fields the decoder reads.

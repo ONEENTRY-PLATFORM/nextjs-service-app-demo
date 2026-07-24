@@ -6,8 +6,8 @@ import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces'
 import type { JSX } from 'react';
 
 import CardAnimations from '@/app/animations/CardAnimations';
-import { offerBookingHref } from '@/components/utils/offerBookingHref';
 import { productCurrency } from '@/components/shared/productCurrency';
+import { offerBookingHref } from '@/components/utils/offerBookingHref';
 
 import OfferCardFooter from './OfferCardFooter';
 import { parseOffer } from './parseOffer';

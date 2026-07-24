@@ -3,9 +3,9 @@ import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 import type { ReactElement } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { normalizeMenuPages } from '@/components/utils/normalizeMenuPages';
 import NavigationMenu from '@/components/layout/header/main-menu';
 import { flatMenuToNested } from '@/components/utils/flatMenuToNested';
+import { normalizeMenuPages } from '@/components/utils/normalizeMenuPages';
 
 import Logo from './Logo';
 import BookOnlineLink from './nav/BookOnlineLink';

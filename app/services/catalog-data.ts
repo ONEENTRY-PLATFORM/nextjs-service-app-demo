@@ -4,15 +4,15 @@ import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces'
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getProductsByPageUrl } from '@/app/api/server/products/getProductsByPageUrl';
-import { isOfferProduct } from '@/components/utils/isOfferProduct';
-import productDurationMinutes from '@/components/utils/productDurationMinutes';
-import { salonFromPage } from '@/components/utils/salonFromPage';
 import type {
   ServiceItem,
   ServicesCategory,
   ServicesSalon,
 } from '@/components/layout/services-page/types';
+import { isOfferProduct } from '@/components/utils/isOfferProduct';
 import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
+import productDurationMinutes from '@/components/utils/productDurationMinutes';
+import { salonFromPage } from '@/components/utils/salonFromPage';
 
 /** Page size of a single catalog products request. */
 const PAGE_LIMIT = 100;

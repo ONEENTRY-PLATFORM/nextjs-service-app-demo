@@ -4,18 +4,21 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { getServicesCatalogData } from '@/app/services/catalog-data';
-import { entityPageIds, entityProductIds } from '@/components/utils/entityLinks';
-import { salonFromPage } from '@/components/utils/salonFromPage';
 import type {
   BookingData,
   BookingMaster,
   BookingSalon,
   BookingService,
 } from '@/components/layout/booking-page/types';
+import {
+  entityPageIds,
+  entityProductIds,
+} from '@/components/utils/entityLinks';
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
 import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
+import { salonFromPage } from '@/components/utils/salonFromPage';
 
 /** Services child page `pageUrl` → display category of the wizard pills */
 const CATEGORY_BY_PAGEURL: Record<string, string> = {

@@ -4,11 +4,11 @@ import type { JSX } from 'react';
 
 import { getBlockByMarker } from '@/app/api/server/blocks/getBlockByMarker';
 import { getMenuByMarker } from '@/app/api/server/menus/getMenuByMarker';
+import { flatMenuToNested } from '@/components/utils/flatMenuToNested';
 import { normalizeMenuPages } from '@/components/utils/normalizeMenuPages';
 import type { OpeningHoursRow } from '@/components/utils/parseOpeningTime';
 import parseOpeningTime from '@/components/utils/parseOpeningTime';
 import summarizeOpeningHours from '@/components/utils/summarizeOpeningHours';
-import { flatMenuToNested } from '@/components/utils/flatMenuToNested';
 
 import Copyrights from './Copyrights';
 import FollowUs from './FollowUs';
