@@ -4,11 +4,16 @@ export interface SocialEntry {
   title: string;
   /** Icon key — an export of `components/icons` and a key of `SOCIAL_ICONS` */
   icon: 'instagram' | 'facebook' | 'twitter';
-  /** Profile URL (placeholder until the real accounts exist) */
+  /** Profile URL — fallback for the CMS marker `social_{icon}_url` */
   link: string;
 }
 
-/** Social links of the studio — placeholders until they move to the CMS. */
+/**
+ * The networks the studio links to. Each entry is bound to an icon component,
+ * so the list itself stays in code; the URLs come from `system_content`
+ * (`social_{icon}_url`) through `buildSocialLinks` and the values here are only
+ * the fallback used when the dictionary is unavailable.
+ */
 export const socialData: SocialEntry[] = [
   {
     title: 'Instagram',

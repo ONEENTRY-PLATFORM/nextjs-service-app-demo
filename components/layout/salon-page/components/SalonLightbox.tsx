@@ -85,10 +85,7 @@ const SalonLightbox = ({
       />
 
       {photo && (
-        <div
-          ref={contentRef}
-          className="w-full max-w-xl px-4 md:mx-20 md:px-0"
-        >
+        <div ref={contentRef} className="w-full max-w-xl px-4 md:mx-20 md:px-0">
           <LightboxStage
             src={photo.url}
             preview={photo.preview}

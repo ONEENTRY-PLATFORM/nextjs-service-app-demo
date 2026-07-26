@@ -12,8 +12,8 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { socialData } from '@/components/data/socialData';
 import { buildContactRows } from '@/components/layout/contacts-page/utils/buildContactRows';
+import { buildSocialLinks } from '@/components/utils/buildSocialLinks';
 import type { CmsSalon } from '@/components/utils/salonFromPage';
 
 /** Lucide icon and accent color per the `icon` key of a contact row */
@@ -24,7 +24,7 @@ const INFO_ICONS = {
   clock: { Icon: Clock, color: '#9b4fb2' },
 } as const;
 
-/** Lucide icon and accent color per the `icon` key of `socialData` */
+/** Lucide icon and accent color per the `icon` key of a social entry */
 const SOCIAL_ICONS = {
   instagram: { Icon: Instagram, color: '#ed21f1' },
   facebook: { Icon: Facebook, color: '#109aa9' },
@@ -43,8 +43,9 @@ interface ContactInfoCardProps {
  * ContactInfoCard component — the "Reach out" info sidebar of the contacts
  * page as in the static-html mock (`ContactsPage.tsx` → ContactInfo): tinted
  * contact rows (phone, e-mail, head office, hours) and the "Follow us"
- * social card. Phone/address/hours come from the CMS (`salons` + `opening_time`);
- * the e-mail row and the social links are still local until the CMS gains them.
+ * social card. Everything comes from the CMS: the rows from the head-office
+ * salon page plus the `opening_time` block, the social URLs from the
+ * `system_content` dictionary.
  * @param   {ContactInfoCardProps} props - Primary salon and collapsed week hours
  * @returns {JSX.Element}                Info sidebar with contact rows and social links
  */
@@ -54,6 +55,7 @@ const ContactInfoCard = ({
 }: ContactInfoCardProps): JSX.Element => {
   const [dict] = ServerProvider<IAttributeValues>('dict');
   const rows = buildContactRows({ salon, hours, dict });
+  const socials = buildSocialLinks(dict);
 
   return (
     <div className="flex h-full flex-col gap-5">
@@ -111,7 +113,7 @@ const ContactInfoCard = ({
           {(dict?.follow_us_text?.value as string | undefined) || 'Follow us'}
         </p>
         <div className="flex gap-3">
-          {socialData.map(({ title, icon, link }) => {
+          {socials.map(({ title, icon, link }) => {
             const social =
               SOCIAL_ICONS[icon as keyof typeof SOCIAL_ICONS] ??
               SOCIAL_ICONS.instagram;

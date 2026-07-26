@@ -12,6 +12,8 @@ export interface CmsSalon {
   address: string;
   /** Phone as stored (`salon_phone`), `''` when unset */
   phone: string;
+  /** Contact e-mail (`salon_email`), `''` when unset */
+  email: string;
 }
 
 /**
@@ -39,6 +41,7 @@ export const salonFromPage = (page: IPagesEntity): CmsSalon => {
 
   const rawAddress = attrs.salon_address?.value;
   const rawPhone = attrs.salon_phone?.value;
+  const rawEmail = attrs.salon_email?.value;
 
   return {
     id: page.id,
@@ -46,5 +49,6 @@ export const salonFromPage = (page: IPagesEntity): CmsSalon => {
     name: page.localizeInfos?.title || page.pageUrl,
     address: typeof rawAddress === 'string' ? rawAddress : '',
     phone: typeof rawPhone === 'string' ? rawPhone : '',
+    email: typeof rawEmail === 'string' ? rawEmail : '',
   };
 };

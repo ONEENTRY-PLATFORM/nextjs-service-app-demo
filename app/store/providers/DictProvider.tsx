@@ -7,7 +7,7 @@ import { DictContext } from './DictContext';
 
 /**
  * DictProvider — makes the `system_content` dictionary available to every
- * client component below it via {@link DictContext} / {@link useDict}.
+ * client component below it via {@link DictContext} / the `useDict` hook.
  *
  * Mounted once in the root layout with the dictionary the server already
  * fetched (`getDictionary()`), so the value is baked into the prerendered /

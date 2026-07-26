@@ -108,7 +108,7 @@ const generateStructuredData = async (): Promise<object | null> => {
     description:
       getPagePlainContent(page) ||
       page.localizeInfos?.title ||
-      'OneEntry next-js Beauty description',
+      'OneEntry Beauty next-js template',
     url: getSiteUrl(),
   };
 };
@@ -131,14 +131,6 @@ const IndexPageLayout = async (): Promise<JSX.Element> => {
 
   /** Set dictionary for localization */
   ServerProvider('dict', dict);
-
-  /**
-   * The site root NEVER 404s: the `home` page entity is not rendered here (only
-   * its blocks are), and every section degrades to the mock's demo fallbacks
-   * when its block is missing or the CMS errors. So we do not fetch `home` or
-   * gate on it — a transient CMS failure or an unpopulated `home` page still
-   * renders the designed layout instead of turning the whole site into a 404.
-   */
 
   /**
    * Index the CMS blocks by their marker so the home page can render a fixed

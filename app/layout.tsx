@@ -114,9 +114,10 @@ const generateStructuredData = (siteName: string): object => {
      * No `sameAs`. It used to list OneEntry's OWN social accounts on every page
      * of the site, telling search engines those are this studio's official
      * profiles — wrong data about a real business, not a cosmetic issue. The
-     * placeholders in `components/data/socialData.ts` are `#1`/`#2`/`#3`, so
-     * sourcing it from there would publish invalid fragments instead. Add the
-     * property back when the studio's real accounts exist.
+     * URLs now live in `system_content` (`social_{network}_url`) but are still
+     * `#` placeholders, so sourcing it from there would publish invalid
+     * fragments instead. Add the property back when the studio's real accounts
+     * exist and those markers hold absolute URLs.
      */
   };
 };

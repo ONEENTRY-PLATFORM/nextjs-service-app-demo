@@ -8,7 +8,7 @@ import { createContext } from 'react';
  *
  * Holds the `system_content` UI-text dictionary (`IAttributeValues`, keyed by
  * marker) so client components can read localized copy without threading a
- * `dict` prop through every level. The value is supplied by {@link DictProvider}
+ * `dict` prop through every level. The value is supplied by `DictProvider`
  * (wired once in the root layout from the same server-fetched dictionary the
  * server components read via `ServerProvider('dict')`).
  *

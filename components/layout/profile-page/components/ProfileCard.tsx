@@ -7,8 +7,8 @@ import type { JSX } from 'react';
 
 import UserForm from '@/components/forms/UserForm';
 
+import { getUserDisplayName } from '../utils/getUserDisplayName';
 import Avatar from './Avatar';
-import { getUserDisplayName } from './getUserDisplayName';
 import SignOutButton from './SignOutButton';
 
 /**

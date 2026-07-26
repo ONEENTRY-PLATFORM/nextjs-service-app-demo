@@ -20,13 +20,13 @@ import { useAppSelector } from '@/app/store/hooks';
  * 1. `grow` — a horizontal `scaleX` reveal from the left edge, for the strip.
  * 2. `slide` — an x-slide + fade from the left, echoing a "back" gesture, for
  * the link.
- * @param   {object}          props             - Component properties
- * @param   {ReactNode}       props.children    - Content to animate
- * @param   {'grow' | 'slide'} props.mode       - Animation style
- * @param   {string}          [props.className] - CSS classes for the wrapper element
- * @param   {CSSProperties}   [props.style]     - Optional inline styles for the wrapper
- * @param   {number}          [props.delay]     - Entrance delay in seconds
- * @returns {JSX.Element}                       Animated wrapper
+ * @param   {object}           props             - Component properties
+ * @param   {ReactNode}        props.children    - Content to animate
+ * @param   {'grow' | 'slide'} props.mode        - Animation style
+ * @param   {string}           [props.className] - CSS classes for the wrapper element
+ * @param   {CSSProperties}    [props.style]     - Optional inline styles for the wrapper
+ * @param   {number}           [props.delay]     - Entrance delay in seconds
+ * @returns {JSX.Element}                        Animated wrapper
  * @see {@link https://gsap.com/cheatsheet/ GSAP cheatsheet}
  */
 const SalonTopBarAnimations = ({

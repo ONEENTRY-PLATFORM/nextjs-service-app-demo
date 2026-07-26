@@ -214,8 +214,8 @@ const BookingSummary = ({
                     string | undefined) || 'Any specialist'
                 }
                 sub={
-                  (dict?.booking_best_match_text?.value as string | undefined) ||
-                  'Best available match'
+                  (dict?.booking_best_match_text?.value as
+                    string | undefined) || 'Best available match'
                 }
               />
             )}

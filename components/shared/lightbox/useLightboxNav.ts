@@ -65,6 +65,8 @@ export const useLightboxNav = ({
    * Escape closes through the a11y hook, which is created below — before the
    * animated `requestClose` exists. This stable indirection forwards to whatever
    * closer is current, so Escape animates the exit just like the close button.
+   * It starts on the raw `onClose` and is re-pointed at the animated closer in an
+   * effect (never during render — see the assignment below).
    */
   const closeRef = useRef(onClose);
   const routedClose = useCallback(() => closeRef.current(), []);
@@ -87,7 +89,16 @@ export const useLightboxNav = ({
     contentRef,
     onClose,
   });
-  closeRef.current = requestClose;
+  /**
+   * Re-point the indirection after commit, not during render: a ref written while
+   * rendering is invisible to a concurrent re-render that discards this pass, and
+   * React flags it. The same latest-ref idiom `useLightboxTransition` uses for its
+   * own `onClose`; effects flush before any keypress can reach the dialog, so
+   * Escape never lands on the raw closer.
+   */
+  useEffect(() => {
+    closeRef.current = requestClose;
+  });
 
   return { direction, dialogRef, contentRef, requestClose };
 };

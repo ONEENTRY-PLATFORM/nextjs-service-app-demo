@@ -185,6 +185,7 @@ export async function fetchCmsData<T>(
      */
     if (IS_BUILD_PHASE) {
       const status = (lastError as IError | undefined)?.statusCode;
+      // eslint-disable-next-line no-console -- the build log is the only place this diagnostic can surface
       console.warn(
         `[cms] ${label}: all ${retries + 1} attempts failed during build` +
           `${status ? ` (last status ${status})` : ''} — section may render empty`,

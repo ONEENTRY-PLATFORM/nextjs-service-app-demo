@@ -1,5 +1,6 @@
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 
+import { dictText } from '@/components/utils/dictText';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
 import type { CmsSalon } from '@/components/utils/salonFromPage';
 
@@ -16,39 +17,15 @@ export interface ContactRow {
 }
 
 /**
- * The studio e-mail has no CMS source yet — salon pages carry only
- * `salon_address`/`salon_phone`. Kept as a placeholder so the row still renders;
- * drop it once a `salon_email` attribute (or a dictionary marker) exists.
- */
-const FALLBACK_EMAIL = 'hello@beautystudio.com';
-
-/**
- * Reads a dictionary string by marker, falling back to a literal.
- * @param   {IAttributeValues | undefined} dict     - System-content dictionary
- * @param   {string}                       marker   - Dictionary marker to read
- * @param   {string}                       fallback - Value used when the marker is absent
- * @returns {string}                                The dictionary text, or the fallback
- */
-const dictText = (
-  dict: IAttributeValues | undefined,
-  marker: string,
-  fallback: string,
-): string => {
-  const value = dict?.[marker]?.value;
-  return typeof value === 'string' && value ? value : fallback;
-};
-
-/**
  * buildContactRows — assemble the "Reach out" rows of the contacts page from CMS
  * data instead of a hardcoded list.
  *
- * Phone and address come from the primary (head-office) salon page; the hours
- * come from the collapsed `opening_time` week, falling back to the dictionary
- * value. Rows with no value (a salon without a phone/address) are dropped so the
- * card degrades cleanly. The e-mail row stays on {@link FALLBACK_EMAIL} until the
- * CMS gains an e-mail source.
+ * Phone, e-mail and address come from the primary (head-office) salon page; the
+ * hours come from the collapsed `opening_time` week, falling back to the
+ * dictionary value. Rows with no value (a salon without a phone/e-mail/address)
+ * are dropped so the card degrades cleanly.
  * @param   {object}                       args       - Grouped arguments
- * @param   {CmsSalon | undefined}         args.salon - Primary salon (phone/address source)
+ * @param   {CmsSalon | undefined}         args.salon - Primary salon (phone/e-mail/address source)
  * @param   {string | null}                args.hours - Collapsed week hours, or `null`
  * @param   {IAttributeValues | undefined} args.dict  - System-content dictionary
  * @returns {ContactRow[]}                            The rows ready to render
@@ -73,12 +50,14 @@ export const buildContactRows = ({
     });
   }
 
-  rows.push({
-    icon: 'mail',
-    label: dictText(dict, 'contact_email_label', 'E-mail us'),
-    value: FALLBACK_EMAIL,
-    href: `mailto:${FALLBACK_EMAIL}`,
-  });
+  if (salon?.email) {
+    rows.push({
+      icon: 'mail',
+      label: dictText(dict, 'contact_email_label', 'E-mail us'),
+      value: salon.email,
+      href: `mailto:${salon.email}`,
+    });
+  }
 
   if (salon?.address) {
     rows.push({

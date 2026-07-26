@@ -7,7 +7,7 @@ import { DictContext } from './DictContext';
  * Read the `system_content` UI-text dictionary inside a client component.
  *
  * The client-side counterpart of the server's `ServerProvider('dict')`: returns
- * the dictionary supplied by {@link DictProvider} (an empty object when mounted
+ * the dictionary supplied by `DictProvider` (an empty object when mounted
  * outside it). Use it exactly like the server dictionary — always with an
  * English fallback, since the dictionary is optional:
  *

@@ -17,7 +17,7 @@ const ProfilePageSkeleton = (): JSX.Element => {
   return (
     <div data-testid="profile-skeleton">
       {/* Gradient hero strip — same classes/height as `GradientLine`'s default */}
-      <div className="bg-gradient-1 h-12.5 sm:h-15 lg:h-20 xl:h-22.5 2xl:h-25" />
+      <div className="h-12.5 bg-gradient-1 xl:h-22.5 sm:h-15 lg:h-20 2xl:h-25" />
 
       <section className="relative mx-auto flex w-full max-w-360 shrink-0 grow flex-col self-stretch p-5">
         <div className="flex w-full max-w-350 flex-col max-md:max-w-full">

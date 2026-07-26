@@ -36,7 +36,11 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
       </SalonTopBarAnimations>
 
       {/* Back link — slides in from the left */}
-      <SalonTopBarAnimations mode="slide" className="page-shell pt-6" delay={0.1}>
+      <SalonTopBarAnimations
+        mode="slide"
+        className="page-shell pt-6"
+        delay={0.1}
+      >
         <Link
           href="/contacts"
           className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"

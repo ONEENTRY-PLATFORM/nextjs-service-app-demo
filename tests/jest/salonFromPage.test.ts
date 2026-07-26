@@ -26,6 +26,7 @@ const page = (
 const FULL = {
   salon_address: { value: 'Sheikh Mohammed bin Rashid Blvd, Downtown Dubai' },
   salon_phone: { value: '+971 4 701 2200' },
+  salon_email: { value: 'hello@beautystudio.com' },
 };
 
 describe('salonFromPage', () => {
@@ -36,6 +37,7 @@ describe('salonFromPage', () => {
       name: 'Thalia Downtown',
       address: 'Sheikh Mohammed bin Rashid Blvd, Downtown Dubai',
       phone: '+971 4 701 2200',
+      email: 'hello@beautystudio.com',
     });
   });
 
@@ -50,7 +52,11 @@ describe('salonFromPage', () => {
   });
 
   it('degrades to empty strings when the attributes are missing', () => {
-    expect(salonFromPage(page({}))).toMatchObject({ address: '', phone: '' });
+    expect(salonFromPage(page({}))).toMatchObject({
+      address: '',
+      phone: '',
+      email: '',
+    });
   });
 
   /**
@@ -74,13 +80,18 @@ describe('salonFromPage', () => {
     ).toBe('');
   });
 
+  it('ignores a non-string e-mail the same way', () => {
+    expect(salonFromPage(page({ salon_email: { value: [] } })).email).toBe('');
+  });
+
   it('falls back to the pageUrl, never to an empty name', () => {
     expect(salonFromPage(page(FULL, { title: '' })).name).toBe('downtown');
   });
 
-  it('reads nothing beyond the five fields it declares', () => {
+  it('reads nothing beyond the six fields it declares', () => {
     expect(Object.keys(salonFromPage(page(FULL))).sort()).toEqual([
       'address',
+      'email',
       'id',
       'name',
       'phone',
