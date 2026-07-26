@@ -2,9 +2,7 @@ import { Star } from 'lucide-react';
 import type { JSX } from 'react';
 
 /**
- * Filled rating star — lucide `Star` filled and stroked with the given colour,
- * as in the static-html mock rating rows (CYAN by default, PINK on the profile
- * visit card).
+ * Filled rating star — lucide `Star` filled and stroked with the given colour.
  * @param   {object}      props         - Component properties
  * @param   {number}      props.size    - Icon size in pixels
  * @param   {string}      [props.color] - Fill/stroke colour (default CYAN `#109AA9`)

@@ -1,8 +1,7 @@
 import type { CSSProperties, JSX } from 'react';
 
 /**
- * Official UAE Dirham symbol (2025), ported from the static-html mock
- * (`src/app/components/Dirham.tsx`). Inlined SVG so it inherits text color
+ * Official UAE Dirham symbol (2025). Inlined SVG so it inherits text color
  * via `currentColor` and scales with the font size.
  * @param   {object}        [props]           - Component properties
  * @param   {string}        [props.className] - CSS classes to apply to the SVG element

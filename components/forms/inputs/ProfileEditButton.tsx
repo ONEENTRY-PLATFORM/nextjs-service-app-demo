@@ -3,8 +3,7 @@ import type { JSX } from 'react';
 
 /**
  * ProfileEditButton — the outlined "Edit" button that switches the profile
- * card from its read-only rows into the editable form (static-html mock
- * `AccountPage.tsx`, view state).
+ * card from its read-only rows into the editable form.
  * @param   {object}      props         - Component props
  * @param   {string}      props.title   - Button label from the dictionary
  * @param   {() => void}  props.onClick - Enters the edit mode

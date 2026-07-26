@@ -186,11 +186,7 @@ const SignInForm = ({
         className="relative mx-auto mt-2 mb-6 box-border flex shrink-0 flex-col gap-3"
         onSubmit={onSignIn}
       >
-        {/* Provider tabs only make sense with more than one credential
-         * provider. With a single provider (the current CMS `email`) they add
-         * a lone dead button — the static-html AuthModal has no tabs — so hide
-         * the row and drive `auth()` with the single `tab` value.
-         */}
+        {/* Provider tabs only make sense with more than one credential provider. */}
         {tabs.length > 1 && (
           <div className="relative box-border flex shrink-0 flex-col gap-2.5">
             <FormFieldAnimations

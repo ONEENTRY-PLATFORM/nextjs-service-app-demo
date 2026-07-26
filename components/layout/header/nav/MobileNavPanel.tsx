@@ -12,7 +12,7 @@ import { useDict } from '@/app/store/providers/useDict';
 /**
  * MobileNavPanel — inline expanding navigation panel under the header row.
  *
- * Mirrors the static-html mock: on <lg the hamburger toggles a panel that
+ * on <lg the hamburger toggles a panel that
  * slides open right below the header (height animation, top border #e8e8f0)
  * and lists the main menu links as plain rows — pink for the active page,
  * DARK otherwise. Replaces the previous offcanvas drawer to match the mock.

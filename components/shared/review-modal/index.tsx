@@ -13,8 +13,7 @@ import PhotoRow from './components/PhotoRow';
 import StarPicker from './components/StarPicker';
 
 /**
- * ReviewModal — the "leave a review" dialog from the static-html mock
- * (`ReviewModal.tsx`): purple→pink gradient header, 5-star hover picker, up to
+ * ReviewModal — the "leave a review" dialog: purple→pink gradient header, 5-star hover picker, up to
  * 5 photo thumbnails, a pink-bordered textarea and a gradient Confirm button
  * enabled once a rating and some text are set.
  *

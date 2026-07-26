@@ -15,8 +15,7 @@ import SalonSidebar from './components/SalonSidebar';
 import type { SalonDetail } from './types';
 
 /**
- * SalonPageContent — the salon detail page body ported from the static-html
- * mock (`SalonPage.tsx`): a 5px gradient strip, "Back to Contacts" link, the
+ * SalonPageContent — the salon detail page body: a 5px gradient strip, "Back to Contacts" link, the
  * salon name header, a photo gallery (hero + thumbnails on desktop, carousel on
  * mobile) with a lightbox, and an About block beside an info/map sidebar.
  * @param   {object}      props       - Component properties

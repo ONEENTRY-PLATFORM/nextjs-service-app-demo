@@ -12,12 +12,12 @@ import { offerBookingHref } from '@/components/utils/offerBookingHref';
 import OfferCardFooter from './OfferCardFooter';
 import { parseOffer } from './parseOffer';
 
-/** Brand text colors from the static-html mock */
+/** Brand text colors */
 const DARK = '#4c4d56';
 const MUTED = '#a8a9b5';
 
 /**
- * OfferCard component — a special-offer card as in the static-html mock:
+ * OfferCard component — a special-offer card:
  * discount ribbon, name and tagline, the bundled services with check marks,
  * price with the dirham symbol, crossed-out old price and a "Book Offer"
  * button ({@link OfferCardFooter}). A featured offer gets the full

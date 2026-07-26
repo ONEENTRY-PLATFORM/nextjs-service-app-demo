@@ -11,12 +11,6 @@ import { DARK, PINK } from '../constants';
 /**
  * PaymentMethodPicker — how the client pays for the appointment.
  *
- * Not in the static-html mock: the design books an appointment and says nothing
- * about payment (pay at the salon). It exists because the salon connected more
- * than one payment account, and the orders rule requires offering every account
- * linked to the storage rather than silently picking one. Styled to the summary
- * panel's own language (same accent, borders and rhythm as the salon chips).
- *
  * Renders nothing when there is no actual choice: with a single account the
  * caller submits with it automatically, and a one-option picker is just noise.
  * @param   {object}               props          - Component properties

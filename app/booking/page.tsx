@@ -17,24 +17,12 @@ import { getBookingData } from './booking-data';
 /**
  * CMS content is the same for everyone — prerender this route and refresh it
  * on a timer (ISR) instead of rendering it per request.
- *
- * Because the page is fully prerendered (`force-static`), the heavy
- * `getBookingData()` read runs at build / revalidation time, NOT per request —
- * users are served static HTML and never wait on it. That is why the slow block
- * is awaited inline here rather than streamed through a local `<Suspense>` (the
- * `app/masters/[handle]` pattern, which is `revalidate`-only, not static): on a
- * fully static page a Suspense fallback is resolved during prerender and never
- * reaches the client, so it would add a skeleton component and indirection for
- * zero user-facing benefit.
  */
 export const dynamic = 'force-static';
 export const revalidate = 300;
 
 /**
- * BookingPageLayout — the booking page following the static-html mock
- * (`BookingPage.tsx`): a photo hero under the purple→pink veil and the
- * step-based booking wizard (entry screen, step bar, cross-filtered steps,
- * "Your Appointment" summary and the success modal).
+ * BookingPageLayout — the booking page.
  *
  * The page renders with whatever the CMS currently has — a missing `booking`
  * page only drops the custom title, and an empty catalog/roster leaves the

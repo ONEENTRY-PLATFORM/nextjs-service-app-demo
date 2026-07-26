@@ -10,8 +10,7 @@ import Image from '@/components/shared/Image';
 /**
  * SpecialistCard — one tile of the home "OUR SPECIALISTS" strip: the master's
  * photo under a purple gradient overlay with name, role and a "Check a profile"
- * link, tiling to the master's profile (static-html mock, `HomePage.tsx` → OUR
- * SPECIALISTS).
+ * link, tiling to the master's profile.
  *
  * The {@link CardAnimations} wrapper gives the tile the same behaviour as the
  * catalog and offer cards: it fades and scales in once it scrolls into view,

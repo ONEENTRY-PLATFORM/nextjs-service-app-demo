@@ -11,10 +11,7 @@ import ReviewsPageContent from '@/components/layout/reviews-page';
 export const revalidate = 60;
 
 /**
- * ReviewsPageLayout — the "/reviews" page following the static-html mock
- * (`ReviewsPage.tsx`): a gradient accent strip and the interactive reviews
- * body (back link, heading with average rating, salon / category / specialist
- * filters and the review card grid).
+ * ReviewsPageLayout — the "/reviews" page.
  *
  * The page is driven by local data (`components/layout/reviews-page/data.ts`)
  * until reviews move to the CMS, so it never 404s when the OneEntry `reviews`

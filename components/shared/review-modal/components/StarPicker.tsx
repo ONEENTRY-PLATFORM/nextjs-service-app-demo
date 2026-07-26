@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useDict } from '@/app/store/providers/useDict';
 
 /**
- * StarPicker — the 5-star rating picker from the static-html `ReviewModal`:
+ * StarPicker — the 5-star rating picker:
  * large lucide stars (32px) that fill PINK on hover/selection and scale up
  * slightly on hover; unselected stars are hollow with a DARK outline.
  * @param   {object}                  props        - Component properties

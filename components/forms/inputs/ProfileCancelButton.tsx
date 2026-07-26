@@ -2,7 +2,7 @@ import type { JSX } from 'react';
 
 /**
  * ProfileCancelButton — the bordered "Cancel" button shown next to Save while
- * the profile card is in edit mode (static-html mock `AccountPage.tsx`).
+ * the profile card is in edit mode.
  * Leaving the edit mode unmounts the inputs, so the typed-but-unsaved values
  * are dropped and the rows fall back to the stored user data.
  * @param   {object}      props         - Component props

@@ -21,7 +21,7 @@ const Modal = dynamic(() => import('@/components/layout/modal'));
  * popup that is currently open (the forms modal for any form name). While
  * nothing is open, no popup code is loaded at all. The mobile navigation is
  * not an overlay anymore — it renders as an inline panel inside the header
- * (`MobileNavPanel`), matching the static-html mock.
+ * (`MobileNavPanel`).
  * @param   {object}           props      - Component properties
  * @param   {IAttributeValues} props.dict - Dictionary passed to the forms modal
  * @returns {JSX.Element}                 The active popup, or nothing

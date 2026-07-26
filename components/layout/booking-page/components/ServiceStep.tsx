@@ -12,8 +12,7 @@ import CategoryPills from './CategoryPills';
 import Price from './Price';
 
 /**
- * ServiceStep — the service selection step of the booking wizard, ported
- * from the static-html mock (`BookingPage.tsx` → `ServiceStep`): category
+ * ServiceStep — the service selection step of the booking wizard: category
  * pills over a list of service rows (name, duration with a clock icon, price
  * and a checkbox circle). Multiple services can be picked for one appointment;
  * only the categories the passed services actually cover get a pill, and a

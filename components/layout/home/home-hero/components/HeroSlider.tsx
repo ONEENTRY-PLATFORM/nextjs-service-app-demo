@@ -39,7 +39,7 @@ export type HeroSlide = {
 };
 
 /**
- * Hero banner carousel, as in the static-html mock: full-bleed slides with a
+ * Hero banner carousel: full-bleed slides with a
  * crossfade, auto-advance (paused on hover), prev/next arrows and dots.
  * Controls are hidden while there is only one slide.
  * @param   {object}      props            - Component properties

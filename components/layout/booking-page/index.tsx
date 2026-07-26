@@ -20,8 +20,7 @@ import type { BookingData } from './types';
 import { scrollToBookingTop } from './utils/scrollToBookingTop';
 
 /**
- * BookingWizard — the interactive booking flow ported from the static-html
- * mock (`BookingPage.tsx` → `BookingPage`): an entry screen with two flows
+ * BookingWizard — the interactive booking flow: an entry screen with two flows
  * (studio-first / specialist-first), a step bar, the four wizard steps with
  * cross-filtering between studio / service / specialist, the "Your
  * Appointment" summary (right column on desktop, a separate screen on

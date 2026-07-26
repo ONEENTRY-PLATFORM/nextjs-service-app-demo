@@ -17,8 +17,7 @@ import type { SalonPhoto } from '../types';
 const ARROW_STYLE = { border: '1.5px solid rgba(255,255,255,0.18)' };
 
 /**
- * SalonLightbox — full-screen photo viewer for the salon gallery, ported from
- * the static-html mock (`SalonPage.tsx`): dark blurred backdrop, `x / N`
+ * SalonLightbox — full-screen photo viewer for the salon gallery: dark blurred backdrop, `x / N`
  * counter, ring-bordered prev/next arrows, accent-glow image, and Esc/Arrow
  * keyboard navigation.
  * @param   {object}              props          - Component properties

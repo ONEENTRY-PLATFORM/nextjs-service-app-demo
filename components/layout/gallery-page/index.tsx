@@ -16,8 +16,7 @@ import type { GalleryItem, GalleryMainCategory } from './taxonomy';
 import { GALLERY_SUBCATEGORIES, SUB_TO_MAIN } from './taxonomy';
 
 /**
- * GalleryPageContent — the gallery page body ported from the static-html
- * mock (`GalleryPage.tsx`): the filter block ({@link GalleryFilterBar}), the
+ * GalleryPageContent — the gallery page body: the filter block ({@link GalleryFilterBar}), the
  * full-bleed photo grid and a lightbox.
  *
  * Pure client-side filtering over a pre-built photo list — degrades to an

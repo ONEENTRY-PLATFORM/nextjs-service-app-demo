@@ -2,7 +2,7 @@ import { Twitter } from 'lucide-react';
 import type { JSX } from 'react';
 
 /**
- * Twitter icon — lucide, same as the static-html mock footer.
+ * Twitter icon — lucide.
  * @param   {object}      [props]        - Component properties
  * @param   {boolean}     [props.active] - Whether the icon is in the active (pink) state
  * @param   {number}      [props.size]   - Icon size in pixels (default 22)

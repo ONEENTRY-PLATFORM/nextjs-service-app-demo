@@ -7,8 +7,7 @@ import StarsGroup from '@/components/shared/StarsGroup';
 /**
  * ReviewSlide component displays a single customer review slide.
  *
- * Renders one review — reviewer name, rating stars and review text — centered,
- * matching the `static-html` reference (REVIEWS section on the home page).
+ * Renders one review — reviewer name, rating stars and review text — centered.
  * @param   {object}      props             - Component properties
  * @param   {object}      props.item        - Review data including title, text and rating
  * @param   {string}      props.item.title  - Reviewer name

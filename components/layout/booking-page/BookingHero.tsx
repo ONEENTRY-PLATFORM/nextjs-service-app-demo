@@ -8,15 +8,7 @@ import HeroKicker from '@/app/animations/HeroKicker';
 import HeroTitle from '@/app/animations/HeroTitle';
 
 /**
- * BookingHero component — the banner of the booking page as in the
- * static-html mock (`BookingPage.tsx` → hero): a full-bleed photo under the
- * purple→pink brand veil, the kicker, the page title and a short subtitle.
- * Compact on mobile (mock `h-[154px]`), full height on desktop.
- *
- * All texts and the background come from the `booking` page's `page_simple`
- * attributes (`page_tag` / `page_hero_bg` / `page_hero_description`, read by
- * `app/booking/page.tsx`) with static fallbacks so the hero degrades without
- * the CMS.
+ * BookingHero component — the banner of the booking page
  *
  * Wrapped in {@link HeroAnimations} so the header plays the same loader-reveal
  * mask overlay and page-transition/parallax animations as the home hero; the

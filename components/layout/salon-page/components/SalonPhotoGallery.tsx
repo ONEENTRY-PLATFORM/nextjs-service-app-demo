@@ -27,8 +27,7 @@ const blurProps = (
     : {};
 
 /**
- * SalonPhotoGallery — the salon photo gallery ported from the static-html mock
- * (`SalonPage.tsx` → PhotoGallery): a swipe carousel with dots on mobile and a
+ * SalonPhotoGallery — the salon photo gallery: a swipe carousel with dots on mobile and a
  * hero + thumbnail grid on desktop. Every tile opens the lightbox via `onOpen`.
  * @param   {object}              props        - Component properties
  * @param   {SalonPhoto[]}        props.photos - Photos with their LQIP placeholders

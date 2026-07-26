@@ -58,8 +58,7 @@ export const OpenDrawerProvider = ({
   /**
    * Direction the next form-step swap slides in from. Set by the in-modal
    * navigation buttons right before `setComponent` so `FormAnimations` can
-   * play a `forward` (→) or `backward` (←) horizontal slide, mirroring the
-   * static-html AuthModal step transitions.
+   * play a `forward` (→) or `backward` (←) horizontal slide.
    */
   const [direction, setDirection] = useState<string>('forward');
 

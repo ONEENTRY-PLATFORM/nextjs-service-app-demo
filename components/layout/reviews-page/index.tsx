@@ -23,8 +23,7 @@ import { MASTER_CAT, MASTER_SALON, REVIEW_SALONS, REVIEWS } from './data';
 const CAT_ORDER: readonly MasterCategory[] = ['Hair', 'Face', 'Body', 'Nails'];
 
 /**
- * ReviewsPageContent — the reviews page body ported from the static-html mock
- * (`ReviewsPage.tsx`): a back link, the "Reviews" heading with an average
+ * ReviewsPageContent — the reviews page body: a back link, the "Reviews" heading with an average
  * rating summary, the salon / category / specialist filters and a responsive
  * grid of review cards. All filtering runs client-side over the local
  * {@link REVIEWS} data; the CYAN accent is used for ratings/stars while the

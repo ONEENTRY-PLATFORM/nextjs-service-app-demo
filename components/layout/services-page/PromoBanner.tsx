@@ -8,8 +8,7 @@ import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 /**
  * PromoBanner component — the "First Visit? Get 15% Off" gradient banner at
- * the bottom of the services page, as in the static-html mock
- * (`PricesPage.tsx` → Special Offer Banner). The button leads to the booking
+ * the bottom of the services page. The button leads to the booking
  * page. Texts are English fallbacks until `system_content` is set up in the
  * CMS.
  *

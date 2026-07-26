@@ -8,7 +8,7 @@ import type { JSX } from 'react';
  * A bordered rounded chip showing the salon title (bold DARK) and, when
  * available, its address (MUTED) preceded by a map-pin glyph. The border tints
  * to a translucent PINK and the chip gains a soft shadow on hover. When the
- * salon page is known the chip is a link to it (static-html `onViewSalon`);
+ * salon page is known the chip is a link to it;
  * otherwise it renders as a plain block.
  * @param   {object}             props         - Component properties.
  * @param   {string}             props.title   - Salon title.

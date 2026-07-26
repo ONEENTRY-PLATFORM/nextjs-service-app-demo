@@ -4,8 +4,7 @@ import type { JSX } from 'react';
 import { CYAN } from '../constants';
 
 /**
- * Stars — a five-star CYAN rating row ported from the static-html mock
- * (`ReviewsPage.tsx`). Each star is filled with CYAN `#109AA9` while its index
+ * Stars — a five-star CYAN rating row. Each star is filled with CYAN `#109AA9` while its index
  * is within the rating and left transparent (CYAN outline) otherwise. This is
  * the reviews-page CYAN outline star, distinct from the shared StarsGroup.
  * @param   {object}      props        - Component properties

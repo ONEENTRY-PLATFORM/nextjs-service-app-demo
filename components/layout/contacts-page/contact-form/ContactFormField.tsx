@@ -3,8 +3,7 @@
 import type { JSX } from 'react';
 
 /**
- * ContactFormField component — a labeled input of the contact form, styled as
- * in the static-html mock (`ContactsPage.tsx` → FormField).
+ * ContactFormField component — a labeled input of the contact form.
  * @param   {object}              props             - Component properties
  * @param   {string}              props.label       - Field label above the input
  * @param   {string}              props.value       - Controlled input value

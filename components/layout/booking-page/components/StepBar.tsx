@@ -24,8 +24,7 @@ const STEP_DEFS: Record<
 };
 
 /**
- * StepBar — the horizontal progress bar of the booking wizard, ported from
- * the static-html mock (`BookingPage.tsx` → `StepBar`): a circle with the
+ * StepBar — the horizontal progress bar of the booking wizard: a circle with the
  * step icon (gradient when active, cyan check when done) joined by thin
  * connector lines; completed steps are clickable to go back.
  * @param   {object}                props            - Component properties

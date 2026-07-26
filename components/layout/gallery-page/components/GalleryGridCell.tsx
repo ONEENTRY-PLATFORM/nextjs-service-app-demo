@@ -10,8 +10,7 @@ import Image from '@/components/shared/Image';
 import type { GalleryItem } from '../taxonomy';
 
 /**
- * GalleryGridCell — a single photo cell of the gallery grid, ported from the
- * static-html mock (`GalleryPage.tsx` → `GridCell`): 4/5 photo with a
+ * GalleryGridCell — a single photo cell of the gallery grid: 4/5 photo with a
  * zoom-on-hover, a purple gradient hover overlay with the master name, role
  * and a "Check a profile" link, plus a like heart.
  *

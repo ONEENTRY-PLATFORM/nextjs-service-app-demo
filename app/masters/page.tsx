@@ -107,9 +107,7 @@ const toMasterItem = ({
 };
 
 /**
- * Specialists page following the static-html mock (`MastersPage.tsx`):
- * gradient accent strip, salon / category / specialist filters and
- * profession card sections.
+ * Specialists page.
  *
  * Specialists come from CMS admins with `master_name` set (content plan,
  * stage 4). When none exist the page degrades to empty filters and sections

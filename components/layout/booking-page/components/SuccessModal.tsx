@@ -8,8 +8,7 @@ import { useDict } from '@/app/store/providers/useDict';
 import { BRAND_GRADIENT, PINK } from '../constants';
 
 /**
- * SuccessModal — the "Booked!" confirmation modal of the booking wizard,
- * ported from the static-html mock (`BookingPage.tsx` → `SuccessModal`):
+ * SuccessModal — the "Booked!" confirmation modal of the booking wizard:
  * a blurred purple backdrop, a gradient check circle, the confirmation text
  * and a Close button.
  * @param   {object}      props         - Component properties

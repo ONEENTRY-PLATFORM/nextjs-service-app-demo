@@ -6,8 +6,7 @@ import type { Review } from '../data';
 import Stars from './Stars';
 
 /**
- * ReviewCard — a single customer review card ported from the static-html mock
- * (`ReviewsPage.tsx`): header with the author (bold DARK), the date (MUTED) and
+ * ReviewCard — a single customer review card: header with the author (bold DARK), the date (MUTED) and
  * the CYAN {@link Stars}; a justified body; and a footer with the PINK
  * MessageCircle icon and specialist name.
  * @param   {object}      props        - Component properties

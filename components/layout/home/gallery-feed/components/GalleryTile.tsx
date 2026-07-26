@@ -21,7 +21,7 @@ export type GalleryGridCard = {
 /**
  * GalleryTile — one tile of the home GALLERY strip: an edge-to-edge `4/5` photo
  * with a subtle hover zoom and magenta tint, opening the Gallery page filtered
- * to its category (static-html mock, `HomePage.tsx` → GALLERY STRIP).
+ * to its category.
  *
  * The {@link CardAnimations} wrapper gives the tile the same behaviour as the
  * catalog and offer cards: it fades and scales in once it scrolls into view,
@@ -55,7 +55,7 @@ const GalleryTile = ({
         className="absolute inset-0"
         imageClassName="transition-transform duration-500 group-hover:scale-105"
       />
-      {/* Magenta hover tint (static-html GALLERY strip) */}
+      {/* Magenta hover tint */}
       <span className="pointer-events-none absolute inset-0 bg-[#c800d7]/25 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
     </Link>
   </CardAnimations>

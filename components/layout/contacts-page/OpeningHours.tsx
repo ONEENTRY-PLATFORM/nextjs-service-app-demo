@@ -28,8 +28,7 @@ const getTodayIdx = (): number => {
 };
 
 /**
- * OpeningHours component — the "Opening Hours" section of the contacts page
- * as in the static-html mock (`ContactsPage.tsx` → OpeningHours): a single
+ * OpeningHours component — the "Opening Hours" section of the contacts page: a single
  * Mon–Sun gradient card on mobile/tablet and per-day cards with a highlighted
  * "Today" on desktop. The schedule comes from the CMS `opening_time` block.
  *

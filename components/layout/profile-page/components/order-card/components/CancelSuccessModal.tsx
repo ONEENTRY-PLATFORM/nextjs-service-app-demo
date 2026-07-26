@@ -8,8 +8,7 @@ import DialogPortal from '@/components/shared/DialogPortal';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 
 /**
- * CancelSuccessModal — the "Appointment cancelled" dialog from the static-html
- * mock (`AccountPage.tsx`): a glowing gradient check circle, the confirmation
+ * CancelSuccessModal — the "Appointment cancelled" dialog: a glowing gradient check circle, the confirmation
  * copy and a full-width gradient "Done" button.
  * @param   {object}      props        - Component properties
  * @param   {() => void}  props.onDone - Close the dialog

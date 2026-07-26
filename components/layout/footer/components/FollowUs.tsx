@@ -3,8 +3,7 @@ import type { JSX } from 'react';
 import SocialButtons from './SocialButtons';
 
 /**
- * FollowUs footer section, as in the static-html mock: bold title and the
- * social icons row.
+ * FollowUs footer section: bold title and the social icons row.
  * @param   {object}               props       - Component properties
  * @param   {string}               props.title - Section title (from the CMS dictionary)
  * @returns {Promise<JSX.Element>}             Follow us section

@@ -14,8 +14,7 @@ import OfferDetailPanel from './OfferDetailPanel';
 import { parseOfferDetail } from './parseOfferDetail';
 
 /**
- * OfferDetailCard component — a full-width special-offer card as in the
- * static-html mock (`OffersPage.tsx` → `OfferDetail`): photo with a discount
+ * OfferDetailCard component — a full-width special-offer card: photo with a discount
  * badge and price overlay on the left ({@link OfferDetailMedia}), an
  * accent-gradient panel with the name, description, bundled services and a
  * "Book Offer" button on the right ({@link OfferDetailPanel}), and a duration

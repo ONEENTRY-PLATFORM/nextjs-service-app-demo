@@ -1,6 +1,5 @@
 /**
- * Gallery taxonomy ported from the static-html mock
- * (`static-html/src/app/data/priceList.ts` + `GalleryPage.tsx`).
+ * Gallery taxonomy.
  *
  * Temporary local data source: while the gallery section of the CMS is not
  * populated (content plan, stage 5), gallery photos are read from
@@ -42,7 +41,7 @@ export const GALLERY_MAIN_CATS: { id: GalleryMainCategory; label: string }[] = [
   { id: 'NAILS', label: 'Nails' },
 ];
 
-/** Price-list subcategories per main category (static-html `priceList.ts`) */
+/** Price-list subcategories per main category */
 export const GALLERY_SUBCATEGORIES: Record<
   GalleryMainCategory,
   readonly string[]

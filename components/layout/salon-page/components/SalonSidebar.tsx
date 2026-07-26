@@ -62,8 +62,7 @@ const Row = ({
 };
 
 /**
- * SalonSidebar — the info card (Address / Phone / Hours rows) plus the map
- * iframe, ported from the static-html mock (`SalonPage.tsx` → SidebarCard).
+ * SalonSidebar — the info card (Address / Phone / Hours rows) plus the map iframe.
  * @param   {object}      props       - Component properties
  * @param   {SalonDetail} props.salon - Salon to render
  * @returns {JSX.Element}             Sidebar with the info card and map

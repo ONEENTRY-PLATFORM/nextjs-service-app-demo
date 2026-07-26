@@ -23,14 +23,6 @@ export const revalidate = 300;
 
 /**
  * Salon detail page (`/salons/downtown`, `/salons/marina`, `/salons/jbr`).
- *
- * Ported from the static-html mock (`SalonPage.tsx`). Address/phone come from
- * the CMS salon page (`salon_address` / `salon_phone`); the photos are the
- * salon's own pictures from its `salon_images` (`groupOfImages`) attribute —
- * the venue itself, not work from the gallery. The About paragraphs and
- * highlight bullets are read from the page's rich-text body (`htmlContent`),
- * falling back to local `salonContent.ts` copy when the CMS body is empty. Only
- * the accent color stays local. 404s only when the salon page itself is missing.
  * @param   {object}                      props        - Page properties
  * @param   {Promise<{ handle: string }>} props.params - Route params (salon `pageUrl`)
  * @returns {Promise<JSX.Element>}                     Salon detail page

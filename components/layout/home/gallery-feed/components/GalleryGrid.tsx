@@ -4,8 +4,7 @@ import type { GalleryGridCard } from './GalleryTile';
 import GalleryTile from './GalleryTile';
 
 /**
- * GalleryGrid — the home GALLERY strip as a static, full-width photo grid, as
- * in the static-html mock (`HomePage.tsx` → GALLERY STRIP): six edge-to-edge
+ * GalleryGrid — the home GALLERY strip as a static, full-width photo grid: six edge-to-edge
  * `4/5` tiles (2 columns on mobile, 3 on tablet, 6 on desktop). Each
  * {@link GalleryTile} carries its own scroll and page-transition animations.
  * @param   {object}            props       - Component properties

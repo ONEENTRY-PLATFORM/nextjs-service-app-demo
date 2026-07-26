@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-// The booking page is the step wizard ported from the static-html mock
-// (`BookingPage.tsx`): a hero, an entry screen with two flows and the
+// The booking page is the step wizard: a hero, an entry screen with two flows and the
 // "Your Appointment" summary in the right column (desktop).
 test.describe('Booking wizard', () => {
   test('renders the hero and the entry screen', async ({ page }) => {

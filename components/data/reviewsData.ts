@@ -12,8 +12,6 @@ export interface ReviewEntry {
 
 /**
  * Reviews shown in the home page carousel.
- *
- * Source: `static-html/src/app/data/reviews.ts` — until reviews move to the CMS.
  */
 export const reviewsData: ReviewEntry[] = [
   {

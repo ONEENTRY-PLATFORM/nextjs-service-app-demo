@@ -4,8 +4,7 @@ import { useDict } from '@/app/store/providers/useDict';
 import type { OpeningHoursRow } from '@/components/utils/parseOpeningTime';
 
 /**
- * OpeningHoursDayCard — one weekday card of the contacts "Opening Hours" grid
- * (static-html mock `ContactsPage.tsx` → OpeningHours), highlighted with the
+ * OpeningHoursDayCard — one weekday card of the contacts "Opening Hours" grid, highlighted with the
  * brand gradient and a "Today" badge when it is the current weekday.
  * @param   {object}          props         - Component properties
  * @param   {OpeningHoursRow} props.row     - Weekday name and its hours

@@ -48,8 +48,7 @@ export const categoryTileKey = (
 
 /**
  * CategoryTile component — a complete category tile (outlined circle + icon
- * + label) inlined from the ICONS_CATEGORY.svg sprite, as in the static-html
- * mock's SERVICE section.
+ * + label) inlined from the ICONS_CATEGORY.svg sprite.
  * @param   {object}      props        - Component properties
  * @param   {string}      props.tile   - Tile key (`hair` | `face` | `body` | `nails`)
  * @param   {string}      props.suffix - Unique suffix for SVG ids so inlined copies don't clash

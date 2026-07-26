@@ -54,10 +54,7 @@ const FormAnimations = ({
       }
 
       /**
-       * Each form step is a fresh mount (the modal swaps `component`), so we
-       * only play the ENTER: slide in from the right on a forward step
-       * (Sign In → Sign Up / Reset) or from the left on a backward step
-       * (Sign Up → Sign In), matching the static-html AuthModal step slide.
+       * Each form step is a fresh mount (the modal swaps `component`)
        */
       const dx = direction === 'backward' ? -1 : 1;
       const tween = gsap.fromTo(

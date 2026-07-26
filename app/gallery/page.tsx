@@ -16,9 +16,7 @@ import getCmsGalleryItems from './utils/getCmsGalleryItems';
 export const revalidate = 60;
 
 /**
- * Gallery page following the static-html mock (`GalleryPage.tsx`): gradient
- * accent strip, Service/Specialist filter block, full-bleed photo grid and a
- * lightbox.
+ * Gallery page.
  *
  * Photos come from the OneEntry gallery tree (`getCmsGalleryItems`); when the
  * CMS gallery is empty the grid degrades to an empty-state message (no 404).

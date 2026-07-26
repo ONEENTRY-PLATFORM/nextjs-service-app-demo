@@ -17,8 +17,7 @@ import type { MasterItem, MastersMainCategory, SalonOption } from './taxonomy';
 import { MASTERS_MAIN_CATS } from './taxonomy';
 
 /**
- * MastersPageContent — the specialists page body ported from the static-html
- * mock (`MastersPage.tsx`): a salon filter ({@link SalonFilter}), main category
+ * MastersPageContent — the specialists page body: a salon filter ({@link SalonFilter}), main category
  * chips (Hair/Face/Body/Nails), a specialist quick-link row on desktop
  * ({@link SpecialistQuickLinks}), a searchable specialist row list on mobile
  * ({@link MobileSpecialistList}), a counter with "Clear all" and profession

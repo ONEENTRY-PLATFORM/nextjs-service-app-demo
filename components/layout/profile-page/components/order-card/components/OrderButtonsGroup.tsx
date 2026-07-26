@@ -14,8 +14,7 @@ import RepeatOrder from './RepeatOrder';
 import RescheduleOrderButton from './RescheduleOrderButton';
 
 /**
- * Order buttons group — the per-status action pairs of the static-html mock
- * (`AccountPage.tsx` → `VisitRow`): upcoming visits offer "Reschedule" +
+ * Order buttons group — the per-status action pairs: upcoming visits offer "Reschedule" +
  * "Cancel booking", completed ones "Book Again" + "Leave a review", and a
  * cancelled one only "Book Again" (right-aligned).
  *

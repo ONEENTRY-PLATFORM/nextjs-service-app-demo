@@ -13,8 +13,7 @@ import type { ContactSalon } from './types';
 export type { ContactSalon };
 
 /**
- * SalonLocations component — the "Our Locations" section of the contacts page
- * as in the static-html mock (`ContactsPage.tsx`): section heading, location
+ * SalonLocations component — the "Our Locations" section of the contacts page: section heading, location
  * cards ({@link SalonCard}; stacked on mobile, a horizontal snap row on tablet,
  * a 3-column grid on desktop) and the scroll dots shown only where the row
  * scrolls.

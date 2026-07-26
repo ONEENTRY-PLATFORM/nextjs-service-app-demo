@@ -7,7 +7,6 @@ import { useDict } from '@/app/store/providers/useDict';
 /**
  * "or continue with" hairline divider between the credential form and the
  * social (Google) sign-in button: two thin rules with muted centered text.
- * A template addition — the static-html mock has no social sign-in at all;
  * kept because Google OAuth is wired through the CMS auth providers.
  * @param   {object}      props      - Component props
  * @param   {string}      props.text - Divider label; falls back to the CMS dictionary, then "or continue with"

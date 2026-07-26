@@ -19,7 +19,7 @@ import OpeningTime from './OpeningTime';
 import SalonsGrid from './SalonsGrid';
 
 /**
- * Footer hours notation from the static-html mock: `10.00-22.00` instead of
+ * Footer hours notation: `10.00-22.00` instead of
  * the canonical `10:00 – 22:00` used elsewhere.
  * @param   {string} hours - Canonical hours of one weekday
  * @returns {string}       Hours in the footer's dotted notation
@@ -81,8 +81,7 @@ const toFooterItems = (
 
 /**
  * MenuSection component to render the main content of the footer.
- *
- * Full port of the static-html footer: salons grid with the Opening Time
+ * Salons grid with the Opening Time
  * column (desktop), mobile collapses for salons / Opening Time / Services /
  * About us with dividers, the desktop Services–About–Follow row and the
  * copyright line.

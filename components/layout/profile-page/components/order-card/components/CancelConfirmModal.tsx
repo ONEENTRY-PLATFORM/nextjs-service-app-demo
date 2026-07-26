@@ -8,8 +8,7 @@ import DialogPortal from '@/components/shared/DialogPortal';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 
 /**
- * CancelConfirmModal — the "Cancel this appointment?" confirmation dialog from
- * the static-html mock (`AccountPage.tsx`): pink X in a light circle, the
+ * CancelConfirmModal — the "Cancel this appointment?" confirmation dialog from: pink X in a light circle, the
  * visit line, the free-cancellation note and a gradient "Keep appointment" /
  * outlined "Yes, cancel" button pair.
  * @param   {object}      props           - Component properties

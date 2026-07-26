@@ -15,8 +15,7 @@ import SpecialistRow from './SpecialistRow';
 
 /**
  * Live search results for the search popup: Specialists (masters filtered by
- * name/role) and Services (products found by the search term) — two sections,
- * as in the static-html mock.
+ * name/role) and Services (products found by the search term) — two sections.
  * @param   {object}                            props             - Component properties
  * @param   {string}                            props.searchValue - Debounced search term
  * @param   {Dispatch<SetStateAction<boolean>>} props.setOpen     - Popup visibility setter (closes the popup on row click)

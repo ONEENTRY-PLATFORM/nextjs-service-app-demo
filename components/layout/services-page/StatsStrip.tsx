@@ -2,7 +2,7 @@ import type { JSX } from 'react';
 
 /**
  * StatsStrip component — the pink→cyan gradient counters strip right under
- * the services page hero, as in the static-html mock (`PricesPage.tsx`).
+ * the services page hero.
  * @param   {object}                           props       - Component properties
  * @param   {Array<[string | number, string]>} props.stats - Pairs of [value, label], one grid column each
  * @returns {JSX.Element}                                  Gradient strip with the counters

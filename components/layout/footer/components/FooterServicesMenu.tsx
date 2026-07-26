@@ -13,8 +13,7 @@ export type FooterMenuItem = {
 };
 
 /**
- * Footer menu list, as in the static-html mock (ServicesCategories /
- * FooterLinks): items with children are accordion categories revealing their
+ * Footer menu list: items with children are accordion categories revealing their
  * sub-items; plain items are links. With `dividers` every row gets a bottom
  * border (desktop footer variant), otherwise rows are spaced (mobile
  * collapse variant).

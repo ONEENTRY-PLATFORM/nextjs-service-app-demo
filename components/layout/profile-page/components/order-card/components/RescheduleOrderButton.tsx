@@ -6,8 +6,7 @@ import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces
 import type { JSX } from 'react';
 
 /**
- * RescheduleOrderButton — the primary action of an upcoming visit, as in the
- * static-html mock (`AccountPage.tsx` → "Reschedule"): it reopens the booking
+ * RescheduleOrderButton — the primary action of an upcoming visit: it reopens the booking
  * wizard for the SAME specialist, studio and services, so only a new date and
  * time have to be picked.
  *

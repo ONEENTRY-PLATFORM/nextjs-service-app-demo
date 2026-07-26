@@ -12,8 +12,7 @@ import SalonCell from './SalonCell';
  *
  * Renders one grid cell per salon (grid itself lives in MenuSection):
  * on mobile each salon is a collapsible row, on `sm+` details are always
- * visible with vertical dividers between columns — as in the static-html
- * footer mock.
+ * visible with vertical dividers between columns.
  * @returns {Promise<JSX.Element>} JSX.Element representing a grid of salon contact information
  */
 const SalonsGrid = async (): Promise<JSX.Element> => {

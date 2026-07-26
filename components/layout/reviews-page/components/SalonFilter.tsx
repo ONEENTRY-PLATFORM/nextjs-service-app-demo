@@ -8,8 +8,7 @@ import { DARK, MUTED, PINK } from '../constants';
 import type { ReviewSalon } from '../data';
 
 /**
- * SalonFilter — the salon selector ported from the static-html mock
- * (`ReviewsPage.tsx`): a dropdown on mobile / small tablet and a three-column
+ * SalonFilter — the salon selector: a dropdown on mobile / small tablet and a three-column
  * grid of cards on desktop. The active salon uses the PINK brand gradient;
  * clicking the active desktop card clears the filter (back to all studios).
  * @param   {object}                  props          - Component properties

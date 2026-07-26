@@ -16,8 +16,7 @@ import ServiceCard from './ServiceCard';
 import type { ServiceItem, ServicesCategory, ServicesSalon } from './types';
 
 /**
- * ServicesCatalog component — the interactive part of the services page as in
- * the static-html mock (`PricesPage.tsx`): salon selector (cards on desktop,
+ * ServicesCatalog component — the interactive part of the services page: salon selector (cards on desktop,
  * dropdown on mobile — {@link SalonSelector}), free-text service search,
  * category and subcategory tabs ({@link CategoryTabs}) and the responsive grid
  * of service cards.
@@ -28,8 +27,7 @@ import type { ServiceItem, ServicesCategory, ServicesSalon } from './types';
  * the grid shows everything the CMS has.
  *
  * When rendered on a category deep-link (`/services/hair`) the parent passes
- * `initialCategory`/`initialSubcategory` to pre-select the matching tab, exactly
- * like `PricesPage`'s `initialCategory` in the static-html mock.
+ * `initialCategory`/`initialSubcategory` to pre-select the matching tab.
  * @param   {object}             props                      - Component properties
  * @param   {ServicesCategory[]} props.categories           - Service categories with their subcategories
  * @param   {ServicesSalon[]}    props.salons               - Salon locations for the selector
@@ -170,8 +168,7 @@ const ServicesCatalog = ({
 
   /**
    * A non-empty search query overrides the category/subcategory tabs and
-   * matches services by name or subcategory title across the entire
-   * catalogue, like the static-html mock (`name` OR `subcategory`).
+   * matches services by name or subcategory title across the entire catalogue.
    */
   const searching = query.trim().length > 0;
   const filtered = useMemo(() => {

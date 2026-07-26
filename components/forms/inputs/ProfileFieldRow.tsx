@@ -4,9 +4,7 @@ import type { JSX } from 'react';
 import FormFieldAnimations from '@/components/forms/animations/FormFieldAnimations';
 
 /**
- * ProfileFieldRow — one read-only profile row of the account card, as in the
- * static-html mock (`AccountPage.tsx` → `ProfileField`, view state): a muted
- * label above the value and a cyan chevron on the right. The chevron is
+ * ProfileFieldRow — one read-only profile row of the account card. The chevron is
  * decorative — editing is entered through the card's Edit button.
  * @param   {object}      props       - Component props
  * @param   {string}      props.label - Field label from the CMS

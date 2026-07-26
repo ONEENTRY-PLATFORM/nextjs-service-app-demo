@@ -2,9 +2,7 @@
  * salonLabel — short salon name for the specialist role line.
  *
  * The role line reads `<grade> · <salon>`, and the design spells the salon part
- * without the brand prefix: `static-html/src/app/components/MastersPage.tsx`
- * ships `"Top Stylist · Downtown"`, and the mock's own converter comments the
- * format as `"Top Stylist · Marina" → "Top Stylist"`. In the CMS the same salon
+ * without the brand prefix. In the CMS the same salon
  * is titled `Thalia Downtown`, so the prefix has to come off here.
  *
  * This existed only inside the home strip's mapper, while `/masters` rendered

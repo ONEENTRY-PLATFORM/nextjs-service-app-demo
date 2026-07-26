@@ -17,10 +17,7 @@ export const dynamic = 'force-static';
 export const revalidate = 60;
 
 /**
- * OffersPageLayout component renders the special offers page following the
- * static-html mock (`OffersPage.tsx`): gradient accent strip, "Back to Home"
- * link, underlined page heading, full-width offer detail cards and the
- * "Good to know" terms block.
+ * OffersPageLayout component renders the special offers page.
  *
  * Offers are optional — while the CMS holds no `offer` products the
  * page renders the heading, a fallback message and the terms instead of a

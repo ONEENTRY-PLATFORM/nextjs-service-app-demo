@@ -5,7 +5,7 @@ import type { JSX, ReactNode } from 'react';
 import { useState } from 'react';
 
 /**
- * Mobile footer collapse, as in the static-html mock: an uppercase bold
+ * Mobile footer collapse: an uppercase bold
  * title with a chevron that expands the content below.
  * @param   {object}      props          - Component properties
  * @param   {string}      props.title    - Collapse header text

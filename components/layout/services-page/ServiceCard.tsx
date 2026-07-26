@@ -13,15 +13,14 @@ import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
 import type { ServiceItem } from './types';
 
-/** Brand colors from the static-html mock (`PricesPage.tsx`) */
+/** Brand colors */
 const PINK = '#ed21f1';
 const PINK2 = '#f60efb';
 const DARK = '#4c4d56';
 const MUTED = '#a8a9b5';
 
 /**
- * ServiceCard component — a single service card as in the static-html mock
- * (`PricesPage.tsx` → `ServiceCard`): name with description, price with the
+ * ServiceCard component — a single service card: name with description, price with the
  * dirham symbol (or a "Not available" badge), and a footer row with the
  * duration and a "Book" button. Hover lifts the shadow and fills the button
  * with the brand gradient.

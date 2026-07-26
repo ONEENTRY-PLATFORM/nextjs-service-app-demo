@@ -12,8 +12,7 @@ import StarsGroup from '@/components/shared/StarsGroup';
  * RatingCluster component — stars, a reviews counter and a "Leave a review"
  * button.
  *
- * Mirrors the static-html header cluster: CYAN stars (14px) followed by the
- * review count and the word "Reviews" (a link to the reviews page filtered to
+ * CYAN stars (14px) followed by the review count and the word "Reviews" (a link to the reviews page filtered to
  * this specialist, underlined on hover), then a PINK underlined "Leave a
  * review" button that opens the in-page {@link ReviewModal}.
  * @param   {object}      props              - Component properties.

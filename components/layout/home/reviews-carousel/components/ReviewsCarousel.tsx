@@ -19,7 +19,7 @@ const AUTOPLAY_DELAY = 5000;
 /**
  * ReviewsCarousel
  *
- * Index-based single-review slider matching the `static-html` reference:
+ * Index-based single-review slider:
  * a centered review that fades on change, desktop side arrows, and a row of
  * dots (flanked by prev/next arrows on mobile). Autoplays and pauses on hover.
  * @returns {JSX.Element} React component that renders the reviews slider
@@ -70,7 +70,7 @@ const ReviewsCarousel = (): JSX.Element => {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        {/** Left arrow — desktop only (thin chevron, matches static-html) */}
+        {/** Left arrow — desktop only */}
         <button
           type="button"
           onClick={prev}
@@ -134,7 +134,7 @@ const ReviewsCarousel = (): JSX.Element => {
           </button>
         </div>
 
-        {/** Right arrow — desktop only (thin chevron, matches static-html) */}
+        {/** Right arrow — desktop only */}
         <button
           type="button"
           onClick={next}

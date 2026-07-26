@@ -22,8 +22,7 @@ const ARROW_STYLE = {
 };
 
 /**
- * GalleryLightbox — fullscreen photo viewer ported from the static-html mock
- * (`GalleryPage.tsx` → `Lightbox`): blurred dark backdrop, close button,
+ * GalleryLightbox — fullscreen photo viewer: blurred dark backdrop, close button,
  * photo counter, prev/next arrows, caption with the master's role and a
  * thumbnail strip. Supports Escape / arrow-key navigation.
  * @param   {object}                  props          - Component properties

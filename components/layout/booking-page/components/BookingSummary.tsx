@@ -19,8 +19,7 @@ import Price from './Price';
 import SummaryRow from './SummaryRow';
 
 /**
- * BookingSummary — the "Your Appointment" sidebar of the booking wizard,
- * ported from the static-html mock (`BookingPage.tsx` → `BookingSummary`):
+ * BookingSummary — the "Your Appointment" sidebar of the booking wizard:
  * a gradient header with a Reset link, the picked studio / service /
  * specialist / date rows, the total and the confirm button (its label walks
  * through "Step x of y" → "Sign in to book" / "Book Appointment").

@@ -42,8 +42,7 @@ interface ContactInfoCardProps {
 }
 
 /**
- * ContactInfoCard component — the "Reach out" info sidebar of the contacts
- * page as in the static-html mock (`ContactsPage.tsx` → ContactInfo): tinted
+ * ContactInfoCard component — the "Reach out" info sidebar of the contacts: tinted
  * contact rows (phone, e-mail, head office, hours) and the "Follow us"
  * social card. Everything comes from the CMS: the rows from the head-office
  * salon page plus the `opening_time` block, the social URLs from the

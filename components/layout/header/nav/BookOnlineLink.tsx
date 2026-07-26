@@ -5,7 +5,7 @@ import type { JSX } from 'react';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 /**
- * BookOnlineLink — the gradient "Book Online" pill from the static-html header.
+ * BookOnlineLink — the gradient "Book Online" pill.
  *
  * The mock renders two separate buttons: a compact one centered in the header
  * row on mobile (`md:hidden`, py-3/text-sm, 14px shadow) and a larger one

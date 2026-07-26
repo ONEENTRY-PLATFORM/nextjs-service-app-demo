@@ -1,6 +1,5 @@
 /**
- * Reviews data ported verbatim from the static-html mock
- * (`static-html/src/app/data/reviews.ts`).
+ * Reviews data.
  *
  * Temporary local data source: while the reviews section of the CMS is not
  * populated, the `/reviews` page is driven by this module (mirrors how

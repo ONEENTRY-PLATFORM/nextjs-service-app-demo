@@ -10,8 +10,8 @@ import { useDict } from '@/app/store/providers/useDict';
 import SearchResultsList from './SearchResultsList';
 
 /**
- * Header search — icon button that opens a search popup, as in the
- * static-html mock (SearchModal): dimmed blurred backdrop, white panel with
+ * Header search — icon button that opens a search popup:
+ * dimmed blurred backdrop, white panel with
  * the search input, live results ({@link SearchResultsList}) and a pink accent
  * strip at the bottom.
  * @param   {object}      props             - Component properties

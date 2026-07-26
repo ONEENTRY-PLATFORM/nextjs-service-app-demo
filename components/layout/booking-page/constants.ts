@@ -2,7 +2,7 @@ import { anySpecialistPhotosData } from '@/components/data/anySpecialistPhotosDa
 
 import type { BookingFlow, BookingSalon, StepKey } from './types';
 
-/** Brand colors from the static-html mock (`BookingPage.tsx`) */
+/** Brand colors */
 export const PINK = '#ed21f1';
 export const PINK2 = '#f60efb';
 export const CYAN = '#109AA9';

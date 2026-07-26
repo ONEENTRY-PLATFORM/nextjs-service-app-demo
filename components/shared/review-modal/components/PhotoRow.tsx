@@ -6,11 +6,11 @@ import { useRef } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
 
-/** Maximum number of photos attachable to a review (static-html mock) */
+/** Maximum number of photos attachable to a review */
 const MAX_PHOTOS = 5;
 
 /**
- * PhotoRow — the review photo strip from the static-html `ReviewModal`:
+ * PhotoRow — the review photo strip:
  * up to 5 photo thumbnails (64px, rounded, hover-revealed pink remove badge)
  * followed by a dashed PINK add button (`Plus` when empty, `ArrowRight` after
  * the first photo) that opens the hidden file input.

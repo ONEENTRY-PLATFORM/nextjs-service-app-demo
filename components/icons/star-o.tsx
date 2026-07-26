@@ -3,7 +3,7 @@ import type { JSX } from 'react';
 
 /**
  * Empty rating star — lucide `Star` with a transparent fill and a coloured
- * outline, as in the static-html mock (`fill="transparent" stroke={CYAN}`).
+ * outline.
  * @param   {object}      props         - Component properties
  * @param   {number}      props.size    - Icon size in pixels
  * @param   {string}      [props.color] - Outline colour (default CYAN `#109AA9`)

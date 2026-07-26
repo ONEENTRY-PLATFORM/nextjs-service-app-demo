@@ -9,8 +9,7 @@ import MonthCalendar from './MonthCalendar';
 import TimeSlotGrid from './TimeSlotGrid';
 
 /**
- * DateTimeStep — the date & time step of the booking wizard, ported from the
- * static-html mock (`BookingPage.tsx` → `DateTimeStep`): a month calendar
+ * DateTimeStep — the date & time step of the booking wizard: a month calendar
  * ({@link MonthCalendar}) and, once a day is picked, its grid of time slots
  * ({@link TimeSlotGrid}). Both read "now" from the single `today` computed here
  * so the calendar's past/today marks and the time grid's past-slot cut-off

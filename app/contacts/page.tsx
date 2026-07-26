@@ -62,11 +62,7 @@ const toContactSalon = (
 };
 
 /**
- * ContactsPageLayout component renders the contacts page following the
- * static-html mock (`ContactsPage.tsx`): mobile gradient strip / desktop
- * photo hero, stats strip, "Our Locations" salon cards with maps, the
- * "Get in Touch" form + info sidebar, "Opening Hours" and the booking CTA
- * banner.
+ * ContactsPageLayout component renders the contacts page.
  *
  * Salons come from the CMS `salons` child pages (those with a `salon_address`);
  * when none exist the "Our Locations" list is simply empty — the page never
@@ -83,12 +79,6 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
     getBlockByMarker('opening_time'),
   ]);
   ServerProvider('dict', dict);
-
-  /**
-   * A missing or errored `contacts` page only drops the custom heading — salon
-   * cards and opening hours are read independently and degrade on their own. A
-   * transient CMS failure must not 404 this static route.
-   */
 
   /** Salon location cards come from the CMS `salons` child pages. */
   const salons: ContactSalon[] = (salonsResult.pages ?? [])

@@ -10,8 +10,7 @@ import HeroTitle from '@/app/animations/HeroTitle';
 import StatsStrip from './StatsStrip';
 
 /**
- * ServicesHero component — the banner section of the services page as in the
- * static-html mock (`PricesPage.tsx`): a full-bleed photo under a brand
+ * ServicesHero component — the banner section of the services page: a full-bleed photo under a brand
  * cyan→pink veil, the kicker (page `page_tag` attribute, fallback "Beauty
  * Studio"), the page title and a short stats subtitle, with the gradient
  * counters strip attached right below.

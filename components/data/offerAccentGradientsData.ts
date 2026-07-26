@@ -1,6 +1,5 @@
 /**
- * Offer accent color → light→dark gradient pairs from the static-html mock
- * (`data/offers.ts`). Keys are lowercase hex values of the `offer_type`
+ * Offer accent color → light→dark gradient pairs. Keys are lowercase hex values of the `offer_type`
  * extended value.
  */
 export const offerAccentGradientsData: Record<string, string> = {

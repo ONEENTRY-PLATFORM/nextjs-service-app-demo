@@ -4,7 +4,7 @@ import type { JSX } from 'react';
 import { useDict } from '@/app/store/providers/useDict';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
 
-/** Brand text colors from the static-html mock */
+/** Brand text colors */
 const DARK = '#4c4d56';
 const MUTED = '#a8a9b5';
 

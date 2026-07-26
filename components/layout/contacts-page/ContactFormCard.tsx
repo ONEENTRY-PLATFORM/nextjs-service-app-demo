@@ -11,8 +11,7 @@ import ContactFormField from './contact-form/ContactFormField';
 import { useContactForm } from './contact-form/useContactForm';
 
 /**
- * ContactFormCard component — the "Write to us" card of the contacts page as
- * in the static-html mock (`ContactsPage.tsx` → ContactForm): name/phone,
+ * ContactFormCard component — the "Write to us" card of the contacts page: name/phone,
  * e-mail and message fields, the gradient submit button and the "Message
  * sent!" success state.
  *

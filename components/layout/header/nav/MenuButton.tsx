@@ -11,7 +11,7 @@ import { useDict } from '@/app/store/providers/useDict';
  * Mobile menu trigger button component.
  *
  * Renders the lucide `Menu` icon (22px, DARK) that switches to `X` while the
- * inline mobile panel is open — exactly as in the static-html mock header.
+ * inline mobile panel is open.
  * Visible on <lg only; toggles the panel through {@link OpenDrawerContext}.
  * @returns {JSX.Element} JSX.Element representing a mobile menu trigger button
  */

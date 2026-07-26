@@ -4,9 +4,7 @@ import type { OpeningHoursRow } from '@/components/utils/parseOpeningTime';
 
 /**
  * OpeningTime component to display opening hours (presentational).
- *
- * Two variants matching the static-html footer mock: `column` — the desktop
- * 4th column (day and hours as stacked lines), `row` — the mobile collapse
+ * `column` — the desktop 4th column (day and hours as stacked lines), `row` — the mobile collapse
  * (day and hours justified in one row).
  * @param   {object}            props           - Component properties
  * @param   {OpeningHoursRow[]} props.rows      - Weekday rows parsed from the `opening_time` block

@@ -5,7 +5,7 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 /**
- * Footer salon cell, as in the static-html mock. On mobile the salon name is
+ * Footer salon cell. On mobile the salon name is
  * a button that expands/collapses the address and phone; on `sm+` the details
  * are always visible and columns are separated by vertical dividers.
  * @param   {object}      props                - Component properties

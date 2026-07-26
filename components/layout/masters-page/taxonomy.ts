@@ -1,5 +1,5 @@
 /**
- * Masters page taxonomy ported from the static-html mock (`MastersPage.tsx`):
+ * Masters page taxonomy:
  * the main price-list categories used as the top-level filter and the
  * normalized specialist / salon shapes the page renders from.
  *

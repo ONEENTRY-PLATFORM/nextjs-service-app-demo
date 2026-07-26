@@ -8,9 +8,8 @@ import ReviewModal from '@/components/shared/review-modal';
 
 /**
  * LeaveReviewButton — the gradient "Leave a review" action on completed
- * visits, as in the static-html mock (`AccountPage.tsx`). Opens the shared
- * {@link ReviewModal} (rating picker, photos, text) which thanks the visitor
- * on confirm.
+ * visits. Opens the shared {@link ReviewModal} (rating picker, photos, text)
+ * which thanks the visitor on confirm.
  * @returns {JSX.Element} JSX.Element representing the leave-a-review action
  */
 const LeaveReviewButton = (): JSX.Element => {

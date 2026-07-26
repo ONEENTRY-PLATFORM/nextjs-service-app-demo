@@ -9,8 +9,7 @@ import { MUTED, PINK } from '../constants';
 import type { BookingSalon } from '../types';
 
 /**
- * SalonStep — the studio selection step of the booking wizard, ported from
- * the static-html mock (`BookingPage.tsx` → `SalonStep`): a vertical list of
+ * SalonStep — the studio selection step of the booking wizard: a vertical list of
  * salon rows with a map-pin icon, name, address · phone line and a radio
  * circle on the right.
  * @param   {object}               props          - Component properties

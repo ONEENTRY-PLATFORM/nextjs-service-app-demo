@@ -6,8 +6,7 @@ import { DARK, PINK } from '../constants';
 import type { MasterCategory } from '../data';
 
 /**
- * CategoryChips — the mobile-only category filter ported from the static-html
- * mock (`ReviewsPage.tsx`): a horizontally scrollable row of All/Hair/Face/
+ * CategoryChips — the mobile-only category filter: a horizontally scrollable row of All/Hair/Face/
  * Body/Nails chips. The active chip uses the PINK brand gradient; only the
  * categories present among the current (salon-filtered) masters are shown.
  * @param   {object}                 props          - Component properties

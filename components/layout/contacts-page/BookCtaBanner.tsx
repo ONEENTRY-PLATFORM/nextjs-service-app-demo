@@ -6,8 +6,7 @@ import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 /**
  * BookCtaBanner component — the "Ready to visit us?" gradient banner at the
- * bottom of the contacts page, as in the static-html mock (`ContactsPage.tsx`
- * → Book CTA banner). The button leads to the booking page. Texts are English
+ * bottom of the contacts page. The button leads to the booking page. Texts are English
  * fallbacks until `system_content` is set up in the CMS.
  * @returns {JSX.Element} Booking CTA banner section
  */

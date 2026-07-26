@@ -134,10 +134,7 @@ const IndexPageLayout = async (): Promise<JSX.Element> => {
 
   /**
    * Index the CMS blocks by their marker so the home page can render a fixed
-   * section layout in the design order (static-html `HomePage.tsx`), passing
-   * each section its block when present. Sections whose block is missing —
-   * or whose CMS data is empty — degrade to the mock's demo fallbacks, so the
-   * layout matches the design regardless of how much of the CMS is populated.
+   * section layout in the design order.
    */
   const sortedBlocks = sortArrayByPosition(blocks ?? []);
   const blockByMarker = new Map<string, IBlockEntity>();

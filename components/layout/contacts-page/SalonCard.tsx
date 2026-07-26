@@ -10,8 +10,7 @@ import { useDict } from '@/app/store/providers/useDict';
 import type { ContactSalon } from './types';
 
 /**
- * SalonCard component — a single location card as in the static-html mock
- * (`ContactsPage.tsx` → SalonCard): top accent line, salon name, address and
+ * SalonCard component — a single location card: top accent line, salon name, address and
  * phone, number badge, hours pill, map iframe and the CTA row ("Call us" on
  * mobile, "Directions" on desktop) plus the outlined "View studio" link to the
  * salon detail page (`/salons/{url}`).

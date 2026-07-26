@@ -5,8 +5,8 @@ import OffersAnimations from '../animations/OffersAnimations';
 import OfferCard from './OfferCard';
 
 /**
- * OffersFeed component displays the special offers grid, as in the
- * static-html mock (BEST OFFERS): 1 column on mobile, 2 on tablet and 4 on
+ * OffersFeed component displays the special offers grid, as in the:
+ * 1 column on mobile, 2 on tablet and 4 on
  * desktop, with equal-height cards. It renders the `offer` products passed by
  * the parent block, which already hides the section when there are none.
  * @param   {object}            props          - Component properties

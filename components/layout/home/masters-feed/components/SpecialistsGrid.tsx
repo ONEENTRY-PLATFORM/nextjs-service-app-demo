@@ -5,8 +5,7 @@ import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import SpecialistCard from './SpecialistCard';
 
 /**
- * SpecialistsGrid — the "OUR SPECIALISTS" strip ported from the static-html
- * mock (`HomePage.tsx` → OUR SPECIALISTS): full-width edge-to-edge tiles
+ * SpecialistsGrid — the "OUR SPECIALISTS" strip: full-width edge-to-edge tiles
  * (2 columns on mobile, 3 on tablet, 6 on desktop). Renders the same normalized
  * {@link MasterItem} shape whether it comes from CMS admins (each tile links to
  * `/masters/{id}`) or the demo roster; each {@link SpecialistCard} carries its

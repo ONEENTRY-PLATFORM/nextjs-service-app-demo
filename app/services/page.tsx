@@ -17,11 +17,7 @@ export const dynamic = 'force-static';
 export const revalidate = 60;
 
 /**
- * ServicesPageLayout component renders the "Services & Prices" page following
- * the static-html mock (`PricesPage.tsx`): photo hero with the page title,
- * gradient stats strip, the interactive catalog (salon selector, search,
- * category/subcategory tabs, service cards) and the "First Visit" promo
- * banner.
+ * ServicesPageLayout component renders the "Services & Prices" page.
  *
  * The catalog data is optional — while the CMS holds no categories/products
  * the page still renders with the hero, an empty catalog and the promo

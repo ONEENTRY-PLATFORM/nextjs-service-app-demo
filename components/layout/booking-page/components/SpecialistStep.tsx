@@ -22,8 +22,7 @@ const ANY_LABEL: Record<string, string> = {
 };
 
 /**
- * SpecialistStep — the specialist selection step of the booking wizard,
- * ported from the static-html mock (`BookingPage.tsx` → `SpecialistStep`):
+ * SpecialistStep — the specialist selection step of the booking wizard:
  * category pills, a desktop name search, a sticky chip of the already chosen
  * service, an "Any specialist" card and the roster cards (compact avatar
  * rows on mobile, photo cards on desktop). The desktop grid is capped at two

@@ -7,8 +7,7 @@ import { DARK, MUTED, PINK } from '../constants';
 import { MASTER_CAT } from '../data';
 
 /**
- * MasterFilter — the specialist filter ported from the static-html mock
- * (`ReviewsPage.tsx`): a free-text search input on mobile / small tablet and a
+ * MasterFilter — the specialist filter: a free-text search input on mobile / small tablet and a
  * centered wrap of specialist pills on desktop. The active pill uses the PINK
  * brand gradient. The desktop pills are additionally narrowed by the current
  * category and search query (both mobile-only inputs, so no-ops on desktop).

@@ -15,8 +15,7 @@ import SearchModal from './search/SearchModal';
 
 /**
  * Header component to render the main site header with logo, search and navigation.
- *
- * Layout follows the static-html mock: logo on the left, the main navigation
+ * logo on the left, the main navigation
  * in the middle and the actions group (search icon with popup, Book Online
  * button, profile) on the right.
  * @param   {object}                props      - Component properties

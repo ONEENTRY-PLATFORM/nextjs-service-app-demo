@@ -70,7 +70,7 @@ const GalleryFeed = async ({
     >
       <div className="flex w-full flex-col">
         <SectionTitle title={title} delay={0.5} className="mb-6 md:mb-10" />
-        {/** Render the static six-tile gallery grid (static-html mock) */}
+        {/** Render the static six-tile gallery grid */}
         <GalleryGrid cards={feedCards} />
       </div>
     </section>
@@ -135,9 +135,8 @@ function extractPhotosFromPage(
     /** Get photos array from page gallery photos attribute with fallback to empty array */
     const photos = imageFileList(page?.attributeValues?.gallery_photos?.value);
     /**
-     * Open the Gallery page filtered to the tile's main category, like the
-     * static-html home gallery (`onGalleryClick`). The gallery category
-     * pageUrl carries a `gallery-` prefix (`gallery-hair` → `?category=HAIR`).
+     * Open the Gallery page filtered to the tile's main category.
+     * The gallery category pageUrl carries a `gallery-` prefix (`gallery-hair` → `?category=HAIR`).
      */
     const categoryUrl = parentPage.pageUrl.replace(/^gallery-/, '');
     const link = categoryUrl

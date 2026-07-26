@@ -23,11 +23,6 @@ export const revalidate = 60;
 
 /**
  * Category service page (`/services/hair`, `/services/haircut`, …).
- *
- * Mirrors the static-html mock, where a category deep-link opens the same
- * interactive `PricesPage` catalog with the matching tab pre-selected — so this
- * route renders the very same hero / stats / catalog / promo layout as
- * `/services`, only with the requested category (and subcategory) preselected.
  * @param   {object}                      props        - page props.
  * @param   {Promise<{ handle: string }>} props.params - page params.
  * @returns {Promise<JSX.Element>}                     ServicePage.

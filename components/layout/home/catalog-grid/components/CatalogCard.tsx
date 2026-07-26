@@ -12,8 +12,7 @@ import CategoryTile, { categoryTileKey } from './CategoryTile';
  *
  * For the four main categories (hair / face / body / nails) it renders the
  * complete tile from the ICONS_CATEGORY.svg sprite (outlined circle + icon +
- * label), as in the static-html mock's SERVICE section. Other categories fall
- * back to the icon + title circle card.
+ * label). Other categories fall back to the icon + title circle card.
  * @param   {object}       props       - Component properties.
  * @param   {IPagesEntity} props.item  - The page entity data containing service information.
  * @param   {number}       props.index - Index for animation sequencing.

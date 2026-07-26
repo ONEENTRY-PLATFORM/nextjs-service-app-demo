@@ -18,14 +18,6 @@
   --aspect-photo: 0.88;
   --aspect-card: 0.86;
 
-  /*
-   * Lift of a centred dialog panel. The only shadow in the codebase that is
-   * genuinely repeated verbatim (5 order-card modals), so it is the only one
-   * worth a token: of 58 distinct shadow values 41 occur exactly once, 20 carry
-   * a runtime colour and cannot be tokenised at all, and the remaining neutral
-   * ones differ in blur/alpha rather than repeating. A "shadow scale" would
-   * therefore have to be invented and would move pixels, not de-duplicate them.
-   */
   --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.25);
 
   --color-fuchsia-50: #fff8ff;
@@ -35,8 +27,7 @@
   --color-fuchsia-500: #ed21f1;
   --color-fuchsia-600: #cd11d1;
 
-  /* Thalia brand accents (static-html: offers.ts / thalia_logo.svg).
-     PINK = fuchsia-500, PINK2 = fuchsia-450, DARK = slate-400. */
+  /* Thalia brand accents. */
   --color-accent-pink: #ed21f1;
   --color-accent-pink-bright: #f60efb;
   --color-accent-cyan: #109aa9;
@@ -47,12 +38,10 @@
   --color-violet-300: #d597fc;
   --color-violet-350: #c37bfe;
   --color-violet-400: #c082ff;
-  /* static-html gallery: LIGHT pill bg and chip/input border */
   --color-slate-50: #f7f7fb;
   --color-slate-150: #e8e8f0;
   --color-slate-100: #f6f7f9;
   --color-slate-200: #cbd5e1;
-  /* static-html contacts: form input borders and inactive scroll dots */
   --color-slate-240: #d4d5e1;
   --color-slate-250: #d9dae1;
   --color-slate-300: #b0bcce;
@@ -189,7 +178,7 @@ address {
   );
 }
 
-/* brand gradients (static-html: buttons 135deg PINK2→PINK, footer 120deg purple→pink) */
+/* brand gradients */
 @utility bg-gradient-brand {
   background-image: linear-gradient(
     135deg,
@@ -206,8 +195,7 @@ address {
   );
 }
 
-/* services page (static-html PricesPage): hero photo veil, stats strip and
-   the "First Visit" promo banner */
+/* services page hero photo veil, stats strip and */
 @utility bg-gradient-hero-veil {
   background-image: linear-gradient(
     135deg,
@@ -232,7 +220,7 @@ address {
     rgb(16 154 169 / 53%)
   );
 }
-/* contacts page (static-html ContactsPage): hero photo veil, purple→pink→black */
+/* contacts page */
 @utility bg-gradient-contacts-veil {
   background-image: linear-gradient(
     135deg,
@@ -241,7 +229,7 @@ address {
     rgb(0 0 0 / 30%)
   );
 }
-/* booking page (static-html BookingPage): hero photo veil, purple→pink 120deg */
+/* booking page */
 @utility bg-gradient-booking-veil {
   background-image: linear-gradient(
     120deg,

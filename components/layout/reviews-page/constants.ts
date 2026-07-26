@@ -1,4 +1,4 @@
-/** Brand colors from the static-html mock (`ReviewsPage.tsx`). */
+/** Brand colors */
 /** PINK — brand fuchsia (chips / master name / active filters). */
 export const PINK = '#ed21f1';
 /** PINK2 — brand fuchsia-bright (start of the active gradient). */

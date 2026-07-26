@@ -69,7 +69,7 @@ const ProductRow = ({
     return null;
   }
 
-  /* Render product row with link to service page (styled as in the static-html mock) */
+  /* Render product row with link to service page */
   return (
     <Link
       prefetch={false}

@@ -69,8 +69,7 @@ const ModalAnimations = ({
 
       /**
        * Opening: spring-like pop-in of the card (scale 0.88 → 1, rise 24 → 0)
-       * over a backdrop fade + blur, mirroring the static-html AuthModal
-       * (motion spring stiffness 320 / damping 28 ≈ `back.out(1.4)`).
+       * over a backdrop fade + blur.
        */
       const tl = gsap.timeline({
         onComplete: () => {

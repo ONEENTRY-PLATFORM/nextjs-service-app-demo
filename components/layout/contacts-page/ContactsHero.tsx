@@ -9,11 +9,7 @@ import HeroTitle from '@/app/animations/HeroTitle';
 import StatsStrip from '@/components/layout/services-page/StatsStrip';
 
 /**
- * ContactsHero component — the desktop-only banner of the contacts page as in
- * the static-html mock (`ContactsPage.tsx`): the Downtown studio photo under
- * a purple→pink veil, the kicker (page `page_tag` attribute, fallback "Beauty
- * Studio"), the page title and the locations subtitle, with the gradient
- * counters strip attached right below.
+ * ContactsHero component — the desktop-only banner of the contacts page.
  * On mobile the mock replaces the hero with a thin gradient strip — rendered
  * by the page itself.
  *

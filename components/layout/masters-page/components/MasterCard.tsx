@@ -9,8 +9,7 @@ import Image from '@/components/shared/Image';
 import type { MasterItem } from '../taxonomy';
 
 /**
- * MasterCard — a specialist photo card ported from the static-html mock
- * (`MastersPage.tsx` → `MasterCard`): a 238×320 portrait with a purple
+ * MasterCard — a specialist photo card: a 238×320 portrait with a purple
  * gradient fading up from the bottom and the name / role / "Check a profile"
  * meta overlaid in white.
  *

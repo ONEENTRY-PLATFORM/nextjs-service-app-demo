@@ -12,8 +12,7 @@ import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 import { adminAttr } from './adminAttr';
 
 /**
- * Single specialist row in the search popup — photo, name, role and an
- * arrow, as in the static-html mock.
+ * Single specialist row in the search popup — photo, name, role and an arrow.
  * @param   {object}                            props         - Component properties
  * @param   {IAdminEntity}                      props.admin   - Admin (master) entity to display
  * @param   {Dispatch<SetStateAction<boolean>>} props.setOpen - Popup visibility setter

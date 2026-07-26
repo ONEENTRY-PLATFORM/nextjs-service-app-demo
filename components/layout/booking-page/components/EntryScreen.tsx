@@ -41,8 +41,7 @@ const OPTIONS: {
 ];
 
 /**
- * EntryScreen — the first screen of the booking wizard, ported from the
- * static-html mock (`BookingPage.tsx` → `EntryScreen`): on desktop two cards
+ * EntryScreen — the first screen of the booking wizard: on desktop two cards
  * ("Browse the studio" / "Choose a specialist"), on mobile a segmented
  * Studio / Specialist toggle with a single Continue button.
  * @param   {object}                      props          - Component properties

@@ -32,7 +32,7 @@ import RefundRequestModal from './RefundRequestModal';
 import RefundSuccessModal from './RefundSuccessModal';
 
 /**
- * Cancel order button — the "Cancel booking" flow from the static-html mock:
+ * Cancel order button — the "Cancel booking" flow:
  * the button opens a confirmation dialog ("Cancel this appointment?" with
  * "Keep appointment" / "Yes, cancel"), and a successful cancellation shows the
  * "Appointment cancelled" dialog instead of a toast.
