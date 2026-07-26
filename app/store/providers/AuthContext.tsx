@@ -5,6 +5,21 @@ import { createContext } from 'react';
 
 /**
  * Type definition for the authentication context properties
+ * @property {boolean}                  isAuth       - A user session is active
+ * @property {boolean}                  isLoading    - The initial token check is still in flight
+ * @property {string}                   [userToken]  - Access token of the active session
+ * @property {IUserEntity}              [user]       - The authenticated user entity
+ * @property {() => void}               authenticate - Re-run the token check and re-fetch the user
+ * @property {() => void}               refreshUser  - Re-fetch the user entity of the active session
+ * @property {(tokens: object) => void} login        - Write tokens (`accessToken`, `refreshToken`,
+ *                                                   `authProviderMarker`) into the current SDK instance and fetch user data. Call this right after a
+ *                                                   successful `getApi().AuthProvider.auth()` / `getApi().AuthProvider.signUp()` response. It uses
+ *                                                   `syncTokens()` to update the existing SDK instance in place — unlike `reDefine()` which creates
+ *                                                   a fresh instance without an accessToken and causes a 401 on the first user request.
+ * @property {() => void}               logout       - Drop the local auth state after `logOutUser()`.
+ *                                                   Purely synchronous — unlike `authenticate()` it must NOT re-fetch the user: the tokens are
+ *                                                   already revoked, so any `getMe` would produce a guaranteed 401 (+ 400 on the retried refresh)
+ *                                                   in the console.
  */
 export type ContextProps = {
   isAuth: boolean;
@@ -13,27 +28,11 @@ export type ContextProps = {
   user?: IUserEntity | undefined;
   authenticate: () => void;
   refreshUser: () => void;
-  /**
-   * Write tokens into the current SDK instance and fetch user data.
-   *
-   * Call this right after a successful `getApi().AuthProvider.auth()` /
-   * `getApi().AuthProvider.signUp()` response. It uses `syncTokens()` to update
-   * the existing SDK instance in place — unlike `reDefine()` which creates
-   * a fresh instance without an accessToken and causes a 401 on the first
-   * user request.
-   */
   login: (tokens: {
     accessToken: string;
     refreshToken: string;
     authProviderMarker: string;
   }) => void;
-  /**
-   * Drop the local auth state after `logOutUser()`.
-   *
-   * Purely synchronous — unlike `authenticate()` it must NOT re-fetch the
-   * user: the tokens are already revoked, so any `getMe` would produce a
-   * guaranteed 401 (+ 400 on the retried refresh) in the console.
-   */
   logout: () => void;
 };
 

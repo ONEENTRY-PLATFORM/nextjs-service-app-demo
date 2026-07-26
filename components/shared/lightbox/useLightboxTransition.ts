@@ -5,9 +5,11 @@ import { gsap } from 'gsap';
 import type { RefObject } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 
-/** The animated closer a lightbox wires to every dismiss path. */
+/**
+ * The animated closer a lightbox wires to every dismiss path.
+ * @property {() => void} requestClose - Play the exit animation, then run the real `onClose`. Idempotent.
+ */
 export interface LightboxTransition {
-  /** Play the exit animation, then run the real `onClose`. Idempotent. */
   requestClose: () => void;
 }
 

@@ -1,13 +1,12 @@
-/** One link of an `entity` attribute, decoded into the parts callers use. */
+/**
+ * One link of an `entity` attribute, decoded into the parts callers use.
+ * @property {string}                      title    - Title the CMS shows for the linked item (`''` when absent)
+ * @property {number | string | undefined} id       - Raw linked id. A PAGE link stores a number; a PRODUCT link stores the composite string `p-{pageId}-{productId}`.
+ * @property {number | undefined}          parentId - Id of the linked item's parent page, when the CMS provides one
+ */
 export interface EntityLink {
-  /** Title the CMS shows for the linked item (`''` when absent) */
   title: string;
-  /**
-   * Raw linked id. A PAGE link stores a number; a PRODUCT link stores the
-   * composite string `p-{pageId}-{productId}`.
-   */
   id: number | string | undefined;
-  /** Id of the linked item's parent page, when the CMS provides one */
   parentId: number | undefined;
 }
 

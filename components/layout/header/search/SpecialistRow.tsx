@@ -1,11 +1,12 @@
 'use client';
 
-import { ArrowUpRight, UserCircle } from 'lucide-react';
-import Image from 'next/image';
+import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { Dispatch, JSX, SetStateAction } from 'react';
 
+import Image from '@/components/shared/Image';
+import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 
 import { adminAttr } from './adminAttr';
@@ -28,6 +29,8 @@ const SpecialistRow = ({
   const name = adminAttr(admin, 'master_name');
   const role = adminAttr(admin, 'master_short_description');
   const photo = fileDisplayUrl(admin.attributeValues?.master_image?.value);
+  /** Ready-made CMS LQIP — the avatar loads behind a blur instead of popping in */
+  const photoBlur = fileBlurDataUrl(admin.attributeValues?.master_image?.value);
 
   return (
     <Link
@@ -36,19 +39,15 @@ const SpecialistRow = ({
       onClick={() => setOpen(false)}
       className="flex w-full items-center gap-3 px-5 py-2.5 text-left transition-colors hover:bg-gray-50"
     >
-      {photo ? (
-        <Image
-          src={photo}
-          width={36}
-          height={36}
-          alt={name}
-          className="size-9 shrink-0 rounded-full object-cover object-top"
-        />
-      ) : (
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-fuchsia-500/10">
-          <UserCircle size={18} className="text-fuchsia-500" />
-        </span>
-      )}
+      <Image
+        src={photo}
+        sizes="36px"
+        alt={name}
+        placeholder={photoBlur ? 'blur' : 'empty'}
+        {...(photoBlur ? { blurDataURL: photoBlur } : {})}
+        className="size-9 shrink-0 rounded-full"
+        imageClassName="object-top"
+      />
       <span className="min-w-0">
         <span className="block truncate text-base font-semibold text-slate-400">
           {name}

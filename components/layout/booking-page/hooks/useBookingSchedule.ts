@@ -8,27 +8,31 @@ import dayCloseMinutes from '../utils/dayCloseMinutes';
 import daySlots from '../utils/daySlots';
 import totalServiceMinutes from '../utils/totalServiceMinutes';
 
-/** What the Date & Time step needs to know to draw its grid. */
+/**
+ * What the Date & Time step needs to know to draw its grid.
+ * @property {BookingMaster | undefined} masterObj   - Resolved chosen specialist (`undefined` for "Any specialist")
+ * @property {BookingSalon | undefined}  salonObj    - Resolved chosen salon
+ * @property {BookingService[]}          serviceObjs - Resolved chosen services
+ * @property {string}                    date        - Chosen date (ISO day), `''` when none
+ */
 export interface BookingScheduleInput {
-  /** Resolved chosen specialist (`undefined` for "Any specialist") */
   masterObj: BookingMaster | undefined;
-  /** Resolved chosen salon */
   salonObj: BookingSalon | undefined;
-  /** Resolved chosen services */
   serviceObjs: BookingService[];
-  /** Chosen date (ISO day), `''` when none */
   date: string;
 }
 
-/** The bookable slots of the chosen day and the limits that bound them. */
+/**
+ * The bookable slots of the chosen day and the limits that bound them.
+ * @property {string[]}      slots           - Booking slots (`HH:MM`) for the chosen day, from the schedule; `[]` if none
+ * @property {boolean}       hasSchedule     - Whether a CMS schedule drives the slots (else the step falls back to the static grid)
+ * @property {number}        durationMinutes - Total length of the chosen services in minutes (`0` when none are chosen)
+ * @property {number | null} closeMinutes    - Closing time of the chosen day, minutes since midnight; `null` when unknown
+ */
 export interface BookingScheduleState {
-  /** Booking slots (`HH:MM`) for the chosen day, from the schedule; `[]` if none */
   slots: string[];
-  /** Whether a CMS schedule drives the slots (else the step falls back to the static grid) */
   hasSchedule: boolean;
-  /** Total length of the chosen services in minutes (`0` when none are chosen) */
   durationMinutes: number;
-  /** Closing time of the chosen day, minutes since midnight; `null` when unknown */
   closeMinutes: number | null;
 }
 

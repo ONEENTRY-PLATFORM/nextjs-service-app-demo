@@ -1,12 +1,14 @@
 import type { CmsSalon } from '@/components/utils/salonFromPage';
 
-/** Dialable phone and Google Maps URLs derived from a salon's address. */
+/**
+ * Dialable phone and Google Maps URLs derived from a salon's address.
+ * @property {string} tel      - `tel:` target — digits and a leading `+` only
+ * @property {string} mapSrc   - Embeddable map `src` for the card's iframe
+ * @property {string} mapsLink - "Get directions" link for the map button
+ */
 export interface SalonMapLinks {
-  /** `tel:` target — digits and a leading `+` only */
   tel: string;
-  /** Embeddable map `src` for the card's iframe */
   mapSrc: string;
-  /** "Get directions" link for the map button */
   mapsLink: string;
 }
 

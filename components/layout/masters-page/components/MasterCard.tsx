@@ -1,10 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import Image from '@/components/shared/Image';
 
 import type { MasterItem } from '../taxonomy';
 
@@ -29,19 +29,18 @@ const MasterCard = ({ item }: { item: MasterItem }): JSX.Element => {
 
   const inner = (
     <>
-      {/* Portrait */}
-      {item.photo && (
-        <Image
-          fill
-          sizes="238px"
-          src={item.photo}
-          alt={item.name}
-          loading="lazy"
-          placeholder={item.photoBlur ? 'blur' : 'empty'}
-          {...(item.photoBlur ? { blurDataURL: item.photoBlur } : {})}
-          className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
-        />
-      )}
+      {/* Portrait — the shared Image paints the brand placeholder when the
+          CMS photo is missing or fails to load */}
+      <Image
+        sizes="238px"
+        src={item.photo}
+        alt={item.name}
+        loading="lazy"
+        placeholder={item.photoBlur ? 'blur' : 'empty'}
+        {...(item.photoBlur ? { blurDataURL: item.photoBlur } : {})}
+        className="absolute inset-0"
+        imageClassName="object-top transition-transform duration-500 group-hover:scale-105"
+      />
 
       {/* Purple gradient overlay fading up from the bottom (mock values) */}
       <div

@@ -20,16 +20,16 @@ const GalleryPageSkeleton = (): JSX.Element => {
 
       {/* Filter bar placeholder: tabs, category pills and the photo counter */}
       <div className="page-shell flex w-full flex-col items-center gap-5 py-6">
-        <div className="h-5 w-44 animate-pulse rounded bg-slate-200" />
+        <div className="h-5 w-44 animate-pulse rounded bg-slate-150" />
         <div className="flex flex-wrap justify-center gap-3">
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
-              className="h-11 w-24 animate-pulse rounded-full bg-slate-200"
+              className="h-11 w-24 animate-pulse rounded-full bg-slate-150"
             />
           ))}
         </div>
-        <div className="h-4 w-20 animate-pulse rounded bg-slate-200" />
+        <div className="h-4 w-20 animate-pulse rounded bg-slate-150" />
       </div>
 
       {/* Photo grid — identical classes to the rendered gallery grid */}
@@ -37,7 +37,7 @@ const GalleryPageSkeleton = (): JSX.Element => {
         {Array.from({ length: 15 }).map((_, index) => (
           <div
             key={index}
-            className="aspect-4/5 animate-pulse rounded-2xl bg-slate-200"
+            className="aspect-4/5 animate-pulse rounded-2xl bg-slate-150"
           />
         ))}
       </div>

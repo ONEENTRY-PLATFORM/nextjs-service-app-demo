@@ -85,4 +85,46 @@ describe('shared/Image', () => {
       fireEvent.click(screen.getByRole('img', { name: 'Main' })),
     ).not.toThrow();
   });
+
+  it('renders the brand placeholder instead of an image when src is empty', () => {
+    const { container } = render(<Image src="" alt="Empty" />);
+
+    expect(container.querySelector('img')).toBeNull();
+    expect(screen.getByTestId('image-placeholder')).toBeInTheDocument();
+    /** The placeholder carries the centered logo SVG. */
+    expect(
+      screen.getByTestId('image-placeholder').querySelector('svg'),
+    ).not.toBeNull();
+  });
+
+  it('swaps a broken image for the brand placeholder on error', () => {
+    const { container } = render(<Image src="/img/broken.jpg" alt="Broken" />);
+
+    fireEvent.error(screen.getByRole('img', { name: 'Broken' }));
+
+    expect(container.querySelector('img')).toBeNull();
+    expect(screen.getByTestId('image-placeholder')).toBeInTheDocument();
+  });
+
+  it('retries with the real image when src changes after a failure', () => {
+    const { rerender } = render(<Image src="/img/broken.jpg" alt="Photo" />);
+    fireEvent.error(screen.getByRole('img', { name: 'Photo' }));
+    expect(screen.getByTestId('image-placeholder')).toBeInTheDocument();
+
+    rerender(<Image src="/img/fixed.jpg" alt="Photo" />);
+    expect(screen.queryByTestId('image-placeholder')).toBeNull();
+    expect(
+      screen.getByRole('img', { name: 'Photo' }).getAttribute('src'),
+    ).toContain(encodeURIComponent('/img/fixed.jpg'));
+  });
+
+  it('appends imageClassName to the inner img, keeping object-cover', () => {
+    const { container } = render(
+      <Image src="/img/main.jpg" alt="" imageClassName="object-top" />,
+    );
+
+    const img = container.querySelector('img');
+    expect(img?.className).toContain('object-cover');
+    expect(img?.className).toContain('object-top');
+  });
 });

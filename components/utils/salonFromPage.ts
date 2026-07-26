@@ -1,18 +1,20 @@
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
-/** A salon page read into plain fields — no formatting, no conversions. */
+/**
+ * A salon page read into plain fields — no formatting, no conversions.
+ * @property {number} id      - Page id, as the CMS stores it
+ * @property {string} url     - `pageUrl`, the `/salons/{handle}` segment
+ * @property {string} name    - Display name (`localizeInfos.title`, falling back to `pageUrl`)
+ * @property {string} address - Street address (`salon_address`), `''` when the CMS has none
+ * @property {string} phone   - Phone as stored (`salon_phone`), `''` when unset
+ * @property {string} email   - Contact e-mail (`salon_email`), `''` when unset
+ */
 export interface CmsSalon {
-  /** Page id, as the CMS stores it */
   id: number;
-  /** `pageUrl`, the `/salons/{handle}` segment */
   url: string;
-  /** Display name (`localizeInfos.title`, falling back to `pageUrl`) */
   name: string;
-  /** Street address (`salon_address`), `''` when the CMS has none */
   address: string;
-  /** Phone as stored (`salon_phone`), `''` when unset */
   phone: string;
-  /** Contact e-mail (`salon_email`), `''` when unset */
   email: string;
 }
 

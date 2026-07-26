@@ -1,13 +1,13 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import type { CSSProperties, JSX } from 'react';
 import { useEffect, useState } from 'react';
 
 import { useHeroRef } from '@/app/animations/hero/useHeroRef';
 import { useDict } from '@/app/store/providers/useDict';
+import Image from '@/components/shared/Image';
 
 import HeroSlideOverlayDesktop from './HeroSlideOverlayDesktop';
 import HeroSlideOverlayMobile from './HeroSlideOverlayMobile';
@@ -16,10 +16,21 @@ import HeroSlideOverlayMobile from './HeroSlideOverlayMobile';
  * A single hero slide: desktop/mobile banner images plus the optional CMS text
  * overlay (title, subtitle, sale badge and CTA button). Empty text fields are
  * simply not rendered.
+ * @property {string} desktop       - Desktop banner image URL
+ * @property {string} mobile        - Mobile banner image URL
+ * @property {string} [desktopBlur] - Ready-made CMS LQIP of the desktop banner; absent when the file has no `previewLink`
+ * @property {string} [mobileBlur]  - Ready-made CMS LQIP of the mobile banner; absent when the file has no `previewLink`
+ * @property {string} title         - Overlay heading
+ * @property {string} text          - Overlay subtitle
+ * @property {string} sale          - Sale badge text
+ * @property {string} buttonText    - CTA button label
+ * @property {string} buttonLink    - CTA button target URL
  */
 export type HeroSlide = {
   desktop: string;
   mobile: string;
+  desktopBlur?: string | undefined;
+  mobileBlur?: string | undefined;
   title: string;
   text: string;
   sale: string;
@@ -99,22 +110,26 @@ const HeroSlider = ({
           >
             {slide.desktop && (
               <Image
-                fill
                 loading={i === 0 ? 'eager' : 'lazy'}
                 src={slide.desktop}
                 alt={alt}
                 sizes="(min-width: 768px) 100vw, 1px"
-                className="hidden object-cover md:block"
+                placeholder={slide.desktopBlur ? 'blur' : 'empty'}
+                {...(slide.desktopBlur
+                  ? { blurDataURL: slide.desktopBlur }
+                  : {})}
+                className="absolute inset-0 hidden md:block"
               />
             )}
             {slide.mobile && (
               <Image
-                fill
-                priority={i === 0}
+                priority={i === 0 ? 'high' : 'auto'}
                 src={slide.mobile}
                 alt={alt}
                 sizes="(min-width: 768px) 1px, 100vw"
-                className="object-cover md:hidden"
+                placeholder={slide.mobileBlur ? 'blur' : 'empty'}
+                {...(slide.mobileBlur ? { blurDataURL: slide.mobileBlur } : {})}
+                className="absolute inset-0 md:hidden"
               />
             )}
 

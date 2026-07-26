@@ -1,12 +1,12 @@
 'use client';
 
-import NextImage from 'next/image';
 import type { JSX, UIEvent } from 'react';
 import { useState } from 'react';
 
 import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useDict } from '@/app/store/providers/useDict';
+import Image from '@/components/shared/Image';
 
 import type { SalonPhoto } from '../types';
 
@@ -88,12 +88,11 @@ const SalonPhotoGallery = ({
               aria-label={`${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} ${i + 1}`}
               className="relative aspect-5/4 w-[86%] shrink-0 snap-center overflow-hidden rounded-2xl"
             >
-              <NextImage
+              <Image
                 src={photo.url}
                 alt=""
-                fill
                 sizes="86vw"
-                className="object-cover"
+                className="absolute inset-0"
                 {...blurProps(photo)}
               />
             </button>
@@ -122,12 +121,12 @@ const SalonPhotoGallery = ({
               aria-label={`${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} 1`}
               className="group relative aspect-5/4 w-full overflow-hidden rounded-2xl lg:aspect-auto lg:h-full lg:min-h-100"
             >
-              <NextImage
+              <Image
                 src={hero.url}
                 alt=""
-                fill
                 sizes="(min-width: 1024px) 40vw, 86vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                className="absolute inset-0"
+                imageClassName="transition-transform duration-500 group-hover:scale-105"
                 {...blurProps(hero)}
               />
               <div
@@ -158,12 +157,12 @@ const SalonPhotoGallery = ({
                   }
                   className="group relative aspect-5/4 w-full overflow-hidden rounded-2xl"
                 >
-                  <NextImage
+                  <Image
                     src={photo.url}
                     alt=""
-                    fill
                     sizes="(min-width: 1024px) 20vw, 86vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="absolute inset-0"
+                    imageClassName="transition-transform duration-500 group-hover:scale-105"
                     {...blurProps(photo)}
                   />
                   {isLastWithMore && (

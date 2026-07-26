@@ -1,12 +1,13 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import Image from '@/components/shared/Image';
 import StarsGroup from '@/components/shared/StarsGroup';
+import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 
 import VisitCardAnimations from '../../animations/VisitCardAnimations';
@@ -33,6 +34,8 @@ const MasterCard = ({
 
   /** Extract master's image source, name, role and rating from attribute values */
   const imgSrc = fileDisplayUrl(attributeValues?.master_image?.value);
+  /** Ready-made CMS LQIP (`previewLink`) shown while the portrait downloads */
+  const imgBlur = fileBlurDataUrl(attributeValues?.master_image?.value);
   const masterName = attributeValues?.master_name?.value as string | undefined;
   const masterRole =
     (attributeValues?.master_short_description?.value as string | undefined) ||
@@ -44,21 +47,20 @@ const MasterCard = ({
   /** Card body — shared between the linked and the static (unknown master) variants. */
   const inner = (
     <>
-      {imgSrc && (
-        <div
-          className="self-center overflow-hidden rounded-2xl"
-          style={{ border: '2px solid #ed21f122' }}
-        >
-          <Image
-            width={160}
-            height={180}
-            loading="lazy"
-            src={imgSrc}
-            className="aspect-card w-40 object-cover"
-            alt={'Profile image of ' + masterName}
-          />
-        </div>
-      )}
+      <div
+        className="self-center overflow-hidden rounded-2xl"
+        style={{ border: '2px solid #ed21f122' }}
+      >
+        <Image
+          sizes="160px"
+          loading="lazy"
+          src={imgSrc}
+          placeholder={imgBlur ? 'blur' : 'empty'}
+          {...(imgBlur ? { blurDataURL: imgBlur } : {})}
+          className="aspect-card w-40"
+          alt={'Profile image of ' + masterName}
+        />
+      </div>
       <h3 className="mt-4 text-base leading-tight font-semibold text-slate-400">
         {masterName}
       </h3>

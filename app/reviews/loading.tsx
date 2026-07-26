@@ -20,12 +20,12 @@ export default function Loading(): JSX.Element {
       <div className="page-shell w-full">
         {/* Heading + master filter placeholder */}
         <div className="flex flex-col items-center gap-5 py-8">
-          <div className="h-7 w-48 animate-pulse rounded bg-slate-200" />
+          <div className="h-7 w-48 animate-pulse rounded bg-slate-150" />
           <div className="flex flex-wrap justify-center gap-3">
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
-                className="h-10 w-28 animate-pulse rounded-full bg-slate-200"
+                className="h-10 w-28 animate-pulse rounded-full bg-slate-150"
               />
             ))}
           </div>
@@ -36,7 +36,7 @@ export default function Loading(): JSX.Element {
           {Array.from({ length: 6 }).map((_, index) => (
             <div
               key={index}
-              className="h-40 animate-pulse rounded-2xl bg-slate-200"
+              className="h-40 animate-pulse rounded-2xl bg-slate-150"
             />
           ))}
         </div>

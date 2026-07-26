@@ -101,10 +101,10 @@ const TitleAnimations = ({
           {
             autoAlpha: 1,
             width: '100%',
-            duration: 1.25,
+            duration: 0.5,
             transformOrigin: 'center center',
           },
-          '-=0.5',
+          '-=0.75',
         );
       }
 

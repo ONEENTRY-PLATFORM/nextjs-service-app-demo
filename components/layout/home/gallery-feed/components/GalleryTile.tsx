@@ -1,14 +1,21 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { JSX } from 'react';
 
 import CardAnimations from '@/app/animations/CardAnimations';
+import Image from '@/components/shared/Image';
 
-/** A single gallery tile — image plus its Gallery-page (category-filtered) link */
+/**
+ * A single gallery tile — image plus its Gallery-page (category-filtered) link
+ * @property {string}        name      - Gallery category name (the image alt text)
+ * @property {string}        link      - Gallery page route filtered to the tile's category
+ * @property {string}        thumb     - Tile image URL
+ * @property {string | null} [preview] - Ready-made CMS LQIP (`previewLink`); `null` for files uploaded without previews
+ */
 export type GalleryGridCard = {
   name: string;
   link: string;
   thumb: string;
+  preview?: string | null;
 };
 
 /**
@@ -39,15 +46,15 @@ const GalleryTile = ({
       href={card.link || '/gallery'}
       className="group relative block aspect-4/5 overflow-hidden rounded-2xl bg-slate-100"
     >
-      {card.thumb && (
-        <Image
-          src={card.thumb}
-          alt={card.name}
-          fill
-          sizes="(min-width: 1024px) 16vw, (min-width: 640px) 33vw, 50vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-      )}
+      <Image
+        src={card.thumb}
+        alt={card.name}
+        sizes="(min-width: 1024px) 16vw, (min-width: 640px) 33vw, 50vw"
+        placeholder={card.preview ? 'blur' : 'empty'}
+        {...(card.preview ? { blurDataURL: card.preview } : {})}
+        className="absolute inset-0"
+        imageClassName="transition-transform duration-500 group-hover:scale-105"
+      />
       {/* Magenta hover tint (static-html GALLERY strip) */}
       <span className="pointer-events-none absolute inset-0 bg-[#c800d7]/25 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
     </Link>

@@ -88,6 +88,15 @@ const MastersPageContent = ({
   /** Changing a filter remounts the card sections */
   useScrollTriggerRefresh(sections);
 
+  /**
+   * Signature of the chip/salon filter state. Drives both halves of the filter
+   * animation: `SwapAnimations` fades the old cards out on a change, and the
+   * same value keys `SpecialistSections` so the incoming tree fully remounts —
+   * masters present in both the old and the new selection would otherwise keep
+   * their DOM nodes and pop in without the `GridItemAnimations` entrance.
+   */
+  const swapKey = `${mainCat}|${salonId ?? 'all'}`;
+
   return (
     <div data-testid="masters-page">
       {/* ── Filter block — fade-only reveal (holds dropdown/scroll controls) ── */}
@@ -156,11 +165,15 @@ const MastersPageContent = ({
       </RevealAnimations>
 
       {/* ── Card sections — tablet & desktop (mobile uses the row list) ──── */}
-      {/* Swapping on the chip/salon filters fades the old cards out first, so
-          the exit mirrors the entrance instead of a blank flash. Search typing
-          is left out of the key — it must update as you type. */}
-      <SwapAnimations swapKey={`${mainCat}|${salonId ?? 'all'}`}>
-        <SpecialistSections sections={sections} onClearAll={clearAll} />
+      {/* Swapping on the chip/salon filters fades the old cards out first, then
+          the key remounts the sections so every card replays its entrance.
+          Search typing is left out of the key — it must update as you type. */}
+      <SwapAnimations swapKey={swapKey}>
+        <SpecialistSections
+          key={swapKey}
+          sections={sections}
+          onClearAll={clearAll}
+        />
       </SwapAnimations>
     </div>
   );

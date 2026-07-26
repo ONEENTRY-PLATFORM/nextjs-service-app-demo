@@ -46,16 +46,12 @@ const GalleryGridCell = ({
       className="group relative aspect-4/5 cursor-pointer overflow-hidden rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-pink"
       onClick={onOpen}
       onKeyDown={(e) => {
-        // Make the lightbox trigger operable for keyboard users (WCAG 2.1.1):
-        // Enter/Space activate it just like the pointer `onClick`.
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           onOpen();
         }
       }}
     >
-      {/* Photo — LQIP blur placeholder (CMS `previewLink` or generated) fades
-          out on load */}
       <Image
         src={item.url}
         alt={item.title}

@@ -9,29 +9,33 @@
  * status). Move to OneEntry once the reviews storage is filled.
  */
 
-/** A single customer review. */
+/**
+ * A single customer review.
+ * @property {string} id     - Stable id, e.g. `r1`
+ * @property {string} author - Customer name
+ * @property {string} master - Specialist name (matches the Specialist roster)
+ * @property {number} rating - Rating, 1–5
+ * @property {string} date   - Display date
+ * @property {string} text   - Review body
+ */
 export type Review = {
-  /** Stable id, e.g. `r1` */
   id: string;
-  /** Customer name */
   author: string;
-  /** Specialist name (matches the Specialist roster) */
   master: string;
-  /** Rating, 1–5 */
   rating: number;
-  /** Display date */
   date: string;
-  /** Review body */
   text: string;
 };
 
-/** A salon location shown in the salon filter. */
+/**
+ * A salon location shown in the salon filter.
+ * @property {string} id      - Salon id (same ids used across the site)
+ * @property {string} name    - Salon display name
+ * @property {string} address - Salon street address
+ */
 export type ReviewSalon = {
-  /** Salon id (same ids used across the site) */
   id: string;
-  /** Salon display name */
   name: string;
-  /** Salon street address */
   address: string;
 };
 

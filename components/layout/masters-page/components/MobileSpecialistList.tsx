@@ -1,11 +1,11 @@
 'use client';
 
 import { ChevronRight, Search, Star, X } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import Image from '@/components/shared/Image';
 
 import type { MasterItem } from '../taxonomy';
 
@@ -80,17 +80,17 @@ const MobileSpecialistList = ({
           masters.map((master) => {
             const row = (
               <>
-                {master.photo ? (
-                  <Image
-                    src={master.photo}
-                    alt=""
-                    width={48}
-                    height={48}
-                    className="size-12 shrink-0 rounded-full border-2 border-fuchsia-500/20 object-cover object-top"
-                  />
-                ) : (
-                  <span className="size-12 shrink-0 rounded-full border-2 border-fuchsia-500/20 bg-slate-50" />
-                )}
+                <Image
+                  src={master.photo}
+                  alt=""
+                  sizes="48px"
+                  placeholder={master.photoBlur ? 'blur' : 'empty'}
+                  {...(master.photoBlur
+                    ? { blurDataURL: master.photoBlur }
+                    : {})}
+                  className="size-12 shrink-0 rounded-full border-2 border-fuchsia-500/20"
+                  imageClassName="object-top"
+                />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[15px] font-bold text-slate-400">
                     {master.name}

@@ -10,31 +10,27 @@
 /** Main service category of the price list (top-level gallery filter) */
 export type GalleryMainCategory = 'HAIR' | 'FACE' | 'BODY' | 'NAILS';
 
-/** A single gallery work photo */
+/**
+ * A single gallery work photo
+ * @property {string}        id         - Stable id, e.g. `g12`
+ * @property {string}        url        - Public URL of the photo
+ * @property {string | null} preview    - Base64 LQIP blur placeholder shown while the photo loads, or `null`
+ * @property {string}        category   - Price-list subcategory, e.g. `Coloring`
+ * @property {string}        title      - Service name decoded from the photo file name
+ * @property {string}        master     - Specialist name decoded from the folder name
+ * @property {number}        [masterId] - Admin id of the linked master (CMS `master_id`), for the profile link
+ * @property {string[]}      salon      - Salons the photo belongs to, via its master (a master may work in more than one). CMS items carry salon `pageUrl` markers (`downtown`), the local scan carries folder names (`Downtown`) — match case-insensitively. Empty when the salon is unknown, in which case the photo is hidden from salon pages.
+ * @property {string}        role       - Specialist role line, e.g. `Stylist · Downtown`
+ */
 export type GalleryItem = {
-  /** Stable id, e.g. `g12` */
   id: string;
-  /** Public URL of the photo */
   url: string;
-  /** Base64 LQIP blur placeholder shown while the photo loads, or `null` */
   preview: string | null;
-  /** Price-list subcategory, e.g. `Coloring` */
   category: string;
-  /** Service name decoded from the photo file name */
   title: string;
-  /** Specialist name decoded from the folder name */
   master: string;
-  /** Admin id of the linked master (CMS `master_id`), for the profile link */
   masterId?: number | undefined;
-  /**
-   * Salons the photo belongs to, via its master (a master may work in more
-   * than one). CMS items carry salon `pageUrl` markers (`downtown`), the local
-   * scan carries folder names (`Downtown`) — match case-insensitively. Empty
-   * when the salon is unknown, in which case the photo is hidden from salon
-   * pages.
-   */
   salon: string[];
-  /** Specialist role line, e.g. `Stylist · Downtown` */
   role: string;
 };
 

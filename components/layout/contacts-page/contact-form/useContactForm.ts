@@ -13,27 +13,29 @@ import { mintCaptchaToken } from './mintCaptchaToken';
 import type { ContactFormField, FieldKey } from './types';
 import { EMPTY_CONTACT_FIELDS } from './types';
 
-/** State and actions the "Write to us" card renders from. */
+/**
+ * State and actions the "Write to us" card renders from.
+ * @property {Record<FieldKey, string>}                         fields          - Current values, keyed by field
+ * @property {(key: FieldKey) => (value: string) => void}       set             - Curried setter for one field
+ * @property {boolean}                                          sent            - The success state is showing
+ * @property {boolean}                                          loading         - A submit is in flight
+ * @property {string}                                           error           - Failure copy (`''` when none)
+ * @property {string}                                           spamSiteKey     - reCAPTCHA site key from the CMS (`''` when the form has no captcha)
+ * @property {Dispatch<SetStateAction<boolean>>}                setCaptchaReady - Mark the reCAPTCHA library as ready to mint tokens (`FormReCaptcha` setter)
+ * @property {boolean}                                          captchaReady    - The reCAPTCHA library is loaded
+ * @property {string}                                           successMessage  - Success copy from the form's CMS settings, with a fallback
+ * @property {(e: FormEvent<HTMLFormElement>) => Promise<void>} handleSubmit    - Submit handler for the `<form>`
+ */
 export interface ContactFormState {
-  /** Current values, keyed by field */
   fields: Record<FieldKey, string>;
-  /** Curried setter for one field */
   set: (key: FieldKey) => (value: string) => void;
-  /** The success state is showing */
   sent: boolean;
-  /** A submit is in flight */
   loading: boolean;
-  /** Failure copy (`''` when none) */
   error: string;
-  /** reCAPTCHA site key from the CMS (`''` when the form has no captcha) */
   spamSiteKey: string;
-  /** Mark the reCAPTCHA library as ready to mint tokens (`FormReCaptcha` setter) */
   setCaptchaReady: Dispatch<SetStateAction<boolean>>;
-  /** The reCAPTCHA library is loaded */
   captchaReady: boolean;
-  /** Success copy from the form's CMS settings, with a fallback */
   successMessage: string;
-  /** Submit handler for the `<form>` */
   handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
 }
 

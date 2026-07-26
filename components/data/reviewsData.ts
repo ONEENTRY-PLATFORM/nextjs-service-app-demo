@@ -1,10 +1,12 @@
-/** A customer review of the home-page carousel. */
+/**
+ * A customer review of the home-page carousel.
+ * @property {string} title  - Reviewer name
+ * @property {string} text   - Review body
+ * @property {number} rating - Star rating, 1–5
+ */
 export interface ReviewEntry {
-  /** Reviewer name */
   title: string;
-  /** Review body */
   text: string;
-  /** Star rating, 1–5 */
   rating: number;
 }
 

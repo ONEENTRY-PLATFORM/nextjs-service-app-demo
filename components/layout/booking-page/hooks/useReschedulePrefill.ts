@@ -12,15 +12,17 @@ import {
 } from '@/app/store/orderMarkers';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 
-/** The appointment being moved, resolved into wizard preselection ids. */
+/**
+ * The appointment being moved, resolved into wizard preselection ids.
+ * @property {number | null} orderId    - Id of the order to move, `null` for a plain (new) booking
+ * @property {number | null} salonId    - Salon of the original appointment
+ * @property {number | null} masterId   - Specialist of the original appointment
+ * @property {number[]}      productIds - EVERY product of the original appointment, not just the first one
+ */
 export interface ReschedulePrefill {
-  /** Id of the order to move, `null` for a plain (new) booking */
   orderId: number | null;
-  /** Salon of the original appointment */
   salonId: number | null;
-  /** Specialist of the original appointment */
   masterId: number | null;
-  /** EVERY product of the original appointment, not just the first one */
   productIds: number[];
 }
 

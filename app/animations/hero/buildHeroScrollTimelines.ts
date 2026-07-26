@@ -2,11 +2,13 @@ import { gsap } from 'gsap';
 
 import type { HeroElements } from './heroRoles';
 
-/** The two scrubbed timelines the hero parallax runs on. */
+/**
+ * The two scrubbed timelines the hero parallax runs on.
+ * @property {gsap.core.Timeline} bgTl      - Background: fades and scales up as the hero scrolls away
+ * @property {gsap.core.Timeline} triggerTl - Text and CTA: drift up, fade and scale as the hero scrolls away
+ */
 export interface HeroScrollTimelines {
-  /** Background: fades and scales up as the hero scrolls away */
   bgTl: gsap.core.Timeline;
-  /** Text and CTA: drift up, fade and scale as the hero scrolls away */
   triggerTl: gsap.core.Timeline;
 }
 

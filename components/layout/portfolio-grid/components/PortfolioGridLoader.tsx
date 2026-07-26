@@ -15,7 +15,7 @@ const PortfolioGridLoader = (): JSX.Element => {
       {/* Heading placeholder — same box as the real "Portfolio" title */}
       <div className="mx-auto flex max-w-7xl flex-col items-center p-3 md:px-8 md:py-6">
         <div
-          className="h-6 w-32 animate-pulse rounded bg-slate-200"
+          className="h-6 w-32 animate-pulse rounded bg-slate-150"
           style={{ fontSize: 'clamp(1.1rem, 2.2vw, 1.65rem)' }}
         />
       </div>
@@ -24,7 +24,7 @@ const PortfolioGridLoader = (): JSX.Element => {
         {Array.from({ length: 10 }).map((_card, index) => (
           <div
             key={index}
-            className="aspect-4/5 animate-pulse rounded-2xl bg-slate-200"
+            className="aspect-4/5 animate-pulse rounded-2xl bg-slate-150"
           />
         ))}
       </div>

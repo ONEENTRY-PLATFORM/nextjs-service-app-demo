@@ -18,37 +18,41 @@ export const MASTERS_MAIN_CATS: { id: MastersMainCategory; label: string }[] = [
   { id: 'NAILS', label: 'Nails' },
 ];
 
-/** A single specialist, normalized for the masters page */
+/**
+ * A single specialist, normalized for the masters page
+ * @property {string}                id          - Stable id (CMS admin id or the specialist name for local demo data)
+ * @property {string}                name        - Specialist name, e.g. `Sofia Marchetti`
+ * @property {string}                role        - Role line, e.g. `Top Stylist · Downtown`
+ * @property {string}                section     - Grouping key — specialists of one profession render as one card section
+ * @property {MastersMainCategory[]} categories  - Main price-list categories the specialist works in
+ * @property {number | null}         salonId     - Page id of the specialist's salon (matches `SalonOption.id`); `null` when unknown
+ * @property {number}                rating      - Rating shown in the mobile row list
+ * @property {string}                photo       - Portrait URL; `''` when the CMS attribute is empty
+ * @property {string}                [photoBlur] - Ready-made LQIP for the portrait (CMS `previewLink`); absent for files uploaded without previews
+ * @property {string}                [href]      - Profile link (`/masters/{adminId}`) — absent for local demo specialists
+ */
 export type MasterItem = {
-  /** Stable id (CMS admin id or the specialist name for local demo data) */
   id: string;
-  /** Specialist name, e.g. `Sofia Marchetti` */
   name: string;
-  /** Role line, e.g. `Top Stylist · Downtown` */
   role: string;
-  /** Grouping key — specialists of one profession render as one card section */
   section: string;
-  /** Main price-list categories the specialist works in */
   categories: MastersMainCategory[];
-  /** Page id of the specialist's salon (matches `SalonOption.id`); `null` when unknown */
   salonId: number | null;
-  /** Rating shown in the mobile row list */
   rating: number;
-  /** Portrait URL; `''` when the CMS attribute is empty */
   photo: string;
-  /** Ready-made LQIP for the portrait (CMS `previewLink`); absent for files uploaded without previews */
   photoBlur?: string | undefined;
-  /** Profile link (`/masters/{adminId}`) — absent for local demo specialists */
   href?: string | undefined;
 };
 
-/** A salon option of the salon filter */
+/**
+ * A salon option of the salon filter
+ * @property {number} id      - CMS salon page id
+ * @property {string} name    - Salon name, e.g. `Thalia Downtown`
+ * @property {string} address - Salon street address, e.g. `Downtown`
+ */
 export type SalonOption = {
-  /** CMS salon page id */
   id: number;
-  /** Salon name, e.g. `Thalia Downtown` */
   name: string;
-  /** Street address shown under the salon name */
   address: string;
 };
 

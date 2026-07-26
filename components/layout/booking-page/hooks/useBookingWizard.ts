@@ -34,82 +34,82 @@ import { useServicesPrefill } from './useServicesPrefill';
  * handlers, plus the narrowed rosters ({@link BookingFiltersState}), the day's
  * slots ({@link BookingScheduleState}) and the payment choice
  * ({@link BookingPaymentState}) the wizard composes.
+ * @property {BookingFlow | null}        flow               - Chosen flow, `null` on the entry screen
+ * @property {StepKey[]}                 stepKeys           - Dynamic step order for the chosen flow
+ * @property {number}                    stepIdx            - Index of the active step
+ * @property {StepKey | undefined}       currentStepKey     - Key of the active step (`undefined` on the entry screen)
+ * @property {boolean}                   mobileSummary      - Mobile: the summary screen is shown instead of the step
+ * @property {(v: boolean) => void}      setMobileSummary   - Toggle the mobile summary screen
+ * @property {string}                    categoryFilter     - Active category pill
+ * @property {BookingSalon[]}            salons             - All salons
+ * @property {number | null}             salon              - Chosen salon id
+ * @property {string[]}                  selectedServiceIds - Chosen service ids (multi-select, in the order they were picked)
+ * @property {string}                    master             - Chosen specialist id (`''`, id or `__any__`)
+ * @property {string}                    date               - Chosen date (ISO day)
+ * @property {string}                    time               - Chosen time slot
+ * @property {BookingSalon | undefined}  salonObj           - Resolved chosen salon
+ * @property {BookingService[]}          serviceObjs        - Resolved chosen services
+ * @property {BookingMaster | undefined} masterObj          - Resolved chosen specialist (`undefined` for "Any specialist")
+ * @property {boolean}                   masterAny          - "Any specialist" is the current choice
+ * @property {boolean}                   canNext            - The current step's Continue button is enabled
+ * @property {boolean}                   isLastStep         - The active step is the last one
+ * @property {boolean}                   booked             - The booking succeeded — show the success modal
+ * @property {boolean}                   isAuth             - The user is authenticated
+ * @property {boolean}                   isLoading          - The order request is in flight
+ * @property {string}                    error              - The order error message (`''` when none)
+ * @property {(f: BookingFlow) => void}  startFlow          - Start a flow from the entry screen
+ * @property {(id: number) => void}      selectSalon        - Choose a salon
+ * @property {(id: string) => void}      selectService      - Toggle a service in or out of the multi-selection
+ * @property {(id: string) => void}      selectMaster       - Choose a specialist
+ * @property {() => void}                clearService       - Clear every chosen service ("Change")
+ * @property {() => void}                handleNext         - Advance to the next step
+ * @property {() => void}                handleBack         - Go back a step (or to the entry screen)
+ * @property {() => void}                handleConfirm      - Submit the booking
+ * @property {() => void}                resetFlow          - Reset the whole flow back to the entry screen
+ * @property {() => void}                handleCloseSuccess - Close the success modal and reset the flow
+ * @property {(idx: number) => void}     goStep             - Jump to a step from the step bar
+ * @property {(cat: string) => void}     onCategoryChange   - Activate a category pill
+ * @property {(d: string) => void}       onDate             - Pick a date
+ * @property {(t: string) => void}       onTime             - Pick a time slot
  */
 export interface BookingWizardState
   extends BookingFiltersState, BookingScheduleState, BookingPaymentState {
-  /** Chosen flow, `null` on the entry screen */
   flow: BookingFlow | null;
-  /** Dynamic step order for the chosen flow */
   stepKeys: StepKey[];
-  /** Index of the active step */
   stepIdx: number;
-  /** Key of the active step (`undefined` on the entry screen) */
   currentStepKey: StepKey | undefined;
-  /** Mobile: the summary screen is shown instead of the step */
   mobileSummary: boolean;
-  /** Toggle the mobile summary screen */
   setMobileSummary: (v: boolean) => void;
-  /** Active category pill */
   categoryFilter: string;
-  /** All salons */
   salons: BookingSalon[];
-  /** Chosen salon id */
   salon: number | null;
-  /** Chosen service ids (multi-select, in the order they were picked) */
   selectedServiceIds: string[];
-  /** Chosen specialist id (`''`, id or `__any__`) */
   master: string;
-  /** Chosen date (ISO day) */
   date: string;
-  /** Chosen time slot */
   time: string;
-  /** Resolved chosen salon */
   salonObj: BookingSalon | undefined;
-  /** Resolved chosen services */
   serviceObjs: BookingService[];
-  /** Resolved chosen specialist (`undefined` for "Any specialist") */
   masterObj: BookingMaster | undefined;
-  /** "Any specialist" is the current choice */
   masterAny: boolean;
-  /** The current step's Continue button is enabled */
   canNext: boolean;
-  /** The active step is the last one */
   isLastStep: boolean;
-  /** The booking succeeded — show the success modal */
   booked: boolean;
-  /** The user is authenticated */
   isAuth: boolean;
-  /** The order request is in flight */
   isLoading: boolean;
-  /** The order error message (`''` when none) */
   error: string;
-  /** Start a flow from the entry screen */
   startFlow: (f: BookingFlow) => void;
-  /** Choose a salon */
   selectSalon: (id: number) => void;
-  /** Toggle a service in or out of the multi-selection */
   selectService: (id: string) => void;
-  /** Choose a specialist */
   selectMaster: (id: string) => void;
-  /** Clear every chosen service ("Change") */
   clearService: () => void;
-  /** Advance to the next step */
   handleNext: () => void;
-  /** Go back a step (or to the entry screen) */
   handleBack: () => void;
-  /** Submit the booking */
   handleConfirm: () => void;
-  /** Reset the whole flow back to the entry screen */
   resetFlow: () => void;
-  /** Close the success modal and reset the flow */
   handleCloseSuccess: () => void;
-  /** Jump to a step from the step bar */
   goStep: (idx: number) => void;
-  /** Activate a category pill */
   onCategoryChange: (cat: string) => void;
-  /** Pick a date */
   onDate: (d: string) => void;
-  /** Pick a time slot */
   onTime: (t: string) => void;
 }
 

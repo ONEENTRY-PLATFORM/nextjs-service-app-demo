@@ -28,15 +28,19 @@ import { buildOrderFormData } from '../utils/buildOrderFormData';
 import { buildOrderProducts } from '../utils/buildOrderProducts';
 import { toBookingInterval } from '../utils/toBookingInterval';
 
-/** Everything the wizard has picked by the time of the confirm click. */
+/**
+ * Everything the wizard has picked by the time of the confirm click.
+ * @property {BookingSalon}     [salon]  - Chosen salon
+ * @property {BookingService[]} services - Chosen services (one appointment can bundle several)
+ * @property {BookingMaster}    [master] - Chosen master; absent = "Any specialist"
+ * @property {string}           date     - Date key of the calendar, `year-monthIndex-day`
+ * @property {string}           time     - Time slot `HH:MM`
+ */
 export interface BookingSelection {
   salon?: BookingSalon | undefined;
-  /** Chosen services (one appointment can bundle several) */
   services: BookingService[];
   master?: BookingMaster | undefined;
-  /** Date key of the calendar, `year-monthIndex-day` */
   date: string;
-  /** Time slot `HH:MM` */
   time: string;
 }
 

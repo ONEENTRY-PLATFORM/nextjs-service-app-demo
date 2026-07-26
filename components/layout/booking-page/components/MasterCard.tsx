@@ -61,6 +61,7 @@ const MasterCard = ({
               photo={m.photo}
               alt={m.name}
               sizes="64px"
+              blur={m.photoBlur}
               className="object-cover object-top"
             />
             {active && <SelectedCheckBadge variant="mobile" />}
@@ -131,6 +132,7 @@ const MasterCard = ({
             photo={m.photo}
             alt={m.name}
             sizes="(min-width: 768px) 33vw, 100vw"
+            blur={m.photoBlur}
             className="object-cover object-top"
           />
 

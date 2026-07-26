@@ -152,10 +152,10 @@ function extractPhotosFromPage(
       if (!thumb) return null;
 
       /**
-       * Only the ready-made CMS blur — never generate one here. The home strip
-       * ({@link GalleryGrid}) renders no placeholder, so generating an LQIP
-       * would download every tile server-side and run it through sharp for a
-       * value nothing reads.
+       * Only the ready-made CMS blur — never generate one here. The strip tiles
+       * show it as their `next/image` placeholder; a photo uploaded without a
+       * `previewLink` simply gets none, since generating one would download
+       * every tile server-side and run it through sharp.
        */
       const preview = blur;
 

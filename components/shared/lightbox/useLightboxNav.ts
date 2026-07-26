@@ -9,15 +9,17 @@ import { useSlideDirection } from '@/components/shared/useSlideDirection';
 
 import { useLightboxTransition } from './useLightboxTransition';
 
-/** What a lightbox needs wired up before it can render its chrome. */
+/**
+ * What a lightbox needs wired up before it can render its chrome.
+ * @property {1 | -1}                           direction    - Which way the viewer is paging — drives the stage slide transition
+ * @property {RefObject<HTMLDivElement | null>} dialogRef    - Attach to the overlay element: focus trap, focus restore, scroll lock, Escape
+ * @property {RefObject<HTMLDivElement | null>} contentRef   - Attach to the stage column — the element the open/close animation scales
+ * @property {() => void}                       requestClose - Animated close: use for the close button, backdrop click and any dismiss
+ */
 export interface LightboxNav {
-  /** Which way the viewer is paging — drives the stage slide transition */
   direction: 1 | -1;
-  /** Attach to the overlay element: focus trap, focus restore, scroll lock, Escape */
   dialogRef: RefObject<HTMLDivElement | null>;
-  /** Attach to the stage column — the element the open/close animation scales */
   contentRef: RefObject<HTMLDivElement | null>;
-  /** Animated close: use for the close button, backdrop click and any dismiss */
   requestClose: () => void;
 }
 

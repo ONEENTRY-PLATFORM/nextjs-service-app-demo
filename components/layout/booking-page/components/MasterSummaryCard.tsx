@@ -1,5 +1,6 @@
-import Image from 'next/image';
 import type { JSX } from 'react';
+
+import Image from '@/components/shared/Image';
 
 import { PINK } from '../constants';
 import type { BookingMaster } from '../types';
@@ -23,15 +24,15 @@ const MasterSummaryCard = ({
     style={{ background: `${PINK}08` }}
   >
     <div className="relative size-10 shrink-0 overflow-hidden rounded-full border-2 border-fuchsia-500">
-      {master.photo && (
-        <Image
-          fill
-          sizes="40px"
-          src={master.photo}
-          alt={master.name}
-          className="object-cover object-top"
-        />
-      )}
+      <Image
+        sizes="40px"
+        src={master.photo}
+        alt={master.name}
+        placeholder={master.photoBlur ? 'blur' : 'empty'}
+        {...(master.photoBlur ? { blurDataURL: master.photoBlur } : {})}
+        className="absolute inset-0"
+        imageClassName="object-top"
+      />
     </div>
     <div className="min-w-0">
       <p className="text-base font-semibold text-slate-400">{master.name}</p>

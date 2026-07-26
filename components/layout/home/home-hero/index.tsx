@@ -5,6 +5,8 @@ import type { JSX } from 'react';
 import HeroAnimations from '@/app/animations/HeroAnimations';
 import { getBlockSlides } from '@/app/api/server/blocks/getBlockSlides';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
+import type { OneEntryImageFile } from '@/components/utils/OneEntryImageFile';
 
 import type { HeroSlide } from './components/HeroSlider';
 import HeroSlider from './components/HeroSlider';
@@ -30,14 +32,22 @@ const HomeHero = async ({
       const attrs = slide.attributeValues as unknown as
         Record<string, unknown> | undefined;
       /**
-       * First `downloadLink` of a raw slide file marker.
-       * @param   {string} marker - Slide file marker (e.g. `image_id1`)
-       * @returns {string}        First file URL, or `''` when absent
+       * First file of a raw slide file marker: its URL plus the ready-made CMS
+       * LQIP (`previewLink`), which the carousel shows as the blur placeholder.
+       * Slide files uploaded without previews simply carry no blur.
+       * @param   {string}                               marker - Slide file marker (e.g. `image_id1`)
+       * @returns {{ url: string; blur: string | null }}        File URL (`''` when absent) and its blur data URI
        */
-      const fileLink = (marker: string): string => {
-        const arr = attrs?.[marker] as
-          Array<{ downloadLink?: string }> | undefined;
-        return arr?.[0]?.downloadLink ?? '';
+      const fileLink = (
+        marker: string,
+      ): { url: string; blur: string | null } => {
+        const arr = attrs?.[marker] as OneEntryImageFile[] | undefined;
+        const file = arr?.[0];
+        if (!file?.downloadLink) {
+          return { url: '', blur: null };
+        }
+        const { full, blur } = getGalleryImageUrls(file);
+        return { url: full, blur };
       };
       /**
        * Trimmed value of a raw slide string marker.
@@ -49,10 +59,13 @@ const HomeHero = async ({
         return typeof value === 'string' ? value.trim() : '';
       };
       const desktop = fileLink('image_id1');
-      const mobile = fileLink('image_id2') || desktop;
+      const mobileOwn = fileLink('image_id2');
+      const mobile = mobileOwn.url ? mobileOwn : desktop;
       return {
-        desktop,
-        mobile,
+        desktop: desktop.url,
+        mobile: mobile.url,
+        desktopBlur: desktop.blur ?? undefined,
+        mobileBlur: mobile.blur ?? undefined,
         title: str('string_id3'),
         text: str('string_id4'),
         sale: str('string_id5'),

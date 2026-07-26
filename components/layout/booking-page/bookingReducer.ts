@@ -16,27 +16,27 @@ import type { BookingData, BookingFlow } from './types';
  * current behavior verbatim. The reducer only *clamps* `stepIdx` into range
  * (see the anchor in {@link makeBookingReducer}) so `currentStepKey` can no
  * longer fall off the end of the list.
+ * @property {BookingFlow | null} flow           - Chosen flow, `null` on the entry screen
+ * @property {number}             stepIdx        - Index of the active step within the flow's `bookingStepKeys` list
+ * @property {number | null}      salon          - Chosen salon id
+ * @property {string[]}           serviceIds     - Chosen service ids, in the order they were picked
+ * @property {string}             master         - Chosen specialist id (`''`, an id, or `__any__`)
+ * @property {string}             date           - Chosen date key
+ * @property {string}             time           - Chosen time slot
+ * @property {string}             categoryFilter - Active category pill
+ * @property {boolean}            serviceLocked  - The service was preselected upstream — hides the Service step
+ * @property {boolean}            touched        - The user has interacted — a late cart rehydration must not override them
  */
 export interface BookingState {
-  /** Chosen flow, `null` on the entry screen */
   flow: BookingFlow | null;
-  /** Index of the active step within the flow's `bookingStepKeys` list */
   stepIdx: number;
-  /** Chosen salon id */
   salon: number | null;
-  /** Chosen service ids, in the order they were picked */
   serviceIds: string[];
-  /** Chosen specialist id (`''`, an id, or `__any__`) */
   master: string;
-  /** Chosen date key */
   date: string;
-  /** Chosen time slot */
   time: string;
-  /** Active category pill */
   categoryFilter: string;
-  /** The service was preselected upstream — hides the Service step */
   serviceLocked: boolean;
-  /** The user has interacted — a late cart rehydration must not override them */
   touched: boolean;
 }
 

@@ -5,15 +5,17 @@ import { useMemo } from 'react';
 
 import { useGetAuthProvidersQuery } from '@/app/api/api/RTKApi';
 
-/** The credential (non-OAuth) auth providers, decoded once for the forms. */
+/**
+ * The credential (non-OAuth) auth providers, decoded once for the forms.
+ * @property {IAuthProvidersEntity | undefined} provider       - First credential provider — drives sign-up and OTP config. `undefined` while loading.
+ * @property {string[]}                         identifiers    - Identifiers of every credential provider — SignIn renders one tab each. Falls back to `['email']`.
+ * @property {string}                           marker         - `provider.identifier`, falling back to `'email'` (the current CMS value).
+ * @property {string}                           formIdentifier - `provider.formIdentifier`, falling back to `'reg'`.
+ */
 export interface CredentialProviders {
-  /** First credential provider — drives sign-up and OTP config. `undefined` while loading. */
   provider: IAuthProvidersEntity | undefined;
-  /** Identifiers of every credential provider — SignIn renders one tab each. Falls back to `['email']`. */
   identifiers: string[];
-  /** `provider.identifier`, falling back to `'email'` (the current CMS value). */
   marker: string;
-  /** `provider.formIdentifier`, falling back to `'reg'`. */
   formIdentifier: string;
 }
 

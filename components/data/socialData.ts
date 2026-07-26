@@ -1,10 +1,12 @@
-/** Social networks the footer and the contacts card link to. */
+/**
+ * Social networks the footer and the contacts card link to.
+ * @property {string}                               title - Network name, used as the link's `aria-label`
+ * @property {'instagram' | 'facebook' | 'twitter'} icon  - Icon key — an export of `components/icons` and a key of `SOCIAL_ICONS`
+ * @property {string}                               link  - Profile URL — fallback for the CMS marker `social_{icon}_url`
+ */
 export interface SocialEntry {
-  /** Network name, used as the link's `aria-label` */
   title: string;
-  /** Icon key — an export of `components/icons` and a key of `SOCIAL_ICONS` */
   icon: 'instagram' | 'facebook' | 'twitter';
-  /** Profile URL — fallback for the CMS marker `social_{icon}_url` */
   link: string;
 }
 

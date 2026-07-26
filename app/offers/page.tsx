@@ -51,10 +51,7 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
    * still renders with the fallback title, and an empty product list shows the
    * "no offers" state. A transient CMS failure must not 404 this static route.
    */
-  const title =
-    page?.localizeInfos?.title ??
-    (dict?.offers_title?.value as string | undefined) ??
-    'Special Offers';
+  const title = page?.localizeInfos?.title || 'Special Offers';
 
   /** Keep only genuine offer products, ignoring anything else on the page. */
   const offers = (products ?? []).filter(isOfferProduct);

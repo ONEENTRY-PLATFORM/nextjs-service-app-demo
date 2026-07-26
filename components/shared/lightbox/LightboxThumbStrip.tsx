@@ -8,13 +8,15 @@
 import type { JSX } from 'react';
 import { useEffect, useRef } from 'react';
 
-/** One entry of the strip: what to show and how to key it. */
+/**
+ * One entry of the strip: what to show and how to key it.
+ * @property {string | number} key   - React key — the photo id where there is one, else the index
+ * @property {string}          src   - Thumbnail source
+ * @property {string}          label - `aria-label` of the button
+ */
 export interface LightboxThumb {
-  /** React key — the photo id where there is one, else the index */
   key: string | number;
-  /** Thumbnail source */
   src: string;
-  /** `aria-label` of the button */
   label: string;
 }
 

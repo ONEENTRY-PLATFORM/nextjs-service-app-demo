@@ -7,23 +7,25 @@ import { entityLinks, entityProductIds } from '@/components/utils/entityLinks';
 /** Accent used when the CMS carries neither a hex nor a known category. */
 const DEFAULT_ACCENT = '#ed21f1';
 
-/** The part of an offer view-model that every offer card shares. */
+/**
+ * The part of an offer view-model that every offer card shares.
+ * @property {string}   description       - Description (`offer_description`, falls back to `plainValue`)
+ * @property {string[]} services          - Bundled service titles (`offer_services`)
+ * @property {number}   price             - Current price (`offer_sale`, falls back to `product.price`)
+ * @property {number}   original          - Crossed-out original price (`offer_price`, `0` hides it)
+ * @property {number}   discount          - Discount percent (`0` hides the ribbon/badge)
+ * @property {string}   accentColor       - Accent colour hex from `offer_type` (per-category fallback)
+ * @property {string}   accentGrad        - `linear-gradient` built from the accent colour
+ * @property {number[]} serviceProductIds - Product ids of the bundled services — what "Book Offer" preselects
+ */
 export interface OfferBase {
-  /** Description (`offer_description`, falls back to `plainValue`) */
   description: string;
-  /** Bundled service titles (`offer_services`) */
   services: string[];
-  /** Current price (`offer_sale`, falls back to `product.price`) */
   price: number;
-  /** Crossed-out original price (`offer_price`, `0` hides it) */
   original: number;
-  /** Discount percent (`0` hides the ribbon/badge) */
   discount: number;
-  /** Accent colour hex from `offer_type` (per-category fallback) */
   accentColor: string;
-  /** `linear-gradient` built from the accent colour */
   accentGrad: string;
-  /** Product ids of the bundled services — what "Book Offer" preselects */
   serviceProductIds: number[];
 }
 

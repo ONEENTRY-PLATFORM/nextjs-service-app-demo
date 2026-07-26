@@ -1,10 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import type { JSX } from 'react';
 import { useState } from 'react';
 
 import GridItemAnimations from '@/app/animations/GridItemAnimations';
+import Image from '@/components/shared/Image';
 
 import PortfolioLightbox from './PortfolioLightbox';
 
@@ -58,9 +58,9 @@ const PortfolioGallery = ({
               <Image
                 src={item.thumb || item.img}
                 alt={item.alt}
-                fill
                 sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                className="absolute inset-0"
+                imageClassName="transition-transform duration-300 group-hover:scale-105"
                 {...(item.preview
                   ? { placeholder: 'blur' as const, blurDataURL: item.preview }
                   : {})}

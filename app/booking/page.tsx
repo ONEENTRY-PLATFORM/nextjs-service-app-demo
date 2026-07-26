@@ -50,9 +50,15 @@ const BookingPageLayout = async (): Promise<JSX.Element> => {
 
   const title = pageResult.page?.localizeInfos?.title || 'Book Online';
   const locations = data.salons.length;
-  const subtitle = `Premium beauty experience${
-    locations > 0 ? ` · ${locations} location${locations > 1 ? 's' : ''}` : ''
-  }`;
+  /** Dictionary-driven subtitle: base line + optional "· N location(s)" tail. */
+  const subtitleBase =
+    (dictionary?.booking_hero_subtitle?.value as string | undefined) ||
+    'Premium beauty experience';
+  const locationsLine = (
+    (dictionary?.booking_hero_locations_text?.value as string | undefined) ||
+    `%n% location${locations > 1 ? 's' : ''}`
+  ).replace('%n%', String(locations));
+  const subtitle = `${subtitleBase}${locations > 0 ? ` · ${locationsLine}` : ''}`;
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-white">

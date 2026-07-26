@@ -2,27 +2,29 @@ import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces'
 
 import { parseOfferBase } from '@/components/utils/parseOfferBase';
 
-/** The view-model of a special-offer card, parsed from a CMS product. */
+/**
+ * The view-model of a special-offer card, parsed from a CMS product.
+ * @property {string}   name              - Offer name without the "(featured)" flag
+ * @property {string}   tagline           - Tagline under the name (`offer_description`, falls back to `plainValue`)
+ * @property {boolean}  featured          - Featured card (full accent-gradient background)
+ * @property {string[]} services          - Bundled service titles with check marks
+ * @property {number}   price             - Current price (`offer_sale`, falls back to `product.price`)
+ * @property {number}   original          - Crossed-out original price (`offer_price`, `0` hides it)
+ * @property {number}   discount          - Discount percent (`0` hides the ribbon)
+ * @property {string}   accentColor       - Accent colour hex from `offer_type` (per-category fallback)
+ * @property {string}   accentGrad        - `linear-gradient` built from the accent colour
+ * @property {number[]} serviceProductIds - Product ids of the bundled services — what "Book Offer" preselects
+ */
 export interface OfferView {
-  /** Offer name without the "(featured)" flag */
   name: string;
-  /** Tagline under the name (`offer_description`, falls back to `plainValue`) */
   tagline: string;
-  /** Featured card (full accent-gradient background) */
   featured: boolean;
-  /** Bundled service titles with check marks */
   services: string[];
-  /** Current price (`offer_sale`, falls back to `product.price`) */
   price: number;
-  /** Crossed-out original price (`offer_price`, `0` hides it) */
   original: number;
-  /** Discount percent (`0` hides the ribbon) */
   discount: number;
-  /** Accent colour hex from `offer_type` (per-category fallback) */
   accentColor: string;
-  /** `linear-gradient` built from the accent colour */
   accentGrad: string;
-  /** Product ids of the bundled services — what "Book Offer" preselects */
   serviceProductIds: number[];
 }
 

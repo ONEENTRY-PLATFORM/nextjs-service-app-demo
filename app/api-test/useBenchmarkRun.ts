@@ -17,43 +17,57 @@ import type {
   TableSort,
 } from './types';
 
-/** Everything the dashboard renders from, plus the actions its controls fire. */
+/**
+ * Everything the dashboard renders from, plus the actions its controls fire.
+ * @property {Preset}                        preset         - Active endpoint family
+ * @property {string}                        marker         - Marker / pageUrl the preset probes (unused for `products`)
+ * @property {boolean}                       cached         - Probe the cached server fetcher instead of the raw SDK call
+ * @property {number}                        count          - How many requests one run issues
+ * @property {Mode}                          mode           - Sequential or a parallel worker pool
+ * @property {number}                        concurrency    - Worker-pool size in parallel mode
+ * @property {boolean}                       running        - A run is in flight
+ * @property {RequestResult[]}               orderedResults - Samples of the current run, in probe order
+ * @property {RequestResult[]}               successResults - The successful subset of {@link orderedResults}
+ * @property {number}                        failed         - Number of failed samples
+ * @property {Stats | null}                  stats          - Client-latency aggregates, `null` before the first success
+ * @property {Stats | null}                  serverStats    - Server-reported-latency aggregates, `null` when the route reports none
+ * @property {number}                        totalBytes     - Summed response body size across successful samples
+ * @property {number}                        progress       - Completion of the current run, 0–100
+ * @property {RunSummary[]}                  runs           - The last ten finished runs, newest first
+ * @property {RequestResult[]}               tableRows      - Rows of the details table after sorting and filtering
+ * @property {TableSort}                     tableSort      - Active ordering of the details table
+ * @property {TableFilter}                   tableFilter    - Active row filter of the details table
+ * @property {(marker: string) => void}      setMarker      - Set the probed marker
+ * @property {(cached: boolean) => void}     setCached      - Toggle the cached server fetcher
+ * @property {(count: number) => void}       setCount       - Set the request count of a run
+ * @property {(mode: Mode) => void}          setMode        - Set the execution mode
+ * @property {(concurrency: number) => void} setConcurrency - Set the worker-pool size
+ * @property {(sort: TableSort) => void}     setTableSort   - Set the details-table ordering
+ * @property {(filter: TableFilter) => void} setTableFilter - Set the details-table row filter
+ * @property {(preset: Preset) => void}      selectPreset   - Switch preset, resetting the marker to that preset's default
+ * @property {() => void}                    startRun       - Start a run
+ * @property {() => void}                    stopRun        - Abort the run in flight
+ * @property {() => void}                    clearRuns      - Drop the run history
+ * @property {() => void}                    exportJson     - Download the current run plus the history as JSON
+ */
 export interface BenchmarkRunState {
-  /** Active endpoint family */
   preset: Preset;
-  /** Marker / pageUrl the preset probes (unused for `products`) */
   marker: string;
-  /** Probe the cached server fetcher instead of the raw SDK call */
   cached: boolean;
-  /** How many requests one run issues */
   count: number;
-  /** Sequential or a parallel worker pool */
   mode: Mode;
-  /** Worker-pool size in parallel mode */
   concurrency: number;
-  /** A run is in flight */
   running: boolean;
-  /** Samples of the current run, in probe order */
   orderedResults: RequestResult[];
-  /** The successful subset of {@link orderedResults} */
   successResults: RequestResult[];
-  /** Number of failed samples */
   failed: number;
-  /** Client-latency aggregates, `null` before the first success */
   stats: Stats | null;
-  /** Server-reported-latency aggregates, `null` when the route reports none */
   serverStats: Stats | null;
-  /** Summed response body size across successful samples */
   totalBytes: number;
-  /** Completion of the current run, 0–100 */
   progress: number;
-  /** The last ten finished runs, newest first */
   runs: RunSummary[];
-  /** Rows of the details table after sorting and filtering */
   tableRows: RequestResult[];
-  /** Active ordering of the details table */
   tableSort: TableSort;
-  /** Active row filter of the details table */
   tableFilter: TableFilter;
   setMarker: (marker: string) => void;
   setCached: (cached: boolean) => void;
@@ -62,15 +76,10 @@ export interface BenchmarkRunState {
   setConcurrency: (concurrency: number) => void;
   setTableSort: (sort: TableSort) => void;
   setTableFilter: (filter: TableFilter) => void;
-  /** Switch preset, resetting the marker to that preset's default */
   selectPreset: (preset: Preset) => void;
-  /** Start a run */
   startRun: () => void;
-  /** Abort the run in flight */
   stopRun: () => void;
-  /** Drop the run history */
   clearRuns: () => void;
-  /** Download the current run plus the history as JSON */
   exportJson: () => void;
 }
 

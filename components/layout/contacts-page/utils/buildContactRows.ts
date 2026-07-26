@@ -4,15 +4,17 @@ import { dictText } from '@/components/utils/dictText';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
 import type { CmsSalon } from '@/components/utils/salonFromPage';
 
-/** One "Reach out" row of the contacts page. */
+/**
+ * One "Reach out" row of the contacts page.
+ * @property {'phone' | 'mail' | 'map-pin' | 'clock'} icon  - Icon key — a key of the card's `INFO_ICONS` map
+ * @property {string}                                 label - Row caption
+ * @property {string}                                 value - Row value (phone, e-mail, address, hours)
+ * @property {string}                                 href  - Link target (`#` for the rows that are not actionable)
+ */
 export interface ContactRow {
-  /** Icon key — a key of the card's `INFO_ICONS` map */
   icon: 'phone' | 'mail' | 'map-pin' | 'clock';
-  /** Row caption */
   label: string;
-  /** Row value (phone, e-mail, address, hours) */
   value: string;
-  /** Link target (`#` for the rows that are not actionable) */
   href: string;
 }
 

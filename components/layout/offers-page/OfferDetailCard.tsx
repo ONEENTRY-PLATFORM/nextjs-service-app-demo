@@ -47,6 +47,7 @@ const OfferDetailCard = ({
     accentColor,
     accentGrad,
     image,
+    imageBlur,
     duration,
     serviceProductIds,
   } = parseOfferDetail(product);
@@ -85,6 +86,7 @@ const OfferDetailCard = ({
       {/* Left — full-bleed photo with price overlay */}
       <OfferDetailMedia
         image={image}
+        imageBlur={imageBlur}
         name={name}
         discount={discount}
         accentColor={accentColor}

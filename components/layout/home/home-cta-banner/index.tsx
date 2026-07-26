@@ -1,5 +1,5 @@
 import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
-import type { JSX } from 'react';
+import type { CSSProperties, JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
@@ -9,17 +9,38 @@ import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr'
 import CtaBannerOverlay from './components/CtaBannerOverlay';
 
 /**
- * First image URL of an `image` block attribute.
- * @param   {unknown} value - Raw `attributeValues.<marker>.value`
- * @returns {string}        Image URL, or `''` when the attribute is empty
+ * First image of an `image` block attribute: its URL plus the ready-made CMS
+ * LQIP (`previewLink`), which the banner paints as the `<img>` background until
+ * the artwork itself arrives.
+ * @param   {unknown}                              value - Raw `attributeValues.<marker>.value`
+ * @returns {{ url: string; blur: string | null }}       Image URL (`''` when empty) and its blur data URI
  */
-const imageUrl = (value: unknown): string => {
+const imageOf = (value: unknown): { url: string; blur: string | null } => {
   if (!Array.isArray(value) || value.length === 0) {
-    return '';
+    return { url: '', blur: null };
   }
   const file = value[0] as OneEntryImageFile | undefined;
-  return file?.downloadLink ? getGalleryImageUrls(file).full : '';
+  if (!file?.downloadLink) {
+    return { url: '', blur: null };
+  }
+  const { full, blur } = getGalleryImageUrls(file);
+  return { url: full, blur };
 };
+
+/**
+ * Inline style painting the LQIP behind an `<img>` — visible only while the
+ * full artwork is still downloading, then covered by the image itself.
+ * @param   {string | null} blur - Base64 blur data URI, `null` when the CMS file has none
+ * @returns {CSSProperties}      Background style, empty when there is no LQIP
+ */
+const blurStyle = (blur: string | null): CSSProperties =>
+  blur
+    ? {
+        backgroundImage: `url("${blur}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
+    : {};
 
 /**
  * Plain text of a block attribute, tolerating both `string` and `text` markers.
@@ -57,10 +78,11 @@ const HomeCtaBanner = ({
   >;
 
   /** Mobile keeps its own portrait crop; the wide banner stands in when absent. */
-  const desktop = imageUrl(attrs.bg_image?.value);
-  const mobile = imageUrl(attrs.bg_image_mobile?.value) || desktop;
+  const desktop = imageOf(attrs.bg_image?.value);
+  const mobileOwn = imageOf(attrs.bg_image_mobile?.value);
+  const mobile = mobileOwn.url ? mobileOwn : desktop;
 
-  if (!desktop && !mobile) {
+  if (!desktop.url && !mobile.url) {
     return null;
   }
 
@@ -75,15 +97,17 @@ const HomeCtaBanner = ({
           {/* Mobile banner */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={mobile}
+            src={mobile.url}
             alt={alt}
+            style={blurStyle(mobile.blur)}
             className="h-auto w-full object-cover md:hidden"
           />
           {/* Desktop banner */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={desktop || mobile}
+            src={desktop.url || mobile.url}
             alt={alt}
+            style={blurStyle(desktop.url ? desktop.blur : mobile.blur)}
             className="hidden h-auto w-full object-cover md:block"
           />
           <CtaBannerOverlay

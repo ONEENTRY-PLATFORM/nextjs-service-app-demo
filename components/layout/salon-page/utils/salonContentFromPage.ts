@@ -1,10 +1,12 @@
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
-/** About paragraphs and highlight bullets read from a salon page. */
+/**
+ * About paragraphs and highlight bullets read from a salon page.
+ * @property {string[]} about      - "About this studio" paragraphs (the page's `<p>` blocks)
+ * @property {string[]} highlights - Highlight bullets (the page's `<li>` items)
+ */
 export interface SalonCopy {
-  /** "About this studio" paragraphs (the page's `<p>` blocks) */
   about: string[];
-  /** Highlight bullets (the page's `<li>` items) */
   highlights: string[];
 }
 

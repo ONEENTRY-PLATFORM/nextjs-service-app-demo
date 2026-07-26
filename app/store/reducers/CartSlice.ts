@@ -16,12 +16,15 @@ import { createSlice } from '@reduxjs/toolkit';
  * the shape is now the three IDs directly. `serviceId`, `date` and `interval`
  * were written by producers but read by nobody (the wizard builds the order
  * from its own selection state, not the cart), and are dropped.
+ * @property {number} [salonId]   - Pre-selected salon page id
+ * @property {number} [productId] - Pre-selected service product id
+ * @property {number} [masterId]  - Pre-selected master admin id
+ * @property {number} version     - Hydration marker AuthProvider bumps once the persisted cart is restored.
  */
 interface CartState {
   salonId?: number;
   productId?: number;
   masterId?: number;
-  /** Hydration marker AuthProvider bumps once the persisted cart is restored. */
   version: number;
 }
 

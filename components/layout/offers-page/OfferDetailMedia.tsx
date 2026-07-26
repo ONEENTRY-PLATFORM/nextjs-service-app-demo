@@ -1,13 +1,14 @@
-import Image from 'next/image';
 import type { JSX } from 'react';
 
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
+import Image from '@/components/shared/Image';
 
 /**
  * OfferDetailMedia — the left photo pane of an offer detail card: a full-bleed
  * image with a discount badge and a price overlay (current price + crossed-out
- * original) at the bottom. An offer without a photo in the CMS keeps the pane
- * as a flat accent block — badge and price still render.
+ * original) at the bottom. An offer without a photo in the CMS (or with a photo
+ * that fails to load) shows the centered brand-logo placeholder — badge and
+ * price still render.
  * @param   {object}      props             - Component properties
  * @param   {string}      props.image       - Photo URL, `''` when the CMS holds none
  * @param   {string}      props.name        - Offer name (alt text)
@@ -16,6 +17,7 @@ import CurrencySymbol from '@/components/shared/CurrencySymbol';
  * @param   {number}      props.price       - Current price
  * @param   {number}      props.original    - Crossed-out original price (`0` hides it)
  * @param   {string}      [props.currency]  - Currency code from the CMS
+ * @param   {string}      [props.imageBlur] - Ready-made CMS LQIP (`previewLink`) shown while the photo loads
  * @returns {JSX.Element}                   Photo pane
  */
 const OfferDetailMedia = ({
@@ -26,6 +28,7 @@ const OfferDetailMedia = ({
   price,
   original,
   currency,
+  imageBlur,
 }: {
   image: string;
   name: string;
@@ -34,17 +37,17 @@ const OfferDetailMedia = ({
   price: number;
   original: number;
   currency?: string | undefined;
+  imageBlur?: string | undefined;
 }): JSX.Element => (
   <div className="relative min-h-60" style={{ background: accentColor }}>
-    {image && (
-      <Image
-        src={image}
-        alt={name}
-        fill
-        sizes="(max-width: 768px) 100vw, 320px"
-        className="object-cover"
-      />
-    )}
+    <Image
+      src={image}
+      alt={name}
+      sizes="(max-width: 768px) 100vw, 320px"
+      placeholder={imageBlur ? 'blur' : 'empty'}
+      {...(imageBlur ? { blurDataURL: imageBlur } : {})}
+      className="absolute inset-0"
+    />
     {discount > 0 && (
       <span
         className="absolute top-4 left-4 rounded-full px-4 py-1.5 text-base font-black text-white"

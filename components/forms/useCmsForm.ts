@@ -8,17 +8,19 @@ import { useAppSelector } from '@/app/store/hooks';
 import { getFormAttributes } from '@/components/utils/getFormAttributes';
 import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
 
-/** The CMS form definition plus the live values every auth form renders from. */
+/**
+ * The CMS form definition plus the live values every auth form renders from.
+ * @property {IFormAttribute[]}                                  attributes - Form fields as configured in the CMS, ordered by their `position`
+ * @property {Record<string, { value: string; valid: boolean }>} fields     - Live field values and validity, keyed by marker (`FormFieldsSlice`)
+ * @property {boolean}                                           isLoading  - The form definition is still being fetched
+ * @property {boolean}                                           hasForm    - A response has arrived (even an empty form) — `false` while unresolved
+ * @property {unknown}                                           error      - The form could not be fetched (RTK Query error), `undefined` when fine
+ */
 export interface CmsForm {
-  /** Form fields as configured in the CMS, ordered by their `position` */
   attributes: IFormAttribute[];
-  /** Live field values and validity, keyed by marker (`FormFieldsSlice`) */
   fields: Record<string, { value: string; valid: boolean }>;
-  /** The form definition is still being fetched */
   isLoading: boolean;
-  /** A response has arrived (even an empty form) — `false` while unresolved */
   hasForm: boolean;
-  /** The form could not be fetched (RTK Query error), `undefined` when fine */
   error: unknown;
 }
 

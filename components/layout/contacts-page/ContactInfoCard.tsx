@@ -31,11 +31,13 @@ const SOCIAL_ICONS = {
   twitter: { Icon: Twitter, color: '#109aa9' },
 } as const;
 
-/** Props for {@link ContactInfoCard} */
+/**
+ * Props for {@link ContactInfoCard}
+ * @property {CmsSalon | undefined} salon - Primary (head-office) salon — source of the phone and address rows
+ * @property {string | null}        hours - Collapsed week hours (`"10:00 – 22:00"`), or `null` when days differ
+ */
 interface ContactInfoCardProps {
-  /** Primary (head-office) salon — source of the phone and address rows */
   salon: CmsSalon | undefined;
-  /** Collapsed week hours (`"10:00 – 22:00"`), or `null` when days differ */
   hours: string | null;
 }
 

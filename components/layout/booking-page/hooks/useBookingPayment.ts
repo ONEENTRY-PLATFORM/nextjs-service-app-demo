@@ -8,13 +8,15 @@ import { isOnlinePayment } from '@/app/api/utils/isOnlinePayment';
 import { PAYMENT_ACCOUNT_CASH } from '@/app/store/orderMarkers';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 
-/** Payment accounts the wizard offers and the one the order will use. */
+/**
+ * Payment accounts the wizard offers and the one the order will use.
+ * @property {IAccountsEntity[]}            paymentAccounts      - Payment accounts the salon offers for these orders (see `usePaymentAccounts`)
+ * @property {string}                       paymentAccount       - Identifier of the payment account the order will use
+ * @property {(identifier: string) => void} selectPaymentAccount - Choose a payment account
+ */
 export interface BookingPaymentState {
-  /** Payment accounts the salon offers for these orders (see `usePaymentAccounts`) */
   paymentAccounts: IAccountsEntity[];
-  /** Identifier of the payment account the order will use */
   paymentAccount: string;
-  /** Choose a payment account */
   selectPaymentAccount: (identifier: string) => void;
 }
 

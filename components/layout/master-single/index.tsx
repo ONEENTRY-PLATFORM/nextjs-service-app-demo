@@ -8,6 +8,7 @@ import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { REVIEWS } from '@/components/layout/reviews-page/data';
 import { entityLinks } from '@/components/utils/entityLinks';
+import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 import { salonFromPage } from '@/components/utils/salonFromPage';
 
@@ -51,6 +52,7 @@ const MasterSingleLayout = async ({
   /** Basic display attributes (all optional — fall back gracefully). */
   const name = (attrs.master_name?.value as string | undefined) ?? '';
   const imageSrc = fileDisplayUrl(attrs.master_image?.value);
+  const imageBlur = fileBlurDataUrl(attrs.master_image?.value);
   const rating = Number(attrs.master_rating?.value) || 0;
   const experience =
     (attrs.master_expirience?.value as string | undefined) ?? '';
@@ -138,7 +140,11 @@ const MasterSingleLayout = async ({
         <MasterAnimations className="grid grid-cols-1 items-start gap-8 md:grid-cols-[300px_1fr] md:gap-12">
           {/* Portrait column */}
           <div className="flex flex-col items-center md:items-start">
-            <MasterPortrait imageSrc={imageSrc} alt={name} />
+            <MasterPortrait
+              imageSrc={imageSrc}
+              alt={name}
+              imageBlur={imageBlur}
+            />
             {salonChips.length > 0 ? (
               <div
                 className="item mt-5 flex w-full flex-col gap-2"

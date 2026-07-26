@@ -11,31 +11,35 @@ import type {
   BookingService,
 } from '../types';
 
-/** The current selection the cross-filters narrow the rosters by. */
+/**
+ * The current selection the cross-filters narrow the rosters by.
+ * @property {BookingData}        data           - Salons, services and specialists from the CMS
+ * @property {BookingFlow | null} flow           - Chosen flow, `null` on the entry screen
+ * @property {number | null}      salon          - Chosen salon id
+ * @property {string[]}           serviceIds     - Chosen service ids
+ * @property {string}             master         - Chosen specialist id (`''`, id or `__any__`)
+ * @property {string}             categoryFilter - Active category pill
+ */
 export interface BookingFiltersInput {
-  /** Salons, services and specialists from the CMS */
   data: BookingData;
-  /** Chosen flow, `null` on the entry screen */
   flow: BookingFlow | null;
-  /** Chosen salon id */
   salon: number | null;
-  /** Chosen service ids */
   serviceIds: string[];
-  /** Chosen specialist id (`''`, id or `__any__`) */
   master: string;
-  /** Active category pill */
   categoryFilter: string;
 }
 
-/** The rosters each step offers, narrowed by the current selection. */
+/**
+ * The rosters each step offers, narrowed by the current selection.
+ * @property {string[]}         categories       - Category pill labels (with "All")
+ * @property {BookingMaster[]}  filteredMasters  - Specialists narrowed by salon / service / category
+ * @property {BookingSalon[]}   filteredSalons   - Salons narrowed to the chosen specialist
+ * @property {BookingService[]} filteredServices - Services narrowed by the specialist-first flow
+ */
 export interface BookingFiltersState {
-  /** Category pill labels (with "All") */
   categories: string[];
-  /** Specialists narrowed by salon / service / category */
   filteredMasters: BookingMaster[];
-  /** Salons narrowed to the chosen specialist */
   filteredSalons: BookingSalon[];
-  /** Services narrowed by the specialist-first flow */
   filteredServices: BookingService[];
 }
 
