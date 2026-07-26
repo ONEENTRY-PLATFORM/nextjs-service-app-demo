@@ -12,6 +12,7 @@ import LightboxOverlay from '@/components/shared/lightbox/LightboxOverlay';
 import LightboxThumbStrip from '@/components/shared/lightbox/LightboxThumbStrip';
 import { useLightboxNav } from '@/components/shared/lightbox/useLightboxNav';
 import LightboxStage from '@/components/shared/LightboxStage';
+import { dictText } from '@/components/utils/dictText';
 
 import type { GalleryItem } from '../taxonomy';
 
@@ -61,7 +62,7 @@ const GalleryLightbox = ({
     onClose,
   });
 
-  const photoWord = (dict?.photo_word?.value as string | undefined) || 'Photo';
+  const photoWord = dictText(dict, 'photo_word', 'Photo');
   const thumbs = useMemo(
     () =>
       items.map((photo, i) => ({
@@ -82,7 +83,7 @@ const GalleryLightbox = ({
       testId="gallery-lightbox"
       label={
         item.title
-          ? `${(dict?.photo_word?.value as string | undefined) || 'Photo'}: ${item.title}`
+          ? `${dictText(dict, 'photo_word', 'Photo')}: ${item.title}`
           : 'Photo viewer'
       }
       className="backdrop-blur-2xl"
@@ -95,10 +96,7 @@ const GalleryLightbox = ({
       <LightboxArrow
         side="prev"
         onClick={onPrev}
-        label={
-          (dict?.previous_photo_aria?.value as string | undefined) ||
-          'Previous photo'
-        }
+        label={dictText(dict, 'previous_photo_aria', 'Previous photo')}
         className="left-4 backdrop-blur-xs transition-transform hover:scale-110 active:scale-95 md:left-8"
         style={ARROW_STYLE}
       />
@@ -128,9 +126,7 @@ const GalleryLightbox = ({
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <button
-              aria-label={
-                (dict?.share_aria?.value as string | undefined) || 'Share'
-              }
+              aria-label={dictText(dict, 'share_aria', 'Share')}
               className="flex size-9 items-center justify-center rounded-xl transition-colors hover:bg-white/10"
               style={{ border: '1.5px solid rgba(255,255,255,0.14)' }}
             >
@@ -145,9 +141,7 @@ const GalleryLightbox = ({
       <LightboxArrow
         side="next"
         onClick={onNext}
-        label={
-          (dict?.next_photo_aria?.value as string | undefined) || 'Next photo'
-        }
+        label={dictText(dict, 'next_photo_aria', 'Next photo')}
         className="right-4 backdrop-blur-xs transition-transform hover:scale-110 active:scale-95 md:right-8"
         style={ARROW_STYLE}
       />

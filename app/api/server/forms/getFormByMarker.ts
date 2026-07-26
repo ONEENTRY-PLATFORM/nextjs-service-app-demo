@@ -3,6 +3,7 @@ import type { IFormsEntity } from 'oneentry/dist/forms/formsInterfaces';
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
+import { expectCmsEntity } from '@/app/api/utils/expectCmsEntity';
 
 /** Cached reader: TTL, request-level dedupe and transient-failure handling. */
 const readFormByMarker = createCachedCmsReader<[string], IFormsEntity>({
@@ -11,6 +12,7 @@ const readFormByMarker = createCachedCmsReader<[string], IFormsEntity>({
   revalidate: 300,
   tags: ['oneentry', 'oneentry-forms'],
   call: (marker) => getApi().Forms.getFormByMarker(marker),
+  validate: (data) => expectCmsEntity(data, 'getFormByMarker', 'id'),
 });
 
 /**

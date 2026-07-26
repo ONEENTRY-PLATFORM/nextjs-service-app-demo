@@ -14,6 +14,7 @@ import type { JSX } from 'react';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { buildContactRows } from '@/components/layout/contacts-page/utils/buildContactRows';
 import { buildSocialLinks } from '@/components/utils/buildSocialLinks';
+import { dictText } from '@/components/utils/dictText';
 import type { CmsSalon } from '@/components/utils/salonFromPage';
 
 /** Lucide icon and accent color per the `icon` key of a contact row */
@@ -66,7 +67,7 @@ const ContactInfoCard = ({
         style={{ boxShadow: '0 4px 32px rgba(237,33,241,0.08)' }}
       >
         <p className="mb-6 ml-2 text-sm font-black tracking-[0.25em] text-accent-cyan uppercase md:ml-0">
-          {(dict?.reach_out_text?.value as string | undefined) || 'Reach out'}
+          {dictText(dict, 'reach_out_text', 'Reach out')}
         </p>
         <div className="flex flex-1 flex-col justify-center space-y-4">
           {rows.map(({ icon, label, value, href }) => {
@@ -111,7 +112,7 @@ const ContactInfoCard = ({
         style={{ boxShadow: '0 4px 32px rgba(237,33,241,0.08)' }}
       >
         <p className="mb-4 ml-2 text-sm font-black tracking-[0.2em] text-slate-400 uppercase md:ml-0">
-          {(dict?.follow_us_text?.value as string | undefined) || 'Follow us'}
+          {dictText(dict, 'follow_us_text', 'Follow us')}
         </p>
         <div className="flex gap-3">
           {socials.map(({ title, icon, link }) => {

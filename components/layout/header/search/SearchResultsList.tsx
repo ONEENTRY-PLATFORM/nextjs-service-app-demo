@@ -7,6 +7,7 @@ import { useGetAdminsQuery } from '@/app/api/api/RTKApi';
 import { useSearchProducts } from '@/app/api/hooks/useSearchProducts';
 import { useDict } from '@/app/store/providers/useDict';
 import Spinner from '@/components/shared/Spinner';
+import { dictText } from '@/components/utils/dictText';
 import { isOfferProduct } from '@/components/utils/isOfferProduct';
 
 import { adminAttr } from './adminAttr';
@@ -76,9 +77,10 @@ const SearchResultsList = ({
         data-testid="search-empty"
         className="px-5 py-8 text-center text-sm text-neutral-300"
       >
-        {(
-          (dict?.search_nothing_found_text?.value as string | undefined) ||
-          'Nothing found for “%q%”.'
+        {dictText(
+          dict,
+          'search_nothing_found_text',
+          'Nothing found for “%q%”.',
         ).replace('%q%', searchValue)}
       </p>
     ) : (
@@ -91,8 +93,7 @@ const SearchResultsList = ({
       {specialists.length > 0 && (
         <div className="py-1">
           <p className="px-5 py-1.5 text-sm font-black tracking-widest text-neutral-300 uppercase">
-            {(dict?.specialists_text?.value as string | undefined) ||
-              'Specialists'}
+            {dictText(dict, 'specialists_text', 'Specialists')}
           </p>
           {specialists.map((admin) => (
             <SpecialistRow key={admin.id} admin={admin} setOpen={setOpen} />
@@ -103,7 +104,7 @@ const SearchResultsList = ({
       {services.length > 0 && (
         <div className="py-1">
           <p className="px-5 py-1.5 text-sm font-black tracking-widest text-neutral-300 uppercase">
-            {(dict?.services_text?.value as string | undefined) || 'Services'}
+            {dictText(dict, 'services_text', 'Services')}
           </p>
           {/* Each row resolves (and caches) its own catalog page — see ProductRow. */}
           {services.map((product) => {

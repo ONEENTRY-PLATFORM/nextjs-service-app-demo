@@ -7,6 +7,7 @@ import { useState } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import SalonTopBarAnimations from './animations/SalonTopBarAnimations';
 import SalonLightbox from './components/SalonLightbox';
@@ -45,8 +46,7 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
           className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
         >
           <ArrowLeft size={16} />{' '}
-          {(dict?.back_to_contacts_text?.value as string | undefined) ||
-            'Back to Contacts'}
+          {dictText(dict, 'back_to_contacts_text', 'Back to Contacts')}
         </Link>
       </SalonTopBarAnimations>
 
@@ -74,8 +74,11 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
                   data-testid="salon-no-photos"
                   className="py-10 text-center text-sm text-neutral-300"
                 >
-                  {(dict?.salon_no_photos_text?.value as string | undefined) ||
-                    'This salon has no photos yet.'}
+                  {dictText(
+                    dict,
+                    'salon_no_photos_text',
+                    'This salon has no photos yet.',
+                  )}
                 </p>
               </RevealAnimations>
             )}
@@ -92,8 +95,7 @@ const SalonPageContent = ({ salon }: { salon: SalonDetail }): JSX.Element => {
                 className="mb-3 text-sm font-black tracking-[0.25em] uppercase"
                 style={{ color: c }}
               >
-                {(dict?.about_studio_text?.value as string | undefined) ||
-                  'About this studio'}
+                {dictText(dict, 'about_studio_text', 'About this studio')}
               </p>
             </RevealAnimations>
             <RevealAnimations delay={0.08}>

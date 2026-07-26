@@ -4,6 +4,7 @@ import { Search, X } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import type { GalleryMainCategory } from '../taxonomy';
 import { GALLERY_MAIN_CATS } from '../taxonomy';
@@ -84,10 +85,8 @@ const GalleryFilterBar = ({
               }`}
             >
               {t === 'service'
-                ? (dict?.gallery_tab_service?.value as string | undefined) ||
-                  'Service'
-                : (dict?.gallery_tab_specialist?.value as string | undefined) ||
-                  'Specialist'}
+                ? dictText(dict, 'gallery_tab_service', 'Service')
+                : dictText(dict, 'gallery_tab_specialist', 'Specialist')}
               {active && (
                 <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-accent-pink" />
               )}
@@ -131,8 +130,11 @@ const GalleryFilterBar = ({
           />
         ) : specialistsInMain.length === 0 ? (
           <p className="text-center text-sm text-neutral-300">
-            {(dict?.no_specialists_category_text?.value as
-              string | undefined) || 'No specialists in this category yet.'}
+            {dictText(
+              dict,
+              'no_specialists_category_text',
+              'No specialists in this category yet.',
+            )}
           </p>
         ) : (
           <GalleryFilterLinks
@@ -156,18 +158,18 @@ const GalleryFilterBar = ({
           placeholder={
             tab === 'specialist'
               ? 'Search by specialist…'
-              : (dict?.search_by_service_placeholder?.value as
-                  string | undefined) || 'Search by service…'
+              : dictText(
+                  dict,
+                  'search_by_service_placeholder',
+                  'Search by service…',
+                )
           }
           className="w-full rounded-xl border-[1.5px] border-slate-150 bg-white px-11 py-3 text-base text-slate-400 shadow-sm transition-colors outline-none focus:border-accent-pink"
         />
         {query.trim() && (
           <button
             onClick={() => onQuery('')}
-            aria-label={
-              (dict?.clear_search_text?.value as string | undefined) ||
-              'Clear search'
-            }
+            aria-label={dictText(dict, 'clear_search_text', 'Clear search')}
             className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-neutral-300"
           >
             <X size={16} />
@@ -180,18 +182,15 @@ const GalleryFilterBar = ({
         <p className="text-sm text-neutral-300">
           {count}{' '}
           {count === 1
-            ? (dict?.photos_word_singular?.value as string | undefined) ||
-              'photo'
-            : (dict?.photos_word_plural?.value as string | undefined) ||
-              'photos'}
+            ? dictText(dict, 'photos_word_singular', 'photo')
+            : dictText(dict, 'photos_word_plural', 'photos')}
         </p>
         {hasActiveFilter && (
           <button
             onClick={onClearAll}
             className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-bold tracking-wider text-accent-pink uppercase transition-colors hover:bg-fuchsia-500/10"
           >
-            <X size={17} />{' '}
-            {(dict?.clear_all_text?.value as string | undefined) || 'Clear all'}
+            <X size={17} /> {dictText(dict, 'clear_all_text', 'Clear all')}
           </button>
         )}
       </div>

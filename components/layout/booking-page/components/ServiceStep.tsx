@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { useMemo, useState } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import { CATEGORY_ORDER, DARK, MUTED, PINK } from '../constants';
 import type { BookingService } from '../types';
@@ -58,8 +59,7 @@ const ServiceStep = ({
     <div className="space-y-4" data-testid="booking-step-service">
       <div className="flex items-baseline justify-between gap-3">
         <h3 className="text-lg font-light text-slate-400">
-          {(dict?.booking_choose_services_text?.value as string | undefined) ||
-            'Choose services'}
+          {dictText(dict, 'booking_choose_services_text', 'Choose services')}
         </h3>
         {selectedIds.length > 0 && (
           <span
@@ -67,8 +67,7 @@ const ServiceStep = ({
             data-testid="booking-services-count"
           >
             {selectedIds.length}{' '}
-            {(dict?.booking_selected_suffix?.value as string | undefined) ||
-              'selected'}
+            {dictText(dict, 'booking_selected_suffix', 'selected')}
           </span>
         )}
       </div>
@@ -84,8 +83,11 @@ const ServiceStep = ({
             style={{ background: `${PINK}08`, color: MUTED }}
             data-testid="booking-services-empty"
           >
-            {(dict?.booking_no_services_text?.value as string | undefined) ||
-              'No services available yet — please check back soon.'}
+            {dictText(
+              dict,
+              'booking_no_services_text',
+              'No services available yet — please check back soon.',
+            )}
           </p>
         )}
         {filtered.map((s) => {

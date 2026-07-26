@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import { DESC_MIN_H } from '../constants';
 import type { BookingSalon } from '../types';
@@ -44,8 +45,10 @@ const AnySpecialistCard = ({
   return (
     <>
       {/* MOBILE compact "Any specialist" card — circular avatar + info row */}
-      <div
+      <button
+        type="button"
         onClick={onSelect}
+        aria-pressed={active}
         data-testid="booking-any-specialist"
         className="cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 active:scale-99 md:hidden"
         style={selectableCardStyle(active)}
@@ -62,21 +65,22 @@ const AnySpecialistCard = ({
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-base leading-tight font-bold text-slate-400">
-              {(dict?.booking_any_specialist_text?.value as
-                string | undefined) || 'Any specialist'}
+              {dictText(dict, 'booking_any_specialist_text', 'Any specialist')}
             </p>
             <p className="truncate text-base font-bold text-fuchsia-500">
               {specialties}
             </p>
             <p className="mt-0.5 line-clamp-2 text-base leading-snug text-neutral-300">
-              {(dict?.booking_any_specialist_desc?.value as
-                string | undefined) ||
-                "We'll assign the first available master who can perform this service. Soonest available slot included."}
+              {dictText(
+                dict,
+                'booking_any_specialist_desc',
+                "We'll assign the first available master who can perform this service. Soonest available slot included.",
+              )}
             </p>
             {fromPrice !== null && (
               <p className="mt-1.5 flex items-baseline gap-1.5">
                 <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">
-                  {(dict?.from_text?.value as string | undefined) || 'from'}
+                  {dictText(dict, 'from_text', 'from')}
                 </span>
                 <span className="text-xl leading-none font-semibold text-slate-400">
                   <Price big amount={fromPrice} currency={currency} />
@@ -89,11 +93,13 @@ const AnySpecialistCard = ({
         <div className="flex flex-col gap-2 p-3">
           <SalonChips salons={salons} height={38} />
         </div>
-      </div>
+      </button>
 
       {/* DESKTOP "Any specialist" card — group photo + card body */}
-      <div
+      <button
+        type="button"
         onClick={onSelect}
+        aria-pressed={active}
         data-testid="booking-any-specialist"
         className="hidden h-full cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 hover:-translate-y-0.5 md:flex md:flex-col"
         style={selectableCardStyle(active)}
@@ -112,8 +118,7 @@ const AnySpecialistCard = ({
         <div className="flex flex-1 flex-col bg-white">
           <div className="flex flex-col gap-2 p-4">
             <p className="truncate text-lg leading-tight font-bold text-slate-400">
-              {(dict?.booking_any_specialist_text?.value as
-                string | undefined) || 'Any specialist'}
+              {dictText(dict, 'booking_any_specialist_text', 'Any specialist')}
             </p>
             <p className="truncate text-base font-bold text-fuchsia-500">
               {specialties}
@@ -122,14 +127,16 @@ const AnySpecialistCard = ({
               className="line-clamp-3 text-base leading-snug text-neutral-300"
               style={{ minHeight: DESC_MIN_H }}
             >
-              {(dict?.booking_any_specialist_desc?.value as
-                string | undefined) ||
-                "We'll assign the first available master who can perform this service. Soonest available slot included."}
+              {dictText(
+                dict,
+                'booking_any_specialist_desc',
+                "We'll assign the first available master who can perform this service. Soonest available slot included.",
+              )}
             </p>
             {fromPrice !== null && (
               <p className="mt-1 flex items-baseline gap-1.5">
                 <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">
-                  {(dict?.from_text?.value as string | undefined) || 'from'}
+                  {dictText(dict, 'from_text', 'from')}
                 </span>
                 <span className="text-2xl leading-none font-semibold text-slate-400">
                   <Price big amount={fromPrice} currency={currency} />
@@ -145,7 +152,7 @@ const AnySpecialistCard = ({
             <SalonChips salons={salons} height={40} />
           </div>
         </div>
-      </div>
+      </button>
     </>
   );
 };

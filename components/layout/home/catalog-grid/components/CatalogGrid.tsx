@@ -5,6 +5,7 @@ import type { JSX, Key } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { dictText } from '@/components/utils/dictText';
 
 import CatalogCard from './CatalogCard';
 import CategoryTile, { CATEGORY_TILES } from './CategoryTile';
@@ -27,8 +28,7 @@ const CatalogGrid = async (): Promise<JSX.Element> => {
   if (!pages || isError) {
     return (
       <div data-testid="catalog-error">
-        {(dict?.error_loading_pages_text?.value as string | undefined) ||
-          'Error loading pages.'}
+        {dictText(dict, 'error_loading_pages_text', 'Error loading pages.')}
       </div>
     );
   }

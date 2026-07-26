@@ -3,6 +3,7 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import { DARK, MUTED, PINK } from '../constants';
 import type { ReviewSalon } from '../data';
@@ -44,9 +45,8 @@ const SalonFilter = ({
             <MapPin size={14} color={PINK} className="shrink-0" />
             <span className="truncate">
               {activeSalon
-                ? `${(dict?.salon_label_prefix?.value as string | undefined) || 'Salon'} ${activeIndex + 1} — ${activeSalon.name}`
-                : (dict?.all_studios_text?.value as string | undefined) ||
-                  'All studios'}
+                ? `${dictText(dict, 'salon_label_prefix', 'Salon')} ${activeIndex + 1} — ${activeSalon.name}`
+                : dictText(dict, 'all_studios_text', 'All studios')}
             </span>
           </span>
           <ChevronDown
@@ -74,8 +74,7 @@ const SalonFilter = ({
                   background: !salonId ? `${PINK}0d` : 'transparent',
                 }}
               >
-                {(dict?.all_studios_text?.value as string | undefined) ||
-                  'All studios'}
+                {dictText(dict, 'all_studios_text', 'All studios')}
               </button>
               {salons.map((s, idx) => {
                 const active = s.id === salonId;
@@ -93,9 +92,8 @@ const SalonFilter = ({
                       className="block text-base font-semibold"
                       style={{ color: active ? PINK : DARK }}
                     >
-                      {(dict?.salon_label_prefix?.value as
-                        string | undefined) || 'Salon'}{' '}
-                      {idx + 1} — {s.name}
+                      {dictText(dict, 'salon_label_prefix', 'Salon')} {idx + 1}{' '}
+                      — {s.name}
                     </span>
                     <span className="block text-sm text-neutral-300">
                       {s.address}
@@ -128,9 +126,8 @@ const SalonFilter = ({
               <div className="mb-1 flex items-center gap-2">
                 <MapPin size={14} />
                 <span className="text-base font-bold">
-                  {(dict?.salon_label_prefix?.value as string | undefined) ||
-                    'Salon'}{' '}
-                  {idx + 1} — {s.name}
+                  {dictText(dict, 'salon_label_prefix', 'Salon')} {idx + 1} —{' '}
+                  {s.name}
                 </span>
               </div>
               <p className="text-base opacity-80">{s.address}</p>

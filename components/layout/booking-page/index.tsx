@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import BookingSummary from './components/BookingSummary';
 import DateTimeStep from './components/DateTimeStep';
@@ -171,10 +172,12 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                   >
                     <ChevronLeft size={16} />{' '}
                     {stepIdx === 0
-                      ? (dict?.booking_change_start_text?.value as
-                          string | undefined) || 'Change start'
-                      : (dict?.back_text?.value as string | undefined) ||
-                        'Back'}
+                      ? dictText(
+                          dict,
+                          'booking_change_start_text',
+                          'Change start',
+                        )
+                      : dictText(dict, 'back_text', 'Back')}
                   </button>
                   {!isLastStep && (
                     <button
@@ -189,8 +192,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                         cursor: canNext ? 'pointer' : 'not-allowed',
                       }}
                     >
-                      {(dict?.continue_text?.value as string | undefined) ||
-                        'Continue'}{' '}
+                      {dictText(dict, 'continue_text', 'Continue')}{' '}
                       <ChevronRight size={16} />
                     </button>
                   )}
@@ -211,8 +213,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
                         cursor: time ? 'pointer' : 'not-allowed',
                       }}
                     >
-                      {(dict?.continue_text?.value as string | undefined) ||
-                        'Continue'}{' '}
+                      {dictText(dict, 'continue_text', 'Continue')}{' '}
                       <ChevronRight size={16} />
                     </button>
                   )}
@@ -236,8 +237,7 @@ const BookingWizard = ({ data }: { data: BookingData }): JSX.Element => {
               className="mb-4 flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold tracking-wider uppercase xl:hidden"
               style={{ background: '#f7f7fb', color: MUTED }}
             >
-              <ChevronLeft size={16} />{' '}
-              {(dict?.back_text?.value as string | undefined) || 'Back'}
+              <ChevronLeft size={16} /> {dictText(dict, 'back_text', 'Back')}
             </button>
             <BookingSummary
               flow={flow}

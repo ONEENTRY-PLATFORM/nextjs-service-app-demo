@@ -2,6 +2,7 @@ import { Search } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import { DARK, MUTED, PINK } from '../constants';
 import { MASTER_CAT } from '../data';
@@ -52,10 +53,11 @@ const MasterFilter = ({
         <input
           value={masterSearch}
           onChange={(e) => onSearch(e.target.value)}
-          placeholder={
-            (dict?.search_specialist_placeholder?.value as
-              string | undefined) || 'Search specialist'
-          }
+          placeholder={dictText(
+            dict,
+            'search_specialist_placeholder',
+            'Search specialist',
+          )}
           className="flex-1 bg-transparent text-base text-slate-400 outline-none"
         />
       </div>
@@ -77,9 +79,7 @@ const MasterFilter = ({
                 active ? { boxShadow: `0 6px 20px ${PINK}44` } : { color: DARK }
               }
             >
-              {m === 'All'
-                ? (dict?.all_text?.value as string | undefined) || 'All'
-                : m}
+              {m === 'All' ? dictText(dict, 'all_text', 'All') : m}
             </button>
           );
         })}

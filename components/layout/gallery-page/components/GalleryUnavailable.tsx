@@ -2,6 +2,7 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * GalleryUnavailable — the gallery error state shown when the OneEntry gallery
@@ -15,12 +16,14 @@ const GalleryUnavailable = (): JSX.Element => {
   return (
     <div data-testid="gallery-unavailable" className="px-4 py-24 text-center">
       <p className="text-base font-semibold text-slate-400">
-        {(dict?.gallery_unavailable_text?.value as string | undefined) ||
-          'The gallery is currently unavailable.'}
+        {dictText(
+          dict,
+          'gallery_unavailable_text',
+          'The gallery is currently unavailable.',
+        )}
       </p>
       <p className="mt-2 text-sm text-neutral-300">
-        {(dict?.try_again_later_text?.value as string | undefined) ||
-          'Please try again later.'}
+        {dictText(dict, 'try_again_later_text', 'Please try again later.')}
       </p>
     </div>
   );

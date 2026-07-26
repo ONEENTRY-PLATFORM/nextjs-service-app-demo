@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
 import Image from '@/components/shared/Image';
+import { dictText } from '@/components/utils/dictText';
 
 import type { GalleryItem } from '../taxonomy';
 
@@ -41,7 +42,7 @@ const GalleryGridCell = ({
       data-gallery-id={item.id}
       role="button"
       tabIndex={0}
-      aria-label={`${(dict?.open_photo_aria?.value as string | undefined) || 'Open photo'}: ${item.title}`}
+      aria-label={`${dictText(dict, 'open_photo_aria', 'Open photo')}: ${item.title}`}
       className="group relative aspect-4/5 cursor-pointer overflow-hidden rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-pink"
       onClick={onOpen}
       onKeyDown={(e) => {
@@ -85,8 +86,7 @@ const GalleryGridCell = ({
             onClick={(e) => e.stopPropagation()}
             className="mt-2 flex w-fit items-center gap-1 text-base font-semibold text-white underline decoration-white/50 underline-offset-2 transition-all hover:decoration-white"
           >
-            {(dict?.check_a_profile_text?.value as string | undefined) ||
-              'Check a profile'}{' '}
+            {dictText(dict, 'check_a_profile_text', 'Check a profile')}{' '}
             <ArrowUpRight size={18} />
           </Link>
         </div>
@@ -99,10 +99,12 @@ const GalleryGridCell = ({
           }}
           aria-label={
             liked
-              ? (dict?.remove_from_favorites_aria?.value as
-                  string | undefined) || 'Remove from favorites'
-              : (dict?.add_to_favorites_aria?.value as string | undefined) ||
-                'Add to favorites'
+              ? dictText(
+                  dict,
+                  'remove_from_favorites_aria',
+                  'Remove from favorites',
+                )
+              : dictText(dict, 'add_to_favorites_aria', 'Add to favorites')
           }
           className="absolute top-3 right-3 flex size-8 items-center justify-center rounded-full backdrop-blur-sm transition-all active:scale-90"
           style={{

@@ -3,6 +3,7 @@ import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
+import { dictText } from '@/components/utils/dictText';
 
 /** Brand text colors */
 const DARK = '#4c4d56';
@@ -85,7 +86,7 @@ const OfferCardFooter = ({
               }
         }
       >
-        {(dict?.book_offer_text?.value as string | undefined) || 'Book Offer'}{' '}
+        {dictText(dict, 'book_offer_text', 'Book Offer')}{' '}
         <ChevronRight size={14} />
       </button>
     </div>

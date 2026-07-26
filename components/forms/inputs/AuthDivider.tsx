@@ -3,6 +3,7 @@
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * "or continue with" hairline divider between the credential form and the
@@ -16,9 +17,7 @@ const AuthDivider = ({ text }: { text?: string }): JSX.Element => {
   /** UI-text dictionary for the localized divider label */
   const dict = useDict();
   const label =
-    text ??
-    (dict?.or_continue_with_text?.value as string | undefined) ??
-    'or continue with';
+    text ?? dictText(dict, 'or_continue_with_text', 'or continue with');
 
   return (
     <div className="flex items-center gap-3">

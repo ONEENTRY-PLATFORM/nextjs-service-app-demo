@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 import type { OpeningHoursRow } from '@/components/utils/parseOpeningTime';
 
 /**
@@ -55,7 +56,7 @@ const OpeningHoursDayCard = ({
           className="rounded-full px-2 py-0.5 text-[10px] font-black tracking-widest text-white uppercase"
           style={{ background: 'rgba(255,255,255,0.25)' }}
         >
-          {(dict?.today_text?.value as string | undefined) || 'Today'}
+          {dictText(dict, 'today_text', 'Today')}
         </span>
       )}
     </div>

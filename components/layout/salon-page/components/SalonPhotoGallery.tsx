@@ -7,6 +7,7 @@ import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useDict } from '@/app/store/providers/useDict';
 import Image from '@/components/shared/Image';
+import { dictText } from '@/components/utils/dictText';
 
 import type { SalonPhoto } from '../types';
 
@@ -84,7 +85,7 @@ const SalonPhotoGallery = ({
             <button
               key={i}
               onClick={() => onOpen(i)}
-              aria-label={`${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} ${i + 1}`}
+              aria-label={`${dictText(dict, 'open_salon_photo_aria', 'Open salon photo')} ${i + 1}`}
               className="relative aspect-5/4 w-[86%] shrink-0 snap-center overflow-hidden rounded-2xl"
             >
               <Image
@@ -117,7 +118,7 @@ const SalonPhotoGallery = ({
           <GridItemAnimations index={0} columns={1} className="lg:h-full">
             <button
               onClick={() => onOpen(0)}
-              aria-label={`${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} 1`}
+              aria-label={`${dictText(dict, 'open_salon_photo_aria', 'Open salon photo')} 1`}
               className="group relative aspect-5/4 w-full overflow-hidden rounded-2xl lg:aspect-auto lg:h-full lg:min-h-100"
             >
               <Image
@@ -148,11 +149,12 @@ const SalonPhotoGallery = ({
                   onClick={() => onOpen(i + 1)}
                   aria-label={
                     isLastWithMore
-                      ? (
-                          (dict?.view_more_photos_aria?.value as
-                            string | undefined) || 'View %n% more salon photos'
+                      ? dictText(
+                          dict,
+                          'view_more_photos_aria',
+                          'View %n% more salon photos',
                         ).replace('%n%', String(moreCount))
-                      : `${(dict?.open_salon_photo_aria?.value as string | undefined) || 'Open salon photo'} ${i + 2}`
+                      : `${dictText(dict, 'open_salon_photo_aria', 'Open salon photo')} ${i + 2}`
                   }
                   className="group relative aspect-5/4 w-full overflow-hidden rounded-2xl"
                 >

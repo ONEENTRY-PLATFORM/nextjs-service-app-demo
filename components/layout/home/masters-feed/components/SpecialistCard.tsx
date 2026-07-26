@@ -6,6 +6,7 @@ import CardAnimations from '@/app/animations/CardAnimations';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import Image from '@/components/shared/Image';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * SpecialistCard — one tile of the home "OUR SPECIALISTS" strip: the master's
@@ -66,8 +67,7 @@ const SpecialistCard = ({
             {master.role}
           </p>
           <span className="mt-1 inline-block w-fit text-[14px] font-semibold whitespace-nowrap text-white underline underline-offset-[3px] transition-opacity group-hover:opacity-80">
-            {(dict?.check_a_profile_text?.value as string | undefined) ||
-              'Check a profile'}
+            {dictText(dict, 'check_a_profile_text', 'Check a profile')}
           </span>
         </div>
       </Link>

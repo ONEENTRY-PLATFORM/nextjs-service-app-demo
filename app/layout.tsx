@@ -21,6 +21,7 @@ import Header from '@/components/layout/header';
 import PopupRoot from '@/components/layout/PopupRoot';
 import JsonLd from '@/components/shared/JsonLd';
 import ResponsiveToastContainer from '@/components/shared/ResponsiveToastContainer';
+import { dictText } from '@/components/utils/dictText';
 
 import IntroAnimations from './animations/IntroAnimations';
 import RegisterGSAP from './animations/RegisterGSAP';
@@ -166,12 +167,18 @@ export default async function RootLayout({
         >
           <main className="flex grow flex-col items-center justify-center gap-3 p-8 text-center">
             <h1 className="text-2xl font-bold">
-              {(dict?.site_unavailable_title?.value as string | undefined) ||
-                'Site temporarily unavailable'}
+              {dictText(
+                dict,
+                'site_unavailable_title',
+                'Site temporarily unavailable',
+              )}
             </h1>
             <p className="text-base text-neutral-600">
-              {(dict?.site_unavailable_desc?.value as string | undefined) ||
-                'The content service is currently unavailable. Please try again later.'}
+              {dictText(
+                dict,
+                'site_unavailable_desc',
+                'The content service is currently unavailable. Please try again later.',
+              )}
             </p>
           </main>
         </body>

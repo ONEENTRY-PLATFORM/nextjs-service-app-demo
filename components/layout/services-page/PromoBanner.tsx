@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * PromoBanner component — the "First Visit? Get 15% Off" gradient banner at
@@ -37,19 +38,24 @@ const PromoBanner = (): JSX.Element => {
               style={{ background: 'rgba(255,255,255,0.25)', color: '#fff' }}
             >
               <Sparkles size={17} className="-mt-0.5 mr-1 inline" />{' '}
-              {(dict?.promo_limited_offer_text?.value as string | undefined) ||
-                'Limited Offer'}
+              {dictText(dict, 'promo_limited_offer_text', 'Limited Offer')}
             </span>
             <h3
               className="mb-1 font-black text-white"
               style={{ fontSize: 'clamp(1.3rem,2.5vw,1.8rem)' }}
             >
-              {(dict?.promo_first_visit_title?.value as string | undefined) ||
-                'First Visit? Get 15% Off'}
+              {dictText(
+                dict,
+                'promo_first_visit_title',
+                'First Visit? Get 15% Off',
+              )}
             </h3>
             <p className="max-w-sm text-base text-white/80">
-              {(dict?.promo_first_visit_desc?.value as string | undefined) ||
-                'Book any service for your first visit and enjoy an exclusive welcome discount.'}
+              {dictText(
+                dict,
+                'promo_first_visit_desc',
+                'Book any service for your first visit and enjoy an exclusive welcome discount.',
+              )}
             </p>
           </div>
 
@@ -63,7 +69,7 @@ const PromoBanner = (): JSX.Element => {
               backdropFilter: 'blur(8px)',
             }}
           >
-            {(dict?.book_now_text?.value as string | undefined) || 'Book Now'}
+            {dictText(dict, 'book_now_text', 'Book Now')}
           </Link>
         </div>
       </RevealAnimations>

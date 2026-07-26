@@ -4,6 +4,7 @@ import Link from 'next/link';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import type { MasterItem } from '../taxonomy';
 
@@ -26,8 +27,11 @@ const SpecialistQuickLinks = ({
     <div className="mt-5 hidden flex-wrap items-center justify-center gap-2 lg:flex">
       {masters.length === 0 ? (
         <span className="text-xs text-neutral-300">
-          {(dict?.no_specialists_category_text?.value as string | undefined) ||
-            'No specialists in this category yet.'}
+          {dictText(
+            dict,
+            'no_specialists_category_text',
+            'No specialists in this category yet.',
+          )}
         </span>
       ) : (
         masters.map((master, idx) => (

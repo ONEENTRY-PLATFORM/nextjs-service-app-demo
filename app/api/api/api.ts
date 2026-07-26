@@ -29,7 +29,9 @@ export const LANG_CODE = 'en_US';
  * Save refresh token to localStorage.
  *
  * This function is used to update user JWT token and save to localStorage.
- * It's part of the authentication system for the OneEntry API.
+ * It's part of the authentication system for the OneEntry API. When the
+ * browser blocks storage, the write silently degrades to a noop — the session
+ * just won't survive a reload.
  * @param   {string}        refreshToken - Refresh token from API to be stored in localStorage
  * @returns {Promise<void>}              Promise that resolves when the token is saved
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
@@ -38,7 +40,11 @@ const saveFunction = async (refreshToken: string): Promise<void> => {
   if (!refreshToken || typeof window === 'undefined') {
     return;
   }
-  localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  try {
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  } catch {
+    // Blocked storage throws a SecurityError on mere access (see authStorage).
+  }
 };
 
 /**

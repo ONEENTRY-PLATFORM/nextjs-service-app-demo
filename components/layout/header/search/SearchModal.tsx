@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useDebounce } from 'use-debounce';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import SearchResultsList from './SearchResultsList';
 
@@ -78,10 +79,7 @@ const SearchModal = ({ placeholder }: { placeholder: string }): JSX.Element => {
               />
               <button
                 onClick={close}
-                aria-label={
-                  (dict?.close_search_aria?.value as string | undefined) ||
-                  'Close search'
-                }
+                aria-label={dictText(dict, 'close_search_aria', 'Close search')}
                 className="rounded-lg p-1.5 text-neutral-300 transition-colors hover:bg-gray-100"
               >
                 <X size={18} />
@@ -92,9 +90,11 @@ const SearchModal = ({ placeholder }: { placeholder: string }): JSX.Element => {
             <div className="max-h-[60vh] overflow-y-auto">
               {!debouncedTerm ? (
                 <p className="px-5 py-8 text-center text-sm text-neutral-300">
-                  {(dict?.search_start_typing_text?.value as
-                    string | undefined) ||
-                    'Start typing to find a service or a specialist.'}
+                  {dictText(
+                    dict,
+                    'search_start_typing_text',
+                    'Start typing to find a service or a specialist.',
+                  )}
                 </p>
               ) : (
                 <SearchResultsList

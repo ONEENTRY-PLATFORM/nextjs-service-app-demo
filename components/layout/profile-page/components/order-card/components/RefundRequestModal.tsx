@@ -7,6 +7,7 @@ import { useDict } from '@/app/store/providers/useDict';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
 import DialogPortal from '@/components/shared/DialogPortal';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * RefundRequestModal — what a paid appointment gets instead of the dead-end
@@ -49,10 +50,7 @@ const RefundRequestModal = ({
         data-testid="order-refund-request"
         role="dialog"
         aria-modal="true"
-        aria-label={
-          (dict?.request_refund_title?.value as string | undefined) ||
-          'Request a refund'
-        }
+        aria-label={dictText(dict, 'request_refund_title', 'Request a refund')}
         className="fixed inset-0 z-300 flex items-center justify-center p-4"
         style={{ background: 'rgba(20,20,30,0.45)' }}
         onClick={(e) => {
@@ -66,15 +64,17 @@ const RefundRequestModal = ({
             <Banknote size={26} color="#ed21f1" />
           </div>
           <h3 className="mb-1 text-lg font-bold text-slate-400">
-            {(dict?.request_refund_title?.value as string | undefined) ||
-              'Request a refund'}
+            {dictText(dict, 'request_refund_title', 'Request a refund')}
           </h3>
           {subtitle ? (
             <p className="mb-2 text-sm text-neutral-300">{subtitle}</p>
           ) : null}
           <p className="mb-3 text-base text-neutral-300">
-            {(dict?.refund_explain_text?.value as string | undefined) ||
-              'This appointment has already been paid, so it can’t be cancelled online. We can send the salon a refund request — they confirm it and return the money to your payment method.'}
+            {dictText(
+              dict,
+              'refund_explain_text',
+              'This appointment has already been paid, so it can’t be cancelled online. We can send the salon a refund request — they confirm it and return the money to your payment method.',
+            )}
           </p>
           {total ? (
             <p className="mb-5 text-base font-bold text-slate-400">
@@ -90,17 +90,15 @@ const RefundRequestModal = ({
               className="flex-1 rounded-xl bg-gradient-brand py-2.5 text-base font-bold text-white transition-all hover:opacity-90 disabled:opacity-60"
             >
               {isPending
-                ? (dict?.sending_text?.value as string | undefined) ||
-                  'Sending…'
-                : (dict?.request_refund_button?.value as string | undefined) ||
-                  'Request refund'}
+                ? dictText(dict, 'sending_text', 'Sending…')
+                : dictText(dict, 'request_refund_button', 'Request refund')}
             </button>
             <button
               onClick={onClose}
               data-testid="order-refund-dismiss"
               className="flex-1 rounded-xl border border-slate-150 py-2.5 text-sm font-medium text-neutral-300 transition-all hover:bg-gray-50"
             >
-              {(dict?.not_now_text?.value as string | undefined) || 'Not now'}
+              {dictText(dict, 'not_now_text', 'Not now')}
             </button>
           </div>
         </div>

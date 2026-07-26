@@ -1,4 +1,5 @@
 import { getDictionary } from '@/app/api/utils/dictionaries';
+import { dictText } from '@/components/utils/dictText';
 
 /** Site name fallback when the `system_content` dictionary is unavailable. */
 const SITE_NAME_FALLBACK = 'Thalia Beauty Studio';
@@ -13,5 +14,5 @@ const SITE_NAME_FALLBACK = 'Thalia Beauty Studio';
  */
 export const getSiteName = async (): Promise<string> => {
   const dict = await getDictionary();
-  return (dict?.site_name?.value as string | undefined) || SITE_NAME_FALLBACK;
+  return dictText(dict, 'site_name', SITE_NAME_FALLBACK);
 };

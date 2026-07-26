@@ -9,6 +9,7 @@ import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import BookingWizard from '@/components/layout/booking-page';
 import BookingAnimations from '@/components/layout/booking-page/animations/BookingAnimations';
 import BookingHero from '@/components/layout/booking-page/BookingHero';
+import { dictText } from '@/components/utils/dictText';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
 
@@ -49,9 +50,10 @@ const BookingPageLayout = async (): Promise<JSX.Element> => {
   const subtitleBase =
     plainTextFromTextAttr(attrs?.page_hero_description?.value) ||
     'Premium beauty experience';
-  const locationsLine = (
-    (dictionary?.booking_hero_locations_text?.value as string | undefined) ||
-    `%n% location${locations > 1 ? 's' : ''}`
+  const locationsLine = dictText(
+    dictionary,
+    'booking_hero_locations_text',
+    `%n% location${locations > 1 ? 's' : ''}`,
   ).replace('%n%', String(locations));
   const subtitle = `${subtitleBase}${locations > 0 ? ` · ${locationsLine}` : ''}`;
 

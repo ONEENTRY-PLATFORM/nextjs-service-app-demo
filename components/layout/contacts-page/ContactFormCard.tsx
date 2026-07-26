@@ -4,6 +4,7 @@ import { Send } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import ErrorMessage from '../../forms/inputs/ErrorMessage';
 import FormReCaptcha from '../../forms/inputs/FormReCaptcha';
@@ -40,7 +41,7 @@ const ContactFormCard = (): JSX.Element => {
       style={{ boxShadow: '0 4px 32px rgba(237,33,241,0.08)' }}
     >
       <p className="mb-6 ml-2 text-sm font-black tracking-[0.25em] text-accent-pink uppercase md:ml-0">
-        {(dict?.write_to_us_text?.value as string | undefined) || 'Write to us'}
+        {dictText(dict, 'write_to_us_text', 'Write to us')}
       </p>
 
       {sent ? (
@@ -54,8 +55,11 @@ const ContactFormCard = (): JSX.Element => {
           {/* Success copy comes from the form's own CMS settings when set. */}
           <p className="text-lg font-bold text-slate-400">{successMessage}</p>
           <p className="text-sm text-neutral-300">
-            {(dict?.contact_success_sub_text?.value as string | undefined) ||
-              "We'll get back to you within 24 hours."}
+            {dictText(
+              dict,
+              'contact_success_sub_text',
+              "We'll get back to you within 24 hours.",
+            )}
           </p>
         </div>
       ) : (
@@ -67,56 +71,51 @@ const ContactFormCard = (): JSX.Element => {
           <div className="space-y-5">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <ContactFormField
-                label={
-                  (dict?.contact_name_label?.value as string | undefined) ||
-                  'Your name'
-                }
+                label={dictText(dict, 'contact_name_label', 'Your name')}
                 value={fields.name}
                 onChange={set('name')}
-                placeholder={
-                  (dict?.contact_name_placeholder?.value as
-                    string | undefined) || 'Jane Doe'
-                }
+                placeholder={dictText(
+                  dict,
+                  'contact_name_placeholder',
+                  'Jane Doe',
+                )}
                 type="text"
               />
               <ContactFormField
-                label={
-                  (dict?.phone_text?.value as string | undefined) || 'Phone'
-                }
+                label={dictText(dict, 'phone_text', 'Phone')}
                 value={fields.phone}
                 onChange={set('phone')}
-                placeholder={
-                  (dict?.contact_phone_placeholder?.value as
-                    string | undefined) || '+971 50 123 4567'
-                }
+                placeholder={dictText(
+                  dict,
+                  'contact_phone_placeholder',
+                  '+971 50 123 4567',
+                )}
                 type="tel"
               />
             </div>
             <ContactFormField
-              label={
-                (dict?.contact_email_label?.value as string | undefined) ||
-                'E-mail'
-              }
+              label={dictText(dict, 'contact_email_label', 'E-mail')}
               value={fields.email}
               onChange={set('email')}
-              placeholder={
-                (dict?.contact_email_placeholder?.value as
-                  string | undefined) || 'you@example.com'
-              }
+              placeholder={dictText(
+                dict,
+                'contact_email_placeholder',
+                'you@example.com',
+              )}
               type="email"
             />
             <div>
               <label className="mb-2.5 block text-base font-normal text-neutral-300">
-                {(dict?.contact_message_label?.value as string | undefined) ||
-                  'Message'}
+                {dictText(dict, 'contact_message_label', 'Message')}
               </label>
               <textarea
                 value={fields.contact_text}
                 onChange={(e) => set('contact_text')(e.target.value)}
-                placeholder={
-                  (dict?.contact_message_placeholder?.value as
-                    string | undefined) || 'How can we help you?'
-                }
+                placeholder={dictText(
+                  dict,
+                  'contact_message_placeholder',
+                  'How can we help you?',
+                )}
                 rows={4}
                 className="w-full resize-none rounded-2xl border border-slate-240 px-4 py-3 text-base text-slate-400 transition-all outline-none focus:border-accent-pink"
               />
@@ -142,9 +141,8 @@ const ContactFormCard = (): JSX.Element => {
           >
             <Send size={15} />{' '}
             {loading
-              ? (dict?.sending_text?.value as string | undefined) || 'Sending…'
-              : (dict?.send_message_text?.value as string | undefined) ||
-                'Send Message'}
+              ? dictText(dict, 'sending_text', 'Sending…')
+              : dictText(dict, 'send_message_text', 'Send Message')}
           </button>
         </form>
       )}

@@ -5,6 +5,7 @@ import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces'
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import { DARK, PINK } from '../constants';
 
@@ -37,7 +38,7 @@ const PaymentMethodPicker = ({
   return (
     <div className="border-t pt-4" style={{ borderColor: '#e8e8f0' }}>
       <p className="mb-2 text-xs font-medium tracking-wider text-neutral-300 uppercase">
-        {(dict?.payment_text?.value as string | undefined) || 'Payment'}
+        {dictText(dict, 'payment_text', 'Payment')}
       </p>
       <div className="flex flex-wrap gap-2" data-testid="payment-methods">
         {accounts.map((account) => {

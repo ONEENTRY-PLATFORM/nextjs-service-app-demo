@@ -1,76 +1,55 @@
-import { unstable_cache } from 'next/cache';
 import type { IError } from 'oneentry/dist/base/utils';
-import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
-import { cache } from 'react';
+import type {
+  IProductsEntity,
+  IProductsResponse,
+} from 'oneentry/dist/products/productsInterfaces';
 
-import { getApi, isError } from '@/app/api/api/api';
-import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
+import { getApi } from '@/app/api/api/api';
+import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
+import { expectCmsArray } from '@/app/api/utils/expectCmsArray';
 import getSearchParams from '@/app/api/utils/getSearchParams';
 
 /**
- * Fetch products from OneEntry, cached across requests (private helper).
+ * Cached reader: TTL, request-level dedupe and transient-failure handling.
  *
  * Takes primitives rather than the public object argument: React `cache()`
  * compares arguments by identity, so a fresh object literal would never hit. An
  * empty `search`/`inStock` behaves exactly like the absent `searchParams` of the
  * public signature — `getSearchParams` treats both as "no filter".
- * @param   {number}          limit   - Maximum number of products to fetch per page
- * @param   {number}          offset  - Number of products to skip
- * @param   {string}          search  - Search term, `''` when unused
- * @param   {string}          inStock - Stock filter, `''` when unused
- * @returns {Promise<object>}         Envelope with the products, total, or the error
  */
-const getProductsImpl = unstable_cache(
-  async (
-    limit: number,
-    offset: number,
-    search: string,
-    inStock: string,
-  ): Promise<{
-    isError: boolean;
-    error?: IError;
-    products?: IProductsEntity[];
-    total: number;
-  }> => {
-    const expandedFilters = getSearchParams({ search, in_stock: inStock });
-
-    const data = await fetchCmsData(
-      () =>
-        getApi().Products.getProducts(expandedFilters, undefined, {
-          /**
-           * Same order as `getProductsByPageUrl` — the two wrappers used to sort
-           * the same catalog in OPPOSITE directions (ASC here, DESC there),
-           * which would have been a confusing bug the moment both fed one screen.
-           *
-           * Note this is creation date, not the admin-controlled `position`: the
-           * catalog order cannot be curated from the admin panel today. Switching
-           * to `position` is a product decision — it visibly reorders services.
-           */
-          sortOrder: 'DESC',
-          sortKey: 'date',
-          offset: offset,
-          limit: limit,
-        }),
-      'getProducts',
-    );
-    if (isError(data)) {
-      return { isError: true, error: data, total: 0 };
-    }
-    return {
-      isError: false,
-      products: data.items,
-      total: data.total,
-    };
-  },
-  ['oneentry-products'],
-  { revalidate: 60, tags: ['oneentry', 'oneentry-products'] },
-);
-
-/** Request-level dedupe, keyed by the flattened primitives. */
-const getProductsCached = cache(getProductsImpl);
+const readProducts = createCachedCmsReader<
+  [number, number, string, string],
+  IProductsResponse
+>({
+  cacheKey: 'oneentry-products',
+  label: 'getProducts',
+  revalidate: 60,
+  tags: ['oneentry', 'oneentry-products'],
+  call: (limit, offset, search, inStock) =>
+    getApi().Products.getProducts(
+      getSearchParams({ search, in_stock: inStock }),
+      undefined,
+      {
+        /**
+         * Same order as `getProductsByPageUrl` — the two wrappers used to sort
+         * the same catalog in OPPOSITE directions (ASC here, DESC there),
+         * which would have been a confusing bug the moment both fed one screen.
+         *
+         * Note this is creation date, not the admin-controlled `position`: the
+         * catalog order cannot be curated from the admin panel today. Switching
+         * to `position` is a product decision — it visibly reorders services.
+         */
+        sortOrder: 'DESC',
+        sortKey: 'date',
+        offset: offset,
+        limit: limit,
+      },
+    ),
+  validate: (data) => expectCmsArray(data.items, 'getProducts'),
+});
 
 /**
- * Get all products with pagination and filter
+ * getProducts — get all products with pagination and filter.
  *
  * ⚠️ Currently UNUSED — no module imports this wrapper: the catalog reads products through `getProductsByPageUrl` / `getProductsByIds`.
  * Kept per project convention; the split between the server wrappers and the
@@ -104,16 +83,20 @@ export const getProducts = async (props: {
   total: number;
 }> => {
   const { limit, offset, params } = props;
-  try {
-    return await getProductsCached(
-      limit,
-      offset,
-      params?.searchParams?.search ?? '',
-      params?.searchParams?.in_stock ?? '',
-    );
-  } catch (e) {
-    // Transient CMS failure — not cached by unstable_cache; degrade for this
-    // request only instead of caching a poisoned result.
-    return { isError: true, error: e as IError, total: 0 };
-  }
+  const {
+    isError: failed,
+    error,
+    data,
+  } = await readProducts(
+    limit,
+    offset,
+    params?.searchParams?.search ?? '',
+    params?.searchParams?.in_stock ?? '',
+  );
+  return {
+    isError: failed,
+    ...(error ? { error } : {}),
+    ...(data ? { products: data.items } : {}),
+    total: data?.total ?? 0,
+  };
 };

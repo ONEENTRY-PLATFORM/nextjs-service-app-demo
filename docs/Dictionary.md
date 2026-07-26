@@ -14,8 +14,16 @@ fallback baked into the code**, so the UI never breaks when the CMS is
 unavailable or a value is empty:
 
 ```tsx
-(dict?.book_text?.value as string | undefined) || 'Book Online';
+dictText(dict, 'book_text', 'Book Online');
 ```
+
+The canonical way to read a value is the **`dictText` utility**
+(`components/utils/dictText.ts`): it returns the CMS value only when it really
+is a non-empty string, and the fallback otherwise. The older inline pattern
+`(dict?.marker?.value as string | undefined) || 'Fallback'` is unreliable — an
+unfilled marker comes back from the CMS as an **empty array**, which is truthy,
+so the cast lets a non-string value travel on as a fake string instead of
+falling back.
 
 The values live in the **`system_content` attribute set**, one attribute per
 marker (e.g. `book_text`, `continue_text`, `booking_success_title`). The value a
@@ -62,10 +70,11 @@ type:
 | **Server component** | `const [dict] = ServerProvider<IAttributeValues>('dict');` (the page sets it once via `ServerProvider('dict', await getDictionary())`) |
 | **Client component** | `const dict = useDict();` — `DictProvider` is mounted once in `app/layout.tsx`, so any client component below it can read without prop-drilling |
 
-Both then use the same expression: `(dict?.<marker>?.value as string | undefined) || 'Fallback'`.
+Both then read values the same way: `dictText(dict, '<marker>', 'Fallback')`.
 
 Relevant files:
 
+- `components/utils/dictText.ts` — the `dictText()` read utility.
 - `app/store/providers/DictContext.tsx` — the client React context.
 - `app/store/providers/DictProvider.tsx` — provider, mounted in `app/layout.tsx`.
 - `app/store/providers/useDict.ts` — the `useDict()` hook.
@@ -78,7 +87,7 @@ placeholder uses **percent-delimited tokens**, resolved in code with `.replace`:
 
 ```tsx
 // CMS value: "Step %x% of %y%"
-((dict?.booking_step_of_text?.value as string | undefined) || 'Step %x% of %y%')
+dictText(dict, 'booking_step_of_text', 'Step %x% of %y%')
   .replace('%x%', String(currentIdx + 1))
   .replace('%y%', String(totalSteps));
 ```
@@ -96,7 +105,7 @@ placeholder uses **percent-delimited tokens**, resolved in code with `.replace`:
    `.claude/temp/fill-system-content.mjs`) with a `string` type and a sensible
    value (no `{}` — use `%token%` for placeholders).
 2. **Reference it in code** with an English fallback:
-   `(dict?.my_marker?.value as string | undefined) || 'My text'`.
+   `dictText(dict, 'my_marker', 'My text')`.
 3. New markers render the fallback until a value is set in the CMS — nothing to
    deploy on the CMS side is required for the code to ship.
 

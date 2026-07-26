@@ -2,6 +2,7 @@ import { Star } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import { CYAN, DESC_MIN_H } from '../constants';
 import type { BookingMaster, BookingSalon } from '../types';
@@ -48,8 +49,10 @@ const MasterCard = ({
   return (
     <>
       {/* MOBILE compact card — circular avatar + info row */}
-      <div
+      <button
+        type="button"
         onClick={onSelect}
+        aria-pressed={active}
         data-testid="booking-master-option"
         data-master-id={m.id}
         className="cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 active:scale-99 md:hidden"
@@ -103,7 +106,7 @@ const MasterCard = ({
               <p className="mt-1.5 flex items-baseline gap-1.5">
                 {showFrom && (
                   <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">
-                    {(dict?.from_text?.value as string | undefined) || 'from'}
+                    {dictText(dict, 'from_text', 'from')}
                   </span>
                 )}
                 <span className="text-xl leading-none font-semibold text-slate-400">
@@ -117,11 +120,13 @@ const MasterCard = ({
         <div className="flex flex-col gap-2 p-3">
           <SalonChips salons={salons} height={38} />
         </div>
-      </div>
+      </button>
 
       {/* DESKTOP card — photo, rating pill, body, salon chips */}
-      <div
+      <button
+        type="button"
         onClick={onSelect}
+        aria-pressed={active}
         data-testid="booking-master-option"
         data-master-id={m.id}
         className="hidden h-full cursor-pointer overflow-hidden rounded-2xl border-2 text-left transition-all duration-200 hover:-translate-y-0.5 md:flex md:flex-col"
@@ -180,7 +185,7 @@ const MasterCard = ({
               <p className="mt-1 flex items-baseline gap-1.5">
                 {showFrom && (
                   <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">
-                    {(dict?.from_text?.value as string | undefined) || 'from'}
+                    {dictText(dict, 'from_text', 'from')}
                   </span>
                 )}
                 <span className="text-2xl leading-none font-semibold text-slate-400">
@@ -196,7 +201,7 @@ const MasterCard = ({
             <SalonChips salons={salons} height={40} />
           </div>
         </div>
-      </div>
+      </button>
     </>
   );
 };

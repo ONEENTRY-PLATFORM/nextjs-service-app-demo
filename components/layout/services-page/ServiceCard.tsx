@@ -10,6 +10,7 @@ import { useAppDispatch } from '@/app/store/hooks';
 import { useDict } from '@/app/store/providers/useDict';
 import { addServiceToCart } from '@/app/store/reducers/CartSlice';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
+import { dictText } from '@/components/utils/dictText';
 
 import type { ServiceItem } from './types';
 
@@ -108,8 +109,7 @@ const ServiceCard = ({
               className="rounded-md px-2 py-1 text-[10px] font-bold tracking-wide uppercase"
               style={{ background: `${MUTED}22`, color: MUTED }}
             >
-              {(dict?.not_available_text?.value as string | undefined) ||
-                'Not available'}
+              {dictText(dict, 'not_available_text', 'Not available')}
             </span>
           ) : (
             <div className="flex items-end leading-none">
@@ -133,7 +133,7 @@ const ServiceCard = ({
         {service.duration !== null ? (
           <span className="inline-flex items-center gap-1 text-sm whitespace-nowrap text-neutral-300">
             <Clock size={17} /> {service.duration}{' '}
-            {(dict?.min_text?.value as string | undefined) || 'min'}
+            {dictText(dict, 'min_text', 'min')}
           </span>
         ) : (
           <span />
@@ -158,7 +158,7 @@ const ServiceCard = ({
             cursor: unavailable ? 'not-allowed' : 'pointer',
           }}
         >
-          {(dict?.book_short_text?.value as string | undefined) || 'Book'}
+          {dictText(dict, 'book_short_text', 'Book')}
         </button>
       </div>
     </div>

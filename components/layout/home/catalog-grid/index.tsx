@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import wrapCharactersInSpan from '@/components/hooks/wrapCharactersInSpan';
 import SectionTitle from '@/components/shared/SectionTitle';
+import { dictText } from '@/components/utils/dictText';
 
 import BgAnimations from './animations/BgAnimations';
 import CatalogGrid from './components/CatalogGrid';
@@ -26,8 +27,7 @@ const CatalogSection = ({
   /** Extract title from block's localized information */
   const title =
     block?.localizeInfos?.title ??
-    (dict?.home_catalog_title?.value as string | undefined) ??
-    'Service';
+    dictText(dict, 'home_catalog_title', 'Service');
 
   /** Wrap title words in spans for animation effects */
   const title1 = wrapCharactersInSpan('Beauty');

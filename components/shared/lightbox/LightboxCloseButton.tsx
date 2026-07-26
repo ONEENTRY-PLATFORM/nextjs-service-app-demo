@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * LightboxCloseButton — the ring-bordered × in the top-right corner of a
@@ -25,7 +26,7 @@ const LightboxCloseButton = ({
   return (
     <button
       onClick={onClose}
-      aria-label={(dict?.close_text?.value as string | undefined) || 'Close'}
+      aria-label={dictText(dict, 'close_text', 'Close')}
       className="absolute top-5 right-5 z-10 flex size-10 items-center justify-center rounded-full transition-colors hover:bg-white/10"
       style={{ border: '1.5px solid rgba(255,255,255,0.25)' }}
     >

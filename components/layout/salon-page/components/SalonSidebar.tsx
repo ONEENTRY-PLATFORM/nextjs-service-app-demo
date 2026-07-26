@@ -3,6 +3,7 @@ import type { ComponentType, JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import type { SalonDetail } from '../types';
 
@@ -82,20 +83,14 @@ const SalonSidebar = ({ salon }: { salon: SalonDetail }): JSX.Element => {
           <Row
             icon={MapPin}
             color={c}
-            label={
-              (dict?.salon_address_label?.value as string | undefined) ||
-              'Address'
-            }
+            label={dictText(dict, 'salon_address_label', 'Address')}
             value={salon.address}
           />
           {salon.phone && (
             <Row
               icon={Phone}
               color={c}
-              label={
-                (dict?.salon_phone_label?.value as string | undefined) ||
-                'Phone'
-              }
+              label={dictText(dict, 'salon_phone_label', 'Phone')}
               value={salon.phone}
               href={`tel:${salon.tel}`}
             />
@@ -103,13 +98,8 @@ const SalonSidebar = ({ salon }: { salon: SalonDetail }): JSX.Element => {
           <Row
             icon={Clock}
             color={c}
-            label={
-              (dict?.salon_hours_label?.value as string | undefined) || 'Hours'
-            }
-            value={
-              (dict?.salon_hours_value?.value as string | undefined) ||
-              'Daily 10:00–22:00'
-            }
+            label={dictText(dict, 'salon_hours_label', 'Hours')}
+            value={dictText(dict, 'salon_hours_value', 'Daily 10:00–22:00')}
           />
         </div>
       </RevealAnimations>

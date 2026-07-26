@@ -6,6 +6,7 @@ import { useState } from 'react';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useDict } from '@/app/store/providers/useDict';
 import SectionHeading from '@/components/shared/SectionHeading';
+import { dictText } from '@/components/utils/dictText';
 
 import SalonCard from './SalonCard';
 import type { ContactSalon } from './types';
@@ -54,8 +55,7 @@ const SalonLocations = ({
     >
       <div className="page-shell">
         <SectionHeading className="mb-6 md:mb-10">
-          {(dict?.our_locations_title?.value as string | undefined) ||
-            'Our Locations'}
+          {dictText(dict, 'our_locations_title', 'Our Locations')}
         </SectionHeading>
 
         {salons.length === 0 ? (
@@ -63,8 +63,11 @@ const SalonLocations = ({
             data-testid="contacts-salons-empty"
             className="py-8 text-center text-base text-neutral-300"
           >
-            {(dict?.no_locations_text?.value as string | undefined) ||
-              'No salon locations available at the moment.'}
+            {dictText(
+              dict,
+              'no_locations_text',
+              'No salon locations available at the moment.',
+            )}
           </p>
         ) : (
           <RevealAnimations fade>

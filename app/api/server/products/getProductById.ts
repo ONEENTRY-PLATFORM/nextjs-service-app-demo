@@ -3,6 +3,7 @@ import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces'
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
+import { expectCmsEntity } from '@/app/api/utils/expectCmsEntity';
 
 /** Cached reader: TTL, request-level dedupe and transient-failure handling. */
 const readProductById = createCachedCmsReader<[number], IProductsEntity>({
@@ -11,6 +12,7 @@ const readProductById = createCachedCmsReader<[number], IProductsEntity>({
   revalidate: 60,
   tags: ['oneentry', 'oneentry-products'],
   call: (id) => getApi().Products.getProductById(id),
+  validate: (data) => expectCmsEntity(data, 'getProductById', 'id'),
 });
 
 /**

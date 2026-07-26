@@ -7,6 +7,7 @@ import type { JSX } from 'react';
 import { useDict } from '@/app/store/providers/useDict';
 import Image from '@/components/shared/Image';
 import StarsGroup from '@/components/shared/StarsGroup';
+import { dictText } from '@/components/utils/dictText';
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 
@@ -39,8 +40,7 @@ const MasterCard = ({
   const masterName = attributeValues?.master_name?.value as string | undefined;
   const masterRole =
     (attributeValues?.master_short_description?.value as string | undefined) ||
-    (dict?.specialist_text?.value as string | undefined) ||
-    'Specialist';
+    dictText(dict, 'specialist_text', 'Specialist');
   const masterRating =
     (attributeValues?.master_rating?.value as number | undefined) ?? 0;
 

@@ -3,6 +3,7 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
+import { expectCmsEntity } from '@/app/api/utils/expectCmsEntity';
 
 /** Cached reader: TTL, request-level dedupe and transient-failure handling. */
 const readPageById = createCachedCmsReader<[number], IPagesEntity>({
@@ -11,6 +12,7 @@ const readPageById = createCachedCmsReader<[number], IPagesEntity>({
   revalidate: 60,
   tags: ['oneentry', 'oneentry-pages'],
   call: (id) => getApi().Pages.getPageById(id),
+  validate: (data) => expectCmsEntity(data, 'getPageById', 'id'),
 });
 
 /**

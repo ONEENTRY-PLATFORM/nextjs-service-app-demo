@@ -3,6 +3,7 @@
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import todayDateKey from '../utils/todayDateKey';
 import MonthCalendar from './MonthCalendar';
@@ -51,8 +52,7 @@ const DateTimeStep = ({
   return (
     <div className="space-y-5" data-testid="booking-step-datetime">
       <h3 className="text-lg font-light text-slate-400">
-        {(dict?.booking_pick_datetime_text?.value as string | undefined) ||
-          'Pick date & time'}
+        {dictText(dict, 'booking_pick_datetime_text', 'Pick date & time')}
       </h3>
       <MonthCalendar
         today={today}

@@ -11,6 +11,7 @@ import { getSiteUrl } from '@/app/utils/getSiteUrl';
 import { resolveCmsPage } from '@/app/utils/resolveCmsPage';
 import ServicesPageContent from '@/components/layout/services-page';
 import JsonLd from '@/components/shared/JsonLd';
+import { dictText } from '@/components/utils/dictText';
 
 import { getServicesCatalogData } from '../catalog-data';
 
@@ -72,8 +73,7 @@ export default async function ServicePageLayout({
    * dictionary (same source as the Organization JSON-LD in the root layout),
    * so Service and Organization markup agree. Falls back to the brand name.
    */
-  const siteName =
-    (dict?.site_name?.value as string | undefined) || 'Thalia Beauty Studio';
+  const siteName = dictText(dict, 'site_name', 'Thalia Beauty Studio');
 
   /**
    * Structured data for the service. Emitted only when the CMS page really was

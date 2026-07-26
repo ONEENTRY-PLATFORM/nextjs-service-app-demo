@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 
 import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import type { MasterItem } from '../taxonomy';
 import MasterCard from './MasterCard';
@@ -35,16 +36,18 @@ const SpecialistSections = ({
           className="page-shell py-16 text-center"
         >
           <p className="text-sm text-neutral-300">
-            {(dict?.no_specialists_filter_text?.value as string | undefined) ||
-              'No specialists match the current filter.'}
+            {dictText(
+              dict,
+              'no_specialists_filter_text',
+              'No specialists match the current filter.',
+            )}
           </p>
           <button
             data-testid="masters-clear-filters"
             onClick={onClearAll}
             className="mt-3 rounded-full bg-fuchsia-500/10 px-5 py-2 text-xs font-bold tracking-wider text-accent-pink uppercase transition-colors hover:bg-fuchsia-500/20"
           >
-            {(dict?.clear_filters_text?.value as string | undefined) ||
-              'Clear filters'}
+            {dictText(dict, 'clear_filters_text', 'Clear filters')}
           </button>
         </div>
       ) : (

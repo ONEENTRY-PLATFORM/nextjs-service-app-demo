@@ -8,6 +8,7 @@ import { getMastersList } from '@/app/api/utils/getMastersList';
 import masterNamesById from '@/app/gallery/utils/masterNamesById';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import SectionTitle from '@/components/shared/SectionTitle';
+import { dictText } from '@/components/utils/dictText';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
 import { imageFileList } from '@/components/utils/imageFileList';
 import { shuffleArray } from '@/components/utils/shuffleArray';
@@ -51,8 +52,7 @@ const GalleryFeed = async ({
   /** Section heading; falls back to the mock's "Gallery" when the block is not filled */
   const title =
     block?.localizeInfos?.title ||
-    (dict?.home_gallery_title?.value as string | undefined) ||
-    'Gallery';
+    dictText(dict, 'home_gallery_title', 'Gallery');
 
   /**
    * Nothing in the CMS gallery tree → drop the whole strip rather than render a

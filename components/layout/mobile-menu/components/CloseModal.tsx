@@ -3,6 +3,7 @@ import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * Close mobile menu modal button
@@ -17,9 +18,7 @@ const CloseModal = (): JSX.Element => {
   /** Render close button for mobile menu modal */
   return (
     <button
-      aria-label={
-        (dict?.close_menu_aria?.value as string | undefined) || 'Close menu'
-      }
+      aria-label={dictText(dict, 'close_menu_aria', 'Close menu')}
       onClick={() => {
         setTransition('close');
       }}

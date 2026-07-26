@@ -1,14 +1,49 @@
-import { unstable_cache } from 'next/cache';
 import type { IError } from 'oneentry/dist/base/utils';
-import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
-import { cache } from 'react';
+import type {
+  IProductsEntity,
+  IProductsResponse,
+} from 'oneentry/dist/products/productsInterfaces';
 
-import { getApi, isError } from '@/app/api/api/api';
-import { fetchCmsData } from '@/app/api/utils/fetchCmsData';
+import { getApi } from '@/app/api/api/api';
+import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
+import { expectCmsArray } from '@/app/api/utils/expectCmsArray';
 import getSearchParams from '@/app/api/utils/getSearchParams';
 
 /**
- * Get all products with pagination for the selected category.
+ * Cached reader: TTL, request-level dedupe and transient-failure handling.
+ *
+ * Takes primitives rather than the public object argument: React `cache()`
+ * compares arguments by identity, so the fresh object literal every caller
+ * builds would never produce a hit. An empty `search`/`inStock` behaves exactly
+ * like the absent `searchParams` of the public signature — `getSearchParams`
+ * treats both as "no filter".
+ */
+const readProductsByPageUrl = createCachedCmsReader<
+  [string, number, number, boolean, string, string],
+  IProductsResponse
+>({
+  cacheKey: 'oneentry-products-by-page-url',
+  label: 'getProductsByPageUrl',
+  revalidate: 60,
+  tags: ['oneentry', 'oneentry-products'],
+  call: (handle, limit, offset, servicesOnly, search, inStock) =>
+    getApi().Products.getProductsByPageUrl(
+      handle,
+      servicesOnly ? getSearchParams({ search, in_stock: inStock }) : [],
+      undefined,
+      {
+        sortOrder: 'DESC',
+        sortKey: 'date',
+        offset: offset,
+        limit: limit,
+      },
+    ),
+  validate: (data) => expectCmsArray(data.items, 'getProductsByPageUrl'),
+});
+
+/**
+ * getProductsByPageUrl — get all products with pagination for the selected
+ * category.
  *
  * `params.handle` is the OneEntry CMS `pageUrl` marker for a catalog page —
  * it happens to coincide with the Next.js `[handle]` route segment. NOT a
@@ -25,68 +60,6 @@ import getSearchParams from '@/app/api/utils/getSearchParams';
  * @returns {Promise<object>}                                    Promise that resolves to an object containing products, error status, and total count
  * @see {@link https://oneentry.cloud/instructions/npm OneEntry docs}
  */
-/**
- * Fetch a catalog page's products from OneEntry, cached across requests
- * (private helper).
- *
- * Takes primitives rather than the public object argument: React `cache()`
- * compares arguments by identity, so the fresh object literal every caller
- * builds would never produce a hit. An empty `search`/`inStock` behaves exactly
- * like the absent `searchParams` of the public signature — `getSearchParams`
- * treats both as "no filter".
- * @param   {string}          handle       - Catalog page marker (`pageUrl` from the CMS)
- * @param   {number}          limit        - Maximum number of products per page
- * @param   {number}          offset       - Number of products to skip
- * @param   {boolean}         servicesOnly - Keep only products carrying an `sku`
- * @param   {string}          search       - Search term, `''` when unused
- * @param   {string}          inStock      - Stock filter, `''` when unused
- * @returns {Promise<object>}              Envelope with the products, total, or the error
- */
-const getProductsByPageUrlImpl = unstable_cache(
-  async (
-    handle: string,
-    limit: number,
-    offset: number,
-    servicesOnly: boolean,
-    search: string,
-    inStock: string,
-  ): Promise<{
-    isError: boolean;
-    error?: IError;
-    products?: IProductsEntity[];
-    total: number;
-  }> => {
-    const expandedFilters = servicesOnly
-      ? getSearchParams({ search, in_stock: inStock })
-      : [];
-
-    const data = await fetchCmsData(
-      () =>
-        getApi().Products.getProductsByPageUrl(
-          handle,
-          expandedFilters,
-          undefined,
-          {
-            sortOrder: 'DESC',
-            sortKey: 'date',
-            offset: offset,
-            limit: limit,
-          },
-        ),
-      'getProductsByPageUrl',
-    );
-    if (isError(data)) {
-      return { isError: true, error: data, total: 0 };
-    }
-    return { isError: false, products: data.items, total: data.total };
-  },
-  ['oneentry-products-by-page-url'],
-  { revalidate: 60, tags: ['oneentry', 'oneentry-products'] },
-);
-
-/** Request-level dedupe, keyed by the flattened primitives. */
-const getProductsByPageUrlCached = cache(getProductsByPageUrlImpl);
-
 export const getProductsByPageUrl = async (props: {
   limit: number;
   offset: number;
@@ -105,18 +78,22 @@ export const getProductsByPageUrl = async (props: {
   total: number;
 }> => {
   const { limit, offset, servicesOnly = true, params } = props;
-  try {
-    return await getProductsByPageUrlCached(
-      params.handle,
-      limit,
-      offset,
-      servicesOnly,
-      params.searchParams?.search ?? '',
-      params.searchParams?.in_stock ?? '',
-    );
-  } catch (e) {
-    // Transient CMS failure — not cached by unstable_cache; degrade for this
-    // request only instead of caching a poisoned result.
-    return { isError: true, error: e as IError, total: 0 };
-  }
+  const {
+    isError: failed,
+    error,
+    data,
+  } = await readProductsByPageUrl(
+    params.handle,
+    limit,
+    offset,
+    servicesOnly,
+    params.searchParams?.search ?? '',
+    params.searchParams?.in_stock ?? '',
+  );
+  return {
+    isError: failed,
+    ...(error ? { error } : {}),
+    ...(data ? { products: data.items } : {}),
+    total: data?.total ?? 0,
+  };
 };

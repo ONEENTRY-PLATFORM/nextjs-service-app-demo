@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import { DARK, PINK } from '../constants';
 import type { MasterCategory } from '../data';
@@ -46,9 +47,7 @@ const CategoryChips = ({
                 active ? { boxShadow: `0 6px 20px ${PINK}44` } : { color: DARK }
               }
             >
-              {c === 'All'
-                ? (dict?.all_text?.value as string | undefined) || 'All'
-                : c}
+              {c === 'All' ? dictText(dict, 'all_text', 'All') : c}
             </button>
           );
         })}

@@ -42,12 +42,21 @@ const claimedKeys = new Set<string>();
  * stored by `unstable_cache`, so it degrades for the current request only and
  * the next one retries, instead of serving a cache-poisoned empty result for the
  * whole revalidate window.
+ *
+ * The optional `validate` guard exists because the SDK's shell mode flattens a
+ * dropped connection into a bare `{}` that `isError` cannot see: without a
+ * guard that `{}` would be cached as a successful payload for the whole
+ * revalidate window. `validate` runs INSIDE the `unstable_cache` callback,
+ * after the stable-`IError` check, so a throw there (`expectCmsArray` /
+ * `expectCmsEntity`) skips the cache write and joins the transient-failure
+ * class above.
  * @param   {object}                                            input            - Reader definition
  * @param   {string}                                            input.cacheKey   - Unique `unstable_cache` key; duplicates throw at module load
  * @param   {string}                                            input.label      - Human label used in timeout / failure messages
  * @param   {number}                                            input.revalidate - Cross-request TTL in seconds
  * @param   {string[]}                                          input.tags       - `revalidateTag` tags of the entry
  * @param   {(...args: TArgs) => Promise<TData | IError>}       input.call       - Thunk performing exactly one SDK request
+ * @param   {(data: TData) => void}                             [input.validate] - Payload guard run before the cache write; throw to classify the payload (e.g. a shell-mode `{}`) as transient so it is not cached
  * @returns {(...args: TArgs) => Promise<CmsReadResult<TData>>}                  Cached reader
  */
 export const createCachedCmsReader = <TArgs extends unknown[], TData>({
@@ -56,12 +65,14 @@ export const createCachedCmsReader = <TArgs extends unknown[], TData>({
   revalidate,
   tags,
   call,
+  validate,
 }: {
   cacheKey: string;
   label: string;
   revalidate: number;
   tags: string[];
   call: (...args: TArgs) => Promise<TData | IError>;
+  validate?: (data: TData) => void;
 }): ((...args: TArgs) => Promise<CmsReadResult<TData>>) => {
   if (claimedKeys.has(cacheKey)) {
     throw new Error(
@@ -77,6 +88,8 @@ export const createCachedCmsReader = <TArgs extends unknown[], TData>({
       if (isError(data)) {
         return { isError: true, error: data };
       }
+      /** A throw here skips the cache write — see the `validate` option JSDoc. */
+      validate?.(data as TData);
       return { isError: false, data: data as TData };
     },
     [cacheKey],

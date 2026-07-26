@@ -162,8 +162,10 @@ const FormInput = (
       {/* password button */}
       {fieldType === 'password' && (
         <button
-          onClick={(e) => {
-            e.preventDefault();
+          type="button"
+          aria-label={type === 'password' ? 'Show password' : 'Hide password'}
+          aria-pressed={type !== 'password'}
+          onClick={() => {
             if (type === 'password') {
               setType('text');
             } else {

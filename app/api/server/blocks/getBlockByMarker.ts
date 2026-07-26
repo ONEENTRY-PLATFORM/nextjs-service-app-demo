@@ -3,6 +3,7 @@ import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
+import { expectCmsEntity } from '@/app/api/utils/expectCmsEntity';
 
 /** Cached reader: TTL, request-level dedupe and transient-failure handling. */
 const readBlockByMarker = createCachedCmsReader<[string], IBlockEntity>({
@@ -11,6 +12,7 @@ const readBlockByMarker = createCachedCmsReader<[string], IBlockEntity>({
   revalidate: 60,
   tags: ['oneentry', 'oneentry-blocks'],
   call: (marker) => getApi().Blocks.getBlockByMarker(marker),
+  validate: (data) => expectCmsEntity(data, 'getBlockByMarker', 'id'),
 });
 
 /**

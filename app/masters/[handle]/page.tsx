@@ -36,13 +36,27 @@ export default async function MasterPageLayout({
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<JSX.Element> {
   /** Params, searchParams, dict and admin-info reads are independent. */
-  const [{ handle }, searchData, dict, { admins }] = await Promise.all([
+  const [{ handle }, searchData, dict, mastersResult] = await Promise.all([
     params,
     searchParams ?? Promise.resolve(undefined),
     getDictionary(),
     getMastersList(),
   ]);
   ServerProvider('dict', dict);
+  const { admins, isError } = mastersResult;
+
+  /**
+   * A failed roster read says nothing about whether this master exists, so it
+   * must not take the `notFound()` branch below — that used to bake a 404 into
+   * the ISR cache for the whole revalidate window. Throwing reaches the error
+   * boundary (retry) on a cache miss, and a failed background regeneration
+   * keeps serving the last valid version.
+   */
+  if (isError || !admins) {
+    throw new Error(
+      `/masters/${handle}: masters list is unavailable — rendering the error boundary instead of baking a 404 into ISR`,
+    );
+  }
 
   /**
    * Resolve the master here rather than inside the section components: the
@@ -51,7 +65,7 @@ export default async function MasterPageLayout({
    * an id outside `generateStaticParams` flashed the loader before 404ing.
    */
   const adminId = parseInt(handle, 10);
-  const admin = admins?.find((a: IAdminEntity) => a.id === adminId);
+  const admin = admins.find((a: IAdminEntity) => a.id === adminId);
 
   if (!admin) {
     notFound();

@@ -5,6 +5,7 @@ import { useSyncExternalStore } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
 import SectionHeading from '@/components/shared/SectionHeading';
+import { dictText } from '@/components/utils/dictText';
 import type { OpeningHoursRow } from '@/components/utils/parseOpeningTime';
 import summarizeOpeningHours from '@/components/utils/summarizeOpeningHours';
 
@@ -57,8 +58,7 @@ const OpeningHours = ({ rows }: { rows: OpeningHoursRow[] }): JSX.Element => {
     <section className="bg-slate-50 py-6 md:py-10" data-testid="opening-hours">
       <div className="page-shell">
         <SectionHeading className="mb-6 md:mb-10">
-          {(dict?.opening_hours_title?.value as string | undefined) ||
-            'Opening Hours'}
+          {dictText(dict, 'opening_hours_title', 'Opening Hours')}
         </SectionHeading>
 
         {/* Mobile + tablet: a single card for the whole week */}

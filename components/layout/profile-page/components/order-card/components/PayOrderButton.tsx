@@ -8,6 +8,7 @@ import { resolveOrderPaymentUrl } from '@/app/api/utils/resolveOrderPaymentUrl';
 import { useDict } from '@/app/store/providers/useDict';
 import { formatOrderTotal } from '@/components/layout/profile-page/utils/formatOrderTotal';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * PayOrderButton — finishes an online payment that never went through.
@@ -47,8 +48,11 @@ const PayOrderButton = ({
     if (!url) {
       setError(
         reason ||
-          (dict?.err_open_checkout?.value as string | undefined) ||
-          'Could not open the checkout. Please try again.',
+          dictText(
+            dict,
+            'err_open_checkout',
+            'Could not open the checkout. Please try again.',
+          ),
       );
       setIsLoading(false);
       return;
@@ -68,11 +72,10 @@ const PayOrderButton = ({
         className="flex-1 rounded-lg bg-gradient-brand px-3.5 py-2 text-base font-bold text-white transition-all hover:opacity-90 disabled:opacity-60"
       >
         {isLoading ? (
-          (dict?.opening_checkout_text?.value as string | undefined) ||
-          'Opening checkout…'
+          dictText(dict, 'opening_checkout_text', 'Opening checkout…')
         ) : (
           <>
-            {(dict?.pay_text?.value as string | undefined) || 'Pay'}
+            {dictText(dict, 'pay_text', 'Pay')}
             {total ? (
               <>
                 {' '}

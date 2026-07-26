@@ -4,6 +4,7 @@ import { Check, MapPin } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import { MUTED, PINK } from '../constants';
 import type { BookingSalon } from '../types';
@@ -32,8 +33,7 @@ const SalonStep = ({
   return (
     <div className="space-y-3" data-testid="booking-step-salon">
       <h3 className="text-lg font-light text-slate-400">
-        {(dict?.booking_choose_studio_text?.value as string | undefined) ||
-          'Choose your studio'}
+        {dictText(dict, 'booking_choose_studio_text', 'Choose your studio')}
       </h3>
       <div className="grid gap-3">
         {salons.map((s) => {

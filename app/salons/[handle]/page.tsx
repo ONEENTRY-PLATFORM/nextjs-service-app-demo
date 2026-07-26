@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
-import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
+import { resolveCmsPage } from '@/app/utils/resolveCmsPage';
 import { salonMapLinks } from '@/app/utils/salonMapLinks';
 import SalonPageContent from '@/components/layout/salon-page';
 import { SALON_COLOR } from '@/components/layout/salon-page/salonContent';
@@ -34,11 +34,30 @@ export default async function SalonDetailLayout({
 }): Promise<JSX.Element> {
   const { handle } = await params;
 
-  const { page, isError } = await getPageByUrl(handle);
+  const resolved = await resolveCmsPage(handle);
 
-  if (!page || isError) {
+  /**
+   * Only a genuine 404 from the CMS means this salon does not exist. A CMS
+   * outage used to take the same branch, freezing a 404 for the whole
+   * revalidate window on this `force-static` route.
+   */
+  if (resolved.status === 'missing') {
     return notFound();
   }
+
+  /**
+   * Every field of the detail below is built from the CMS entity, so there is
+   * nothing to degrade to. Throwing reaches the error boundary (retry) on a
+   * cache miss, and a failed background regeneration keeps serving the last
+   * valid version.
+   */
+  if (resolved.status === 'unavailable') {
+    throw new Error(
+      `/salons/${handle}: CMS is unavailable — rendering the error boundary instead of baking a 404 into ISR`,
+    );
+  }
+
+  const { page } = resolved;
 
   const salon = salonFromPage(page);
   const links = salonMapLinks(salon);

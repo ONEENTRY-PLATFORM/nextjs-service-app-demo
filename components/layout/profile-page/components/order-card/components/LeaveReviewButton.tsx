@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
 import ReviewModal from '@/components/shared/review-modal';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * LeaveReviewButton — the gradient "Leave a review" action on completed
@@ -26,8 +27,7 @@ const LeaveReviewButton = (): JSX.Element => {
         data-testid="order-leave-review"
         className="flex-1 rounded-lg bg-gradient-brand py-1.5 text-base font-bold text-white transition-all hover:opacity-90"
       >
-        {(dict?.leave_review_text?.value as string | undefined) ||
-          'Leave a review'}
+        {dictText(dict, 'leave_review_text', 'Leave a review')}
       </button>
       {reviewOpen && <ReviewModal onClose={() => setReviewOpen(false)} />}
     </>

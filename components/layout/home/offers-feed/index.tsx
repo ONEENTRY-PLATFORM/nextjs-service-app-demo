@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import SectionTitle from '@/components/shared/SectionTitle';
+import { dictText } from '@/components/utils/dictText';
 import { isOfferProduct } from '@/components/utils/isOfferProduct';
 
 import OffersFeed from './components/OffersFeed';
@@ -39,8 +40,7 @@ const OffersFeedBlock = ({
   /** Section heading; falls back to the mock's "Best Offers" when the block is not filled */
   const title =
     block?.localizeInfos?.title ||
-    (dict?.home_offers_title?.value as string | undefined) ||
-    'Best Offers';
+    dictText(dict, 'home_offers_title', 'Best Offers');
 
   return (
     <section

@@ -13,7 +13,7 @@ import { DictContext } from './DictContext';
  *
  * ```tsx
  * const dict = useDict();
- * const label = (dict?.book_text?.value as string | undefined) || 'Book Online';
+ * const label = dictText(dict, 'book_text', 'Book Online');
  * ```
  * @returns {IAttributeValues} The dictionary values keyed by marker
  */

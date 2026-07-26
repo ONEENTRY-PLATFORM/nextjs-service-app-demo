@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useDict } from '@/app/store/providers/useDict';
 import ReviewModal from '@/components/shared/review-modal';
 import StarsGroup from '@/components/shared/StarsGroup';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * RatingCluster component — stars, a reviews counter and a "Leave a review"
@@ -49,7 +50,7 @@ const RatingCluster = ({
           {reviewsCount}
         </span>
         <span className="text-sm text-neutral-300 underline-offset-2 group-hover:underline">
-          {(dict?.reviews_label?.value as string | undefined) || 'Reviews'}
+          {dictText(dict, 'reviews_label', 'Reviews')}
         </span>
       </Link>
       <button
@@ -57,8 +58,7 @@ const RatingCluster = ({
         data-testid="master-leave-review"
         className="text-base font-bold text-fuchsia-500 underline underline-offset-2 transition-opacity hover:opacity-70"
       >
-        {(dict?.leave_review_text?.value as string | undefined) ||
-          'Leave a review'}
+        {dictText(dict, 'leave_review_text', 'Leave a review')}
       </button>
       {reviewOpen && <ReviewModal onClose={() => setReviewOpen(false)} />}
     </div>

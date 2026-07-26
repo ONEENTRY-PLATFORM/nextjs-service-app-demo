@@ -5,7 +5,8 @@
  * They used to be inlined across six modules (session restore, login, logout,
  * the SDK's save function, both sign-out buttons); a typo in any one of those
  * silently broke either session restore or sign-out, with no type error to
- * catch it. Every accessor is SSR-safe and reports "no session" on the server.
+ * catch it. Every accessor is SSR-safe and reports "no session" both on the
+ * server and in browsers that block storage (see {@link safeGetItem}).
  */
 
 /** Long-lived refresh token the session is restored from. */
@@ -22,14 +23,66 @@ export const AUTH_PROVIDER_MARKER_KEY = 'authProviderMarker';
 export const DEFAULT_AUTH_PROVIDER_MARKER = 'email';
 
 /**
+ * safeGetItem — `localStorage.getItem` with blocked storage treated as empty.
+ *
+ * With storage blocked (Safari/Chrome "Block all cookies", embedded webviews)
+ * merely touching `localStorage` throws a SecurityError — a `typeof window`
+ * check does not guard against it. Every accessor below funnels through these
+ * helpers, degrading to "no session" / noop the same way redux-persist does.
+ * @param   {string}        key - Storage key to read
+ * @returns {string | null}     Stored value, or `null` when absent or storage is unavailable
+ */
+const safeGetItem = (key: string): string | null => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * safeSetItem — `localStorage.setItem` degrading to a noop when storage is
+ * unavailable (see {@link safeGetItem}).
+ * @param {string} key   - Storage key to write
+ * @param {string} value - Value to store
+ */
+const safeSetItem = (key: string, value: string): void => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Storage blocked — the session just won't survive a reload.
+  }
+};
+
+/**
+ * safeRemoveItem — `localStorage.removeItem` degrading to a noop when storage
+ * is unavailable (see {@link safeGetItem}).
+ * @param {string} key - Storage key to drop
+ */
+const safeRemoveItem = (key: string): void => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // Storage blocked — there is nothing persisted to drop.
+  }
+};
+
+/**
  * readRefreshToken — the stored refresh token, or `null` when there is no
- * session to restore.
+ * session to restore (or storage is unavailable).
  * @returns {string | null} Refresh token, or `null`
  */
 export const readRefreshToken = (): string | null =>
-  typeof window === 'undefined'
-    ? null
-    : localStorage.getItem(REFRESH_TOKEN_KEY);
+  safeGetItem(REFRESH_TOKEN_KEY);
 
 /**
  * readAuthProviderMarker — the provider the current session was created with.
@@ -40,10 +93,7 @@ export const readRefreshToken = (): string | null =>
  * @returns {string} Provider marker, never empty
  */
 export const readAuthProviderMarker = (): string =>
-  typeof window === 'undefined'
-    ? DEFAULT_AUTH_PROVIDER_MARKER
-    : localStorage.getItem(AUTH_PROVIDER_MARKER_KEY) ||
-      DEFAULT_AUTH_PROVIDER_MARKER;
+  safeGetItem(AUTH_PROVIDER_MARKER_KEY) || DEFAULT_AUTH_PROVIDER_MARKER;
 
 /**
  * saveAuthSession — persists what a page reload needs to restore the session:
@@ -63,11 +113,8 @@ export const saveAuthSession = ({
   refreshToken: string;
   authProviderMarker: string;
 }): void => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-  localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-  localStorage.setItem(AUTH_PROVIDER_MARKER_KEY, authProviderMarker);
+  safeSetItem(REFRESH_TOKEN_KEY, refreshToken);
+  safeSetItem(AUTH_PROVIDER_MARKER_KEY, authProviderMarker);
 };
 
 /**
@@ -78,9 +125,6 @@ export const saveAuthSession = ({
  * every request, which is endless 400/401 noise (`rules/tokens.md`).
  */
 export const clearAuthSession = (): void => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-  localStorage.removeItem(REFRESH_TOKEN_KEY);
-  localStorage.removeItem(AUTH_PROVIDER_MARKER_KEY);
+  safeRemoveItem(REFRESH_TOKEN_KEY);
+  safeRemoveItem(AUTH_PROVIDER_MARKER_KEY);
 };

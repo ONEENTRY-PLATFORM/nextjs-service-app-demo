@@ -4,6 +4,7 @@ import { Check } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import { BRAND_GRADIENT, PINK } from '../constants';
 
@@ -38,12 +39,14 @@ const SuccessModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
           <Check size={36} color="#fff" />
         </div>
         <h2 className="mb-2 text-xl font-bold text-slate-400">
-          {(dict?.booking_success_title?.value as string | undefined) ||
-            'Booked!'}
+          {dictText(dict, 'booking_success_title', 'Booked!')}
         </h2>
         <p className="mb-6 text-base text-neutral-300">
-          {(dict?.booking_success_desc?.value as string | undefined) ||
-            "Your appointment has been confirmed. We'll send you a reminder."}
+          {dictText(
+            dict,
+            'booking_success_desc',
+            "Your appointment has been confirmed. We'll send you a reminder.",
+          )}
         </p>
         <button
           onClick={onClose}
@@ -53,7 +56,7 @@ const SuccessModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
             boxShadow: `0 8px 24px ${PINK}44`,
           }}
         >
-          {(dict?.close_text?.value as string | undefined) || 'Close'}
+          {dictText(dict, 'close_text', 'Close')}
         </button>
       </div>
     </div>

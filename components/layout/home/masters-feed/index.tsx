@@ -8,6 +8,7 @@ import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
 import SectionTitle from '@/components/shared/SectionTitle';
+import { dictText } from '@/components/utils/dictText';
 import { entityLinks } from '@/components/utils/entityLinks';
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
@@ -72,8 +73,7 @@ const MastersFeed = async ({
   /** UI-text dictionary (system_content) with English fallbacks */
   const [dict] = ServerProvider<IAttributeValues>('dict');
   /** Fallback role label when a master has no short description */
-  const specialistText =
-    (dict?.specialist_text?.value as string | undefined) || 'Specialist';
+  const specialistText = dictText(dict, 'specialist_text', 'Specialist');
 
   /** Fetch admin information (masters) */
   const { admins } = await getMastersList();
@@ -98,8 +98,7 @@ const MastersFeed = async ({
         <SectionTitle
           title={
             block?.localizeInfos?.title ||
-            (dict?.home_masters_title?.value as string | undefined) ||
-            'Our Specialists'
+            dictText(dict, 'home_masters_title', 'Our Specialists')
           }
           delay={0.25}
           className="mb-6 md:mb-10"

@@ -6,6 +6,7 @@ import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * Mobile menu trigger button component.
@@ -39,8 +40,8 @@ const MobileMenuTrigger = (): JSX.Element => {
       onClick={handleClick}
       aria-label={
         isOpen
-          ? (dict?.close_menu_aria?.value as string | undefined) || 'Close menu'
-          : (dict?.open_menu_aria?.value as string | undefined) || 'Open menu'
+          ? dictText(dict, 'close_menu_aria', 'Close menu')
+          : dictText(dict, 'open_menu_aria', 'Open menu')
       }
       aria-expanded={isOpen}
       data-testid="mobile-nav-toggle"

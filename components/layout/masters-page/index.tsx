@@ -8,6 +8,7 @@ import RevealAnimations from '@/app/animations/RevealAnimations';
 import SwapAnimations from '@/app/animations/SwapAnimations';
 import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import MobileSpecialistList from './components/MobileSpecialistList';
 import SalonFilter from './components/SalonFilter';
@@ -144,10 +145,8 @@ const MastersPageContent = ({
           <p className="text-sm text-neutral-300">
             {rendered.length}{' '}
             {rendered.length === 1
-              ? (dict?.specialists_word_singular?.value as
-                  string | undefined) || 'specialist'
-              : (dict?.specialists_word_plural?.value as string | undefined) ||
-                'specialists'}
+              ? dictText(dict, 'specialists_word_singular', 'specialist')
+              : dictText(dict, 'specialists_word_plural', 'specialists')}
           </p>
           {hasActiveFilter && (
             <button
@@ -155,9 +154,7 @@ const MastersPageContent = ({
               onClick={clearAll}
               className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-bold tracking-wider text-accent-pink uppercase transition-colors hover:bg-fuchsia-500/10"
             >
-              <X size={17} />{' '}
-              {(dict?.clear_all_text?.value as string | undefined) ||
-                'Clear all'}
+              <X size={17} /> {dictText(dict, 'clear_all_text', 'Clear all')}
             </button>
           )}
         </div>

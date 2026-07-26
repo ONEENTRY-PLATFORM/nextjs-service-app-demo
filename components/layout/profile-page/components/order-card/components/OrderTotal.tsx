@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 import { useDict } from '@/app/store/providers/useDict';
 import { formatOrderTotal } from '@/components/layout/profile-page/utils/formatOrderTotal';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * OrderTotal — what the visit costs, with the payment method it was booked on.
@@ -38,7 +39,7 @@ const OrderTotal = ({
       data-testid="order-total"
     >
       <span className="text-sm text-neutral-300">
-        {(dict?.total_text?.value as string | undefined) || 'Total'}
+        {dictText(dict, 'total_text', 'Total')}
         {method ? ` · ${method}` : ''}
       </span>
       <span className="text-base font-bold text-slate-400">

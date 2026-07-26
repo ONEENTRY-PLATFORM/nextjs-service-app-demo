@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import wrapCharactersInSpan from '@/components/hooks/wrapCharactersInSpan';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * CatalogCardTitle component to display the title of a catalog card.
@@ -21,8 +22,7 @@ const CatalogCardTitle = ({ item }: { item: IPagesEntity }): JSX.Element => {
   /** Wrap title characters in spans for animation effects with fallback */
   const title = wrapCharactersInSpan(
     item.localizeInfos?.title ||
-      (dict?.no_title_text?.value as string | undefined) ||
-      'No Title Available',
+      dictText(dict, 'no_title_text', 'No Title Available'),
   );
 
   /** Render wrapped title with proper styling */

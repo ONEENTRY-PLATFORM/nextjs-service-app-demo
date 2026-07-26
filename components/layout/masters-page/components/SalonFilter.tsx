@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import type { SalonOption } from '../taxonomy';
 
@@ -62,7 +63,7 @@ const SalonFilter = ({
               <div className="mb-1 flex items-center gap-2">
                 <MapPin size={14} className="shrink-0" />
                 <span className="text-base font-bold">
-                  {`${(dict?.salon_label_prefix?.value as string | undefined) || 'Salon'} ${idx + 1} — ${salon.name}`}
+                  {`${dictText(dict, 'salon_label_prefix', 'Salon')} ${idx + 1} — ${salon.name}`}
                 </span>
               </div>
               <p className="text-sm opacity-80">{salon.address}</p>
@@ -80,9 +81,8 @@ const SalonFilter = ({
           <span className="flex items-center gap-2 text-base font-semibold text-slate-400">
             <MapPin size={14} className="shrink-0 text-accent-pink" />
             {selectedSalon
-              ? `${(dict?.salon_label_prefix?.value as string | undefined) || 'Salon'} ${salons.indexOf(selectedSalon) + 1} — ${selectedSalon.name}`
-              : (dict?.all_studios_text?.value as string | undefined) ||
-                'All studios'}
+              ? `${dictText(dict, 'salon_label_prefix', 'Salon')} ${salons.indexOf(selectedSalon) + 1} — ${selectedSalon.name}`
+              : dictText(dict, 'all_studios_text', 'All studios')}
           </span>
           <ChevronDown
             size={16}
@@ -113,8 +113,7 @@ const SalonFilter = ({
                     : 'text-slate-400'
                 }`}
               >
-                {(dict?.all_studios_text?.value as string | undefined) ||
-                  'All studios'}
+                {dictText(dict, 'all_studios_text', 'All studios')}
               </button>
               {salons.map((salon, idx) => {
                 const active = selectedId === salon.id;
@@ -134,7 +133,7 @@ const SalonFilter = ({
                         active ? 'text-accent-pink' : 'text-slate-400'
                       }`}
                     >
-                      {`${(dict?.salon_label_prefix?.value as string | undefined) || 'Salon'} ${idx + 1} — ${salon.name}`}
+                      {`${dictText(dict, 'salon_label_prefix', 'Salon')} ${idx + 1} — ${salon.name}`}
                     </span>
                     <span className="block text-sm text-neutral-300">
                       {salon.address}

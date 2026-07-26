@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
 import Image from '@/components/shared/Image';
+import { dictText } from '@/components/utils/dictText';
 
 import type { MasterItem } from '../taxonomy';
 
@@ -59,8 +60,7 @@ const MasterCard = ({ item }: { item: MasterItem }): JSX.Element => {
           {item.role}
         </p>
         <span className="mt-1.5 inline-block w-fit text-sm font-semibold whitespace-nowrap text-white underline decoration-white/90 underline-offset-3 transition-opacity group-hover:opacity-80">
-          {(dict?.check_a_profile_text?.value as string | undefined) ||
-            'Check a profile'}
+          {dictText(dict, 'check_a_profile_text', 'Check a profile')}
         </span>
       </div>
     </>

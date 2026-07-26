@@ -58,22 +58,29 @@ export async function googleOAuthAction(
     deviceMetadata,
   });
 
-  /**
-   * `oauth()` handles both first-time login and registration — no separate
-   * sign-up flow is needed. Marker `'google'` is the OAuth provider configured
-   * in the CMS (`type: 'oauth'`, verified via inspect-auth-providers).
-   */
-  const result = await api.AuthProvider.oauth('google', {
-    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
-    client_secret: process.env.GOOGLE_CLIENT_SECRET as string,
-    code,
-    grant_type: 'authorization_code',
-    redirect_uri: redirectUri,
-  });
+  try {
+    /**
+     * `oauth()` handles both first-time login and registration — no separate
+     * sign-up flow is needed. Marker `'google'` is the OAuth provider
+     * configured in the CMS (`type: 'oauth'`, verified via
+     * inspect-auth-providers).
+     */
+    const result = await api.AuthProvider.oauth('google', {
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET as string,
+      code,
+      grant_type: 'authorization_code',
+      redirect_uri: redirectUri,
+    });
 
-  if (isError(result)) {
-    return { isError: true, error: result };
+    if (isError(result)) {
+      return { isError: true, error: result };
+    }
+
+    return { isError: false, token: result as IAuthEntity };
+  } catch (e) {
+    // Network / SDK throw — return the envelope instead of rejecting the
+    // Server Action, so the callback page can show the error and redirect.
+    return { isError: true, error: e as IError };
   }
-
-  return { isError: false, token: result as IAuthEntity };
 }

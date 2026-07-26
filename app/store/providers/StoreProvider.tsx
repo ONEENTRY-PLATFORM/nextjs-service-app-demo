@@ -24,7 +24,12 @@ export default function StoreProvider({
     // plaintext passwords in localStorage on returning visitors. The slice is no
     // longer persisted (see store.ts), so the stale key is dropped on bootstrap.
     if (typeof window !== 'undefined') {
-      window.localStorage.removeItem('persist:form-fields');
+      try {
+        window.localStorage.removeItem('persist:form-fields');
+      } catch {
+        // Blocked storage throws a SecurityError on mere access; degrade to a
+        // noop like redux-persist does — nothing was persisted there anyway.
+      }
     }
 
     const storeInstance = setupStore();

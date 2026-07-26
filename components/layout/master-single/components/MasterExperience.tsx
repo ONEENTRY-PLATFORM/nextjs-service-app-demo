@@ -2,6 +2,7 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * MasterExperience component — the specialist's working experience line.
@@ -25,8 +26,7 @@ const MasterExperience = ({
 
   return (
     <p className="item mt-2 text-sm text-slate-400">
-      {(dict?.working_experience_label?.value as string | undefined) ||
-        'Working experience:'}{' '}
+      {dictText(dict, 'working_experience_label', 'Working experience:')}{' '}
       <span className="font-bold">{experience}</span>
     </p>
   );

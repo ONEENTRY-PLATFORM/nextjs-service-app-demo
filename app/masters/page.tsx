@@ -15,6 +15,7 @@ import type {
   SalonOption,
 } from '@/components/layout/masters-page/taxonomy';
 import { sectionOfRole } from '@/components/layout/masters-page/taxonomy';
+import { dictText } from '@/components/utils/dictText';
 import { entityLinks, entityPageIds } from '@/components/utils/entityLinks';
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
@@ -166,8 +167,7 @@ const MastersPageLayout = async (): Promise<JSX.Element> => {
     cmsSalons.map((salon) => [salon.id, salon.name]),
   );
 
-  const specialistText =
-    (dict?.specialist_text?.value as string | undefined) || 'Specialist';
+  const specialistText = dictText(dict, 'specialist_text', 'Specialist');
   const cmsMasters =
     admins
       ?.map((admin: IAdminEntity) =>

@@ -8,6 +8,7 @@ import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * MobileNavPanel — inline expanding navigation panel under the header row.
@@ -41,9 +42,7 @@ const MobileNavPanel = ({
       )}
     >
       <nav
-        aria-label={
-          (dict?.mobile_menu_aria?.value as string | undefined) || 'Mobile menu'
-        }
+        aria-label={dictText(dict, 'mobile_menu_aria', 'Mobile menu')}
         data-testid="mobile-nav-panel"
         className="min-h-0 overflow-hidden"
       >

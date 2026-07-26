@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import HeroAnimations from '@/app/animations/HeroAnimations';
 import { getBlockSlides } from '@/app/api/server/blocks/getBlockSlides';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { dictText } from '@/components/utils/dictText';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
 import type { OneEntryImageFile } from '@/components/utils/OneEntryImageFile';
 
@@ -84,8 +85,7 @@ const HomeHero = async ({
   const [dict] = ServerProvider<IAttributeValues>('dict');
   const alt =
     (block.localizeInfos?.title as string | undefined) ||
-    (dict?.site_name?.value as string | undefined) ||
-    'Thalia Beauty Studio';
+    dictText(dict, 'site_name', 'Thalia Beauty Studio');
 
   /** Render home hero banner carousel */
   return (

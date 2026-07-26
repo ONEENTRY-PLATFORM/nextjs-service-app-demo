@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
 import Image from '@/components/shared/Image';
+import { dictText } from '@/components/utils/dictText';
 
 import type { MasterItem } from '../taxonomy';
 
@@ -46,19 +47,17 @@ const MobileSpecialistList = ({
           data-testid="masters-search-input"
           value={query}
           onChange={(e) => onQuery(e.target.value)}
-          placeholder={
-            (dict?.search_specialist_placeholder?.value as
-              string | undefined) || 'Search specialist'
-          }
+          placeholder={dictText(
+            dict,
+            'search_specialist_placeholder',
+            'Search specialist',
+          )}
           className="w-full rounded-xl border-[1.5px] border-slate-150 bg-white py-2.5 pr-10 pl-9 text-base text-slate-400 transition-colors outline-none focus:border-accent-pink"
         />
         {query.trim() && (
           <button
             onClick={() => onQuery('')}
-            aria-label={
-              (dict?.clear_search_text?.value as string | undefined) ||
-              'Clear search'
-            }
+            aria-label={dictText(dict, 'clear_search_text', 'Clear search')}
             className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-neutral-300"
           >
             <X size={16} />
@@ -73,8 +72,11 @@ const MobileSpecialistList = ({
             data-testid="masters-rows-empty"
             className="py-4 text-center text-sm text-neutral-300"
           >
-            {(dict?.no_specialists_found_text?.value as string | undefined) ||
-              'No specialists found.'}
+            {dictText(
+              dict,
+              'no_specialists_found_text',
+              'No specialists found.',
+            )}
           </p>
         ) : (
           masters.map((master) => {

@@ -3,6 +3,7 @@ import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
+import { expectCmsEntity } from '@/app/api/utils/expectCmsEntity';
 
 /** Cached reader: TTL, request-level dedupe and transient-failure handling. */
 const readMenuByMarker = createCachedCmsReader<[string], IMenusEntity>({
@@ -11,6 +12,7 @@ const readMenuByMarker = createCachedCmsReader<[string], IMenusEntity>({
   revalidate: 300,
   tags: ['oneentry', 'oneentry-menus'],
   call: (marker) => getApi().Menus.getMenusByMarker(marker),
+  validate: (data) => expectCmsEntity(data, 'getMenuByMarker', 'id'),
 });
 
 /**

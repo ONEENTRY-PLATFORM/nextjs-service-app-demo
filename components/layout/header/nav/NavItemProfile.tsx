@@ -10,6 +10,7 @@ import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { useDict } from '@/app/store/providers/useDict';
 import ProfileIcon from '@/components/icons/profile';
 import { prefetchPopup } from '@/components/layout/prefetchPopup';
+import { dictText } from '@/components/utils/dictText';
 
 import UserProfileMenu from './user-menu/UserProfileMenu';
 
@@ -49,9 +50,7 @@ const NavItemProfile = ({
         onPointerEnter={() => prefetchPopup('SignInForm')}
         onFocus={() => prefetchPopup('SignInForm')}
         className="group relative my-auto box-border flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-[#d0d0dc] transition-transform duration-200 hover:scale-108 active:scale-94"
-        aria-label={
-          (dict?.sign_in_text?.value as string | undefined) || 'Sign In'
-        }
+        aria-label={dictText(dict, 'sign_in_text', 'Sign In')}
       >
         <span className="flex size-4.75">
           <ProfileIcon />
@@ -71,9 +70,7 @@ const NavItemProfile = ({
       prefetch={false}
       href="/profile"
       className="group relative my-auto box-border flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-fuchsia-500 bg-fuchsia-500/6 shadow-[0_0_12px_rgba(237,33,241,0.27)] transition-transform duration-200 hover:scale-108 active:scale-94"
-      aria-label={
-        (dict?.profile_aria?.value as string | undefined) || 'Profile'
-      }
+      aria-label={dictText(dict, 'profile_aria', 'Profile')}
     >
       <span className="flex size-4.75">
         <ProfileIcon active />

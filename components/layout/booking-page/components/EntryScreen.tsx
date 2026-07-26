@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import { BRAND_GRADIENT, CYAN, MUTED, PINK } from '../constants';
 import type { BookingFlow } from '../types';
@@ -61,19 +62,24 @@ const EntryScreen = ({
     <div className="space-y-5" data-testid="booking-entry">
       <div>
         <p className="mb-2 text-xs tracking-widest text-fuchsia-500 uppercase">
-          {(dict?.booking_entry_kicker?.value as string | undefined) ||
-            'Start your booking'}
+          {dictText(dict, 'booking_entry_kicker', 'Start your booking')}
         </p>
         <h3
           className="text-xl font-light text-slate-400"
           data-testid="booking-entry-title"
         >
-          {(dict?.booking_entry_heading?.value as string | undefined) ||
-            'How would you like to start?'}
+          {dictText(
+            dict,
+            'booking_entry_heading',
+            'How would you like to start?',
+          )}
         </h3>
         <p className="mt-1 hidden text-sm text-neutral-300 sm:block">
-          {(dict?.booking_entry_hint?.value as string | undefined) ||
-            'Both paths take you to the same booking — pick whichever feels natural.'}
+          {dictText(
+            dict,
+            'booking_entry_hint',
+            'Both paths take you to the same booking — pick whichever feels natural.',
+          )}
         </p>
       </div>
 
@@ -98,16 +104,14 @@ const EntryScreen = ({
                 }
               >
                 {o.flow === 'salon-first'
-                  ? (dict?.studio_text?.value as string | undefined) || 'Studio'
-                  : (dict?.specialist_text?.value as string | undefined) ||
-                    'Specialist'}
+                  ? dictText(dict, 'studio_text', 'Studio')
+                  : dictText(dict, 'specialist_text', 'Specialist')}
               </button>
             );
           })}
         </div>
         <p className="text-base leading-normal text-neutral-300">
-          {(dict?.[picked?.subtitleMarker ?? '']?.value as
-            string | undefined) || picked?.subtitle}
+          {dictText(dict, picked?.subtitleMarker ?? '', picked?.subtitle ?? '')}
         </p>
         <button
           data-testid="booking-entry-continue"
@@ -118,7 +122,7 @@ const EntryScreen = ({
             boxShadow: `0 6px 20px ${PINK}44`,
           }}
         >
-          {(dict?.continue_text?.value as string | undefined) || 'Continue'}{' '}
+          {dictText(dict, 'continue_text', 'Continue')}{' '}
           <ChevronRight size={16} />
         </button>
       </div>
@@ -158,19 +162,17 @@ const EntryScreen = ({
                 </div>
 
                 <p className="mt-5 text-base font-light text-slate-400">
-                  {(dict?.[titleMarker]?.value as string | undefined) || title}
+                  {dictText(dict, titleMarker, title)}
                 </p>
 
                 {/* Description — grows to absorb height differences */}
                 <p className="mt-2 flex-1 text-base leading-normal text-neutral-300">
-                  {(dict?.[subtitleMarker]?.value as string | undefined) ||
-                    subtitle}
+                  {dictText(dict, subtitleMarker, subtitle)}
                 </p>
 
                 {/* CTA — pinned to bottom */}
                 <div className="mt-4 flex items-center gap-1 text-base font-bold text-fuchsia-500">
-                  {(dict?.continue_text?.value as string | undefined) ||
-                    'Continue'}{' '}
+                  {dictText(dict, 'continue_text', 'Continue')}{' '}
                   <ChevronRight size={14} />
                 </div>
               </div>

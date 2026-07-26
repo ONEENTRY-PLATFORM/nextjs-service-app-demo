@@ -8,6 +8,7 @@ import { logOutUser } from '@/app/api/server/users/logOutUser';
 import { readAuthProviderMarker } from '@/app/store/auth/authStorage';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * Logout menu item button.
@@ -52,7 +53,7 @@ const LogoutMenuItem = (): JSX.Element => {
       onClick={handleLogout}
       data-testid="logout-button"
     >
-      <div>{(dict?.logout_text?.value as string | undefined) || 'Logout'}</div>
+      <div>{dictText(dict, 'logout_text', 'Logout')}</div>
     </button>
   );
 };

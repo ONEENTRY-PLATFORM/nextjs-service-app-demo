@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import SaleText from './SaleText';
 
@@ -71,8 +72,7 @@ const HeroSlideOverlayMobile = ({
             className="pointer-events-auto inline-flex h-10 w-57.5 items-center justify-center rounded-[10px] bg-white/80 text-base tracking-widest text-charcoal uppercase transition-colors hover:bg-white md:h-11 md:w-64"
           >
             {buttonText ||
-              (dict?.discover_more_text?.value as string | undefined) ||
-              'Discover More'}
+              dictText(dict, 'discover_more_text', 'Discover More')}
           </Link>
         )}
       </div>

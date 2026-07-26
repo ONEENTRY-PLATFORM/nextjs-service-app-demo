@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 import { useEffect } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * Error — route-segment error boundary for the page subtree.
@@ -42,19 +43,21 @@ export default function Error({
       className="flex grow flex-col items-center justify-center gap-4 p-8 text-center"
     >
       <h1 className="text-2xl font-bold">
-        {(dict?.something_went_wrong_title?.value as string | undefined) ||
-          'Something went wrong'}
+        {dictText(dict, 'something_went_wrong_title', 'Something went wrong')}
       </h1>
       <p className="max-w-md text-base text-neutral-600">
-        {(dict?.error_load_page_desc?.value as string | undefined) ||
-          "We couldn't load this page. Please try again in a moment."}
+        {dictText(
+          dict,
+          'error_load_page_desc',
+          "We couldn't load this page. Please try again in a moment.",
+        )}
       </p>
       <button
         type="button"
         onClick={reset}
         className="rounded-full bg-gradient-brand px-6 py-2.5 font-medium text-white"
       >
-        {(dict?.try_again_text?.value as string | undefined) || 'Try again'}
+        {dictText(dict, 'try_again_text', 'Try again')}
       </button>
     </div>
   );

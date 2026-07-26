@@ -9,6 +9,7 @@ import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import CategoryChips from './components/CategoryChips';
 import MasterFilter from './components/MasterFilter';
@@ -125,8 +126,7 @@ const ReviewsPageContent = ({
           href="/"
           className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
         >
-          <ArrowLeft size={16} />{' '}
-          {(dict?.back_text?.value as string | undefined) || 'Back'}
+          <ArrowLeft size={16} /> {dictText(dict, 'back_text', 'Back')}
         </Link>
       </div>
 
@@ -140,7 +140,7 @@ const ReviewsPageContent = ({
             letterSpacing: '0.08em',
           }}
         >
-          {(dict?.reviews_title?.value as string | undefined) || 'Reviews'}
+          {dictText(dict, 'reviews_title', 'Reviews')}
         </h1>
         <div className="mt-4 flex items-center justify-center gap-3">
           <Stars rating={Math.round(Number(avg))} />
@@ -148,10 +148,8 @@ const ReviewsPageContent = ({
           <span className="text-sm text-neutral-300">
             · {filtered.length}{' '}
             {filtered.length === 1
-              ? (dict?.reviews_word_singular?.value as string | undefined) ||
-                'review'
-              : (dict?.reviews_word_plural?.value as string | undefined) ||
-                'reviews'}
+              ? dictText(dict, 'reviews_word_singular', 'review')
+              : dictText(dict, 'reviews_word_plural', 'reviews')}
           </span>
         </div>
       </RevealAnimations>
@@ -188,8 +186,11 @@ const ReviewsPageContent = ({
 
         {filtered.length === 0 && (
           <p className="py-12 text-center text-sm text-neutral-300">
-            {(dict?.no_reviews_specialist_text?.value as string | undefined) ||
-              'No reviews for this specialist yet.'}
+            {dictText(
+              dict,
+              'no_reviews_specialist_text',
+              'No reviews for this specialist yet.',
+            )}
           </p>
         )}
       </div>

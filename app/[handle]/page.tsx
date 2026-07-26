@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
-import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
+import { resolveCmsPage } from '@/app/utils/resolveCmsPage';
 import PaymentCanceled from '@/components/pages/PaymentCanceled';
 import PaymentSuccess from '@/components/pages/PaymentSuccess';
 
@@ -35,17 +35,34 @@ export default async function PageLayout({
   const { handle } = await params;
 
   /** Fetch dictionary and CMS page in parallel — they're independent. */
-  const [dictionary, pageResult] = await Promise.all([
+  const [dictionary, resolved] = await Promise.all([
     getDictionary(),
-    getPageByUrl(handle),
+    resolveCmsPage(handle),
   ]);
   const [dict] = ServerProvider('dict', dictionary);
-  const { page, isError } = pageResult;
 
-  /** If page not found or error occurred, show 404 page */
-  if (isError || !page) {
+  /**
+   * Only a genuine 404 from the CMS means the page does not exist. A CMS
+   * outage used to take the same branch and bake a 404 into the ISR cache for
+   * the whole revalidate window — right as the user came back from Stripe.
+   */
+  if (resolved.status === 'missing') {
     return notFound();
   }
+
+  /**
+   * Unlike the catalog routes there is nothing to degrade to: the page IS the
+   * content, and even the template dispatch below keys off `page.pageUrl`.
+   * Throwing reaches the error boundary (retry) on a cache miss, and a failed
+   * background regeneration keeps serving the last valid version.
+   */
+  if (resolved.status === 'unavailable') {
+    throw new Error(
+      `/${handle}: CMS is unavailable — rendering the error boundary instead of baking a 404 into ISR`,
+    );
+  }
+
+  const { page } = resolved;
 
   /**
    * Markers this catch-all route knows how to render. Every other page marker

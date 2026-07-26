@@ -3,6 +3,7 @@ import type { JSX } from 'react';
 import { Suspense } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { dictText } from '@/components/utils/dictText';
 
 import CallbackClient from './CallbackClient';
 
@@ -24,8 +25,7 @@ const GoogleAuthCallbackPage = (): JSX.Element => {
     <Suspense
       fallback={
         <div className="flex min-h-[60vh] items-center justify-center text-xl text-slate-400">
-          {(dict?.logging_in_text?.value as string | undefined) ||
-            'Logging in…'}
+          {dictText(dict, 'logging_in_text', 'Logging in…')}
         </div>
       }
     >

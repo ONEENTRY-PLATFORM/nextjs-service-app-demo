@@ -3,6 +3,7 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * BookCtaBanner component — the "Ready to visit us?" gradient banner at the
@@ -31,12 +32,14 @@ const BookCtaBanner = (): JSX.Element => {
               className="mb-1 font-black text-white"
               style={{ fontSize: 'clamp(1.3rem,2.5vw,1.8rem)' }}
             >
-              {(dict?.ready_to_visit_title?.value as string | undefined) ||
-                'Ready to visit us?'}
+              {dictText(dict, 'ready_to_visit_title', 'Ready to visit us?')}
             </h3>
             <p className="max-w-sm text-base text-white/80">
-              {(dict?.ready_to_visit_desc?.value as string | undefined) ||
-                'Book your appointment online in just a few taps — choose your studio, service and master.'}
+              {dictText(
+                dict,
+                'ready_to_visit_desc',
+                'Book your appointment online in just a few taps — choose your studio, service and master.',
+              )}
             </p>
           </div>
 
@@ -50,7 +53,7 @@ const BookCtaBanner = (): JSX.Element => {
               backdropFilter: 'blur(8px)',
             }}
           >
-            {(dict?.book_text?.value as string | undefined) || 'Book Online'}
+            {dictText(dict, 'book_text', 'Book Online')}
           </Link>
         </div>
       </div>

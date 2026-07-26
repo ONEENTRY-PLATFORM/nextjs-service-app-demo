@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
+import { dictText } from '@/components/utils/dictText';
 
 /** Shown when the CMS page has no text — the page must never be bare */
 const FALLBACK_DESCRIPTION =
@@ -30,15 +31,13 @@ const NotFound = async (): Promise<JSX.Element> => {
       >
         <h1 className="mb-10 text-6xl">404</h1>
         <p className="mb-4">
-          {(dict?.not_found_desc?.value as string | undefined) ||
-            FALLBACK_DESCRIPTION}
+          {dictText(dict, 'not_found_desc', FALLBACK_DESCRIPTION)}
         </p>
         <Link
           href="/"
           className="items-center justify-center rounded-card border border-solid border-fuchsia-500 bg-transparent px-3.5 py-1 text-base font-bold tracking-wide text-fuchsia-500 uppercase transition-colors duration-300 hover:border-fuchsia-600 hover:text-fuchsia-600 focus-visible:text-fuchsia-600 focus-visible:outline-fuchsia-600 disabled:border-neutral-300 disabled:bg-neutral-300/50 disabled:text-neutral-300"
         >
-          {(dict?.return_home_text?.value as string | undefined) ||
-            'Return home'}
+          {dictText(dict, 'return_home_text', 'Return home')}
         </Link>
       </div>
     );
@@ -60,14 +59,13 @@ const NotFound = async (): Promise<JSX.Element> => {
          * every other route already reads its body text this way.
          */}
         {getPagePlainContent(page) ||
-          (dict?.not_found_desc?.value as string | undefined) ||
-          FALLBACK_DESCRIPTION}
+          dictText(dict, 'not_found_desc', FALLBACK_DESCRIPTION)}
       </p>
       <Link
         href="/"
         className="items-center justify-center rounded-card border border-solid border-fuchsia-500 bg-transparent px-3.5 py-1 text-base font-bold tracking-wide text-fuchsia-500 uppercase transition-colors duration-300 hover:border-fuchsia-600 hover:text-fuchsia-600 focus-visible:text-fuchsia-600 focus-visible:outline-fuchsia-600 disabled:border-neutral-300 disabled:bg-neutral-300/50 disabled:text-neutral-300"
       >
-        {(dict?.return_home_text?.value as string | undefined) || 'Return home'}
+        {dictText(dict, 'return_home_text', 'Return home')}
       </Link>
     </div>
   );

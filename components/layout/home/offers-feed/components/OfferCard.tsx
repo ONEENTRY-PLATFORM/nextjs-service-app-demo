@@ -84,11 +84,27 @@ const OfferCard = ({
             }
       }
     >
+      {/* role="button" instead of <button>: the footer nests the Book button,
+          and interactive content may not nest inside a real <button> */}
       <div
         data-testid="offer-card"
         data-product-id={product.id}
+        role="button"
+        tabIndex={0}
+        aria-label={`View offer: ${name}`}
         onClick={() => router.push('/offers')}
-        className="flex h-full flex-col"
+        onKeyDown={(e) => {
+          // Keydown from the nested Book button bubbles up here; without this
+          // guard Enter/Space on it would be hijacked into card navigation
+          if (e.target !== e.currentTarget) return;
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            router.push('/offers');
+          }
+        }}
+        // Inward-drawn ring: the animation wrapper's overflow-hidden would
+        // clip the global outward :focus-visible outline
+        className={`flex h-full flex-col focus-visible:outline-2 focus-visible:-outline-offset-2 ${featured ? 'focus-visible:outline-white' : 'focus-visible:outline-accent-pink'}`}
       >
         {/* Header */}
         <div

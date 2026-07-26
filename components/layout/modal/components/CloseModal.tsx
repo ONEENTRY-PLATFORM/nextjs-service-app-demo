@@ -5,6 +5,7 @@ import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * Close modal button
@@ -21,7 +22,7 @@ const CloseModal = (): JSX.Element => {
     <button
       onClick={() => setTransition('close')}
       className="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-solid border-white/70 transition-transform hover:rotate-90"
-      aria-label={(dict?.close_text?.value as string | undefined) || 'Close'}
+      aria-label={dictText(dict, 'close_text', 'Close')}
     >
       <svg
         width="18"

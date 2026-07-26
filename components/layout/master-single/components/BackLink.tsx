@@ -4,6 +4,7 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * BackLink component — a link back to the specialists listing.
@@ -23,8 +24,7 @@ const BackLink = (): JSX.Element => {
       className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
     >
       <ArrowLeft size={16} />{' '}
-      {(dict?.back_to_specialist_text?.value as string | undefined) ||
-        'Back to Specialist'}
+      {dictText(dict, 'back_to_specialist_text', 'Back to Specialist')}
     </Link>
   );
 };

@@ -5,6 +5,7 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * StarPicker — the 5-star rating picker:
@@ -37,9 +38,10 @@ const StarPicker = ({
             onMouseEnter={() => setHoverRating(i)}
             onMouseLeave={() => setHoverRating(0)}
             className="transition-transform hover:scale-110"
-            aria-label={(
-              (dict?.rate_star_aria?.value as string | undefined) ||
-              'Rate %n% star(s)'
+            aria-label={dictText(
+              dict,
+              'rate_star_aria',
+              'Rate %n% star(s)',
             ).replace('%n%', String(i))}
           >
             <Star

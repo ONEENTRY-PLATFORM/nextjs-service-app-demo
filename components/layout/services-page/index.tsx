@@ -3,6 +3,7 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { dictText } from '@/components/utils/dictText';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 
 import PromoBanner from './PromoBanner';
@@ -56,8 +57,7 @@ const ServicesPageContent = ({
    */
   const title =
     page?.localizeInfos?.title ??
-    ((dict?.services_title?.value as string | undefined) ||
-      'Services & Prices');
+    dictText(dict, 'services_title', 'Services & Prices');
   /** Hero kicker and background live in the page's `page_simple` attributes. */
   const kicker = page?.attributeValues?.page_tag?.value as string | undefined;
   const heroBg = fileDisplayUrl(page?.attributeValues?.page_hero_bg?.value);
@@ -72,18 +72,15 @@ const ServicesPageContent = ({
       ? [
           [
             services.length,
-            (dict?.services_stat_services?.value as string | undefined) ||
-              'Services',
+            dictText(dict, 'services_stat_services', 'Services'),
           ],
           [
             salons.length,
-            (dict?.services_stat_locations?.value as string | undefined) ||
-              'Locations',
+            dictText(dict, 'services_stat_locations', 'Locations'),
           ],
           [
             categories.length,
-            (dict?.services_stat_categories?.value as string | undefined) ||
-              'Categories',
+            dictText(dict, 'services_stat_categories', 'Categories'),
           ],
         ]
       : undefined;

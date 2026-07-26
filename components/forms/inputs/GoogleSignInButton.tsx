@@ -7,6 +7,7 @@ import { getApi, isError } from '@/app/api/api/api';
 import { useDict } from '@/app/store/providers/useDict';
 import { buildOAuthState } from '@/components/forms/buildOAuthState';
 import GoogleIcon from '@/components/icons/google';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * "Sign in with Google" button — starts the OAuth redirect flow.
@@ -29,9 +30,7 @@ const GoogleSignInButton = ({ title }: { title?: string }): JSX.Element => {
   /** UI-text dictionary for the localized button label */
   const dict = useDict();
   const label =
-    title ??
-    (dict?.google_sign_in_text?.value as string | undefined) ??
-    'Sign in with Google';
+    title ?? dictText(dict, 'google_sign_in_text', 'Sign in with Google');
   /** Disable the button between the click and the full-page redirect. */
   const [loading, setLoading] = useState(false);
 

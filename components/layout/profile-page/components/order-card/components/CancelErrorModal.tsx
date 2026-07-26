@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 import { useDict } from '@/app/store/providers/useDict';
 import DialogPortal from '@/components/shared/DialogPortal';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * CancelErrorModal — the failure counterpart of `CancelSuccessModal`: the
@@ -39,8 +40,11 @@ const CancelErrorModal = ({
   /** Headline: the caller's title, else the dictionary's cancellation wording. */
   const resolvedTitle =
     title ||
-    (dict?.appointment_not_cancelled_title?.value as string | undefined) ||
-    'Appointment not cancelled';
+    dictText(
+      dict,
+      'appointment_not_cancelled_title',
+      'Appointment not cancelled',
+    );
 
   return (
     <DialogPortal>
@@ -71,7 +75,7 @@ const CancelErrorModal = ({
             data-testid="order-cancel-error-close"
             className="w-full rounded-xl bg-gradient-brand py-2.5 text-base font-bold text-white transition-all hover:opacity-90"
           >
-            {(dict?.close_text?.value as string | undefined) || 'Close'}
+            {dictText(dict, 'close_text', 'Close')}
           </button>
         </div>
       </div>

@@ -10,6 +10,7 @@ import LightboxCounter from '@/components/shared/lightbox/LightboxCounter';
 import LightboxOverlay from '@/components/shared/lightbox/LightboxOverlay';
 import { useLightboxNav } from '@/components/shared/lightbox/useLightboxNav';
 import LightboxStage from '@/components/shared/LightboxStage';
+import { dictText } from '@/components/utils/dictText';
 
 import type { SalonPhoto } from '../types';
 
@@ -60,10 +61,7 @@ const SalonLightbox = ({
   return (
     <LightboxOverlay
       dialogRef={dialogRef}
-      label={
-        (dict?.salon_photo_viewer_aria?.value as string | undefined) ||
-        'Salon photo viewer'
-      }
+      label={dictText(dict, 'salon_photo_viewer_aria', 'Salon photo viewer')}
       className="p-4"
       style={{ background: 'rgba(6,0,14,0.94)', backdropFilter: 'blur(16px)' }}
       onClose={requestClose}
@@ -78,7 +76,7 @@ const SalonLightbox = ({
       <LightboxArrow
         side="prev"
         onClick={onPrev}
-        label={(dict?.previous_text?.value as string | undefined) || 'Previous'}
+        label={dictText(dict, 'previous_text', 'Previous')}
         className="left-6 transition-colors hover:bg-white/10"
         style={ARROW_STYLE}
       />
@@ -99,7 +97,7 @@ const SalonLightbox = ({
       <LightboxArrow
         side="next"
         onClick={onNext}
-        label={(dict?.next_text?.value as string | undefined) || 'Next'}
+        label={dictText(dict, 'next_text', 'Next')}
         className="right-6 transition-colors hover:bg-white/10"
         style={ARROW_STYLE}
       />

@@ -3,6 +3,7 @@ import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import SectionTitle from '@/components/shared/SectionTitle';
+import { dictText } from '@/components/utils/dictText';
 
 import ReviewsCarousel from './components/ReviewsCarousel';
 
@@ -14,8 +15,7 @@ const ReviewsCarouselLayout = (): JSX.Element => {
   /** UI-text dictionary (system_content) with English fallbacks */
   const [dict] = ServerProvider<IAttributeValues>('dict');
   /** Define title for the reviews section */
-  const title =
-    (dict?.home_reviews_title?.value as string | undefined) || 'Reviews';
+  const title = dictText(dict, 'home_reviews_title', 'Reviews');
 
   return (
     <div

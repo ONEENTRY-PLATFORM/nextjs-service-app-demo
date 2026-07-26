@@ -18,6 +18,7 @@ import OpeningHours from '@/components/layout/contacts-page/OpeningHours';
 import type { ContactSalon } from '@/components/layout/contacts-page/SalonLocations';
 import SalonLocations from '@/components/layout/contacts-page/SalonLocations';
 import SectionHeading from '@/components/shared/SectionHeading';
+import { dictText } from '@/components/utils/dictText';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
 import parseOpeningTime from '@/components/utils/parseOpeningTime';
@@ -121,14 +122,12 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
         stats={[
           [
             salons.length,
-            (dict?.services_stat_locations?.value as string | undefined) ||
-              'Locations',
+            dictText(dict, 'services_stat_locations', 'Locations'),
           ],
           ...(openingSummary
             ? ([
                 [
-                  (dict?.stat_daily_text?.value as string | undefined) ||
-                    'Daily',
+                  dictText(dict, 'stat_daily_text', 'Daily'),
                   openingSummary.hours,
                 ],
               ] as Array<[string, string]>)
@@ -144,8 +143,7 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
       <section className="bg-white pt-2 pb-6 md:pt-6 md:pb-10">
         <div className="page-shell">
           <SectionHeading className="mb-6 md:mb-10">
-            {(dict?.get_in_touch_title?.value as string | undefined) ||
-              'Get in Touch'}
+            {dictText(dict, 'get_in_touch_title', 'Get in Touch')}
           </SectionHeading>
           <RevealAnimations className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-5">
             <div className="lg:col-span-3">

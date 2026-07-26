@@ -9,6 +9,7 @@ import { useContext, useEffect, useRef } from 'react';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { useDict } from '@/app/store/providers/useDict';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
+import { dictText } from '@/components/utils/dictText';
 import { flatMenuToNested } from '@/components/utils/flatMenuToNested';
 import { normalizeMenuPages } from '@/components/utils/normalizeMenuPages';
 
@@ -85,9 +86,7 @@ const OffscreenModal = ({ menu }: { menu: IMenusEntity }): JSX.Element => {
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-label={
-          (dict?.mobile_menu_aria?.value as string | undefined) || 'Menu'
-        }
+        aria-label={dictText(dict, 'mobile_menu_aria', 'Menu')}
         className="fixed inset-0 z-50 flex size-full max-w-90 flex-col bg-white pb-6"
       >
         <div className="p-6">
@@ -97,7 +96,7 @@ const OffscreenModal = ({ menu }: { menu: IMenusEntity }): JSX.Element => {
               src={'/images/thalia-logo.svg'}
               width={110}
               height={70}
-              alt={(dict?.site_name?.value as string | undefined) || 'Thalia'}
+              alt={dictText(dict, 'site_name', 'Thalia')}
               loading="lazy"
               className="h-auto max-w-full shrink-0 max-sm:mb-5"
             />

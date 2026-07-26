@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import type { ContactSalon } from './types';
 
@@ -104,8 +105,7 @@ const SalonCard = ({
               className="text-sm font-medium"
               style={{ color: salon.color }}
             >
-              {(dict?.salon_hours_value?.value as string | undefined) ||
-                'Daily 10:00–22:00'}
+              {dictText(dict, 'salon_hours_value', 'Daily 10:00–22:00')}
             </span>
           </div>
         </div>
@@ -138,8 +138,7 @@ const SalonCard = ({
             boxShadow: `0 6px 16px ${salon.color}44`,
           }}
         >
-          <Phone size={18} />{' '}
-          {(dict?.call_us_text?.value as string | undefined) || 'Call us'}
+          <Phone size={18} /> {dictText(dict, 'call_us_text', 'Call us')}
         </a>
         <a
           href={salon.mapsLink}
@@ -153,7 +152,7 @@ const SalonCard = ({
           }}
         >
           <Navigation size={18} />{' '}
-          {(dict?.directions_text?.value as string | undefined) || 'Directions'}
+          {dictText(dict, 'directions_text', 'Directions')}
         </a>
         {/* View studio — outlined, links to the salon detail page */}
         <Link
@@ -161,8 +160,7 @@ const SalonCard = ({
           className="flex flex-1 items-center justify-center gap-1.5 rounded-xl py-3.5 text-sm font-bold tracking-wide uppercase transition-colors duration-200"
           style={{ border: `2px solid ${salon.color}`, color: salon.color }}
         >
-          {(dict?.view_studio_text?.value as string | undefined) ||
-            'View studio'}{' '}
+          {dictText(dict, 'view_studio_text', 'View studio')}{' '}
           <ArrowUpRight size={18} />
         </Link>
       </div>

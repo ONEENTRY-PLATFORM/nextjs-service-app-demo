@@ -7,6 +7,7 @@ import type { JSX } from 'react';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { offerTermsData } from '@/components/data/offerTermsData';
+import { dictText } from '@/components/utils/dictText';
 
 import OfferDetailCard from './OfferDetailCard';
 
@@ -51,8 +52,7 @@ const OffersPageContent = ({
           className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition-opacity hover:opacity-70"
         >
           <ArrowLeft size={16} />{' '}
-          {(dict?.back_to_home_text?.value as string | undefined) ||
-            'Back to Home'}
+          {dictText(dict, 'back_to_home_text', 'Back to Home')}
         </Link>
       </div>
 
@@ -80,8 +80,11 @@ const OffersPageContent = ({
             className="text-center text-base text-neutral-300"
             data-testid="offers-empty"
           >
-            {(dict?.no_offers_text?.value as string | undefined) ||
-              'No special offers available right now — check back soon.'}
+            {dictText(
+              dict,
+              'no_offers_text',
+              'No special offers available right now — check back soon.',
+            )}
           </p>
         )}
       </div>
@@ -90,8 +93,7 @@ const OffersPageContent = ({
       <RevealAnimations className="page-shell pb-16">
         <div className="rounded-2xl p-6" style={{ background: '#f7f7fb' }}>
           <p className="mb-3 text-sm font-black tracking-widest text-ink uppercase">
-            {(dict?.offer_good_to_know_text?.value as string | undefined) ||
-              'Good to know'}
+            {dictText(dict, 'offer_good_to_know_text', 'Good to know')}
           </p>
           <ul className="space-y-2">
             {offerTermsData.map((term) => (

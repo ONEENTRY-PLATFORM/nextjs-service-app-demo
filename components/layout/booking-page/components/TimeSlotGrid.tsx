@@ -3,6 +3,7 @@
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 import formatMinutes from '@/components/utils/formatMinutes';
 
 import FadeStaggerGroup from '../animations/FadeStaggerGroup';
@@ -99,17 +100,17 @@ const TimeSlotGrid = ({
     <div className="space-y-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3">
         <p className="text-sm font-medium text-slate-400">
-          {(dict?.booking_available_times_text?.value as string | undefined) ||
-            'Available times'}
+          {dictText(dict, 'booking_available_times_text', 'Available times')}
         </p>
         {showDurationHint && (
           <p
             className="text-xs text-neutral-300"
             data-testid="booking-duration-hint"
           >
-            {(
-              (dict?.booking_visit_hint?.value as string | undefined) ||
-              'Your visit takes %d% — later starts are unavailable'
+            {dictText(
+              dict,
+              'booking_visit_hint',
+              'Your visit takes %d% — later starts are unavailable',
             ).replace('%d%', formatMinutes(durationMinutes))}
           </p>
         )}
@@ -120,8 +121,11 @@ const TimeSlotGrid = ({
           style={{ background: `${PINK}08`, color: MUTED }}
           data-testid="booking-no-slots"
         >
-          {(dict?.booking_no_times_text?.value as string | undefined) ||
-            'No available times on this day. Please pick another date.'}
+          {dictText(
+            dict,
+            'booking_no_times_text',
+            'No available times on this day. Please pick another date.',
+          )}
         </p>
       ) : noSlotFits ? (
         <p
@@ -129,10 +133,10 @@ const TimeSlotGrid = ({
           style={{ background: `${PINK}08`, color: MUTED }}
           data-testid="booking-no-fitting-slots"
         >
-          {(
-            (dict?.booking_no_fitting_slots_text?.value as
-              string | undefined) ||
-            'No start on this day leaves enough time for the whole %d% visit before closing. Please pick another date or fewer services.'
+          {dictText(
+            dict,
+            'booking_no_fitting_slots_text',
+            'No start on this day leaves enough time for the whole %d% visit before closing. Please pick another date or fewer services.',
           ).replace('%d%', formatMinutes(durationMinutes))}
         </p>
       ) : (

@@ -7,6 +7,7 @@ import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 import type { GalleryTab } from './components/GalleryFilterBar';
 import GalleryFilterBar from './components/GalleryFilterBar';
@@ -200,16 +201,18 @@ const GalleryPageContent = ({
       ) : (
         <div data-testid="gallery-empty" className="px-4 py-20 text-center">
           <p className="text-sm text-neutral-300">
-            {(dict?.no_portfolio_text?.value as string | undefined) ||
-              'No portfolio yet for this combination.'}
+            {dictText(
+              dict,
+              'no_portfolio_text',
+              'No portfolio yet for this combination.',
+            )}
           </p>
           <button
             data-testid="gallery-clear-filters"
             onClick={clearAll}
             className="mt-3 rounded-full bg-fuchsia-500/10 px-5 py-2 text-xs font-bold tracking-wider text-accent-pink uppercase transition-colors hover:bg-fuchsia-500/20"
           >
-            {(dict?.clear_filters_text?.value as string | undefined) ||
-              'Clear filters'}
+            {dictText(dict, 'clear_filters_text', 'Clear filters')}
           </button>
         </div>
       )}

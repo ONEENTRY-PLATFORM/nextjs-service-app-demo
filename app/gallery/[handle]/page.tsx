@@ -37,7 +37,6 @@ const handleToCategory = (handle: string): GalleryMainCategory | undefined => {
 
 /**
  * Gallery category page (`/gallery/gallery-hair`, …).
- *
  * @param   {object}                    props        - GallerySingleLayout props.
  * @param   {Promise<{handle: string}>} props.params - page params.
  * @returns {Promise<JSX.Element>}                   Gallery page pre-filtered by category.

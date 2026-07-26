@@ -2,6 +2,7 @@ import { Check, ChevronRight } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * OfferDetailPanel — the right accent-gradient content pane of an offer detail
@@ -52,8 +53,7 @@ const OfferDetailPanel = ({
             className="mb-3 text-sm font-black tracking-widest uppercase"
             style={{ color: 'rgba(255,255,255,0.8)' }}
           >
-            {(dict?.offer_included_text?.value as string | undefined) ||
-              "What's included"}
+            {dictText(dict, 'offer_included_text', "What's included")}
           </p>
           <div className="mb-7 flex flex-col gap-2.5">
             {services.map((serviceTitle) => (
@@ -92,7 +92,7 @@ const OfferDetailPanel = ({
             e.currentTarget.style.background = 'rgba(255,255,255,0.22)';
           }}
         >
-          {(dict?.book_offer_text?.value as string | undefined) || 'Book Offer'}{' '}
+          {dictText(dict, 'book_offer_text', 'Book Offer')}{' '}
           <ChevronRight size={15} />
         </button>
       </div>

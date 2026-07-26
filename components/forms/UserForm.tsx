@@ -13,6 +13,7 @@ import { buildProfileUpdateBody } from '@/components/forms/buildProfileUpdateBod
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
 import { useCmsForm } from '@/components/forms/useCmsForm';
+import { dictText } from '@/components/utils/dictText';
 import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import AuthError from '../pages/AuthError';
@@ -138,8 +139,11 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
     const notificationEmail = fields.email_reg?.value || user?.identifier || '';
     if (!notificationEmail) {
       setError(
-        (dict?.err_no_email_on_file?.value as string | undefined) ||
+        dictText(
+          dict,
+          'err_no_email_on_file',
           'Your account has no e-mail on file — cannot save.',
+        ),
       );
       return;
     }
@@ -181,9 +185,7 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
       /** Saved — collapse the card back to its read-only rows */
       setEditing(false);
       /** Show success notification */
-      toast(
-        (dict?.toast_data_saved?.value as string | undefined) || 'Data saved!',
-      );
+      toast(dictText(dict, 'toast_data_saved', 'Data saved!'));
     } catch (error) {
       /** Set error message if update fails */
       setError(toErrorMessage(error));
@@ -220,7 +222,7 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
         ))}
         <div className="mt-5">
           <ProfileEditButton
-            title={(dict?.edit_text?.value as string | undefined) || 'Edit'}
+            title={dictText(dict, 'edit_text', 'Edit')}
             onClick={() => setEditing(true)}
           />
         </div>
@@ -270,14 +272,12 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
       {/** Save + Cancel row (mock: gradient Save, bordered Cancel) */}
       <div className="flex items-stretch gap-2">
         <SubmitButton
-          title={
-            (dict?.save_button_text?.value as string | undefined) || 'Save'
-          }
+          title={dictText(dict, 'save_button_text', 'Save')}
           isLoading={loading}
           index={10}
         />
         <ProfileCancelButton
-          title={(dict?.cancel_text?.value as string | undefined) || 'Cancel'}
+          title={dictText(dict, 'cancel_text', 'Cancel')}
           onClick={() => setEditing(false)}
         />
       </div>
