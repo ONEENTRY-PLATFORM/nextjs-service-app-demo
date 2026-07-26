@@ -3,6 +3,7 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 
 import PromoBanner from './PromoBanner';
 import ServicesCatalog from './ServicesCatalog';
@@ -57,6 +58,9 @@ const ServicesPageContent = ({
     page?.localizeInfos?.title ??
     ((dict?.services_title?.value as string | undefined) ||
       'Services & Prices');
+  /** Hero kicker and background live in the page's `page_simple` attributes. */
+  const kicker = page?.attributeValues?.page_tag?.value as string | undefined;
+  const heroBg = fileDisplayUrl(page?.attributeValues?.page_hero_bg?.value);
   /** Stats line under the hero title — only when the CMS has services */
   const subtitle =
     services.length > 0
@@ -86,7 +90,13 @@ const ServicesPageContent = ({
 
   return (
     <>
-      <ServicesHero title={title} subtitle={subtitle} stats={stats} />
+      <ServicesHero
+        title={title}
+        kicker={kicker}
+        subtitle={subtitle}
+        stats={stats}
+        bg={heroBg || undefined}
+      />
       {/*
        * The key must sit HERE, on the catalog: without it a move between two
        * category deep-links reuses the mounted catalog and keeps the previously

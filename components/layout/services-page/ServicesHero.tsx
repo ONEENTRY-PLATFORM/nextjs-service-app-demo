@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import HeroAnimations from '@/app/animations/HeroAnimations';
@@ -7,15 +6,15 @@ import HeroBg from '@/app/animations/HeroBg';
 import HeroDescription from '@/app/animations/HeroDescription';
 import HeroKicker from '@/app/animations/HeroKicker';
 import HeroTitle from '@/app/animations/HeroTitle';
-import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 import StatsStrip from './StatsStrip';
 
 /**
  * ServicesHero component — the banner section of the services page as in the
  * static-html mock (`PricesPage.tsx`): a full-bleed photo under a brand
- * cyan→pink veil, the "Beauty Studio" kicker, the page title and a short
- * stats subtitle, with the gradient counters strip attached right below.
+ * cyan→pink veil, the kicker (page `page_tag` attribute, fallback "Beauty
+ * Studio"), the page title and a short stats subtitle, with the gradient
+ * counters strip attached right below.
  *
  * Wrapped in {@link HeroAnimations} so the header plays the same loader-reveal
  * mask overlay and page-transition/parallax animations as the home hero; the
@@ -26,27 +25,32 @@ import StatsStrip from './StatsStrip';
  * as one header unit.
  * @param   {object}                           props            - Component properties
  * @param   {string}                           props.title      - Page title from the CMS (e.g. "Services & prices")
+ * @param   {string}                           [props.kicker]   - Kicker line above the title (page `page_tag` attribute)
  * @param   {string}                           [props.subtitle] - Stats line under the title; hidden when not provided
  * @param   {Array<[string | number, string]>} [props.stats]    - Counter pairs for the strip; hidden when not provided
+ * @param   {string}                           [props.bg]       - Background photo URL (page `page_hero_bg` attribute)
  * @returns {JSX.Element}                                       Hero section with background photo, titles and counters
  */
 const ServicesHero = ({
   title,
+  kicker,
   subtitle,
   stats,
+  bg,
 }: {
   title: string;
+  kicker?: string | undefined;
   subtitle?: string | undefined;
   stats?: Array<[string | number, string]> | undefined;
+  bg?: string | undefined;
 }): JSX.Element => {
-  const [dict] = ServerProvider<IAttributeValues>('dict');
   return (
     <HeroAnimations className="relative overflow-hidden">
       <div className="relative flex h-64 items-center justify-center overflow-hidden md:h-80">
         <div className="absolute inset-0">
           <HeroBg className="absolute inset-0">
             <Image
-              src="/images/Offer/banner_main.jpeg"
+              src={bg || '/images/Offer/banner_main.jpeg'}
               alt=""
               fill
               priority
@@ -58,8 +62,7 @@ const ServicesHero = ({
         </div>
         <div className="relative px-4 text-center">
           <HeroKicker className="mb-2 text-xs tracking-[0.45em] text-white/75 uppercase">
-            {(dict?.services_hero_kicker?.value as string | undefined) ||
-              'Beauty Studio'}
+            {kicker || 'Beauty Studio'}
           </HeroKicker>
           <HeroTitle
             className="font-black tracking-widest text-white uppercase"

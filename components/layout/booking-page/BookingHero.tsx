@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { JSX } from 'react';
 
 import HeroAnimations from '@/app/animations/HeroAnimations';
@@ -7,14 +6,17 @@ import HeroBg from '@/app/animations/HeroBg';
 import HeroDescription from '@/app/animations/HeroDescription';
 import HeroKicker from '@/app/animations/HeroKicker';
 import HeroTitle from '@/app/animations/HeroTitle';
-import { ServerProvider } from '@/app/store/providers/ServerProvider';
 
 /**
  * BookingHero component — the banner of the booking page as in the
  * static-html mock (`BookingPage.tsx` → hero): a full-bleed photo under the
- * purple→pink brand veil, the kicker (dictionary `booking_hero_kicker`,
- * fallback "Online booking"), the page title and a short subtitle. Compact on
- * mobile (mock `h-[154px]`), full height on desktop.
+ * purple→pink brand veil, the kicker, the page title and a short subtitle.
+ * Compact on mobile (mock `h-[154px]`), full height on desktop.
+ *
+ * All texts and the background come from the `booking` page's `page_simple`
+ * attributes (`page_tag` / `page_hero_bg` / `page_hero_description`, read by
+ * `app/booking/page.tsx`) with static fallbacks so the hero degrades without
+ * the CMS.
  *
  * Wrapped in {@link HeroAnimations} so the header plays the same loader-reveal
  * mask overlay and page-transition/parallax animations as the home hero; the
@@ -25,24 +27,28 @@ import { ServerProvider } from '@/app/store/providers/ServerProvider';
  * the header is driven by a single timeline.
  * @param   {object}      props            - Component properties
  * @param   {string}      props.title      - Page title from the CMS (e.g. "Book Online")
+ * @param   {string}      [props.kicker]   - Kicker line above the title (page `page_tag` attribute)
  * @param   {string}      [props.subtitle] - Line under the title; hidden when not provided
+ * @param   {string}      [props.bg]       - Background photo URL (page `page_hero_bg` attribute)
  * @returns {JSX.Element}                  Hero section with background photo and titles
  */
 const BookingHero = ({
   title,
+  kicker,
   subtitle,
+  bg,
 }: {
   title: string;
+  kicker?: string | undefined;
   subtitle?: string | undefined;
+  bg?: string | undefined;
 }): JSX.Element => {
-  const [dict] = ServerProvider<IAttributeValues>('dict');
-
   return (
     <HeroAnimations className="relative flex h-38.5 items-center justify-center overflow-hidden md:h-80">
       <div className="absolute inset-0">
         <HeroBg className="absolute inset-0">
           <Image
-            src="/images/Offer/banner_03.jpeg"
+            src={bg || '/images/Offer/banner_03.jpeg'}
             alt=""
             fill
             priority
@@ -54,8 +60,7 @@ const BookingHero = ({
       </div>
       <div className="relative px-4 text-center">
         <HeroKicker className="mb-2 text-xs tracking-[0.4em] text-white/80 uppercase">
-          {(dict?.booking_hero_kicker?.value as string | undefined) ||
-            'Online booking'}
+          {kicker || 'Online booking'}
         </HeroKicker>
         <HeroTitle
           className="font-black tracking-widest text-white uppercase drop-shadow-lg"

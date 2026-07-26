@@ -18,8 +18,10 @@ import OpeningHours from '@/components/layout/contacts-page/OpeningHours';
 import type { ContactSalon } from '@/components/layout/contacts-page/SalonLocations';
 import SalonLocations from '@/components/layout/contacts-page/SalonLocations';
 import SectionHeading from '@/components/shared/SectionHeading';
+import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
 import parseOpeningTime from '@/components/utils/parseOpeningTime';
+import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
 import { salonFromPage } from '@/components/utils/salonFromPage';
 import summarizeOpeningHours from '@/components/utils/summarizeOpeningHours';
 
@@ -105,10 +107,15 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
   /** Counters strip: the hours cell only works while the week is uniform. */
   const openingSummary = summarizeOpeningHours(openingRows);
 
-  const title =
-    page?.localizeInfos?.title ??
-    (dict?.contacts_title?.value as string | undefined) ??
-    'Contacts';
+  const title = page?.localizeInfos?.title || 'Contacts';
+  /** Hero texts and background live in the page's `page_simple` attributes. */
+  const kicker = page?.attributeValues?.page_tag?.value as string | undefined;
+  const heroBg = fileDisplayUrl(page?.attributeValues?.page_hero_bg?.value);
+  /** Subtitle = salon count + the page-attribute suffix. */
+  const subtitleSuffix =
+    plainTextFromTextAttr(
+      page?.attributeValues?.page_hero_description?.value,
+    ) || 'locations · Always happy to see you';
 
   return (
     <div className="bg-white" data-testid="contacts-page">
@@ -118,10 +125,9 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
       {/* Hero + stats strip (desktop only) — revealed together as one header */}
       <ContactsHero
         title={title}
-        subtitle={`${salons.length} ${
-          (dict?.contacts_locations_suffix?.value as string | undefined) ||
-          'locations · Always happy to see you'
-        }`}
+        kicker={kicker}
+        subtitle={`${salons.length} ${subtitleSuffix}`}
+        bg={heroBg || undefined}
         stats={[
           [
             salons.length,

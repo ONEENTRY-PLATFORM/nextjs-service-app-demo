@@ -9,6 +9,8 @@ import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import BookingWizard from '@/components/layout/booking-page';
 import BookingAnimations from '@/components/layout/booking-page/animations/BookingAnimations';
 import BookingHero from '@/components/layout/booking-page/BookingHero';
+import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
+import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
 
 import { getBookingData } from './booking-data';
 
@@ -49,10 +51,15 @@ const BookingPageLayout = async (): Promise<JSX.Element> => {
   ServerProvider('dict', dictionary);
 
   const title = pageResult.page?.localizeInfos?.title || 'Book Online';
+
+  /** Hero texts and background live in the page's `page_simple` attributes. */
+  const attrs = pageResult.page?.attributeValues;
+  const kicker = attrs?.page_tag?.value as string | undefined;
+  const bg = fileDisplayUrl(attrs?.page_hero_bg?.value);
   const locations = data.salons.length;
-  /** Dictionary-driven subtitle: base line + optional "· N location(s)" tail. */
+  /** Page-attribute subtitle base + optional "· N location(s)" tail. */
   const subtitleBase =
-    (dictionary?.booking_hero_subtitle?.value as string | undefined) ||
+    plainTextFromTextAttr(attrs?.page_hero_description?.value) ||
     'Premium beauty experience';
   const locationsLine = (
     (dictionary?.booking_hero_locations_text?.value as string | undefined) ||
@@ -62,18 +69,12 @@ const BookingPageLayout = async (): Promise<JSX.Element> => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-white">
-      <BookingHero title={title} subtitle={subtitle} />
-      {/* The wizard reads `?reschedule={orderId}` (`useSearchParams`), which on
-          a prerendered route is only known on the client — Next requires the
-          boundary. The fallback never reaches the user: the wizard itself is
-          client-rendered, so the suspense resolves in the same commit.
-
-          `BookingAnimations` lives INSIDE the boundary so its GSAP `.set` on the
-          wizard body (`.mx-auto`) never reaches across the Suspense boundary: a
-          parent-side layout effect that mutated that div before the suspended
-          subtree hydrated produced a hydration mismatch (server DOM carried an
-          `opacity:0;visibility:hidden` the client render didn't). Sharing one
-          hydration boundary with its target keeps the fade after hydration. */}
+      <BookingHero
+        title={title}
+        kicker={kicker}
+        subtitle={subtitle}
+        bg={bg || undefined}
+      />
       <Suspense fallback={null}>
         <BookingAnimations className="flex flex-1 flex-col">
           <BookingWizard data={data} />
