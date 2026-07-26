@@ -13,7 +13,7 @@ import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxon
 import { GALLERY_MAIN_CATS } from '@/components/layout/gallery-page/taxonomy';
 import JsonLd from '@/components/shared/JsonLd';
 
-import getCmsGalleryItems from '../getCmsGalleryItems';
+import getCmsGalleryItems from '../utils/getCmsGalleryItems';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it

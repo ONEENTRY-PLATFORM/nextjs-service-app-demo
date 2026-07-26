@@ -7,7 +7,7 @@ import GalleryUnavailable from '@/components/layout/gallery-page/components/Gall
 import type { GalleryMainCategory } from '@/components/layout/gallery-page/taxonomy';
 import { GALLERY_MAIN_CATS } from '@/components/layout/gallery-page/taxonomy';
 
-import getCmsGalleryItems from './getCmsGalleryItems';
+import getCmsGalleryItems from './utils/getCmsGalleryItems';
 
 /**
  * ISR: refresh the prerendered CMS content on a timer. Not `force-static` —

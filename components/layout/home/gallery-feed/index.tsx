@@ -5,7 +5,7 @@ import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
-import masterNamesById from '@/app/gallery/masterNamesById';
+import masterNamesById from '@/app/gallery/utils/masterNamesById';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import SectionTitle from '@/components/shared/SectionTitle';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';

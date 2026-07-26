@@ -2,8 +2,8 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
-import masterNamesById from '@/app/gallery/masterNamesById';
-import masterSalonsById from '@/app/gallery/masterSalonsById';
+import masterNamesById from '@/app/gallery/utils/masterNamesById';
+import masterSalonsById from '@/app/gallery/utils/masterSalonsById';
 import { PAGES } from '@/app/utils/constants';
 import getLqipPreview from '@/components/hooks/getLqipPreview';
 import type {

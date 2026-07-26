@@ -47,8 +47,6 @@ export default async function PageLayout({
     return notFound();
   }
 
-  const { pageUrl } = page;
-
   /**
    * Markers this catch-all route knows how to render. Every other page marker
    * either has its own route in `app/` or is not meant to be reachable here.
@@ -58,7 +56,7 @@ export default async function PageLayout({
     payment_canceled: <PaymentCanceled page={page} dict={dict} />,
   };
 
-  const content = templates[pageUrl];
+  const content = templates[page.pageUrl];
 
   /**
    * The page exists in the CMS but this route has no template for it (e.g.
