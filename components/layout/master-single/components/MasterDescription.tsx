@@ -1,6 +1,7 @@
-import parse from 'html-react-parser';
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
+
+import { parseSafeCmsHtml } from '@/components/layout/master-single/utils/parseSafeCmsHtml';
 
 /**
  * MasterDescription component to render the description of a master.
@@ -22,10 +23,10 @@ const MasterDescription = ({
 
   const descriptionHtml = descArr?.[0]?.htmlValue;
 
-  /** Render master description with parsed HTML content */
+  /** Render master description through the sanitizing allowlist parser */
   return (
     <div className="item mt-4 text-justify text-base leading-relaxed text-slate-400 max-md:max-w-full">
-      {descriptionHtml ? parse(descriptionHtml) : null}
+      {descriptionHtml ? parseSafeCmsHtml(descriptionHtml) : null}
     </div>
   );
 };
