@@ -37,6 +37,13 @@ const nextConfig: NextConfig = {
   // own path, so no search path is needed.
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Dev-only escape hatch for the optimizer's SSRF guard: it resolves the
+    // upstream host with `all: true` and rejects the request if ANY record is
+    // private/reserved. On networks with DNS64 the resolver synthesizes a NAT64
+    // AAAA (64:ff9b::/96) for beauty.oneentry.cloud alongside the public A
+    // record, so every remote image 400s ('"url" parameter is not allowed')
+    // even though the fetch itself would succeed. Production keeps the guard.
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
     // OneEntry file URLs are content-addressable, so a long TTL is safe (30 days).
     minimumCacheTTL: 60 * 60 * 24 * 30,
     deviceSizes: [640, 768, 1024, 1280, 1920],

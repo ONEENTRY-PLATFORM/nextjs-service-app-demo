@@ -7,6 +7,7 @@ import { getDictionary } from '@/app/api/utils/dictionaries';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import OffersPageContent from '@/components/layout/offers-page';
+import { parseOfferTerms } from '@/components/layout/offers-page/parseOfferTerms';
 import { isOfferProduct } from '@/components/utils/isOfferProduct';
 
 /**
@@ -53,7 +54,13 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
   /** Keep only genuine offer products, ignoring anything else on the page. */
   const offers = (products ?? []).filter(isOfferProduct);
 
-  return <OffersPageContent title={title} offers={offers} />;
+  /**
+   * "Good to know" terms live in the page's built-in content field (HTML
+   * editor). An empty parse — no page, blank content — simply hides the block.
+   */
+  const terms = parseOfferTerms(page);
+
+  return <OffersPageContent title={title} offers={offers} terms={terms} />;
 };
 
 export default OffersPageLayout;

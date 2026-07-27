@@ -6,7 +6,6 @@ import type { JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { offerTermsData } from '@/components/data/offerTermsData';
 import { dictText } from '@/components/utils/dictText';
 
 import OfferDetailCard from './OfferDetailCard';
@@ -26,18 +25,23 @@ const PINK = '#ed21f1';
  * lived in the route file. The route now only reads the CMS and picks the title.
  *
  * Degrades on its own: an empty list renders the "no offers" state rather than
- * an empty page, so the route never has to 404 over missing products.
+ * an empty page, so the route never has to 404 over missing products. Empty
+ * `terms` (CMS content missing or unreadable) simply hide the "Good to know"
+ * block — same pattern as the opening-hours column of the footer.
  * @param   {object}            props        - Component properties
  * @param   {string}            props.title  - Page heading (CMS title or fallback)
  * @param   {IProductsEntity[]} props.offers - Offer products to render
+ * @param   {string[]}          props.terms  - "Good to know" lines parsed from the CMS page content
  * @returns {JSX.Element}                    Offers page body
  */
 const OffersPageContent = ({
   title,
   offers,
+  terms,
 }: {
   title: string;
   offers: IProductsEntity[];
+  terms: string[];
 }): JSX.Element => {
   const [dict] = ServerProvider<IAttributeValues>('dict');
   return (
@@ -90,27 +94,29 @@ const OffersPageContent = ({
       </div>
 
       {/* Terms */}
-      <RevealAnimations className="page-shell pb-16">
-        <div className="rounded-2xl p-6" style={{ background: '#f7f7fb' }}>
-          <p className="mb-3 text-sm font-black tracking-widest text-ink uppercase">
-            {dictText(dict, 'offer_good_to_know_text', 'Good to know')}
-          </p>
-          <ul className="space-y-2">
-            {offerTermsData.map((term) => (
-              <li
-                key={term}
-                className="flex items-start gap-2.5 text-sm text-slate-400"
-              >
-                <span
-                  className="mt-1.5 inline-block shrink-0 rounded-full"
-                  style={{ width: 5, height: 5, background: PINK }}
-                />
-                {term}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </RevealAnimations>
+      {terms.length > 0 && (
+        <RevealAnimations className="page-shell pb-16">
+          <div className="rounded-2xl p-6" style={{ background: '#f7f7fb' }}>
+            <p className="mb-3 text-sm font-black tracking-widest text-ink uppercase">
+              {dictText(dict, 'offer_good_to_know_text', 'Good to know')}
+            </p>
+            <ul className="space-y-2">
+              {terms.map((term) => (
+                <li
+                  key={term}
+                  className="flex items-start gap-2.5 text-sm text-slate-400"
+                >
+                  <span
+                    className="mt-1.5 inline-block shrink-0 rounded-full"
+                    style={{ width: 5, height: 5, background: PINK }}
+                  />
+                  {term}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </RevealAnimations>
+      )}
     </div>
   );
 };
