@@ -58,6 +58,27 @@ test.describe('Offer → booking modal', () => {
     await expect(page).toHaveURL(/\/offers$/);
   });
 
+  // The home BEST OFFERS feed renders the same offer cards (shared parse and
+  // `onBook` path as /offers), but its wiring — section, animations, dict —
+  // is its own. Cover the home entry point: the card's button must open the
+  // modal in place, without navigating away from the home page.
+  test('home offer card “Book Offer” opens the modal in place', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    const feed = page.getByTestId('home-offers');
+    const bookBtn = feed.getByTestId('offer-book').first();
+    await expect(bookBtn).toBeAttached({ timeout: 30_000 });
+    await bookBtn.click();
+
+    await expect(page.getByTestId('offer-booking-modal')).toBeVisible({
+      timeout: 30_000,
+    });
+    // The modal opens in place — no navigation to /offers or /booking
+    await expect(page).toHaveURL(/\/$/);
+  });
+
   // The /booking?services= deep link stays live production code — it is the
   // declared fallback of both Book Offer buttons whenever the CMS gives the
   // modal nothing to work with (no salons / specialists / resolvable bundle).

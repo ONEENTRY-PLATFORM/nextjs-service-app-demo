@@ -5,6 +5,7 @@ import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type { ComponentType, JSX } from 'react';
 import { useContext } from 'react';
 
+import type { PopupKey } from '@/app/store/providers/OpenDrawerContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import ModalAnimations from '@/components/layout/modal/animations/ModalAnimations';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
@@ -19,6 +20,9 @@ type ModalFormProps = {
   isActive: boolean;
 };
 
+/** Popup keys that resolve to a form of this modal (not the mobile panel). */
+type FormKey = Exclude<PopupKey, '' | 'MobileMenu'>;
+
 /**
  * Forms are event-driven — nothing is shown until the user opens the modal —
  * and each one pulls in the OneEntry SDK. Loading them through `dynamic()`
@@ -27,7 +31,9 @@ type ModalFormProps = {
  *
  * Each form declares only the props it actually uses (some take just `dict`,
  * some just `className`), while the modal always passes the full set — extra
- * props are simply ignored, hence the single cast to the common shape.
+ * props are simply ignored, hence the single cast to the common shape. The
+ * `FormKey` key type keeps the map exhaustive over {@link PopupKey}: adding a
+ * popup without a form entry (or misspelling one) fails to compile.
  *
  * The contact form is NOT here: it renders inline on `/contacts` as
  * `ContactFormCard`, never in this modal.
@@ -45,7 +51,7 @@ const formsMap = {
   VerificationForm: dynamic(
     () => import('@/components/forms/VerificationForm'),
   ),
-} as unknown as Record<string, ComponentType<ModalFormProps> | undefined>;
+} as Record<FormKey, ComponentType<ModalFormProps>>;
 
 /**
  * useTitleData component
@@ -120,7 +126,8 @@ const Modal = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
   const { open, component, setTransition } = useContext(OpenDrawerContext);
 
   /** Dynamically select form component by component name */
-  const Form = formsMap[component];
+  const Form =
+    component && component !== 'MobileMenu' ? formsMap[component] : undefined;
 
   /** Get title data based on current component and dictionary */
   const title = useTitleData({ dict, component });

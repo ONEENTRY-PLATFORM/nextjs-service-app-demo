@@ -7,7 +7,10 @@ test.describe('Reviews page', () => {
   test('renders the heading and review cards', async ({ page }) => {
     await page.goto('/reviews');
 
-    const reviews = page.getByTestId('reviews-page');
+    // `:visible` sidesteps a strict-mode violation during the Suspense reveal:
+    // for a moment the old (hidden) subtree is still detaching while the new
+    // one is already inserted, so the bare testid resolves to two nodes.
+    const reviews = page.locator('[data-testid="reviews-page"]:visible');
     await expect(reviews).toBeVisible({ timeout: 30_000 });
 
     await expect(
@@ -24,7 +27,8 @@ test.describe('Reviews page', () => {
   }) => {
     await page.goto('/reviews');
 
-    const reviews = page.getByTestId('reviews-page');
+    // `:visible` — same Suspense-reveal double-node guard as the test above
+    const reviews = page.locator('[data-testid="reviews-page"]:visible');
     const cards = reviews.getByTestId('review-card');
     await expect(cards.first()).toBeVisible({ timeout: 30_000 });
     const total = await cards.count();

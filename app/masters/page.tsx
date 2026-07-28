@@ -4,6 +4,7 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
@@ -117,20 +118,24 @@ const toMasterItem = ({
  */
 const MastersPageLayout = async (): Promise<JSX.Element> => {
   /** All five reads are independent — fetch them in parallel to cut TTFB. */
-  const [dict, { admins }, servicesResult, salonsResult] = await Promise.all([
-    getDictionary(),
-    getMastersList(),
-    getChildPagesByParentUrl('services'),
-    getChildPagesByParentUrl('salons'),
-  ]);
+  const [dict, { admins }, servicesResult, salonsResult, pageResult] =
+    await Promise.all([
+      getDictionary(),
+      getMastersList(),
+      getChildPagesByParentUrl('services'),
+      getChildPagesByParentUrl('salons'),
+      getPageByUrl('masters'),
+    ]);
   ServerProvider('dict', dict);
 
   /**
-   * The `masters` page entity is not rendered here (only the admin roster and
-   * the service/salon filter options are), so it is neither fetched nor gated
-   * on: a transient CMS failure or an unpopulated page degrades to empty
-   * filters and sections instead of 404-ing over missing masters.
+   * The `masters` page entity feeds only the (visually hidden) `h1` — the body
+   * renders the admin roster and the service/salon filter options — so it is
+   * never gated on: a transient CMS failure or an unpopulated page degrades to
+   * the fallback heading and empty filters instead of 404-ing over missing
+   * masters. `getPageByUrl` reports failures in its envelope, it never throws.
    */
+  const heading = pageResult.page?.localizeInfos?.title || 'Specialists';
 
   /**
    * Service page id → main category. Keyed by BOTH the 4 main category pages
@@ -186,6 +191,8 @@ const MastersPageLayout = async (): Promise<JSX.Element> => {
 
   return (
     <div className="flex w-full flex-col bg-white">
+      {/* The design opens with the filter bar — the h1 is for a11y/SEO only */}
+      <h1 className="sr-only">{heading}</h1>
       {/* Gradient accent strip */}
       <div className="h-1.25 bg-gradient-stats" />
       <MastersPageContent masters={masters} salons={salons} />

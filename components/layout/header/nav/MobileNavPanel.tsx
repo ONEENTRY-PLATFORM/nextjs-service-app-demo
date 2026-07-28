@@ -17,6 +17,11 @@ import { dictText } from '@/components/utils/dictText';
  * slides open right below the header (height animation, top border #e8e8f0)
  * and lists the main menu links as plain rows — pink for the active page,
  * DARK otherwise. Replaces the previous offcanvas drawer to match the mock.
+ *
+ * A11y: this is a disclosure, not a dialog — no focus trap or scroll lock
+ * (`useDialogA11y` stays with the true modals). The collapsed panel is hidden
+ * only visually (`grid-rows-[0fr]` + `overflow-hidden`), so `inert` keeps its
+ * links out of the Tab order while closed.
  * @param   {object}                            props       - Component properties
  * @param   {{ label: string; href: string }[]} props.items - Main menu links (label + resolved href)
  * @returns {JSX.Element}                                   JSX.Element representing the mobile navigation panel
@@ -45,6 +50,7 @@ const MobileNavPanel = ({
         aria-label={dictText(dict, 'mobile_menu_aria', 'Mobile menu')}
         data-testid="mobile-nav-panel"
         className="min-h-0 overflow-hidden"
+        inert={!isOpen}
       >
         <div className="space-y-3 px-6 py-4">
           {items.map((item) => (

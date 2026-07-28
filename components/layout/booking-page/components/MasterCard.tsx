@@ -59,14 +59,17 @@ const MasterCard = ({
         style={selectableCardStyle(active)}
       >
         <div className="flex gap-3 p-3">
-          <div className="relative size-16 shrink-0 overflow-hidden rounded-full">
-            <Portrait
-              photo={m.photo}
-              alt={m.name}
-              sizes="64px"
-              blur={m.photoBlur}
-              className="object-cover object-top"
-            />
+          {/* The round mask lives on the inner wrapper so the badge can overhang */}
+          <div className="relative size-16 shrink-0">
+            <div className="relative size-full overflow-hidden rounded-full">
+              <Portrait
+                photo={m.photo}
+                alt={m.name}
+                sizes="64px"
+                blur={m.photoBlur}
+                className="object-cover object-top"
+              />
+            </div>
             {active && <SelectedCheckBadge variant="mobile" />}
           </div>
           <div className="min-w-0 flex-1">

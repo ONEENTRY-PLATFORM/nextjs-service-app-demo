@@ -54,13 +54,16 @@ const AnySpecialistCard = ({
         style={selectableCardStyle(active)}
       >
         <div className="flex gap-3 p-3">
-          <div className="relative size-16 shrink-0 overflow-hidden rounded-full">
-            <Portrait
-              photo={photo}
-              alt="Our team"
-              sizes="64px"
-              className="object-cover"
-            />
+          {/* The round mask lives on the inner wrapper so the badge can overhang */}
+          <div className="relative size-16 shrink-0">
+            <div className="relative size-full overflow-hidden rounded-full">
+              <Portrait
+                photo={photo}
+                alt="Our team"
+                sizes="64px"
+                className="object-cover"
+              />
+            </div>
             {active && <SelectedCheckBadge variant="mobile" />}
           </div>
           <div className="min-w-0 flex-1">

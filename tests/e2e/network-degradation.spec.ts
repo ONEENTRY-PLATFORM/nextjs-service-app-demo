@@ -38,12 +38,18 @@ const breakCms = async (page: Page, mode: 'abort' | 'error'): Promise<void> => {
 
 /**
  * Assert a page rendered its own shell and no failure UI.
+ *
+ * The shell is matched with `:visible`: during a Suspense reveal the old
+ * (hidden) subtree is still detaching while the new one is already inserted,
+ * so the bare testid can transiently resolve to two nodes and trip strict mode.
  * @param   {Page}          page   - Playwright page
  * @param   {string}        testId - Page container testid
  * @returns {Promise<void>}        Resolves once the shell is verified
  */
 const expectShell = async (page: Page, testId: string): Promise<void> => {
-  await expect(page.getByTestId(testId)).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(`[data-testid="${testId}"]:visible`)).toBeVisible({
+    timeout: 30_000,
+  });
   await expect(page.getByTestId('error-boundary')).toHaveCount(0);
   await expect(page.getByTestId('not-found')).toHaveCount(0);
 };

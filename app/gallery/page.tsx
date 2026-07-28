@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { JSX } from 'react';
 
+import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import GalleryPageContent from '@/components/layout/gallery-page';
 import GalleryUnavailable from '@/components/layout/gallery-page/components/GalleryUnavailable';
@@ -29,11 +30,19 @@ const GalleryPageLayout = async ({
 }: {
   searchParams: Promise<{ category?: string }>;
 }): Promise<JSX.Element> => {
-  /** Query params and the CMS gallery fetch are independent — run in parallel. */
-  const [{ category }, items] = await Promise.all([
+  /** Query params and the CMS reads are independent — run in parallel. */
+  const [{ category }, items, pageResult] = await Promise.all([
     searchParams,
     getCmsGalleryItems(),
+    getPageByUrl('gallery'),
   ]);
+
+  /**
+   * The `gallery` page entity feeds only the (visually hidden) `h1` and is
+   * never gated on — `getPageByUrl` reports failures in its envelope, so a
+   * missing or unreachable page degrades to the fallback heading.
+   */
+  const heading = pageResult.page?.localizeInfos?.title || 'Gallery';
 
   /** Accept only a known main category from the query string */
   const initialCategory = GALLERY_MAIN_CATS.some((cat) => cat.id === category)
@@ -42,6 +51,8 @@ const GalleryPageLayout = async ({
 
   return (
     <div className="flex w-full flex-col bg-white">
+      {/* The design opens with the filter bar — the h1 is for a11y/SEO only */}
+      <h1 className="sr-only">{heading}</h1>
       {/* Gradient accent strip */}
       <div className="h-1.25 bg-gradient-stats" />
       {items.length > 0 ? (

@@ -13,8 +13,10 @@ test.describe('Gallery lightbox', () => {
       .getByTestId('gallery-page')
       .getByTestId('gallery-item')
       .first();
-    await expect(firstItem).toBeAttached({ timeout: 30_000 });
-    await firstItem.scrollIntoViewIfNeeded();
+    // No explicit scrollIntoViewIfNeeded: it has no detach-retry, and the grid
+    // re-mounts around this moment. `click` scrolls by itself and re-resolves
+    // the locator when the node detaches mid-action.
+    await expect(firstItem).toBeVisible({ timeout: 30_000 });
     await firstItem.click();
 
     const lightbox = page.getByTestId('gallery-lightbox');
@@ -30,11 +32,11 @@ test.describe('Gallery lightbox', () => {
     await page.goto('/gallery');
 
     const items = page.getByTestId('gallery-page').getByTestId('gallery-item');
-    await expect(items.first()).toBeAttached({ timeout: 30_000 });
+    await expect(items.first()).toBeVisible({ timeout: 30_000 });
     const total = await items.count();
     test.skip(total < 2, 'needs at least two photos to page through');
 
-    await items.first().scrollIntoViewIfNeeded();
+    // `click` scrolls by itself — see the note in the first test
     await items.first().click();
 
     const lightbox = page.getByTestId('gallery-lightbox');
