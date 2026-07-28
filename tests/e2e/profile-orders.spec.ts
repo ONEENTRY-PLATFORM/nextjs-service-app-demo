@@ -97,20 +97,49 @@ const FIXTURE_ORDERS = [
  *
  * Everything else (getMe, catalog, masters…) passes through untouched, so the
  * page renders against the live CMS apart from the history itself.
- * @param   {Page}          page          - Playwright page
- * @param   {string}        [updateError] - Reject updates with this API error message instead of acknowledging them
- * @returns {Promise<void>}               Resolves once the route is installed
+ *
+ * The single-order GET (`…/orders/{id}`) matches {@link ORDERS_LIST_RE} too and
+ * is answered from the same fixture set: it is the fresh re-read the refund
+ * gate makes after a payment-shaped refusal, and letting it fall through to the
+ * live CMS would 404 on fixture ids and silently downgrade the flow under test
+ * to the stale-list fallback.
+ * @param   {Page}                      page               - Playwright page
+ * @param   {object}                    [opts]             - Route behaviour overrides
+ * @param   {string}                    [opts.updateError] - Reject updates with this API error message instead of acknowledging them
+ * @param   {Record<string, unknown>[]} [opts.orders]      - Serve these orders instead of {@link FIXTURE_ORDERS}
+ * @returns {Promise<void>}                                Resolves once the route is installed
  */
-const mockOrders = async (page: Page, updateError?: string): Promise<void> => {
+const mockOrders = async (
+  page: Page,
+  opts: { updateError?: string; orders?: Record<string, unknown>[] } = {},
+): Promise<void> => {
+  const { updateError, orders = FIXTURE_ORDERS } = opts;
   await page.route(ORDERS_LIST_RE, async (route) => {
     const method = route.request().method();
+    // `…/marker/{marker}/orders/900001?…` — the trailing id separates the
+    // single-order read from the list (the marker segment never is numeric)
+    const singleId = route
+      .request()
+      .url()
+      .match(/\/orders\/(\d+)/)?.[1];
+    if (method === 'GET' && singleId) {
+      const order = orders.find((o) => o.id === Number(singleId));
+      await route.fulfill({
+        status: order ? 200 : 404,
+        contentType: 'application/json',
+        body: JSON.stringify(
+          order ?? { statusCode: 404, message: 'Order not found' },
+        ),
+      });
+      return;
+    }
     if (method === 'GET') {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
-          items: FIXTURE_ORDERS,
-          total: FIXTURE_ORDERS.length,
+          items: orders,
+          total: orders.length,
         }),
       });
       return;
@@ -321,12 +350,20 @@ test.describe('Profile — visit history', () => {
     page,
   }) => {
     // The live failure this covers: a paid order the API refuses to cancel.
-    // `isPaidOrderError` matches /paid|payment/i, so this message takes the
-    // refund branch rather than the plain error dialog.
-    await mockOrders(
-      page,
-      "Can't update the order. Payment sessions 3 could not be canceled — the order may have been paid.",
-    );
+    // `isPaidOrderError` matches /paid|payment/i AND the re-read order carries
+    // the gateway's `isCompleted: true`, so this refusal takes the refund
+    // branch rather than the plain error dialog.
+    await mockOrders(page, {
+      updateError:
+        "Can't update the order. Payment sessions 3 could not be canceled — the order may have been paid.",
+      orders: [
+        makeOrder(ORDER_ID.upcoming, 'upcoming', 'Upcoming', {
+          identifier: 'stripe',
+          title: 'Stripe',
+          isCompleted: true,
+        }),
+      ],
+    });
     await signInTestUser(page);
     await expect(
       page
@@ -361,15 +398,63 @@ test.describe('Profile — visit history', () => {
     await expect(page.getByTestId('order-refund-request')).toHaveCount(0);
   });
 
+  test('a stuck UNPAID order gets the salon dialog, not a doomed refund offer', async ({
+    page,
+  }) => {
+    // The other face of the same refusal (live orders #17/#18): the checkout
+    // session expired unpaid, Stripe can no longer void it, and the API answers
+    // with the identical "may have been paid" wording. A refund here is
+    // guaranteed to 404 ("cannot refund uncompleted order"), so the gate must
+    // read `isCompleted: false` and route to the honest error dialog instead.
+    await mockOrders(page, {
+      updateError:
+        "Can't update the order. Payment sessions 4 could not be canceled — the order may have been paid.",
+      orders: [
+        makeOrder(ORDER_ID.unpaid, 'upcoming', 'Upcoming', {
+          identifier: 'stripe',
+          title: 'Stripe',
+          isCompleted: false,
+        }),
+      ],
+    });
+    await signInTestUser(page);
+    await expect(
+      page
+        .getByTestId('profile-visits-upcoming')
+        .getByTestId('order-services')
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
+
+    await page
+      .getByTestId('profile-visits-upcoming')
+      .getByTestId('order-cancel')
+      .first()
+      .click();
+    await page
+      .getByTestId('order-cancel-confirm')
+      .getByTestId('order-cancel-yes')
+      .click();
+
+    const error = page.getByTestId('order-cancel-error');
+    await expect(error).toBeVisible({ timeout: 30_000 });
+    // The honest next step, not the plumbing wording and not a refund promise
+    await expect(error).toContainText('contact the salon');
+    await expect(error).not.toContainText('Payment sessions');
+    await expect(page.getByTestId('order-refund-request')).toHaveCount(0);
+    await expect(page.getByTestId('order-cancel-success')).toHaveCount(0);
+
+    await error.getByTestId('order-cancel-error-close').click();
+    await expect(page.getByTestId('order-cancel-error')).toHaveCount(0);
+  });
+
   test('a refusal that is not about payment still shows the error dialog', async ({
     page,
   }) => {
     // Guards the branch above: a message without "paid"/"payment" must NOT be
     // rerouted into the refund offer.
-    await mockOrders(
-      page,
-      "Can't update the order. Order is locked by the salon.",
-    );
+    await mockOrders(page, {
+      updateError: "Can't update the order. Order is locked by the salon.",
+    });
     await signInTestUser(page);
     await expect(
       page

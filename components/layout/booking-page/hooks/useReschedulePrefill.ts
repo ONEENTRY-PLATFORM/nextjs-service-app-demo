@@ -1,7 +1,6 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import type { IOrderData } from 'oneentry/dist/orders/ordersInterfaces';
 import { useContext } from 'react';
 
 import { useGetSingleOrderQuery } from '@/app/api/api/RTKApi';
@@ -57,8 +56,6 @@ export const useReschedulePrefill = (): ReschedulePrefill => {
     {
       marker: ORDERS_STORAGE_MARKER,
       id: orderId ?? 0,
-      /** Read-only call — `SingleOrderProps` shares its shape with the update. */
-      body: {} as IOrderData,
     },
     { skip: !orderId || !isAuth },
   );

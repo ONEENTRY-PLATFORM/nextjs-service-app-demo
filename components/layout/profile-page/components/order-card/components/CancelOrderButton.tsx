@@ -11,6 +11,7 @@ import { useCallback, useState } from 'react';
 
 import {
   useCreateRefundRequestMutation,
+  useLazyGetSingleOrderQuery,
   useUpdateOrderMutation,
 } from '@/app/api/api/RTKApi';
 import {
@@ -22,6 +23,7 @@ import { formatOrderTotal } from '@/components/layout/profile-page/utils/formatO
 import { formatRefundError } from '@/components/layout/profile-page/utils/formatRefundError';
 import { formatUtcDate } from '@/components/layout/profile-page/utils/formatUtcDate';
 import { formatUtcTime } from '@/components/layout/profile-page/utils/formatUtcTime';
+import { isOrderPaid } from '@/components/layout/profile-page/utils/isOrderPaid';
 import { isPaidOrderError } from '@/components/layout/profile-page/utils/isPaidOrderError';
 import { parseOrderInterval } from '@/components/layout/profile-page/utils/parseOrderInterval';
 
@@ -58,6 +60,8 @@ const CancelOrderButton = ({
   const [updateOrder, { isLoading }] = useUpdateOrderMutation();
   const [createRefundRequest, { isLoading: isRefunding }] =
     useCreateRefundRequestMutation();
+  /** Fresh re-read of the order — the paid-or-stuck check after a refusal */
+  const [fetchFreshOrder] = useLazyGetSingleOrderQuery();
   /**
    * Label of the action. `cancel_booking_text` is the marker for THIS button;
    * the generic `cancel_text` ("Cancel") is the dictionary's dialog/dismiss
@@ -123,7 +127,36 @@ const CancelOrderButton = ({
        * of the dead-end error dialog. Anything else keeps the error dialog.
        */
       if (isPaidOrderError(e)) {
-        setStage('refund');
+        /**
+         * The refusal wording covers two very different orders (see
+         * `isOrderPaid`): a genuinely paid one, and an unpaid one whose
+         * checkout session merely expired. Offering the refund to the second
+         * would loop the guest through a guaranteed `404 "cannot refund
+         * uncompleted order"`, so branch on the gateway's verdict instead.
+         * The order is re-read because payment may have landed after the
+         * history list was cached; if the re-read itself fails, the cached
+         * card still answers truthfully for every order that was paid before
+         * the profile loaded.
+         */
+        const fresh = await fetchFreshOrder({
+          marker: ORDERS_STORAGE_MARKER,
+          id,
+        })
+          .unwrap()
+          .catch(() => undefined);
+        if (isOrderPaid(fresh ?? orderData)) {
+          setStage('refund');
+          return;
+        }
+        setErrorTitle(
+          (dict.appointment_not_cancelled_title?.value as string | undefined) ||
+            'Appointment not cancelled',
+        );
+        setErrorMessage(
+          (dict.cancel_contact_salon_text?.value as string | undefined) ||
+            'This appointment can’t be cancelled online right now. Please contact the salon — they will cancel it for you.',
+        );
+        setStage('error');
         return;
       }
       setErrorTitle(
@@ -137,7 +170,7 @@ const CancelOrderButton = ({
 
     /** The list refreshes itself — show the mock's success dialog. */
     setStage('done');
-  }, [orderData, updateOrder, dict]);
+  }, [orderData, updateOrder, fetchFreshOrder, dict]);
 
   /**
    * Ask the salon to refund the paid appointment.

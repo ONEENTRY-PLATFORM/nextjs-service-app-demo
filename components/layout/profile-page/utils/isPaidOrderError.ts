@@ -1,15 +1,17 @@
 /**
- * isPaidOrderError — did `updateOrder` refuse the cancellation because the
- * appointment is already paid?
+ * isPaidOrderError — did `updateOrder` refuse the cancellation on payment
+ * grounds?
  *
- * The API answers a cancel attempt on a paid order with plumbing wording
- * ("Can't update the order. Payment sessions 3 could not be canceled — the
- * order may have been paid."). That is the one refusal the guest can still act
- * on: instead of a dead end, the card offers a refund request
- * (`Orders.createRefundRequest`). Every other failure keeps the plain error
- * dialog, so an unknown message never silently turns into a refund offer.
+ * The API answers a cancel attempt with plumbing wording ("Can't update the
+ * order. Payment sessions 3 could not be canceled — the order may have been
+ * paid."). "May" is literal: the same sentence covers a genuinely paid order
+ * and an unpaid one with an expired checkout session, so this detector only
+ * selects the payment-shaped refusal — whether the guest is then offered a
+ * refund is decided by the `isOrderPaid` gate in `CancelOrderButton`. Every
+ * other failure keeps the plain error dialog, so an unknown message never
+ * silently turns into a refund offer.
  * @param   {unknown} error - Value thrown by `updateOrder(...).unwrap()`
- * @returns {boolean}       True when the order could not be cancelled because it is paid
+ * @returns {boolean}       True when the cancellation was refused on payment grounds
  */
 export function isPaidOrderError(error: unknown): boolean {
   const raw =

@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import PaymentMethodPicker from '@/components/layout/booking-page/components/PaymentMethodPicker';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
 import { dictText } from '@/components/utils/dictText';
 
@@ -12,8 +13,10 @@ import OfferSummaryRow from './OfferSummaryRow';
 
 /**
  * OfferSummaryStep — the second step of the offer booking modal: the summary
- * panel (location, specialist, when, the package with its price) and, for
- * signed-out clients, the sign-in note.
+ * panel (location, specialist, when, the package with its price), then the
+ * payment method choice for signed-in clients — the wizard's own
+ * {@link PaymentMethodPicker}, gated and self-hiding exactly as in the
+ * booking summary — or the sign-in note for signed-out ones.
  * @param   {object}                 props        - Component properties
  * @param   {OfferBookingController} props.wizard - Modal controller
  * @param   {OfferBookingInfo}       props.offer  - The offer being booked
@@ -58,6 +61,16 @@ const OfferSummaryStep = ({
           }
         />
       </div>
+
+      {/* Payment — only once the client is signed in and the salon offers a
+          real choice; PaymentMethodPicker renders nothing for one account. */}
+      {wizard.isAuth && (
+        <PaymentMethodPicker
+          accounts={wizard.paymentAccounts}
+          value={wizard.paymentAccount}
+          onSelect={wizard.selectPaymentAccount}
+        />
+      )}
 
       {!wizard.isAuth && <OfferSignInNote accent={offer.accentColor} />}
     </div>

@@ -42,6 +42,18 @@ interface SingleOrderProps {
   body: IOrderData;
 }
 
+/**
+ * Arguments of the read-only single-order query — `SingleOrderProps` without
+ * the write payload, so readers no longer have to fake an empty `body`.
+ *
+ * @property {string} marker - Text identifier of the order storage object
+ * @property {number} id     - ID of the order object
+ */
+interface OrderReadProps {
+  marker: string;
+  id: number;
+}
+
 interface CreateOrderProps {
   marker: string;
   body: IOrderData;
@@ -460,10 +472,9 @@ export const RTKApi = createApi({
      * Fetches a specific order by its ID and the marker of its storage object.
      * @param id     - ID of the order object
      * @param marker - Text identifier of the order storage object
-     * @param body   - Additional data for the request
      * @returns      Order by marker entity
      */
-    getSingleOrder: build.query<IOrderByMarkerEntity, SingleOrderProps>({
+    getSingleOrder: build.query<IOrderByMarkerEntity, OrderReadProps>({
       queryFn: async ({ id, marker }) => {
         const result = await getApi().Orders.getOrderByMarkerAndId(marker, id);
         if (isError(result)) {
@@ -581,6 +592,7 @@ export const {
   useGetOrderStorageByMarkerQuery,
   useGetAllOrdersByMarkerQuery,
   useGetSingleOrderQuery,
+  useLazyGetSingleOrderQuery,
   useGetProductByIdQuery,
   useGetProductsQuery,
   useGetProductsByPageUrlQuery,

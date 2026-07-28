@@ -1,5 +1,6 @@
 'use client';
 
+import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces';
 import { useEffect, useMemo, useState } from 'react';
 
 import { TIMES } from '@/components/layout/booking-page/constants';
@@ -51,6 +52,9 @@ export interface OfferSlotOption {
  * @property {(time: string) => void}   selectSlot       - Choose a time slot
  * @property {OfferSlotOption[]}        slotOptions      - Time grid of the chosen day (with disabled tails)
  * @property {boolean}                  step1Ready       - Salon + specialist + slot all chosen
+ * @property {IAccountsEntity[]}        paymentAccounts  - Payment accounts the salon offers for these orders
+ * @property {string}                   paymentAccount   - Identifier of the payment account the order will use
+ * @property {(id: string) => void}     selectPaymentAccount - Choose a payment account
  * @property {boolean}                  isAuth           - Whether the client is signed in
  * @property {boolean}                  isLoading        - Order creation in flight
  * @property {string}                   error            - Order creation error (`''` = none)
@@ -82,6 +86,9 @@ export interface OfferBookingController {
   selectSlot: (time: string) => void;
   slotOptions: OfferSlotOption[];
   step1Ready: boolean;
+  paymentAccounts: IAccountsEntity[];
+  paymentAccount: string;
+  selectPaymentAccount: (identifier: string) => void;
   isAuth: boolean;
   isLoading: boolean;
   error: string;
@@ -184,7 +191,8 @@ export const useOfferBooking = ({
     if (!option || option.disabled) setSlot('');
   }, [slot, slotOptions]);
 
-  const { paymentAccount } = useBookingPayment();
+  const { paymentAccounts, paymentAccount, selectPaymentAccount } =
+    useBookingPayment();
   const { submit, booked, closeSuccess, isAuth, isLoading, error } =
     useBookingSubmit({ paymentAccount, rescheduleOrderId: null });
 
@@ -281,6 +289,9 @@ export const useOfferBooking = ({
     selectSlot: setSlot,
     slotOptions,
     step1Ready,
+    paymentAccounts,
+    paymentAccount,
+    selectPaymentAccount,
     isAuth,
     isLoading,
     error,
