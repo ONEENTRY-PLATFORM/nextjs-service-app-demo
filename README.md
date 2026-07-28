@@ -71,13 +71,13 @@ Requires **Node.js ≥ 22.14.0**.
 Clone the project
 
 ```bash
-git clone https://github.com/kvasss/oneentry-next-beauty-v2.git
+git clone https://github.com/ONEENTRY-PLATFORM/nextjs-service-app-demo.git
 ```
 
 Go to the project directory
 
 ```bash
-cd oneentry-next-beauty-v2
+cd nextjs-service-app-demo
 ```
 
 Install dependencies
