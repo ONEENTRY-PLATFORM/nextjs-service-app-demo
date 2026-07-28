@@ -10,6 +10,7 @@ import type {
   BookingSalon,
   BookingService,
 } from '../types';
+import masterMatchesSelection from '../utils/masterMatchesSelection';
 
 /**
  * The current selection the cross-filters narrow the rosters by.
@@ -79,19 +80,17 @@ export const useBookingFilters = ({
    */
   const filteredMasters = useMemo(() => {
     return masters.filter((m) => {
+      /**
+       * Salon + "performs at least one picked service" — the shared predicate
+       * (also behind the offer booking modal). Salon narrows only in the
+       * salon-first flow: specialist-first chooses the salon BY the master.
+       */
       if (
-        flow === 'salon-first' &&
-        salon &&
-        m.salonIds.length > 0 &&
-        !m.salonIds.includes(salon)
-      ) {
-        return false;
-      }
-      /** Keep specialists who perform AT LEAST ONE of the picked services */
-      if (
-        serviceIds.length > 0 &&
-        m.serviceIds.length > 0 &&
-        !serviceIds.some((sid) => m.serviceIds.includes(sid))
+        !masterMatchesSelection(
+          m,
+          flow === 'salon-first' && salon ? salon : null,
+          serviceIds,
+        )
       ) {
         return false;
       }

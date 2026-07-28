@@ -25,16 +25,18 @@ import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import type { BookingMaster, BookingSalon, BookingService } from '../types';
 import { buildOrderFormData } from '../utils/buildOrderFormData';
+import type { OrderProduct } from '../utils/buildOrderProducts';
 import { buildOrderProducts } from '../utils/buildOrderProducts';
 import { toBookingInterval } from '../utils/toBookingInterval';
 
 /**
  * Everything the wizard has picked by the time of the confirm click.
- * @property {BookingSalon}     [salon]  - Chosen salon
- * @property {BookingService[]} services - Chosen services (one appointment can bundle several)
- * @property {BookingMaster}    [master] - Chosen master; absent = "Any specialist"
- * @property {string}           date     - Date key of the calendar, `year-monthIndex-day`
- * @property {string}           time     - Time slot `HH:MM`
+ * @property {BookingSalon}     [salon]         - Chosen salon
+ * @property {BookingService[]} services        - Chosen services (one appointment can bundle several)
+ * @property {BookingMaster}    [master]        - Chosen master; absent = "Any specialist"
+ * @property {string}           date            - Date key of the calendar, `year-monthIndex-day`
+ * @property {string}           time            - Time slot `HH:MM`
+ * @property {OrderProduct[]}   [orderProducts] - Order lines override. The offer booking modal posts the OFFER product itself here (its top-level `price` derives from `offer_sale`, so the order's `totalSum` equals the promised package price, and the profile card names the package) while `services` keeps carrying the bundled services for the appointment length. Absent — the wizard path — the lines are built from `services`.
  */
 export interface BookingSelection {
   salon?: BookingSalon | undefined;
@@ -42,6 +44,7 @@ export interface BookingSelection {
   master?: BookingMaster | undefined;
   date: string;
   time: string;
+  orderProducts?: OrderProduct[] | undefined;
 }
 
 /**
@@ -135,7 +138,7 @@ export const useBookingSubmit = ({
      * Nothing bookable in the selection (all demo services) → there is nothing
      * to post, so just show the confirmation.
      */
-    const products = buildOrderProducts(sel.services);
+    const products = sel.orderProducts ?? buildOrderProducts(sel.services);
     if (products.length === 0) {
       setRealOrder(false);
       setBooked(true);

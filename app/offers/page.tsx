@@ -4,8 +4,10 @@ import type { JSX } from 'react';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getProductsByPageUrl } from '@/app/api/server/products/getProductsByPageUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
+import { getBookingData } from '@/app/booking/booking-data';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
+import { slimOfferBookingData } from '@/components/layout/offer-booking/utils/slimOfferBookingData';
 import OffersPageContent from '@/components/layout/offers-page';
 import { parseOfferTerms } from '@/components/layout/offers-page/parseOfferTerms';
 import { isOfferProduct } from '@/components/utils/isOfferProduct';
@@ -27,8 +29,8 @@ export const revalidate = 60;
  * @see {@link https://nextjs.org/docs/app/api-reference/file-conventions/page Next.js docs}
  */
 const OffersPageLayout = async (): Promise<JSX.Element> => {
-  /** All three fetches are independent — run in parallel. */
-  const [dict, { page }, { products }] = await Promise.all([
+  /** All four fetches are independent — run in parallel. */
+  const [dict, { page }, { products }, bookingData] = await Promise.all([
     getDictionary(),
     getPageByUrl('offers'),
     /**
@@ -41,6 +43,8 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
       servicesOnly: false,
       params: { handle: 'offers' },
     }),
+    /** Salons / services / specialists the offer booking modal runs on. */
+    getBookingData(),
   ]);
   ServerProvider('dict', dict);
 
@@ -60,7 +64,14 @@ const OffersPageLayout = async (): Promise<JSX.Element> => {
    */
   const terms = parseOfferTerms(page);
 
-  return <OffersPageContent title={title} offers={offers} terms={terms} />;
+  return (
+    <OffersPageContent
+      title={title}
+      offers={offers}
+      terms={terms}
+      bookingData={slimOfferBookingData(bookingData)}
+    />
+  );
 };
 
 export default OffersPageLayout;

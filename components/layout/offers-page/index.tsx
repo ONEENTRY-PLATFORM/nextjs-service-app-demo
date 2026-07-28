@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import type { BookingData } from '@/components/layout/booking-page/types';
 import { dictText } from '@/components/utils/dictText';
 
 import OfferDetailCard from './OfferDetailCard';
@@ -28,20 +29,23 @@ const PINK = '#ed21f1';
  * an empty page, so the route never has to 404 over missing products. Empty
  * `terms` (CMS content missing or unreadable) simply hide the "Good to know"
  * block — same pattern as the opening-hours column of the footer.
- * @param   {object}            props        - Component properties
- * @param   {string}            props.title  - Page heading (CMS title or fallback)
- * @param   {IProductsEntity[]} props.offers - Offer products to render
- * @param   {string[]}          props.terms  - "Good to know" lines parsed from the CMS page content
- * @returns {JSX.Element}                    Offers page body
+ * @param   {object}            props             - Component properties
+ * @param   {string}            props.title       - Page heading (CMS title or fallback)
+ * @param   {IProductsEntity[]} props.offers      - Offer products to render
+ * @param   {string[]}          props.terms       - "Good to know" lines parsed from the CMS page content
+ * @param   {BookingData}       props.bookingData - Salons / services / specialists the offer booking modal runs on
+ * @returns {JSX.Element}                         Offers page body
  */
 const OffersPageContent = ({
   title,
   offers,
   terms,
+  bookingData,
 }: {
   title: string;
   offers: IProductsEntity[];
   terms: string[];
+  bookingData: BookingData;
 }): JSX.Element => {
   const [dict] = ServerProvider<IAttributeValues>('dict');
   return (
@@ -77,7 +81,12 @@ const OffersPageContent = ({
       >
         {offers.length > 0 ? (
           offers.map((offer, index) => (
-            <OfferDetailCard key={offer.id} product={offer} index={index} />
+            <OfferDetailCard
+              key={offer.id}
+              product={offer}
+              index={index}
+              bookingData={bookingData}
+            />
           ))
         ) : (
           <p

@@ -65,12 +65,24 @@ export function useDialogA11y<T extends HTMLElement = HTMLDivElement>({
         ? Array.from(node.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
         : [];
 
-    /** Move focus into the dialog: first focusable, else the container. */
+    /**
+     * Move focus into the dialog: first focusable, else the container.
+     * Deferred by two frames: animated dialogs enter through a GSAP `autoAlpha`
+     * tween whose 0-state is `visibility: hidden`, and `focus()` on a hidden
+     * element is a silent no-op — the trap then never engages and Tab wanders
+     * the page behind the backdrop. Frame one lets the tween's first tick flip
+     * visibility on; frame two focuses.
+     */
     if (node) {
       node.tabIndex = -1;
     }
-    const firstFocusable = getFocusable()[0];
-    (firstFocusable ?? node)?.focus();
+    let focusRaf = 0;
+    const visibilityRaf = requestAnimationFrame(() => {
+      focusRaf = requestAnimationFrame(() => {
+        const firstFocusable = getFocusable()[0];
+        (firstFocusable ?? node)?.focus();
+      });
+    });
 
     /**
      * Escape closes; Tab / Shift+Tab is trapped inside the dialog.
@@ -107,6 +119,8 @@ export function useDialogA11y<T extends HTMLElement = HTMLDivElement>({
 
     document.addEventListener('keydown', onKeyDown, true);
     return () => {
+      cancelAnimationFrame(visibilityRaf);
+      cancelAnimationFrame(focusRaf);
       document.removeEventListener('keydown', onKeyDown, true);
       document.body.style.overflow = prevOverflow;
       previouslyFocused?.focus();

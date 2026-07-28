@@ -1,13 +1,16 @@
 'use client';
 
 import { Clock } from 'lucide-react';
-import { useTransitionRouter } from 'next-transition-router';
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 import type { JSX } from 'react';
 
 import CardAnimations from '@/app/animations/CardAnimations';
+import type { BookingData } from '@/components/layout/booking-page/types';
+import OfferBookingModal from '@/components/layout/offer-booking';
+import { useOfferBookingLauncher } from '@/components/layout/offer-booking/hooks/useOfferBookingLauncher';
+import type { OfferBookingInfo } from '@/components/layout/offer-booking/types';
+import DialogPortal from '@/components/shared/DialogPortal';
 import { productCurrency } from '@/components/shared/productCurrency';
-import { offerBookingHref } from '@/components/utils/offerBookingHref';
 
 import OfferDetailMedia from './OfferDetailMedia';
 import OfferDetailPanel from './OfferDetailPanel';
@@ -20,22 +23,25 @@ import { parseOfferDetail } from './parseOfferDetail';
  * "Book Offer" button on the right ({@link OfferDetailPanel}), and a duration
  * pill in the top-right corner. Offer data is parsed by {@link parseOfferDetail}.
  *
- * The button opens the booking wizard with the offer's bundled services
- * preselected — same flow as the home page `OfferCard`.
- * @param   {object}          props         - Component properties
- * @param   {IProductsEntity} props.product - Product entity representing the special offer (`offer`)
- * @param   {number}          props.index   - Card index — used for the animation stagger
- * @returns {JSX.Element}                   Special-offer detail card
+ * The button opens the offer booking modal (salon → specialist → date & time →
+ * summary) over the page; while the CMS gives it nothing to work with, the
+ * shared launcher ({@link useOfferBookingLauncher}) degrades to the booking
+ * wizard deep link instead — same flow as the home page `OfferCard`.
+ * @param   {object}          props             - Component properties
+ * @param   {IProductsEntity} props.product     - Product entity representing the special offer (`offer`)
+ * @param   {number}          props.index       - Card index — used for the animation stagger
+ * @param   {BookingData}     props.bookingData - Salons / services / specialists the booking modal runs on
+ * @returns {JSX.Element}                       Special-offer detail card
  */
 const OfferDetailCard = ({
   product,
   index,
+  bookingData,
 }: {
   product: IProductsEntity;
   index: number;
+  bookingData: BookingData;
 }): JSX.Element => {
-  const router = useTransitionRouter();
-
   const {
     name,
     description,
@@ -51,17 +57,23 @@ const OfferDetailCard = ({
     serviceProductIds,
   } = parseOfferDetail(product);
 
-  /**
-   * Open the booking wizard with the offer's bundled services preselected.
-   *
-   * The offer product itself is NOT bookable — it carries the `offer`
-   * attribute set and is excluded from the booking catalog — so the link
-   * names the services it bundles instead.
-   * @returns {void}
-   */
-  const handleBook = () => {
-    router.push(offerBookingHref(serviceProductIds));
+  /** The offer summary the booking modal renders and books from. */
+  const offerInfo: OfferBookingInfo = {
+    productId: product.id,
+    name,
+    services,
+    price,
+    original,
+    currency: productCurrency(product),
+    accentColor,
+    accentGrad,
+    serviceProductIds,
   };
+
+  const { bookingOpen, openBooking, closeBooking } = useOfferBookingLauncher({
+    offer: offerInfo,
+    data: bookingData,
+  });
 
   return (
     <CardAnimations
@@ -90,7 +102,7 @@ const OfferDetailCard = ({
         discount={discount}
         accentColor={accentColor}
         price={price}
-        currency={productCurrency(product)}
+        currency={offerInfo.currency}
         original={original}
       />
 
@@ -100,8 +112,19 @@ const OfferDetailCard = ({
         description={description}
         services={services}
         accentGrad={accentGrad}
-        onBook={handleBook}
+        onBook={openBooking}
       />
+
+      {/* Booking modal — portaled out of the animation wrapper's transform */}
+      {bookingOpen && (
+        <DialogPortal>
+          <OfferBookingModal
+            offer={offerInfo}
+            data={bookingData}
+            onClose={closeBooking}
+          />
+        </DialogPortal>
+      )}
     </CardAnimations>
   );
 };

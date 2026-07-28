@@ -1,13 +1,11 @@
 'use client';
 
 import type { RefObject } from 'react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
-import { useDialogA11y } from '@/components/shared/useDialogA11y';
+import { useAnimatedDialog } from '@/components/shared/useAnimatedDialog';
 import { useNeighborPreload } from '@/components/shared/useNeighborPreload';
 import { useSlideDirection } from '@/components/shared/useSlideDirection';
-
-import { useLightboxTransition } from './useLightboxTransition';
 
 /**
  * What a lightbox needs wired up before it can render its chrome.
@@ -32,10 +30,9 @@ export interface LightboxNav {
  * The key listener is skipped for an empty set, so a viewer rendered with no
  * photos cannot page into an out-of-range index.
  *
- * Closing is animated: Escape and the returned `requestClose` both route through
- * `useLightboxTransition`, which plays the exit tween before `onClose` unmounts
- * the viewer. A stable indirection (`closeRef`) lets the a11y hook — wired below,
- * before the animated closer exists — still reach it.
+ * Closing is animated: Escape and the returned `requestClose` both route
+ * through {@link useAnimatedDialog}, which plays the exit tween before
+ * `onClose` unmounts the viewer.
  * @param   {object}      input         - Hook input
  * @param   {string[]}    input.urls    - Full-size URLs of every photo, in display order
  * @param   {number}      input.index   - Index of the photo on screen
@@ -61,18 +58,6 @@ export const useLightboxNav = ({
 
   useNeighborPreload(urls, index);
 
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  /**
-   * Escape closes through the a11y hook, which is created below — before the
-   * animated `requestClose` exists. This stable indirection forwards to whatever
-   * closer is current, so Escape animates the exit just like the close button.
-   * It starts on the raw `onClose` and is re-pointed at the animated closer in an
-   * effect (never during render — see the assignment below).
-   */
-  const closeRef = useRef(onClose);
-  const routedClose = useCallback(() => closeRef.current(), []);
-
   const empty = urls.length === 0;
   useEffect(() => {
     if (empty) return;
@@ -84,22 +69,8 @@ export const useLightboxNav = ({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [empty, onPrev, onNext]);
 
-  const dialogRef = useDialogA11y({ isOpen: true, onClose: routedClose });
-
-  const { requestClose } = useLightboxTransition({
-    overlayRef: dialogRef,
-    contentRef,
+  const { dialogRef, contentRef, requestClose } = useAnimatedDialog({
     onClose,
-  });
-  /**
-   * Re-point the indirection after commit, not during render: a ref written while
-   * rendering is invisible to a concurrent re-render that discards this pass, and
-   * React flags it. The same latest-ref idiom `useLightboxTransition` uses for its
-   * own `onClose`; effects flush before any keypress can reach the dialog, so
-   * Escape never lands on the raw closer.
-   */
-  useEffect(() => {
-    closeRef.current = requestClose;
   });
 
   return { direction, dialogRef, contentRef, requestClose };

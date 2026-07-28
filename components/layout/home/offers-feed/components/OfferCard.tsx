@@ -6,8 +6,12 @@ import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces'
 import type { JSX } from 'react';
 
 import CardAnimations from '@/app/animations/CardAnimations';
+import type { BookingData } from '@/components/layout/booking-page/types';
+import OfferBookingModal from '@/components/layout/offer-booking';
+import { useOfferBookingLauncher } from '@/components/layout/offer-booking/hooks/useOfferBookingLauncher';
+import type { OfferBookingInfo } from '@/components/layout/offer-booking/types';
+import DialogPortal from '@/components/shared/DialogPortal';
 import { productCurrency } from '@/components/shared/productCurrency';
-import { offerBookingHref } from '@/components/utils/offerBookingHref';
 
 import OfferCardFooter from './OfferCardFooter';
 import { parseOffer } from './parseOffer';
@@ -24,19 +28,24 @@ const MUTED = '#a8a9b5';
  * accent-gradient background with white text. Offer data is parsed by
  * {@link parseOffer}.
  *
- * Clicking the card opens the offers page; the button opens the booking wizard
- * with the bundled services preselected.
- * @param   {object}          props         - Component properties
- * @param   {IProductsEntity} props.product - Product entity representing the special offer
- * @param   {number}          props.index   - Index of the card for animation purposes
- * @returns {JSX.Element}                   React component representing an offer card with animation
+ * Clicking the card opens the offers page; the button opens the offer booking
+ * modal (salon → specialist → date & time → summary) over the page, falling
+ * back to the booking wizard deep link while the CMS gives the modal nothing
+ * to work with.
+ * @param   {object}          props             - Component properties
+ * @param   {IProductsEntity} props.product     - Product entity representing the special offer
+ * @param   {number}          props.index       - Index of the card for animation purposes
+ * @param   {BookingData}     props.bookingData - Salons / services / specialists the booking modal runs on
+ * @returns {JSX.Element}                       React component representing an offer card with animation
  */
 const OfferCard = ({
   product,
   index,
+  bookingData,
 }: {
   product: IProductsEntity;
   index: number;
+  bookingData: BookingData;
 }): JSX.Element => {
   const router = useTransitionRouter();
 
@@ -53,17 +62,23 @@ const OfferCard = ({
     serviceProductIds,
   } = parseOffer(product);
 
-  /**
-   * Open the booking wizard with the offer's bundled services preselected.
-   *
-   * The offer product itself is NOT bookable — it carries the `offer`
-   * attribute set and is excluded from the booking catalog — so the link
-   * names the services it bundles instead.
-   * @returns {void}
-   */
-  const handleBook = () => {
-    router.push(offerBookingHref(serviceProductIds));
+  /** The offer summary the booking modal renders and books from. */
+  const offerInfo: OfferBookingInfo = {
+    productId: product.id,
+    name,
+    services,
+    price,
+    original,
+    currency: productCurrency(product),
+    accentColor,
+    accentGrad,
+    serviceProductIds,
   };
+
+  const { bookingOpen, openBooking, closeBooking } = useOfferBookingLauncher({
+    offer: offerInfo,
+    data: bookingData,
+  });
 
   return (
     <CardAnimations
@@ -173,11 +188,22 @@ const OfferCard = ({
           accentColor={accentColor}
           accentGrad={accentGrad}
           price={price}
-          currency={productCurrency(product)}
+          currency={offerInfo.currency}
           original={original}
-          onBook={handleBook}
+          onBook={openBooking}
         />
       </div>
+
+      {/* Booking modal — portaled out of the animation wrapper's transform */}
+      {bookingOpen && (
+        <DialogPortal>
+          <OfferBookingModal
+            offer={offerInfo}
+            data={bookingData}
+            onClose={closeBooking}
+          />
+        </DialogPortal>
+      )}
     </CardAnimations>
   );
 };

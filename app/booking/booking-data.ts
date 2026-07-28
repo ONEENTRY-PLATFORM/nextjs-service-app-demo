@@ -1,5 +1,6 @@
 import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import { cache } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
@@ -103,9 +104,14 @@ const toBookingMaster = ({
  *
  * When the CMS is missing services, specialists or salons the wizard simply
  * renders the empty steps rather than showing fabricated data.
+ *
+ * Wrapped in React `cache()` so the collectors that share it within one
+ * render (`/booking`, `/offers`, the home offers feed) reuse one assembly —
+ * the underlying readers dedupe their fetches anyway, but the mapping and the
+ * object identity are shared too.
  * @returns {Promise<BookingData>} Wizard payload from the CMS
  */
-export const getBookingData = async (): Promise<BookingData> => {
+export const getBookingData = cache(async (): Promise<BookingData> => {
   /** The three sources are independent — fetch in parallel */
   const [catalog, salonsResult, adminsResult] = await Promise.all([
     getServicesCatalogData(),
@@ -156,4 +162,4 @@ export const getBookingData = async (): Promise<BookingData> => {
     .filter((m): m is BookingMaster => m !== null);
 
   return { salons, services, masters };
-};
+});

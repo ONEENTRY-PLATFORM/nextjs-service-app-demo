@@ -36,6 +36,9 @@ type StagePhoto = {
  * @param   {() => void}    [props.onPrev]    - Page to the previous photo (enables drag paging)
  * @param   {() => void}    [props.onNext]    - Page to the next photo (enables drag paging)
  * @param   {string}        [props.aspect]    - Tailwind aspect-ratio class of the stage box
+ * @param   {string}        [props.fit]       - How the photo fills the box: 'cover' crops to the
+ *                                            box, 'contain' shows the whole photo over the
+ *                                            blurred-LQIP letterbox
  * @param   {string}        [props.glow]      - `box-shadow` of the stage box
  * @returns {JSX.Element}                     Stage box with the photo
  */
@@ -47,6 +50,7 @@ const LightboxStage = ({
   onPrev,
   onNext,
   aspect = 'aspect-4/5',
+  fit = 'cover',
   glow = '0 0 80px #ed21f122, 0 32px 64px rgba(0,0,0,0.7)',
 }: {
   src: string;
@@ -56,6 +60,7 @@ const LightboxStage = ({
   onPrev?: (() => void) | undefined;
   onNext?: (() => void) | undefined;
   aspect?: string | undefined;
+  fit?: 'cover' | 'contain' | undefined;
   glow?: string | undefined;
 }): JSX.Element => {
   /**
@@ -109,7 +114,9 @@ const LightboxStage = ({
               }
             }}
             onLoad={() => setLoadedSrc(photo.src)}
-            className="absolute inset-0 size-full object-cover transition-opacity duration-500 ease-out"
+            className={`absolute inset-0 size-full transition-opacity duration-500 ease-out ${
+              fit === 'contain' ? 'object-contain' : 'object-cover'
+            }`}
             style={{ opacity: loadedSrc === photo.src ? 1 : 0 }}
           />
         </>
