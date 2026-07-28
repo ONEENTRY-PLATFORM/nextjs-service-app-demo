@@ -103,17 +103,22 @@ const FIXTURE_ORDERS = [
  * gate makes after a payment-shaped refusal, and letting it fall through to the
  * live CMS would 404 on fixture ids and silently downgrade the flow under test
  * to the stale-list fallback.
- * @param   {Page}                      page               - Playwright page
- * @param   {object}                    [opts]             - Route behaviour overrides
- * @param   {string}                    [opts.updateError] - Reject updates with this API error message instead of acknowledging them
- * @param   {Record<string, unknown>[]} [opts.orders]      - Serve these orders instead of {@link FIXTURE_ORDERS}
- * @returns {Promise<void>}                                Resolves once the route is installed
+ * @param   {Page}                      page                - Playwright page
+ * @param   {object}                    [opts]              - Route behaviour overrides
+ * @param   {string}                    [opts.updateError]  - Reject updates with this API error message instead of acknowledging them
+ * @param   {Record<string, unknown>[]} [opts.orders]       - Serve these orders instead of {@link FIXTURE_ORDERS}
+ * @param   {Record<string, unknown>[]} [opts.freshOrders]  - Answer the single-order GET from these instead of `orders` — lets a test diverge the re-read from the cached list (payment landing late, or an empty pool forcing the 404 → cached fallback)
+ * @returns {Promise<void>}                                 Resolves once the route is installed
  */
 const mockOrders = async (
   page: Page,
-  opts: { updateError?: string; orders?: Record<string, unknown>[] } = {},
+  opts: {
+    updateError?: string;
+    orders?: Record<string, unknown>[];
+    freshOrders?: Record<string, unknown>[];
+  } = {},
 ): Promise<void> => {
-  const { updateError, orders = FIXTURE_ORDERS } = opts;
+  const { updateError, orders = FIXTURE_ORDERS, freshOrders = orders } = opts;
   await page.route(ORDERS_LIST_RE, async (route) => {
     const method = route.request().method();
     // `…/marker/{marker}/orders/900001?…` — the trailing id separates the
@@ -123,7 +128,7 @@ const mockOrders = async (
       .url()
       .match(/\/orders\/(\d+)/)?.[1];
     if (method === 'GET' && singleId) {
-      const order = orders.find((o) => o.id === Number(singleId));
+      const order = freshOrders.find((o) => o.id === Number(singleId));
       await route.fulfill({
         status: order ? 200 : 404,
         contentType: 'application/json',
@@ -394,6 +399,105 @@ test.describe('Profile — visit history', () => {
     // Dismiss, never confirm: `order-refund-confirm` POSTs to
     // `/api/content/orders/{id}/refund`, which `mockOrders` does not intercept —
     // confirming here would send a live request for a fixture order id.
+    await refund.getByTestId('order-refund-dismiss').click();
+    await expect(page.getByTestId('order-refund-request')).toHaveCount(0);
+  });
+
+  test('payment that landed after the list was cached still earns the refund offer', async ({
+    page,
+  }) => {
+    // The reason the gate RE-READS the order instead of trusting the cached
+    // list: the guest paid on the gateway while the profile was already open,
+    // so the list still says `isCompleted: false` but the fresh single-order
+    // GET says `true`. Only the re-read can reach the refund here — if it is
+    // ever lost, the stale-list fallback routes to the error dialog and this
+    // test fails.
+    await mockOrders(page, {
+      updateError:
+        "Can't update the order. Payment sessions 3 could not be canceled — the order may have been paid.",
+      orders: [
+        makeOrder(ORDER_ID.upcoming, 'upcoming', 'Upcoming', {
+          identifier: 'stripe',
+          title: 'Stripe',
+          isCompleted: false,
+        }),
+      ],
+      freshOrders: [
+        makeOrder(ORDER_ID.upcoming, 'upcoming', 'Upcoming', {
+          identifier: 'stripe',
+          title: 'Stripe',
+          isCompleted: true,
+        }),
+      ],
+    });
+    await signInTestUser(page);
+    await expect(
+      page
+        .getByTestId('profile-visits-upcoming')
+        .getByTestId('order-services')
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
+
+    await page
+      .getByTestId('profile-visits-upcoming')
+      .getByTestId('order-cancel')
+      .first()
+      .click();
+    await page
+      .getByTestId('order-cancel-confirm')
+      .getByTestId('order-cancel-yes')
+      .click();
+
+    const refund = page.getByTestId('order-refund-request');
+    await expect(refund).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('order-cancel-error')).toHaveCount(0);
+
+    // Dismiss, never confirm — same live-refund caveat as the test above
+    await refund.getByTestId('order-refund-dismiss').click();
+    await expect(page.getByTestId('order-refund-request')).toHaveCount(0);
+  });
+
+  test('a failed re-read falls back to the cached paid order and still offers the refund', async ({
+    page,
+  }) => {
+    // The `.catch(() => undefined)` half of the gate: the single-order GET
+    // 404s (empty fresh pool), so the verdict comes from the cached list row —
+    // a paid order must not lose its refund offer to a flaky re-read.
+    await mockOrders(page, {
+      updateError:
+        "Can't update the order. Payment sessions 3 could not be canceled — the order may have been paid.",
+      orders: [
+        makeOrder(ORDER_ID.upcoming, 'upcoming', 'Upcoming', {
+          identifier: 'stripe',
+          title: 'Stripe',
+          isCompleted: true,
+        }),
+      ],
+      freshOrders: [],
+    });
+    await signInTestUser(page);
+    await expect(
+      page
+        .getByTestId('profile-visits-upcoming')
+        .getByTestId('order-services')
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
+
+    await page
+      .getByTestId('profile-visits-upcoming')
+      .getByTestId('order-cancel')
+      .first()
+      .click();
+    await page
+      .getByTestId('order-cancel-confirm')
+      .getByTestId('order-cancel-yes')
+      .click();
+
+    const refund = page.getByTestId('order-refund-request');
+    await expect(refund).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('order-cancel-error')).toHaveCount(0);
+
+    // Dismiss, never confirm — same live-refund caveat as the test above
     await refund.getByTestId('order-refund-dismiss').click();
     await expect(page.getByTestId('order-refund-request')).toHaveCount(0);
   });

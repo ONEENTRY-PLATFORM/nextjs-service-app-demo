@@ -1,4 +1,3 @@
-import type { EnhancedStore } from '@reduxjs/toolkit';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { createWrapper } from 'next-redux-wrapper';
 import type { PersistedState, Storage } from 'redux-persist';
@@ -81,10 +80,15 @@ const rootReducer = combineReducers({
 
 /**
  * Setup redux store with persistence - save redux state in storage
- * @returns {EnhancedStore} Redux store with persistence
+ *
+ * The return type is deliberately inferred: annotating it as `EnhancedStore`
+ * erased the middleware-aware dispatch signature, so `AppDispatch` lost the
+ * thunk overload and could not dispatch RTK Query `initiate`/`prefetch`
+ * thunks (the one-shot order re-read in `CancelOrderButton` needs it).
+ * @returns {AppStore} Redux store with persistence
  * @see {@link https://github.com/rt2zz/redux-persist?tab=readme-ov-file#nested-persists}
  */
-export const setupStore = (): EnhancedStore => {
+export const setupStore = () => {
   return configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>

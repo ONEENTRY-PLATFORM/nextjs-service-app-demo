@@ -592,7 +592,6 @@ export const {
   useGetOrderStorageByMarkerQuery,
   useGetAllOrdersByMarkerQuery,
   useGetSingleOrderQuery,
-  useLazyGetSingleOrderQuery,
   useGetProductByIdQuery,
   useGetProductsQuery,
   useGetProductsByPageUrlQuery,

@@ -7,13 +7,14 @@ import type {
   IOrderData,
 } from 'oneentry/dist/orders/ordersInterfaces';
 import type { JSX } from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import {
+  RTKApi,
   useCreateRefundRequestMutation,
-  useLazyGetSingleOrderQuery,
   useUpdateOrderMutation,
 } from '@/app/api/api/RTKApi';
+import { useAppDispatch } from '@/app/store/hooks';
 import {
   ORDERS_STATUS_CANCELED,
   ORDERS_STORAGE_MARKER,
@@ -60,8 +61,22 @@ const CancelOrderButton = ({
   const [updateOrder, { isLoading }] = useUpdateOrderMutation();
   const [createRefundRequest, { isLoading: isRefunding }] =
     useCreateRefundRequestMutation();
-  /** Fresh re-read of the order — the paid-or-stuck check after a refusal */
-  const [fetchFreshOrder] = useLazyGetSingleOrderQuery();
+  /** Dispatch for the one-shot order re-read (`initiate`, no subscription) */
+  const dispatch = useAppDispatch();
+  /**
+   * The paid-or-stuck re-read is in flight. Folded into the confirm dialog's
+   * `isPending`: the mutation's own `isLoading` drops the moment the refusal
+   * arrives, and without this flag "Yes, cancel" would wake up mid-check and
+   * invite a second, concurrent cancellation attempt.
+   */
+  const [isRechecking, setIsRechecking] = useState(false);
+  /**
+   * Re-entrancy latch for `cancelOrderHandle`. The disabled button already
+   * blocks the mouse path, but Enter on a focused button and the brief
+   * pending-flag handover still allow a second run — and a second run means a
+   * second live PUT racing the first one's dialog transitions.
+   */
+  const isCancellingRef = useRef(false);
   /**
    * Label of the action. `cancel_booking_text` is the marker for THIS button;
    * the generic `cancel_text` ("Cancel") is the dictionary's dialog/dismiss
@@ -87,7 +102,20 @@ const CancelOrderButton = ({
 
   /** Memoized function to handle order cancellation */
   const cancelOrderHandle = useCallback(async () => {
-    if (!orderData) return;
+    if (!orderData || isCancellingRef.current) return;
+    isCancellingRef.current = true;
+
+    /**
+     * Advance the dialog, but only out of the still-open confirmation. The
+     * paid-or-stuck branch resolves over the network, and by then the guest
+     * may have dismissed the dialog ("Keep appointment", Escape, backdrop) or
+     * a newer flow may own the stage — a late continuation must not reopen
+     * anything on top of that.
+     * @param {typeof stage} next - Stage the confirmation transitions into
+     */
+    const advanceFromConfirm = (next: typeof stage): void => {
+      setStage((current) => (current === 'confirm' ? next : current));
+    };
 
     /** Extract id and products from order data */
     const { id, products } = orderData;
@@ -113,64 +141,77 @@ const CancelOrderButton = ({
     } as IOrderData;
 
     try {
-      /** `.unwrap()` turns a failed mutation into a throw we can catch */
-      await updateOrder({
-        marker: ORDERS_STORAGE_MARKER,
-        id,
-        body: formData,
-      }).unwrap();
-    } catch (e) {
-      /**
-       * Surface a failed cancellation instead of falsely reporting success.
-       * A paid order is the common case: the API can't undo a payment, but the
-       * SDK can register a refund request — so that branch offers one instead
-       * of the dead-end error dialog. Anything else keeps the error dialog.
-       */
-      if (isPaidOrderError(e)) {
-        /**
-         * The refusal wording covers two very different orders (see
-         * `isOrderPaid`): a genuinely paid one, and an unpaid one whose
-         * checkout session merely expired. Offering the refund to the second
-         * would loop the guest through a guaranteed `404 "cannot refund
-         * uncompleted order"`, so branch on the gateway's verdict instead.
-         * The order is re-read because payment may have landed after the
-         * history list was cached; if the re-read itself fails, the cached
-         * card still answers truthfully for every order that was paid before
-         * the profile loaded.
-         */
-        const fresh = await fetchFreshOrder({
+      try {
+        /** `.unwrap()` turns a failed mutation into a throw we can catch */
+        await updateOrder({
           marker: ORDERS_STORAGE_MARKER,
           id,
-        })
-          .unwrap()
-          .catch(() => undefined);
-        if (isOrderPaid(fresh ?? orderData)) {
-          setStage('refund');
+          body: formData,
+        }).unwrap();
+      } catch (e) {
+        /**
+         * Surface a failed cancellation instead of falsely reporting success.
+         * A paid order is the common case: the API can't undo a payment, but
+         * the SDK can register a refund request — so that branch offers one
+         * instead of the dead-end error dialog. Anything else keeps the error
+         * dialog.
+         */
+        if (isPaidOrderError(e)) {
+          /**
+           * The refusal wording covers two very different orders (see
+           * `isOrderPaid`): a genuinely paid one, and an unpaid one whose
+           * checkout session merely expired. Offering the refund to the second
+           * would loop the guest through a guaranteed `404 "cannot refund
+           * uncompleted order"`, so branch on the gateway's verdict instead.
+           * The order is re-read because payment may have landed after the
+           * history list was cached; if the re-read itself fails, the cached
+           * card still answers truthfully for every order that was paid before
+           * the profile loaded. `initiate` with `subscribe: false` is a
+           * one-shot read on purpose: the lazy hook would keep a live
+           * subscription that `providesTags: ['Orders']` then refetches on
+           * every later order mutation, for nobody.
+           */
+          setIsRechecking(true);
+          const fresh = await dispatch(
+            RTKApi.endpoints.getSingleOrder.initiate(
+              { marker: ORDERS_STORAGE_MARKER, id },
+              { subscribe: false, forceRefetch: true },
+            ),
+          )
+            .unwrap()
+            .catch(() => undefined);
+          if (isOrderPaid(fresh ?? orderData)) {
+            advanceFromConfirm('refund');
+            return;
+          }
+          setErrorTitle(
+            (dict.appointment_not_cancelled_title?.value as
+              | string
+              | undefined) || 'Appointment not cancelled',
+          );
+          setErrorMessage(
+            (dict.cancel_contact_salon_text?.value as string | undefined) ||
+              'This appointment can’t be cancelled online right now. Please contact the salon — they will cancel it for you.',
+          );
+          advanceFromConfirm('error');
           return;
         }
         setErrorTitle(
           (dict.appointment_not_cancelled_title?.value as string | undefined) ||
             'Appointment not cancelled',
         );
-        setErrorMessage(
-          (dict.cancel_contact_salon_text?.value as string | undefined) ||
-            'This appointment can’t be cancelled online right now. Please contact the salon — they will cancel it for you.',
-        );
-        setStage('error');
+        setErrorMessage(formatOrderCancelError(e));
+        advanceFromConfirm('error');
         return;
       }
-      setErrorTitle(
-        (dict.appointment_not_cancelled_title?.value as string | undefined) ||
-          'Appointment not cancelled',
-      );
-      setErrorMessage(formatOrderCancelError(e));
-      setStage('error');
-      return;
-    }
 
-    /** The list refreshes itself — show the mock's success dialog. */
-    setStage('done');
-  }, [orderData, updateOrder, fetchFreshOrder, dict]);
+      /** The list refreshes itself — show the mock's success dialog. */
+      advanceFromConfirm('done');
+    } finally {
+      isCancellingRef.current = false;
+      setIsRechecking(false);
+    }
+  }, [orderData, updateOrder, dispatch, dict]);
 
   /**
    * Ask the salon to refund the paid appointment.
@@ -181,6 +222,17 @@ const CancelOrderButton = ({
    */
   const requestRefundHandle = useCallback(async () => {
     if (!orderData) return;
+
+    /**
+     * Advance the dialog, but only out of the still-open refund offer — the
+     * same late-continuation rule as in `cancelOrderHandle`: a guest who
+     * dismissed the dialog while the request was in flight must not have a
+     * result dialog reopened on top of nothing.
+     * @param {typeof stage} next - Stage the refund offer transitions into
+     */
+    const advanceFromRefund = (next: typeof stage): void => {
+      setStage((current) => (current === 'refund' ? next : current));
+    };
 
     const products = Object.fromEntries(
       (orderData.products ?? []).map((product) => [
@@ -200,11 +252,11 @@ const CancelOrderButton = ({
           'Refund not requested',
       );
       setErrorMessage(formatRefundError(e));
-      setStage('error');
+      advanceFromRefund('error');
       return;
     }
 
-    setStage('refund-done');
+    advanceFromRefund('refund-done');
   }, [orderData, createRefundRequest, dict]);
 
   /**
@@ -233,7 +285,7 @@ const CancelOrderButton = ({
       {stage === 'confirm' && (
         <CancelConfirmModal
           subtitle={subtitle}
-          isPending={isLoading}
+          isPending={isLoading || isRechecking}
           onKeep={() => setStage(null)}
           onConfirm={cancelOrderHandle}
         />
