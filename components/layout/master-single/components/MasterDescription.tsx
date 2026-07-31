@@ -2,6 +2,7 @@ import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
 import type { JSX } from 'react';
 
 import { parseSafeCmsHtml } from '@/components/layout/master-single/utils/parseSafeCmsHtml';
+import { firstAttrValue } from '@/components/utils/firstAttrValue';
 
 /**
  * MasterDescription component to render the description of a master.
@@ -17,11 +18,14 @@ const MasterDescription = ({
 }: {
   master: IAdminEntity;
 }): JSX.Element => {
-  /** Extract master description HTML from attribute values */
-  const descArr = (master.attributeValues || {}).master_description?.value as
-    Array<{ htmlValue?: string }> | undefined;
-
-  const descriptionHtml = descArr?.[0]?.htmlValue;
+  /**
+   * Extract master description HTML from attribute values. The `text` block
+   * comes as a one-element array, but `firstAttrValue` also accepts the bare
+   * object the SDK contract allows.
+   */
+  const descriptionHtml = firstAttrValue<{ htmlValue?: string }>(
+    (master.attributeValues || {}).master_description?.value,
+  )?.htmlValue;
 
   /** Render master description through the sanitizing allowlist parser */
   return (

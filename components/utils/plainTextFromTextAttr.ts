@@ -1,8 +1,11 @@
+import { firstAttrValue } from './firstAttrValue';
+
 /**
  * Extract plain text from a `text`-type attribute value.
  *
- * A `text` attribute's `value` is an array of `{ htmlValue, plainValue,
- * mdValue }` (never a raw string). This reads the first entry, prefers
+ * A `text` attribute's `value` is a block of `{ htmlValue, plainValue,
+ * mdValue }` — an array of them in practice, though the SDK contract allows the
+ * bare object too ({@link firstAttrValue}). This reads the first block, prefers
  * `plainValue`, and — since in this CMS `plainValue` is frequently empty —
  * falls back to stripping tags off `htmlValue` and decoding the common HTML
  * entities. Tolerates the legacy plain-string shape too. Returns plain text
@@ -13,9 +16,9 @@
  */
 export const plainTextFromTextAttr = (value: unknown): string => {
   if (typeof value === 'string') return value;
-  if (!Array.isArray(value) || value.length === 0) return '';
-  const first = value[0] as
-    { plainValue?: string; htmlValue?: string } | undefined;
+  const first = firstAttrValue<{ plainValue?: string; htmlValue?: string }>(
+    value,
+  );
   const plain = first?.plainValue?.trim();
   if (plain) return plain;
   const html = first?.htmlValue;

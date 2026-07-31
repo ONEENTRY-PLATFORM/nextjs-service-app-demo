@@ -2,6 +2,7 @@ import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
 import type { CSSProperties, JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';
+import { firstAttrValue } from '@/components/utils/firstAttrValue';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
 import type { OneEntryImageFile } from '@/components/utils/OneEntryImageFile';
 import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
@@ -16,10 +17,7 @@ import CtaBannerOverlay from './components/CtaBannerOverlay';
  * @returns {{ url: string; blur: string | null }}       Image URL (`''` when empty) and its blur data URI
  */
 const imageOf = (value: unknown): { url: string; blur: string | null } => {
-  if (!Array.isArray(value) || value.length === 0) {
-    return { url: '', blur: null };
-  }
-  const file = value[0] as OneEntryImageFile | undefined;
+  const file = firstAttrValue<OneEntryImageFile>(value);
   if (!file?.downloadLink) {
     return { url: '', blur: null };
   }

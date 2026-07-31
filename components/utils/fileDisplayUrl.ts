@@ -1,3 +1,5 @@
+import { firstAttrValue } from './firstAttrValue';
+
 /**
  * Display URL of a CMS file attribute (`image` / `groupOfImages`), e.g. an
  * admin's `master_image`.
@@ -7,17 +9,17 @@
  * portrait from it would show a blurry square. The preview URLs are only a last
  * resort for legacy files that carry no `downloadLink` at all. For the blur data
  * URI use `fileBlurDataUrl` instead.
+ *
+ * Both value shapes are accepted — see {@link firstAttrValue} for why a single
+ * `image` file can arrive unwrapped.
  * @param   {unknown} value - Raw `attributeValues.<marker>.value`
  * @returns {string}        File URL, or `''` when the attribute is empty
  */
 export const fileDisplayUrl = (value: unknown): string => {
-  if (!Array.isArray(value) || value.length === 0) {
-    return '';
-  }
-  const first = value[0] as {
+  const first = firstAttrValue<{
     previewLink?: string | { default?: string[] };
     downloadLink?: string | { default?: string[] };
-  };
+  }>(value);
   const link = first?.downloadLink ?? first?.previewLink;
   if (!link) {
     return '';

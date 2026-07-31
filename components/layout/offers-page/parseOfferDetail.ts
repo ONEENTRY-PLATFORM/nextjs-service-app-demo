@@ -1,5 +1,6 @@
 import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
 
+import { firstAttrValue } from '@/components/utils/firstAttrValue';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';
 import type { OneEntryImageFile } from '@/components/utils/OneEntryImageFile';
 import { parseOfferBase } from '@/components/utils/parseOfferBase';
@@ -49,16 +50,17 @@ export const parseOfferDetail = (product: IProductsEntity): OfferDetailView => {
   const name = product.localizeInfos?.title ?? '';
 
   /**
-   * Offer photo: `offer_image` (an `image` attribute — its value is a single
-   * file object `{ downloadLink }`, tolerating an array too). Empty when the
-   * CMS holds no photo — the card then renders its accent pane without one.
+   * Offer photo: `offer_image` (an `image` attribute — on a product the SDK
+   * unwraps its single file to a bare object, hence `firstAttrValue`, which
+   * takes either shape). Empty when the CMS holds no photo — the card then
+   * renders its accent pane without one.
    *
    * `getGalleryImageUrls` also hands back the ready-made `previewLink` LQIP
    * when the file carries one, so the photo fades in from a blur.
    */
-  const imageVal = product.attributeValues?.offer_image?.value as
-    OneEntryImageFile | OneEntryImageFile[] | undefined;
-  const imageFile = Array.isArray(imageVal) ? imageVal[0] : imageVal;
+  const imageFile = firstAttrValue<OneEntryImageFile>(
+    product.attributeValues?.offer_image?.value,
+  );
   const { full, blur } = imageFile?.downloadLink
     ? getGalleryImageUrls(imageFile)
     : { full: '', blur: null };

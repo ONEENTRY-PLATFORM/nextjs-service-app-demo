@@ -2,6 +2,7 @@ import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
 
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
+import { firstAttrValue } from '@/components/utils/firstAttrValue';
 import { flatMenuToNested } from '@/components/utils/flatMenuToNested';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
 import { getFormAttributes } from '@/components/utils/getFormAttributes';
@@ -209,6 +210,12 @@ describe('plainTextFromTextAttr', () => {
     ).toBe('One Two');
   });
 
+  it('reads an unwrapped text block object', () => {
+    expect(plainTextFromTextAttr({ plainValue: 'Bare object' })).toBe(
+      'Bare object',
+    );
+  });
+
   it('returns an empty string for empty, non-array or contentless values', () => {
     expect(plainTextFromTextAttr([])).toBe('');
     expect(plainTextFromTextAttr(undefined)).toBe('');
@@ -239,10 +246,34 @@ describe('fileDisplayUrl', () => {
     );
   });
 
+  it('reads an unwrapped single file (product-shaped image attribute)', () => {
+    expect(fileDisplayUrl({ downloadLink: 'https://cdn/offer.jpg' })).toBe(
+      'https://cdn/offer.jpg',
+    );
+  });
+
   it('returns an empty string for empty, non-array or linkless values', () => {
     expect(fileDisplayUrl([])).toBe('');
     expect(fileDisplayUrl(undefined)).toBe('');
     expect(fileDisplayUrl([{}])).toBe('');
+    expect(fileDisplayUrl('')).toBe('');
+  });
+});
+
+describe('firstAttrValue', () => {
+  it('takes the first entry of an array value', () => {
+    expect(firstAttrValue([{ a: 1 }, { a: 2 }])).toEqual({ a: 1 });
+  });
+
+  it('takes an unwrapped object value as is', () => {
+    expect(firstAttrValue({ a: 1 })).toEqual({ a: 1 });
+  });
+
+  it('returns undefined for the shapes an unset attribute takes', () => {
+    expect(firstAttrValue([])).toBeUndefined();
+    expect(firstAttrValue('')).toBeUndefined();
+    expect(firstAttrValue(null)).toBeUndefined();
+    expect(firstAttrValue(undefined)).toBeUndefined();
   });
 });
 
@@ -279,6 +310,12 @@ describe('getGalleryImageUrls / fileBlurDataUrl', () => {
 
   it('fileBlurDataUrl reads the ready-made blur data URI from the first file', () => {
     expect(fileBlurDataUrl([withObjectPreview])).toBe(
+      'data:image/webp;base64,BLUR',
+    );
+  });
+
+  it('fileBlurDataUrl reads an unwrapped single file too', () => {
+    expect(fileBlurDataUrl(withObjectPreview)).toBe(
       'data:image/webp;base64,BLUR',
     );
   });
