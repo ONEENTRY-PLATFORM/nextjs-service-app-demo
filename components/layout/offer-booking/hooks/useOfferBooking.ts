@@ -1,7 +1,7 @@
 'use client';
 
 import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { TIMES } from '@/components/layout/booking-page/constants';
 import { useBookingPayment } from '@/components/layout/booking-page/hooks/useBookingPayment';
@@ -48,7 +48,7 @@ export interface OfferSlotOption {
  * @property {number}                                calYear              - Year the calendar shows
  * @property {number}                                calMonth             - Month index (0-based) the calendar shows
  * @property {(year: number, month: number) => void} changeCalMonth       - Page the calendar
- * @property {string}                                slot                 - Chosen time slot (`''` = none yet)
+ * @property {string}                                slot                 - Chosen time slot (`''` = none yet, or the pick no longer fits the day)
  * @property {(time: string) => void}                selectSlot           - Choose a time slot
  * @property {OfferSlotOption[]}                     slotOptions          - Time grid of the chosen day (with disabled tails)
  * @property {boolean}                               step1Ready           - Salon + specialist + slot all chosen
@@ -133,7 +133,7 @@ export const useOfferBooking = ({
   );
   const [masterId, setMasterId] = useState('');
   const [dateKey, setDateKey] = useState(todayKey);
-  const [slot, setSlot] = useState('');
+  const [pickedSlot, setPickedSlot] = useState('');
   const [calOpen, setCalOpen] = useState(false);
   const [calYear, setCalYear] = useState(() => new Date().getFullYear());
   const [calMonth, setCalMonth] = useState(() => new Date().getMonth());
@@ -184,12 +184,19 @@ export const useOfferBooking = ({
     [hasSchedule, slots, durationMinutes, closeMinutes, dateKey],
   );
 
-  /** A pick that stopped fitting (day or specialist changed) is dropped. */
-  useEffect(() => {
-    if (!slot) return;
-    const option = slotOptions.find((o) => o.time === slot);
-    if (!option || option.disabled) setSlot('');
-  }, [slot, slotOptions]);
+  /**
+   * A pick that stopped fitting (the day, the specialist or the schedule
+   * changed under it) counts as no pick at all. It is derived while rendering
+   * rather than cleared from an effect: an effect would have to paint the
+   * stale slot once, then set state and re-render — the cascading render React
+   * warns about — while this way the grid never shows a selected cell its own
+   * options mark as disabled.
+   */
+  const slot = slotOptions.some(
+    (option) => option.time === pickedSlot && !option.disabled,
+  )
+    ? pickedSlot
+    : '';
 
   const { paymentAccounts, paymentAccount, selectPaymentAccount } =
     useBookingPayment();
@@ -217,7 +224,7 @@ export const useOfferBooking = ({
    */
   const pickDay = (key: string): void => {
     setDateKey(key);
-    setSlot('');
+    setPickedSlot('');
     setCalOpen(false);
   };
 
@@ -286,7 +293,7 @@ export const useOfferBooking = ({
     calMonth,
     changeCalMonth,
     slot,
-    selectSlot: setSlot,
+    selectSlot: setPickedSlot,
     slotOptions,
     step1Ready,
     paymentAccounts,
