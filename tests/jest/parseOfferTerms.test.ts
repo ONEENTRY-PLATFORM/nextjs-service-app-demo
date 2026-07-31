@@ -61,7 +61,8 @@ describe('parseOfferTerms', () => {
     expect(parseOfferTerms(pageWith(undefined))).toEqual([]);
     expect(parseOfferTerms(pageWith({ htmlContent: null }))).toEqual([]);
     expect(parseOfferTerms(pageWith({ htmlContent: '   ' }))).toEqual([]);
-    expect(parseOfferTerms(pageWith({ htmlContent: '<ul><li> </li></ul>' })))
-      .toEqual([]);
+    expect(
+      parseOfferTerms(pageWith({ htmlContent: '<ul><li> </li></ul>' })),
+    ).toEqual([]);
   });
 });

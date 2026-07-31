@@ -29,38 +29,38 @@ export interface OfferSlotOption {
 
 /**
  * Everything the offer booking modal renders from.
- * @property {1 | 2}                    step             - Current wizard step: picks / summary
- * @property {() => void}               goToSummary      - Advance to the summary step (no-op until `step1Ready`)
- * @property {() => void}               goBack           - Return to the picks step
- * @property {number | null}            salonId          - Chosen salon page id
- * @property {(id: number) => void}     selectSalon      - Choose a salon (resets the specialist)
- * @property {BookingSalon | undefined} salonObj         - Resolved chosen salon
- * @property {string}                   masterId         - Chosen specialist id (`''` = none yet)
- * @property {(id: string) => void}     selectMaster     - Choose a specialist
- * @property {BookingMaster|undefined}  masterObj        - Resolved chosen specialist
- * @property {BookingMaster[]}          availableMasters - Specialists offered for this salon + package
- * @property {string}                   todayKey         - Date key of today
- * @property {string}                   tomorrowKey      - Date key of tomorrow
- * @property {string}                   dateKey          - Chosen day
- * @property {(key: string) => void}    pickDay          - Choose a day (clears the slot, closes the calendar)
- * @property {boolean}                  calOpen          - Whether the inline calendar replaces the slot grid
- * @property {() => void}               toggleCalendar   - Open/close the inline calendar
- * @property {number}                   calYear          - Year the calendar shows
- * @property {number}                   calMonth         - Month index (0-based) the calendar shows
- * @property {(year: number, month: number) => void} changeCalMonth - Page the calendar
- * @property {string}                   slot             - Chosen time slot (`''` = none yet)
- * @property {(time: string) => void}   selectSlot       - Choose a time slot
- * @property {OfferSlotOption[]}        slotOptions      - Time grid of the chosen day (with disabled tails)
- * @property {boolean}                  step1Ready       - Salon + specialist + slot all chosen
- * @property {IAccountsEntity[]}        paymentAccounts  - Payment accounts the salon offers for these orders
- * @property {string}                   paymentAccount   - Identifier of the payment account the order will use
- * @property {(id: string) => void}     selectPaymentAccount - Choose a payment account
- * @property {boolean}                  isAuth           - Whether the client is signed in
- * @property {boolean}                  isLoading        - Order creation in flight
- * @property {string}                   error            - Order creation error (`''` = none)
- * @property {boolean}                  booked           - Confirmed — the modal shows the done screen
- * @property {() => void}               closeSuccess     - Finish the done screen: routes a real appointment to the profile (the modal shell calls it from its auto-close timer)
- * @property {() => void}               handleConfirm    - Confirm: sign-in popup when signed out, else create the order
+ * @property {1 | 2}                                 step                 - Current wizard step: picks / summary
+ * @property {() => void}                            goToSummary          - Advance to the summary step (no-op until `step1Ready`)
+ * @property {() => void}                            goBack               - Return to the picks step
+ * @property {number | null}                         salonId              - Chosen salon page id
+ * @property {(id: number) => void}                  selectSalon          - Choose a salon (resets the specialist)
+ * @property {BookingSalon | undefined}              salonObj             - Resolved chosen salon
+ * @property {string}                                masterId             - Chosen specialist id (`''` = none yet)
+ * @property {(id: string) => void}                  selectMaster         - Choose a specialist
+ * @property {BookingMaster|undefined}               masterObj            - Resolved chosen specialist
+ * @property {BookingMaster[]}                       availableMasters     - Specialists offered for this salon + package
+ * @property {string}                                todayKey             - Date key of today
+ * @property {string}                                tomorrowKey          - Date key of tomorrow
+ * @property {string}                                dateKey              - Chosen day
+ * @property {(key: string) => void}                 pickDay              - Choose a day (clears the slot, closes the calendar)
+ * @property {boolean}                               calOpen              - Whether the inline calendar replaces the slot grid
+ * @property {() => void}                            toggleCalendar       - Open/close the inline calendar
+ * @property {number}                                calYear              - Year the calendar shows
+ * @property {number}                                calMonth             - Month index (0-based) the calendar shows
+ * @property {(year: number, month: number) => void} changeCalMonth       - Page the calendar
+ * @property {string}                                slot                 - Chosen time slot (`''` = none yet)
+ * @property {(time: string) => void}                selectSlot           - Choose a time slot
+ * @property {OfferSlotOption[]}                     slotOptions          - Time grid of the chosen day (with disabled tails)
+ * @property {boolean}                               step1Ready           - Salon + specialist + slot all chosen
+ * @property {IAccountsEntity[]}                     paymentAccounts      - Payment accounts the salon offers for these orders
+ * @property {string}                                paymentAccount       - Identifier of the payment account the order will use
+ * @property {(id: string) => void}                  selectPaymentAccount - Choose a payment account
+ * @property {boolean}                               isAuth               - Whether the client is signed in
+ * @property {boolean}                               isLoading            - Order creation in flight
+ * @property {string}                                error                - Order creation error (`''` = none)
+ * @property {boolean}                               booked               - Confirmed — the modal shows the done screen
+ * @property {() => void}                            closeSuccess         - Finish the done screen: routes a real appointment to the profile (the modal shell calls it from its auto-close timer)
+ * @property {() => void}                            handleConfirm        - Confirm: sign-in popup when signed out, else create the order
  */
 export interface OfferBookingController {
   step: 1 | 2;

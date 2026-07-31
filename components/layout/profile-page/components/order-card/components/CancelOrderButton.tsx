@@ -186,8 +186,7 @@ const CancelOrderButton = ({
           }
           setErrorTitle(
             (dict.appointment_not_cancelled_title?.value as
-              | string
-              | undefined) || 'Appointment not cancelled',
+              string | undefined) || 'Appointment not cancelled',
           );
           setErrorMessage(
             (dict.cancel_contact_salon_text?.value as string | undefined) ||

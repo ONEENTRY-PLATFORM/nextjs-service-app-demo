@@ -45,7 +45,6 @@ interface SingleOrderProps {
 /**
  * Arguments of the read-only single-order query — `SingleOrderProps` without
  * the write payload, so readers no longer have to fake an empty `body`.
- *
  * @property {string} marker - Text identifier of the order storage object
  * @property {number} id     - ID of the order object
  */

@@ -7,12 +7,12 @@ import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import type { BookingData } from '@/components/layout/booking-page/types';
 import { useAnimatedDialog } from '@/components/shared/useAnimatedDialog';
 
+import OfferSwapAnimations from './animations/OfferSwapAnimations';
 import OfferBookingDone from './components/OfferBookingDone';
 import OfferBookingFooter from './components/OfferBookingFooter';
 import OfferBookingHeader from './components/OfferBookingHeader';
 import OfferPicksStep from './components/OfferPicksStep';
 import OfferSummaryStep from './components/OfferSummaryStep';
-import OfferSwapAnimations from './animations/OfferSwapAnimations';
 import { useOfferBooking } from './hooks/useOfferBooking';
 import type { OfferBookingInfo } from './types';
 

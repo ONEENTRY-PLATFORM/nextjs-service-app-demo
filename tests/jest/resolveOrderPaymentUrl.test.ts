@@ -20,9 +20,9 @@ const getApiMock = getApi as jest.Mock;
 
 /**
  * Wire the fake Payments module into getApi and hand the spies back.
- * @param   {unknown} sessions - Resolved value of `getSessionByOrderId`
- * @param   {unknown} created  - Resolved value of `createSession`
- * @returns {{ getSessionByOrderId: jest.Mock; createSession: jest.Mock }} The two spies
+ * @param   {unknown}                                                      sessions - Resolved value of `getSessionByOrderId`
+ * @param   {unknown}                                                      created  - Resolved value of `createSession`
+ * @returns {{ getSessionByOrderId: jest.Mock; createSession: jest.Mock }}          The two spies
  */
 const mockPayments = (sessions: unknown, created?: unknown) => {
   const getSessionByOrderId = jest.fn().mockResolvedValue(sessions);
@@ -65,7 +65,10 @@ describe('resolveOrderPaymentUrl', () => {
   it('creates a session when no listed session is reusable', async () => {
     // A dead session and a waiting one without a URL — neither may be reused.
     const { getSessionByOrderId, createSession } = mockPayments(
-      [{ status: 'canceled', paymentUrl: 'https://stripe.test/dead' }, { status: 'waiting' }],
+      [
+        { status: 'canceled', paymentUrl: 'https://stripe.test/dead' },
+        { status: 'waiting' },
+      ],
       { paymentUrl: 'https://stripe.test/new' },
     );
 

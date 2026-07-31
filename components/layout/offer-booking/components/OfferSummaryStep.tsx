@@ -54,8 +54,7 @@ const OfferSummaryStep = ({
           accent={offer.accentColor}
           value={
             <>
-              {offer.name} ·{' '}
-              <CurrencySymbol currency={offer.currency} />
+              {offer.name} · <CurrencySymbol currency={offer.currency} />
               {offer.price}
             </>
           }

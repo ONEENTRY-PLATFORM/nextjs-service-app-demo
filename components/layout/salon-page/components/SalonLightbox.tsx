@@ -82,7 +82,10 @@ const SalonLightbox = ({
       />
 
       {photo && (
-        <div ref={contentRef} className="w-full max-w-2xl px-4 md:mx-20 md:px-0">
+        <div
+          ref={contentRef}
+          className="w-full max-w-2xl px-4 md:mx-20 md:px-0"
+        >
           {/* Salon photos are landscape (the gallery tiles are 5/4), so the
               stage keeps a horizontal frame and letterboxes instead of
               cropping — the design reference shows the photo uncropped */}

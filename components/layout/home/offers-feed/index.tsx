@@ -21,9 +21,9 @@ import OffersFeed from './components/OffersFeed';
  * the `/booking` route) slimmed by {@link slimOfferBookingData} before it is
  * serialized into the page payload.
  * The whole section is hidden while the CMS holds no `offer` products.
- * @param   {object}             props         - Component properties
- * @param   {IBlockEntity}       [props.block] - The `home_offers_feed` block
- * @returns {Promise<JSX.Element | null>}      The offers section, or `null` when empty
+ * @param   {object}                      props         - Component properties
+ * @param   {IBlockEntity}                [props.block] - The `home_offers_feed` block
+ * @returns {Promise<JSX.Element | null>}               The offers section, or `null` when empty
  */
 const OffersFeedBlock = async ({
   block,

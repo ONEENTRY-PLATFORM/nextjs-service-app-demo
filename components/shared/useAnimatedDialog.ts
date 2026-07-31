@@ -36,10 +36,10 @@ export interface AnimatedDialog {
  * the modal locks its own Escape while the popup (or an in-flight submit)
  * owns the interaction. The returned `requestClose` is NOT gated: callers
  * gate their own pointer paths so programmatic closes stay possible.
- * @param   {object}                            input                   - Hook input
- * @param   {() => void}                        input.onClose           - Real close (unmounts the dialog), run after the exit tween
- * @param   {RefObject<boolean>}                [input.escapeLockedRef] - When `.current` is true, Escape is ignored
- * @returns {AnimatedDialog}                                            The dialog refs and the animated closer
+ * @param   {object}             input                   - Hook input
+ * @param   {() => void}         input.onClose           - Real close (unmounts the dialog), run after the exit tween
+ * @param   {RefObject<boolean>} [input.escapeLockedRef] - When `.current` is true, Escape is ignored
+ * @returns {AnimatedDialog}                             The dialog refs and the animated closer
  */
 export const useAnimatedDialog = ({
   onClose,

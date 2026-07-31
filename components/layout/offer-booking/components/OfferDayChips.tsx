@@ -12,15 +12,15 @@ import OfferDayChip from './OfferDayChip';
  * and the calendar toggle, which doubles as the chip of a custom-picked date.
  * While the calendar is unfolded the toggle chip reads active instead of the
  * day chips, exactly as the mock behaves.
- * @param   {object}               props                - Component properties
- * @param   {string}               props.dateKey        - Chosen day
- * @param   {string}               props.todayKey       - Date key of today
- * @param   {string}               props.tomorrowKey    - Date key of tomorrow
- * @param   {boolean}              props.calOpen        - Whether the calendar is unfolded
- * @param   {string}               props.accent         - Accent colour of the offer
- * @param   {(key: string) => void} props.onPickDay     - Choose today / tomorrow
- * @param   {() => void}           props.onToggleCalendar - Unfold / fold the calendar
- * @returns {JSX.Element}                               Day chip row
+ * @param   {object}                props                  - Component properties
+ * @param   {string}                props.dateKey          - Chosen day
+ * @param   {string}                props.todayKey         - Date key of today
+ * @param   {string}                props.tomorrowKey      - Date key of tomorrow
+ * @param   {boolean}               props.calOpen          - Whether the calendar is unfolded
+ * @param   {string}                props.accent           - Accent colour of the offer
+ * @param   {(key: string) => void} props.onPickDay        - Choose today / tomorrow
+ * @param   {() => void}            props.onToggleCalendar - Unfold / fold the calendar
+ * @returns {JSX.Element}                                  Day chip row
  */
 const OfferDayChips = ({
   dateKey,

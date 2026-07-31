@@ -1,6 +1,4 @@
-import type {
-  BookingService,
-} from '@/components/layout/booking-page/types';
+import type { BookingService } from '@/components/layout/booking-page/types';
 
 /**
  * offerBundledServices — resolve the offer's bundled service product ids into

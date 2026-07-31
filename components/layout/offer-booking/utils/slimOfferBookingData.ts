@@ -17,21 +17,19 @@ import type {
  */
 export const slimOfferBookingData = (data: BookingData): BookingData => ({
   ...data,
-  masters: data.masters.map(
-    (master): BookingMaster => ({
-      id: master.id,
-      adminId: master.adminId,
-      name: master.name,
-      grade: master.grade,
-      photo: master.photo,
-      specialties: master.specialties,
-      rating: master.rating,
-      reviews: null,
-      price: null,
-      bio: '',
-      salonIds: master.salonIds,
-      serviceIds: master.serviceIds,
-      ...(master.schedule !== undefined ? { schedule: master.schedule } : {}),
-    }),
-  ),
+  masters: data.masters.map((master): BookingMaster => ({
+    id: master.id,
+    adminId: master.adminId,
+    name: master.name,
+    grade: master.grade,
+    photo: master.photo,
+    specialties: master.specialties,
+    rating: master.rating,
+    reviews: null,
+    price: null,
+    bio: '',
+    salonIds: master.salonIds,
+    serviceIds: master.serviceIds,
+    ...(master.schedule !== undefined ? { schedule: master.schedule } : {}),
+  })),
 });

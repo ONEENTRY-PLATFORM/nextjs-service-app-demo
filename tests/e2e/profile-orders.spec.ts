@@ -103,12 +103,12 @@ const FIXTURE_ORDERS = [
  * gate makes after a payment-shaped refusal, and letting it fall through to the
  * live CMS would 404 on fixture ids and silently downgrade the flow under test
  * to the stale-list fallback.
- * @param   {Page}                      page                - Playwright page
- * @param   {object}                    [opts]              - Route behaviour overrides
- * @param   {string}                    [opts.updateError]  - Reject updates with this API error message instead of acknowledging them
- * @param   {Record<string, unknown>[]} [opts.orders]       - Serve these orders instead of {@link FIXTURE_ORDERS}
- * @param   {Record<string, unknown>[]} [opts.freshOrders]  - Answer the single-order GET from these instead of `orders` — lets a test diverge the re-read from the cached list (payment landing late, or an empty pool forcing the 404 → cached fallback)
- * @returns {Promise<void>}                                 Resolves once the route is installed
+ * @param   {Page}                      page               - Playwright page
+ * @param   {object}                    [opts]             - Route behaviour overrides
+ * @param   {string}                    [opts.updateError] - Reject updates with this API error message instead of acknowledging them
+ * @param   {Record<string, unknown>[]} [opts.orders]      - Serve these orders instead of {@link FIXTURE_ORDERS}
+ * @param   {Record<string, unknown>[]} [opts.freshOrders] - Answer the single-order GET from these instead of `orders` — lets a test diverge the re-read from the cached list (payment landing late, or an empty pool forcing the 404 → cached fallback)
+ * @returns {Promise<void>}                                Resolves once the route is installed
  */
 const mockOrders = async (
   page: Page,

@@ -36,7 +36,10 @@ const OfferMasterList = ({
         2. {dictText(dict, 'specialist_text', 'Specialist')}
       </p>
       {masters.length === 0 ? (
-        <p className="text-base text-neutral-300" data-testid="offer-no-masters">
+        <p
+          className="text-base text-neutral-300"
+          data-testid="offer-no-masters"
+        >
           {dictText(
             dict,
             'offer_no_masters_text',

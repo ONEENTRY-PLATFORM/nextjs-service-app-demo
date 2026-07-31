@@ -14,15 +14,15 @@ import { dateKeyToDate } from '../utils/dateKeyToDate';
  * "3. Date & time" block (mock `Calendar`): month pager, Mo–Su headers and a
  * 7-column day grid on the neutral panel. Days before today are disabled and
  * the pager cannot leave the current month backwards.
- * @param   {object}                                props            - Component properties
- * @param   {string}                                props.accent     - Accent colour of the offer
- * @param   {number}                                props.year       - Year shown
- * @param   {number}                                props.month      - Month index (0-based) shown
+ * @param   {object}                                props             - Component properties
+ * @param   {string}                                props.accent      - Accent colour of the offer
+ * @param   {number}                                props.year        - Year shown
+ * @param   {number}                                props.month       - Month index (0-based) shown
  * @param   {string}                                props.selectedKey - Chosen day key
- * @param   {string}                                props.todayKey   - Date key of today (the minimum pickable day)
- * @param   {(year: number, month: number) => void} props.onMonth    - Page the calendar
- * @param   {(key: string) => void}                 props.onPick     - Choose a day
- * @returns {JSX.Element}                                            Inline calendar
+ * @param   {string}                                props.todayKey    - Date key of today (the minimum pickable day)
+ * @param   {(year: number, month: number) => void} props.onMonth     - Page the calendar
+ * @param   {(key: string) => void}                 props.onPick      - Choose a day
+ * @returns {JSX.Element}                                             Inline calendar
  */
 const OfferCalendar = ({
   accent,

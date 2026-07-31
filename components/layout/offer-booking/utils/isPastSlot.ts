@@ -6,9 +6,9 @@ import slotMinutes from '@/components/layout/booking-page/utils/slotMinutes';
  * can have past slots; any other day's grid is fully in the future. Local wall
  * clock on purpose — the studio and its clients share one timezone, the same
  * assumption the booking wizard's time grid makes.
- * @param   {string} slot    - Slot label `HH:MM`
- * @param   {string} dateKey - Calendar day key `year-monthIndex-day`
- * @returns {boolean}        Whether the slot is in the past
+ * @param   {string}  slot    - Slot label `HH:MM`
+ * @param   {string}  dateKey - Calendar day key `year-monthIndex-day`
+ * @returns {boolean}         Whether the slot is in the past
  */
 export const isPastSlot = (slot: string, dateKey: string): boolean => {
   if (dateKey !== dateKeyOffset(0)) return false;
