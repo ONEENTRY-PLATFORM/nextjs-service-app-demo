@@ -1,14 +1,13 @@
 'use client';
 
-import { X } from 'lucide-react';
 import type { JSX } from 'react';
 
-import { useDict } from '@/app/store/providers/useDict';
-import { dictText } from '@/components/utils/dictText';
+import CloseButton from '@/components/shared/CloseButton';
 
 /**
  * LightboxCloseButton — the ring-bordered × in the top-right corner of a
- * fullscreen viewer.
+ * fullscreen viewer: the shared {@link CloseButton} in its `overlay` tone,
+ * pinned for every lightbox in one place.
  * @param   {object}      props         - Component properties
  * @param   {() => void}  props.onClose - Close the viewer
  * @param   {number}      [props.size]  - Icon size in px (default `17`)
@@ -16,23 +15,17 @@ import { dictText } from '@/components/utils/dictText';
  */
 const LightboxCloseButton = ({
   onClose,
-  size = 17,
+  size,
 }: {
   onClose: () => void;
   size?: number | undefined;
-}): JSX.Element => {
-  const dict = useDict();
-
-  return (
-    <button
-      onClick={onClose}
-      aria-label={dictText(dict, 'close_text', 'Close')}
-      className="absolute top-5 right-5 z-10 flex size-10 items-center justify-center rounded-full transition-colors hover:bg-white/10"
-      style={{ border: '1.5px solid rgba(255,255,255,0.25)' }}
-    >
-      <X size={size} color="#fff" />
-    </button>
-  );
-};
+}): JSX.Element => (
+  <CloseButton
+    onClose={onClose}
+    tone="overlay"
+    {...(size === undefined ? {} : { size })}
+    className="absolute top-5 right-5 z-10"
+  />
+);
 
 export default LightboxCloseButton;

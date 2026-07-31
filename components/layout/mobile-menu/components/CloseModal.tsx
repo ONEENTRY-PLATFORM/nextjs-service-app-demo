@@ -3,10 +3,12 @@ import { useContext } from 'react';
 
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { useDict } from '@/app/store/providers/useDict';
+import CloseButton from '@/components/shared/CloseButton';
 import { dictText } from '@/components/utils/dictText';
 
 /**
- * Close mobile menu modal button
+ * Close mobile menu modal button — the ringed × pinned to the top-right of the
+ * drawer, drawn by the shared {@link CloseButton} (`ring` tone).
  * @returns {JSX.Element} Close button
  */
 const CloseModal = (): JSX.Element => {
@@ -15,17 +17,13 @@ const CloseModal = (): JSX.Element => {
   /** UI-text dictionary for the localized aria-label */
   const dict = useDict();
 
-  /** Render close button for mobile menu modal */
   return (
-    <button
-      aria-label={dictText(dict, 'close_menu_aria', 'Close menu')}
-      onClick={() => {
-        setTransition('close');
-      }}
-      className="absolute top-6 right-4 flex aspect-square size-12 shrink-0 items-center justify-center rounded-full border border-[#EEEFF0] text-xl text-slate-700"
-    >
-      &#10005;
-    </button>
+    <CloseButton
+      onClose={() => setTransition('close')}
+      tone="ring"
+      className="absolute top-6 right-4"
+      label={dictText(dict, 'close_menu_aria', 'Close menu')}
+    />
   );
 };
 

@@ -1,11 +1,11 @@
 'use client';
 
-import { X } from 'lucide-react';
 import type { JSX } from 'react';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { useDict } from '@/app/store/providers/useDict';
+import CloseButton from '@/components/shared/CloseButton';
 import DialogPortal from '@/components/shared/DialogPortal';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 import { dictText } from '@/components/utils/dictText';
@@ -80,13 +80,7 @@ const ReviewModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
             <h2 className="text-[2rem] font-light text-white">
               {dictText(dict, 'reviews_label', 'Reviews')}
             </h2>
-            <button
-              onClick={onClose}
-              className="absolute top-5 right-5 flex size-9 items-center justify-center rounded-full border-2 border-white/70 transition-opacity hover:opacity-80"
-              aria-label={dictText(dict, 'close_text', 'Close')}
-            >
-              <X size={16} color="#fff" />
-            </button>
+            <CloseButton onClose={onClose} className="absolute top-5 right-5" />
           </div>
 
           {/* Body */}

@@ -1,11 +1,12 @@
 'use client';
 
-import { Search, X } from 'lucide-react';
+import { Search } from 'lucide-react';
 import type { JSX } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useDebounce } from 'use-debounce';
 
 import { useDict } from '@/app/store/providers/useDict';
+import CloseButton from '@/components/shared/CloseButton';
 import { dictText } from '@/components/utils/dictText';
 
 import SearchResultsList from './SearchResultsList';
@@ -77,13 +78,11 @@ const SearchModal = ({ placeholder }: { placeholder: string }): JSX.Element => {
                 data-testid="header-search-input"
                 className="flex-1 bg-transparent text-base text-slate-400 outline-none"
               />
-              <button
-                onClick={close}
-                aria-label={dictText(dict, 'close_search_aria', 'Close search')}
-                className="rounded-lg p-1.5 text-neutral-300 transition-colors hover:bg-gray-100"
-              >
-                <X size={18} />
-              </button>
+              <CloseButton
+                onClose={close}
+                tone="plain"
+                label={dictText(dict, 'close_search_aria', 'Close search')}
+              />
             </div>
 
             {/* Results */}
