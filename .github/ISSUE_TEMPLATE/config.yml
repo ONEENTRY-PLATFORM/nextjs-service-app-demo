@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discord community
+    url: https://discord.gg/sM7vFmFaQz
+    about: Ask questions and chat with the OneEntry community.
+  - name: 📖 OneEntry documentation
+    url: https://doc.oneentry.cloud/
+    about: Read the official OneEntry platform documentation.
+  - name: 🗨️ GitHub Discussions
+    url: https://github.com/orgs/ONEENTRY-PLATFORM/discussions
+    about: General questions and discussion about OneEntry templates.
