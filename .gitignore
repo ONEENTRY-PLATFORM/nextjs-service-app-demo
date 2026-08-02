@@ -23,6 +23,7 @@
 
 .vscode
 .claude
+CLAUDE.md
 .playwright-mcp
 git-setup.sh
 *.log
