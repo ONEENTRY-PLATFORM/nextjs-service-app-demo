@@ -24,6 +24,7 @@
 .vscode
 .claude
 .playwright-mcp
+git-setup.sh
 *.log
 
 # debug
@@ -49,3 +50,4 @@ next-env.d.ts
 .swc
 temp
 static-html
+git-setup.sh
