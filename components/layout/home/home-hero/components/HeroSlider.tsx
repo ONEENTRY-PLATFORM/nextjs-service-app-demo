@@ -10,6 +10,7 @@ import { useDict } from '@/app/store/providers/useDict';
 import Image from '@/components/shared/Image';
 import { dictText } from '@/components/utils/dictText';
 
+import { heroSlideLayerClass } from '../utils/heroSlideLayerClass';
 import HeroSlideOverlayDesktop from './HeroSlideOverlayDesktop';
 import HeroSlideOverlayMobile from './HeroSlideOverlayMobile';
 
@@ -43,6 +44,12 @@ export type HeroSlide = {
  * Hero banner carousel: full-bleed slides with a
  * crossfade, auto-advance (paused on hover), prev/next arrows and dots.
  * Controls are hidden while there is only one slide.
+ *
+ * The banners and the text overlays are stacked in two separate layers on
+ * purpose: only the banner layer carries the `bg` hero role, so the slide texts
+ * are animated by the hero timeline in their own right — dropping in from above
+ * and drifting up on scroll like the headings of the inner pages — instead of
+ * being zoomed along with the photo behind them.
  * @param   {object}      props            - Component properties
  * @param   {HeroSlide[]} props.slides     - Slides to display
  * @param   {number}      props.intervalMs - Auto-advance interval in milliseconds
@@ -64,6 +71,7 @@ const HeroSlider = ({
   const count = slides.length;
   const current = slides[idx];
   const bgRef = useHeroRef('bg');
+  const ctaRef = useHeroRef('button');
 
   const [reduceMotion, setReduceMotion] = useState(false);
   useEffect(() => {
@@ -94,18 +102,13 @@ const HeroSlider = ({
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
+      {/* Banner layer — the only part carrying the `bg` hero role */}
       <div ref={bgRef} className="absolute inset-0">
         {slides.map((slide, i) => (
           <div
             key={i}
-            role="group"
-            aria-roledescription="slide"
-            aria-label={`${i + 1} of ${count}`}
             aria-hidden={i !== idx}
-            className={
-              'absolute inset-0 transition-opacity duration-700 ' +
-              (i === idx ? 'opacity-100' : 'pointer-events-none opacity-0')
-            }
+            className={heroSlideLayerClass(i === idx)}
           >
             {slide.desktop && (
               <Image
@@ -131,7 +134,21 @@ const HeroSlider = ({
                 className="absolute inset-0 md:hidden"
               />
             )}
+          </div>
+        ))}
+      </div>
 
+      {/* Text layer — outside the banner layer, animated by the hero timeline */}
+      <div className="absolute inset-0 z-10">
+        {slides.map((slide, i) => (
+          <div
+            key={i}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${count}`}
+            aria-hidden={i !== idx}
+            className={heroSlideLayerClass(i === idx)}
+          >
             {/* Mobile overlay. */}
             <HeroSlideOverlayMobile
               sale={slide.sale}
@@ -154,6 +171,7 @@ const HeroSlider = ({
       {/* Desktop CTA. */}
       {current && (
         <Link
+          ref={ctaRef}
           href={current.buttonLink || '/offers'}
           className="absolute right-[3.33em] bottom-[2.83em] z-10 hidden h-[2.5em] w-[12.5em] items-center justify-center rounded-[0.83em] bg-white/80 font-normal tracking-widest text-charcoal uppercase transition-colors hover:bg-white lg:inline-flex"
           style={{ fontSize: 'calc(var(--hero-u) * 1.25)' }}

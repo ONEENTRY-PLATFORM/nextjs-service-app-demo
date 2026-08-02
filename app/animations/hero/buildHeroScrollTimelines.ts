@@ -17,8 +17,9 @@ export interface HeroScrollTimelines {
  * drifts on its own scrubbed timeline while the kicker, title, description and
  * CTA share a second one, so the two can be scrubbed at different rates.
  *
- * Every element is optional — a hero renders whichever parts its page provides,
- * and a missing role is simply not tweened.
+ * Every role is optional — a hero renders whichever parts its page provides, and
+ * an empty role is simply not tweened; a role holding several elements (the home
+ * carousel's per-slide titles) has them all scrubbed as one.
  * @param   {object}              input          - Input
  * @param   {Element}             input.trigger  - Hero container that drives both ScrollTriggers
  * @param   {HeroElements}        input.elements - The hero's animated elements by role
@@ -57,7 +58,7 @@ export const buildHeroScrollTimelines = ({
     },
   });
 
-  if (title) {
+  if (title.length > 0) {
     triggerTl.fromTo(
       title,
       { y: '0', autoAlpha: 1, scale: 1 },
@@ -72,7 +73,7 @@ export const buildHeroScrollTimelines = ({
     );
   }
 
-  if (description) {
+  if (description.length > 0) {
     triggerTl.fromTo(
       description,
       { y: '0', autoAlpha: 1, scale: 1 },
@@ -88,7 +89,7 @@ export const buildHeroScrollTimelines = ({
     );
   }
 
-  if (button) {
+  if (button.length > 0) {
     triggerTl.to(
       button,
       { autoAlpha: 0, duration: 1, ease: 'expo.inOut', id: 'button' },
@@ -97,7 +98,7 @@ export const buildHeroScrollTimelines = ({
   }
 
   /** kicker — runs in parallel with the title (absolute position 0) */
-  if (kicker) {
+  if (kicker.length > 0) {
     triggerTl.fromTo(
       kicker,
       { y: '0', autoAlpha: 1, scale: 1 },
@@ -113,7 +114,7 @@ export const buildHeroScrollTimelines = ({
     );
   }
 
-  if (bg) {
+  if (bg.length > 0) {
     bgTl.fromTo(
       bg,
       { autoAlpha: 1, scale: 1 },

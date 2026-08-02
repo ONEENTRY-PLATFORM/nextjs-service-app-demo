@@ -10,6 +10,7 @@ import { useAppSelector } from '@/app/store/hooks';
 
 import { buildHeroScrollTimelines } from './hero/buildHeroScrollTimelines';
 import { buildHeroStageTimeline } from './hero/buildHeroStageTimeline';
+import { collectHeroElements } from './hero/collectHeroElements';
 import HeroMask from './hero/HeroMask';
 import {
   HERO_MASK_CLOSED,
@@ -17,7 +18,7 @@ import {
   HERO_MASK_OPEN,
 } from './hero/heroMaskPaths';
 import { HeroRefContext } from './hero/HeroRefContext';
-import type { HeroElements, HeroRole } from './hero/heroRoles';
+import type { HeroElementRegistry, HeroRole } from './hero/heroRoles';
 
 /**
  * HeroAnimations component for creating hero section animations.
@@ -55,20 +56,26 @@ const HeroAnimations = ({
   const hasLeftRef = useRef(false);
 
   /**
-   * Hero element references keyed by role, populated by the `useHeroRef`
-   * callback refs during commit (before the GSAP layout effects run).
+   * Hero element references keyed by role and by the registering component's
+   * instance key, populated by the `useHeroRef` callback refs during commit
+   * (before the GSAP layout effects run). A role may hold several elements —
+   * the home carousel registers a title per slide.
    */
-  const els = useRef<HeroElements>({
-    bg: null,
-    kicker: null,
-    title: null,
-    description: null,
-    button: null,
+  const els = useRef<HeroElementRegistry>({
+    bg: new Map(),
+    kicker: new Map(),
+    title: new Map(),
+    description: new Map(),
+    button: new Map(),
   });
   /** Stable ref-registration factory handed to the context consumers. */
   const register = useCallback(
-    (role: HeroRole) => (el: Element | null) => {
-      els.current[role] = el;
+    (role: HeroRole, key: string) => (el: Element | null) => {
+      if (el) {
+        els.current[role].set(key, el);
+      } else {
+        els.current[role].delete(key);
+      }
     },
     [],
   );
@@ -82,7 +89,7 @@ const HeroAnimations = ({
 
       const { bgTl, triggerTl } = buildHeroScrollTimelines({
         trigger: ref.current,
-        elements: els.current,
+        elements: collectHeroElements(els.current),
       });
       setBackTl(bgTl);
       setTriggerTl(triggerTl);
@@ -123,8 +130,10 @@ const HeroAnimations = ({
       (stage === 'none' && prevStage === '') ||
       (stage === 'entering' && prevStage === 'leaving');
 
+    const elements = collectHeroElements(els.current);
+
     const stageTl = buildHeroStageTimeline({
-      elements: els.current,
+      elements,
       leaving,
     });
 
@@ -157,8 +166,8 @@ const HeroAnimations = ({
       backTl?.kill();
       triggerTl?.kill();
 
-      if (els.current.bg) {
-        stageTl.to([els.current.bg, '.bg-gradient-1'], {
+      if (elements.bg.length > 0) {
+        stageTl.to([...elements.bg, '.bg-gradient-1'], {
           autoAlpha: 0,
           duration: 0.65,
         });

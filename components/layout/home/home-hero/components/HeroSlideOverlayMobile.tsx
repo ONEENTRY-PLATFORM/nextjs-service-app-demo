@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import type { JSX } from 'react';
 
+import { useHeroRef } from '@/app/animations/hero/useHeroRef';
+import HeroDescription from '@/app/animations/HeroDescription';
+import HeroKicker from '@/app/animations/HeroKicker';
+import HeroTitle from '@/app/animations/HeroTitle';
 import { useDict } from '@/app/store/providers/useDict';
 import { dictText } from '@/components/utils/dictText';
 
@@ -8,6 +12,12 @@ import SaleText from './SaleText';
 
 /**
  * HeroSlideOverlayMobile — the mobile (`md:hidden`) text overlay of a hero slide.
+ *
+ * The sale badge, the heading, the subtitle and the call-to-action register as
+ * the hero `kicker`/`title`/`description`/`button`, so they drop in and drift on
+ * scroll exactly like the headings of the inner pages. Their transforms grow
+ * from the left edge (`origin-left`) because the overlay is left-aligned and a
+ * centred scale would push the text out of the banner.
  * @param   {object}      props            - Component properties
  * @param   {string}      props.sale       - Badge text (e.g. "-15%"), empty to hide
  * @param   {string}      props.title      - Slide title, empty to hide
@@ -30,10 +40,11 @@ const HeroSlideOverlayMobile = ({
   buttonLink: string;
 }): JSX.Element => {
   const dict = useDict();
+  const ctaRef = useHeroRef('button');
   return (
     <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-start gap-25 p-10 md:p-14 lg:hidden">
       {sale && (
-        <div className="-mb-14.5 flex aspect-square w-48.5 shrink-0 items-center justify-center rounded-full bg-logo-dot/60">
+        <HeroKicker className="-mb-14.5 flex aspect-square w-48.5 shrink-0 origin-left items-center justify-center rounded-full bg-logo-dot/60">
           <span
             className="px-2 text-center text-[88px] text-nowrap text-white/80 [text-box:trim-both_cap_alphabetic]"
             style={{
@@ -43,31 +54,32 @@ const HeroSlideOverlayMobile = ({
           >
             <SaleText text={sale} percentSize="0.51em" />
           </span>
-        </div>
+        </HeroKicker>
       )}
 
       <div className="flex w-full flex-col gap-10">
         <div className="flex flex-col gap-2.5">
           {title && (
-            <h1
-              className="text-[64px] leading-none text-white/80 md:text-[72px]"
+            <HeroTitle
+              className="origin-left text-[64px] leading-none text-white/80 md:text-[72px]"
               style={{
                 fontFamily: 'var(--font-league-gothic)',
                 textShadow: '0 4px 20px rgba(0,0,0,0.5)',
               }}
             >
               {title}
-            </h1>
+            </HeroTitle>
           )}
           {text && (
-            <p className="text-2xl leading-none font-light text-white capitalize md:text-[28px]">
+            <HeroDescription className="origin-left text-2xl leading-none font-light text-white capitalize md:text-[28px]">
               {text}
-            </p>
+            </HeroDescription>
           )}
         </div>
 
         {(buttonText || buttonLink) && (
           <Link
+            ref={ctaRef}
             href={buttonLink || '/offers'}
             className="pointer-events-auto inline-flex h-10 w-57.5 items-center justify-center rounded-[10px] bg-white/80 text-base tracking-widest text-charcoal uppercase transition-colors hover:bg-white md:h-11 md:w-64"
           >
