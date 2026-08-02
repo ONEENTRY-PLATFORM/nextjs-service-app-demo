@@ -1,6 +1,7 @@
 import { toast } from 'react-toastify';
 
 import { isError } from '@/app/api/api/api';
+import { normalizeErrorMessage } from '@/components/utils/normalizeErrorMessage';
 
 /**
  * Dev-only diagnostic log for {@link handleApiError}. Gated on `NODE_ENV` so the
@@ -114,7 +115,8 @@ export function formatErrorMessage(
       case 500:
         return 'Internal Server Error: Please try again later';
       default:
-        return error.message || defaultMessage;
+        /** Validation errors send `message` as a string ARRAY — normalize. */
+        return normalizeErrorMessage(error.message) || defaultMessage;
     }
   }
 

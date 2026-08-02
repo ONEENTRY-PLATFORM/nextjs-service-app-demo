@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
 import Image from '@/components/shared/Image';
+import NearViewport from '@/components/shared/NearViewport';
 import { dictText } from '@/components/utils/dictText';
 
 import type { MasterItem } from '../taxonomy';
@@ -82,17 +83,20 @@ const MobileSpecialistList = ({
           masters.map((master) => {
             const row = (
               <>
-                <Image
-                  src={master.photo}
-                  alt=""
-                  sizes="48px"
-                  placeholder={master.photoBlur ? 'blur' : 'empty'}
-                  {...(master.photoBlur
-                    ? { blurDataURL: master.photoBlur }
-                    : {})}
-                  className="size-12 shrink-0 rounded-full border-2 border-fuchsia-500/20"
-                  imageClassName="object-top"
-                />
+                {/* Avatar mounts only near the viewport; the box stays put */}
+                <NearViewport className="size-12 shrink-0" rootMargin="200px">
+                  <Image
+                    src={master.photo}
+                    alt=""
+                    sizes="48px"
+                    placeholder={master.photoBlur ? 'blur' : 'empty'}
+                    {...(master.photoBlur
+                      ? { blurDataURL: master.photoBlur }
+                      : {})}
+                    className="size-full rounded-full border-2 border-fuchsia-500/20"
+                    imageClassName="object-top"
+                  />
+                </NearViewport>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[15px] font-bold text-slate-400">
                     {master.name}

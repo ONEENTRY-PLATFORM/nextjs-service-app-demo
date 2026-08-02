@@ -8,21 +8,27 @@ import { dictText } from '@/components/utils/dictText';
 
 import ErrorMessage from '../../forms/inputs/ErrorMessage';
 import FormReCaptcha from '../../forms/inputs/FormReCaptcha';
-import ContactFormField from './contact-form/ContactFormField';
+import ContactCmsFields from './contact-form/ContactCmsFields';
+import ContactFieldsSkeleton from './contact-form/ContactFieldsSkeleton';
 import { useContactForm } from './contact-form/useContactForm';
 
 /**
- * ContactFormCard component — the "Write to us" card of the contacts page: name/phone,
- * e-mail and message fields, the gradient submit button and the "Message
- * sent!" success state.
+ * ContactFormCard component — the "Write to us" card of the contacts page:
+ * the `contact_us` CMS form fields, the gradient submit button and the
+ * "Message sent!" success state.
  *
- * All state and the CMS submit live in {@link useContactForm}; this component
- * only renders.
- * @returns {JSX.Element} Contact form card
+ * The inputs render from the CMS form definition ({@link ContactCmsFields})
+ * and from nothing else: while the definition loads the card holds its shape
+ * with {@link ContactFieldsSkeleton}, and a form without fields renders no
+ * card at all instead of a hardcoded layout. All state and the CMS submit live
+ * in {@link useContactForm}; this component only renders.
+ * @returns {JSX.Element | null} Contact form card, or nothing while the CMS form has no fields
  */
-const ContactFormCard = (): JSX.Element => {
+const ContactFormCard = (): JSX.Element | null => {
   const dict = useDict();
   const {
+    formFields,
+    formLoading,
     fields,
     set,
     sent,
@@ -34,6 +40,11 @@ const ContactFormCard = (): JSX.Element => {
     successMessage,
     handleSubmit,
   } = useContactForm();
+
+  /** No CMS form (or an empty one) — degrade to nothing, never to mock copy. */
+  if (!formLoading && formFields.length === 0) {
+    return null;
+  }
 
   return (
     <div
@@ -68,64 +79,22 @@ const ContactFormCard = (): JSX.Element => {
           data-testid="contact-form"
           className="flex flex-1 flex-col"
         >
-          <div className="space-y-5">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <ContactFormField
-                label={dictText(dict, 'contact_name_label', 'Your name')}
-                value={fields.name}
-                onChange={set('name')}
-                placeholder={dictText(
-                  dict,
-                  'contact_name_placeholder',
-                  'Jane Doe',
-                )}
-                type="text"
-              />
-              <ContactFormField
-                label={dictText(dict, 'phone_text', 'Phone')}
-                value={fields.phone}
-                onChange={set('phone')}
-                placeholder={dictText(
-                  dict,
-                  'contact_phone_placeholder',
-                  '+971 50 123 4567',
-                )}
-                type="tel"
-              />
-            </div>
-            <ContactFormField
-              label={dictText(dict, 'contact_email_label', 'E-mail')}
-              value={fields.email}
-              onChange={set('email')}
-              placeholder={dictText(
-                dict,
-                'contact_email_placeholder',
-                'you@example.com',
-              )}
-              type="email"
+          {/* Inputs come from the CMS form; the skeleton only holds its shape. */}
+          {formLoading ? (
+            <ContactFieldsSkeleton />
+          ) : (
+            <ContactCmsFields
+              fields={formFields}
+              values={fields}
+              set={set}
+              dict={dict}
             />
-            <div>
-              <label className="mb-2.5 block text-base font-normal text-neutral-300">
-                {dictText(dict, 'contact_message_label', 'Message')}
-              </label>
-              <textarea
-                value={fields.contact_text}
-                onChange={(e) => set('contact_text')(e.target.value)}
-                placeholder={dictText(
-                  dict,
-                  'contact_message_placeholder',
-                  'How can we help you?',
-                )}
-                rows={4}
-                className="w-full resize-none rounded-2xl border border-slate-240 px-4 py-3 text-base text-slate-400 transition-all outline-none focus:border-accent-pink"
-              />
-            </div>
-          </div>
+          )}
 
           {/*
             reCAPTCHA v3 for the `spam` field — invisible, rendered only once
-            the admin has configured a site key. While it is absent the submit
-            degrades to the local success state (see `useContactForm`).
+            the admin has configured a site key. Without one the CMS rejects the
+            submit and the card shows that failure (see `useContactForm`).
           */}
           {spamSiteKey && (
             <FormReCaptcha siteKey={spamSiteKey} setIsReady={setCaptchaReady} />
@@ -135,7 +104,9 @@ const ContactFormCard = (): JSX.Element => {
 
           <button
             type="submit"
-            disabled={loading || (!!spamSiteKey && !captchaReady)}
+            disabled={
+              loading || formLoading || (!!spamSiteKey && !captchaReady)
+            }
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-brand py-3.5 text-base font-bold tracking-wider text-white uppercase transition-transform duration-200 hover:scale-102 active:scale-95 disabled:opacity-70 md:mt-auto"
             style={{ boxShadow: '0 8px 24px #ed21f144' }}
           >

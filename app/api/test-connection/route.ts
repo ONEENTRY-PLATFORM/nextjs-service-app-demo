@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { getApi } from '@/app/api/api/api';
+import { getApi, isError as isSdkError } from '@/app/api/api/api';
 import { getBlockByMarker } from '@/app/api/server/blocks/getBlockByMarker';
 import { getMenuByMarker } from '@/app/api/server/menus/getMenuByMarker';
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
@@ -53,7 +53,8 @@ const runRequest = async (
       return { ok: !isError, size: page ? JSON.stringify(page).length : 0 };
     }
     const data = await getApi().Pages.getPageByUrl(m, lang);
-    return { ok: !!data, size: data ? JSON.stringify(data).length : 0 };
+    /** A truthy IError is still a failure — probe success needs the guard. */
+    return { ok: !isSdkError(data), size: JSON.stringify(data).length };
   }
   if (preset === 'menu') {
     const m = marker || DEFAULT_MARKER.menu;
@@ -62,7 +63,7 @@ const runRequest = async (
       return { ok: !isError, size: menu ? JSON.stringify(menu).length : 0 };
     }
     const data = await getApi().Menus.getMenusByMarker(m);
-    return { ok: !!data, size: data ? JSON.stringify(data).length : 0 };
+    return { ok: !isSdkError(data), size: JSON.stringify(data).length };
   }
   if (preset === 'block') {
     if (!marker)
@@ -72,13 +73,13 @@ const runRequest = async (
       return { ok: !isError, size: block ? JSON.stringify(block).length : 0 };
     }
     const data = await getApi().Blocks.getBlockByMarker(marker);
-    return { ok: !!data, size: data ? JSON.stringify(data).length : 0 };
+    return { ok: !isSdkError(data), size: JSON.stringify(data).length };
   }
   const data = await getApi().Products.getProducts([], lang, {
     offset: 0,
     limit: 12,
   });
-  return { ok: !!data, size: data ? JSON.stringify(data).length : 0 };
+  return { ok: !isSdkError(data), size: JSON.stringify(data).length };
 };
 
 /**

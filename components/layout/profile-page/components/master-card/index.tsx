@@ -10,6 +10,7 @@ import StarsGroup from '@/components/shared/StarsGroup';
 import { dictText } from '@/components/utils/dictText';
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
+import { masterRating } from '@/components/utils/masterRating';
 
 import VisitCardAnimations from '../../animations/VisitCardAnimations';
 
@@ -41,8 +42,8 @@ const MasterCard = ({
   const masterRole =
     (attributeValues?.master_short_description?.value as string | undefined) ||
     dictText(dict, 'specialist_text', 'Specialist');
-  const masterRating =
-    (attributeValues?.master_rating?.value as number | undefined) ?? 0;
+  /** `null` while the admin has not rated the master — hides the stars row */
+  const rating = masterRating(attributeValues);
 
   /** Card body — shared between the linked and the static (unknown master) variants. */
   const inner = (
@@ -65,11 +66,13 @@ const MasterCard = ({
         {masterName}
       </h3>
       <p className="mt-0.5 text-sm text-neutral-300">{masterRole}</p>
-      {/* Display master's rating using star icons */}
-      <div className="mt-1 mb-2">
-        {/* Profile visit card uses PINK stars */}
-        <StarsGroup rating={masterRating} size={16} color="#ed21f1" />
-      </div>
+      {/* An unrated master shows no stars — never a false zero-star score */}
+      {rating !== null && (
+        <div className="mt-1 mb-2">
+          {/* Profile visit card uses PINK stars */}
+          <StarsGroup rating={rating} size={16} color="#ed21f1" />
+        </div>
+      )}
     </>
   );
 

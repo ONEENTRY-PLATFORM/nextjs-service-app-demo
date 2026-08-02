@@ -13,6 +13,7 @@ import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
 import { useCmsForm } from '@/components/forms/useCmsForm';
+import { normalizeErrorMessage } from '@/components/utils/normalizeErrorMessage';
 import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import ErrorMessage from './inputs/ErrorMessage';
@@ -154,8 +155,9 @@ const ResetPasswordForm = ({ dict }: FormProps): JSX.Element => {
       );
 
       if (isSdkError(result)) {
+        /** Validation 400s send `message` as a string ARRAY — normalize it. */
         setError(
-          result.message ||
+          normalizeErrorMessage(result.message) ||
             (err_change_password_failed?.value as string | undefined) ||
             'Could not change the password',
         );

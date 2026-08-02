@@ -6,6 +6,7 @@ import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
 import Image from '@/components/shared/Image';
+import NearViewport from '@/components/shared/NearViewport';
 import { dictText } from '@/components/utils/dictText';
 
 import type { GalleryItem } from '../taxonomy';
@@ -52,15 +53,18 @@ const GalleryGridCell = ({
         }
       }}
     >
-      <Image
-        src={item.url}
-        alt={item.title}
-        loading="lazy"
-        sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
-        placeholder={item.preview ? 'blur' : 'empty'}
-        {...(item.preview ? { blurDataURL: item.preview } : {})}
-        className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"
-      />
+      {/* The photo mounts only near the viewport — the cell keeps its box */}
+      <NearViewport className="absolute inset-0">
+        <Image
+          src={item.url}
+          alt={item.title}
+          loading="lazy"
+          sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+          placeholder={item.preview ? 'blur' : 'empty'}
+          {...(item.preview ? { blurDataURL: item.preview } : {})}
+          className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+      </NearViewport>
 
       {/* Hover overlay — full cell gradient */}
       <div

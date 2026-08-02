@@ -15,6 +15,7 @@ import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
 import { isSignUpVisibleField } from '@/components/forms/fieldFlags/isSignUpVisibleField';
 import { useCmsForm } from '@/components/forms/useCmsForm';
 import { useCredentialProvider } from '@/components/forms/useCredentialProvider';
+import { normalizeErrorMessage } from '@/components/utils/normalizeErrorMessage';
 import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import AuthDivider from './inputs/AuthDivider';
@@ -125,7 +126,10 @@ const SignUpForm = ({ dict }: FormProps): JSX.Element => {
         );
 
         if (isError(res)) {
-          setError(`Error ${res.statusCode}: ${res.message ?? ''}`.trim());
+          /** Validation 400s send `message` as a string ARRAY — normalize. */
+          setError(
+            `Error ${res.statusCode}: ${normalizeErrorMessage(res.message)}`.trim(),
+          );
           return;
         }
 

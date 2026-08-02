@@ -6,6 +6,7 @@ import CardAnimations from '@/app/animations/CardAnimations';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import type { MasterItem } from '@/components/layout/masters-page/taxonomy';
 import Image from '@/components/shared/Image';
+import NearViewport from '@/components/shared/NearViewport';
 import { dictText } from '@/components/utils/dictText';
 
 /**
@@ -41,15 +42,18 @@ const SpecialistCard = ({
         className="group relative block overflow-hidden rounded-[15px] bg-slate-100 text-left shadow-[0_10px_30px_rgba(124,42,232,0.18)]"
         style={{ aspectRatio: '3/4' }}
       >
-        <Image
-          src={master.photo}
-          alt={master.name}
-          sizes="(min-width: 1024px) 16vw, (min-width: 640px) 33vw, 50vw"
-          placeholder={master.photoBlur ? 'blur' : 'empty'}
-          {...(master.photoBlur ? { blurDataURL: master.photoBlur } : {})}
-          className="absolute inset-0"
-          imageClassName="object-top transition-transform duration-500 group-hover:scale-105"
-        />
+        {/* The photo mounts only near the viewport — the tile keeps its box */}
+        <NearViewport className="absolute inset-0">
+          <Image
+            src={master.photo}
+            alt={master.name}
+            sizes="(min-width: 1024px) 16vw, (min-width: 640px) 33vw, 50vw"
+            placeholder={master.photoBlur ? 'blur' : 'empty'}
+            {...(master.photoBlur ? { blurDataURL: master.photoBlur } : {})}
+            className="absolute inset-0"
+            imageClassName="object-top transition-transform duration-500 group-hover:scale-105"
+          />
+        </NearViewport>
         {/* Purple gradient overlay */}
         <div
           className="absolute inset-x-0 bottom-0 h-[62%]"

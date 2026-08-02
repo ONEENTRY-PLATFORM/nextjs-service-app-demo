@@ -1,9 +1,5 @@
 import { buildContactAnswers } from '@/components/layout/contacts-page/contact-form/buildContactAnswers';
-import type {
-  ContactFormField,
-  FieldKey,
-} from '@/components/layout/contacts-page/contact-form/types';
-import { EMPTY_CONTACT_FIELDS } from '@/components/layout/contacts-page/contact-form/types';
+import type { ContactFormField } from '@/components/layout/contacts-page/contact-form/types';
 
 /** The `contact_us` form as the CMS defines it today. */
 const CONTACT_FIELDS: ContactFormField[] = [
@@ -13,14 +9,18 @@ const CONTACT_FIELDS: ContactFormField[] = [
   { marker: 'contact_text', type: 'text' },
 ];
 
+/** The untouched card — the CMS markers carry no value yet. */
+const EMPTY_VALUES: Record<string, string> = {};
+
 /**
- * values — the card's local state with the given fields filled in.
- * @param   {Partial<Record<FieldKey, string>>} over - Fields to fill
- * @returns {Record<FieldKey, string>}               Card values
+ * values — the card's local state with the given markers filled in.
+ * @param   {Record<string, string>} over - Values keyed by CMS marker
+ * @returns {Record<string, string>}      Card values
  */
-const values = (
-  over: Partial<Record<FieldKey, string>>,
-): Record<FieldKey, string> => ({ ...EMPTY_CONTACT_FIELDS, ...over });
+const values = (over: Record<string, string>): Record<string, string> => ({
+  ...EMPTY_VALUES,
+  ...over,
+});
 
 describe('buildContactAnswers', () => {
   it('skips fields the visitor left blank', () => {
@@ -71,7 +71,7 @@ describe('buildContactAnswers', () => {
     expect(
       buildContactAnswers({
         fields: CONTACT_FIELDS,
-        values: EMPTY_CONTACT_FIELDS,
+        values: EMPTY_VALUES,
       }),
     ).toEqual([]);
   });

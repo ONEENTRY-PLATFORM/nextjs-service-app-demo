@@ -8,6 +8,7 @@ import { useContext } from 'react';
 import { AuthContext } from '@/app/store/providers/AuthContext';
 import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import ProfileIcon from '@/components/icons/profile';
+import { prefetchPopup } from '@/components/layout/prefetchPopup';
 
 /**
  * Nav item profile link / SignInForm button.
@@ -29,6 +30,12 @@ const NavItemProfile = ({ item }: { item: IMenusPages }): JSX.Element => {
       onClick={() => {
         setOpen(!open);
         setComponent('SignInForm');
+      }}
+      onPointerEnter={() => {
+        prefetchPopup('SignInForm');
+      }}
+      onFocus={() => {
+        prefetchPopup('SignInForm');
       }}
       title={title}
       className="group relative box-border flex size-6 shrink-0"

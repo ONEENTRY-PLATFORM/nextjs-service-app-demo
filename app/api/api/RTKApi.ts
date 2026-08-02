@@ -218,8 +218,9 @@ export const RTKApi = createApi({
      * Search-as-you-type is client data loaded on interaction, so it belongs to
      * RTK Query: retyping a term or reopening the popup is served from cache
      * instead of hitting the API again, and concurrent subscribers share one
-     * request. `searchProduct` returns `IProductsEntity[] | IError`, so a failure
-     * is a VALUE, not a throw — it must be checked, never cast to an array.
+     * request. `searchProduct` returns
+     * `IProductsEntity[] | IProductSearchResult[] | IError` (SDK 1.0.157), so a
+     * failure is a VALUE, not a throw — it must be checked, never cast.
      * @param name - Product name or partial name to search for
      * @returns    Array of matching product entities
      */
@@ -234,7 +235,17 @@ export const RTKApi = createApi({
           if (isError(result) || !Array.isArray(result)) {
             return { data: [] };
           }
-          return { data: result };
+          /**
+           * The short-card branch (`IProductSearchResult[]`, no
+           * `attributeValues`) only occurs with `traficLimit: true`, which this
+           * project never enables (`api.ts`) — the element guard narrows the
+           * union without a cast and quietly drops short cards if that changes.
+           */
+          return {
+            data: result.filter(
+              (item): item is IProductsEntity => 'attributeValues' in item,
+            ),
+          };
         } catch {
           /** Network failure degrades to an empty list, not a broken popup. */
           return { data: [] };

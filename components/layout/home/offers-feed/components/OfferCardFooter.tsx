@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { prefetchOfferBooking } from '@/components/layout/offer-booking/prefetchOfferBooking';
 import CurrencySymbol from '@/components/shared/CurrencySymbol';
 import { dictText } from '@/components/utils/dictText';
 
@@ -73,6 +74,8 @@ const OfferCardFooter = ({
           e.stopPropagation();
           onBook();
         }}
+        onPointerEnter={() => prefetchOfferBooking()}
+        onFocus={() => prefetchOfferBooking()}
         className="flex w-full items-center justify-center gap-1 rounded-xl py-3.5 text-base font-bold tracking-wider text-white uppercase transition-all hover:opacity-90 focus:outline-none"
         style={
           featured

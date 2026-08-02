@@ -18,6 +18,7 @@ import {
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
+import { masterRating } from '@/components/utils/masterRating';
 import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
 import { salonFromPage } from '@/components/utils/salonFromPage';
 
@@ -85,7 +86,8 @@ const toBookingMaster = ({
     photo: fileDisplayUrl(attrs.master_image?.value),
     photoBlur: fileBlurDataUrl(attrs.master_image?.value),
     specialties,
-    rating: Number(attrs.master_rating?.value) || 5,
+    /** Unrated (`null` per SDK 1.0.157) keeps the neutral list default of 5 */
+    rating: masterRating(attrs) ?? 5,
     reviews: null,
     price: prices.length ? Math.min(...prices) : null,
     bio: plainTextFromTextAttr(attrs.master_description?.value),

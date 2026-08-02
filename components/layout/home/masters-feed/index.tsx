@@ -12,6 +12,7 @@ import { dictText } from '@/components/utils/dictText';
 import { entityLinks } from '@/components/utils/entityLinks';
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
+import { masterRating } from '@/components/utils/masterRating';
 import { salonLabel } from '@/components/utils/salonLabel';
 
 import SpecialistsGrid from './components/SpecialistsGrid';
@@ -52,7 +53,8 @@ const toMasterItem = (
     section: sectionOfRole(shortDescription),
     categories: [],
     salonId,
-    rating: Number(attrs.master_rating?.value) || 5,
+    /** Unrated (`null` per SDK 1.0.157) keeps the neutral list default of 5 */
+    rating: masterRating(attrs) ?? 5,
     photo: fileDisplayUrl(attrs.master_image?.value),
     photoBlur: fileBlurDataUrl(attrs.master_image?.value),
     href: `/masters/${admin.id}`,

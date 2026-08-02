@@ -3,29 +3,27 @@
 import type { JSX } from 'react';
 
 /**
- * ContactFormField component — a labeled input of the contact form.
+ * ContactTextareaField component — the labeled message textarea of the contact
+ * form.
  * @param   {object}              props             - Component properties
- * @param   {string}              props.label       - Field label above the input
- * @param   {string}              props.value       - Controlled input value
+ * @param   {string}              props.label       - Field label above the textarea
+ * @param   {string}              props.value       - Controlled textarea value
  * @param   {(v: string) => void} props.onChange    - Change handler receiving the new value
- * @param   {string}              props.placeholder - Input placeholder
- * @param   {string}              props.type        - HTML input type
+ * @param   {string}              props.placeholder - Textarea placeholder
  * @param   {boolean}             [props.required]  - The CMS marks the field as required
- * @returns {JSX.Element}                           Labeled form input
+ * @returns {JSX.Element}                           Labeled form textarea
  */
-const ContactFormField = ({
+const ContactTextareaField = ({
   label,
   value,
   onChange,
   placeholder,
-  type,
   required,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
-  type: string;
   required?: boolean | undefined;
 }): JSX.Element => (
   <div>
@@ -33,15 +31,15 @@ const ContactFormField = ({
       {label}
       {required && <span className="text-red-500"> *</span>}
     </label>
-    <input
-      type={type}
+    <textarea
       value={value}
-      placeholder={placeholder}
       onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
       required={required}
-      className="w-full rounded-2xl border border-slate-240 px-4 py-3 text-base text-slate-400 transition-all outline-none focus:border-accent-pink"
+      rows={4}
+      className="w-full resize-none rounded-2xl border border-slate-240 px-4 py-3 text-base text-slate-400 transition-all outline-none focus:border-accent-pink"
     />
   </div>
 );
 
-export default ContactFormField;
+export default ContactTextareaField;

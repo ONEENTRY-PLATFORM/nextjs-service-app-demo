@@ -20,6 +20,7 @@ import { dictText } from '@/components/utils/dictText';
 import { entityLinks, entityPageIds } from '@/components/utils/entityLinks';
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
+import { masterRating } from '@/components/utils/masterRating';
 import { salonFromPage } from '@/components/utils/salonFromPage';
 import { salonLabel } from '@/components/utils/salonLabel';
 
@@ -99,7 +100,8 @@ const toMasterItem = ({
     categories:
       categories.length > 0 ? categories : ['HAIR', 'FACE', 'BODY', 'NAILS'],
     salonId,
-    rating: Number(attrs.master_rating?.value) || 5,
+    /** Unrated (`null` per SDK 1.0.157) keeps the neutral list default of 5 */
+    rating: masterRating(attrs) ?? 5,
     photo: fileDisplayUrl(attrs.master_image?.value),
     photoBlur: fileBlurDataUrl(attrs.master_image?.value),
     href:

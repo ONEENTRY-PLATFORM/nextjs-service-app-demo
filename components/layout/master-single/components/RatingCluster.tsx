@@ -16,18 +16,18 @@ import { dictText } from '@/components/utils/dictText';
  * CYAN stars (14px) followed by the review count and the word "Reviews" (a link to the reviews page filtered to
  * this specialist, underlined on hover), then a PINK underlined "Leave a
  * review" button that opens the in-page {@link ReviewModal}.
- * @param   {object}      props              - Component properties.
- * @param   {number}      props.rating       - Rating value (0–5).
- * @param   {number}      props.reviewsCount - Number of reviews for this specialist.
- * @param   {string}      props.masterName   - Specialist name (pre-selects the reviews-page filter).
- * @returns {JSX.Element}                    JSX.Element representing the rating cluster.
+ * @param   {object}        props              - Component properties.
+ * @param   {number | null} props.rating       - Rating value (0–5), or `null` while unrated — the stars stay hidden then.
+ * @param   {number}        props.reviewsCount - Number of reviews for this specialist.
+ * @param   {string}        props.masterName   - Specialist name (pre-selects the reviews-page filter).
+ * @returns {JSX.Element}                      JSX.Element representing the rating cluster.
  */
 const RatingCluster = ({
   rating,
   reviewsCount,
   masterName,
 }: {
-  rating: number;
+  rating: number | null;
   reviewsCount: number;
   masterName: string;
 }): JSX.Element => {
@@ -45,7 +45,8 @@ const RatingCluster = ({
         }
         className="group flex items-center gap-1.5"
       >
-        <StarsGroup rating={rating} size={14} />
+        {/* An unrated master shows no stars — never a false zero-star score */}
+        {rating !== null && <StarsGroup rating={rating} size={14} />}
         <span className="text-sm text-slate-400 underline-offset-2 group-hover:underline">
           {reviewsCount}
         </span>

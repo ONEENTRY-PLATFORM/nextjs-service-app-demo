@@ -10,6 +10,7 @@ import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import FormAnimations from '@/components/forms/animations/FormAnimations';
 import { EVENT_PASSWORD_RESET } from '@/components/forms/authEventMarkers';
 import { useCmsForm } from '@/components/forms/useCmsForm';
+import { normalizeErrorMessage } from '@/components/utils/normalizeErrorMessage';
 import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import SpinnerLoader from '../shared/SpinnerLoader';
@@ -67,8 +68,9 @@ export const ForgotPasswordForm = ({
         EVENT_PASSWORD_RESET,
       );
       if (isSdkError(result)) {
+        /** Validation 400s send `message` as a string ARRAY — normalize it. */
         setError(
-          result.message ||
+          normalizeErrorMessage(result.message) ||
             (err_send_code_failed?.value as string | undefined) ||
             'Could not send the verification code',
         );

@@ -10,6 +10,7 @@ import { REVIEWS } from '@/components/layout/reviews-page/data';
 import { entityLinks } from '@/components/utils/entityLinks';
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
+import { masterRating } from '@/components/utils/masterRating';
 import { salonFromPage } from '@/components/utils/salonFromPage';
 
 import MasterAnimations from './animations/MasterAnimations';
@@ -53,7 +54,8 @@ const MasterSingleLayout = async ({
   const name = (attrs.master_name?.value as string | undefined) ?? '';
   const imageSrc = fileDisplayUrl(attrs.master_image?.value);
   const imageBlur = fileBlurDataUrl(attrs.master_image?.value);
-  const rating = Number(attrs.master_rating?.value) || 0;
+  /** `null` while the admin has not rated the master — hides the stars row */
+  const rating = masterRating(attrs);
   const experience =
     (attrs.master_expirience?.value as string | undefined) ?? '';
   const shortDescription =

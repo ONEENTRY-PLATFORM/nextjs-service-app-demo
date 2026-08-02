@@ -21,7 +21,6 @@ import Header from '@/components/layout/header';
 import PopupRoot from '@/components/layout/PopupRoot';
 import JsonLd from '@/components/shared/JsonLd';
 import ResponsiveToastContainer from '@/components/shared/ResponsiveToastContainer';
-import { dictText } from '@/components/utils/dictText';
 
 import IntroAnimations from './animations/IntroAnimations';
 import RegisterGSAP from './animations/RegisterGSAP';
@@ -137,7 +136,7 @@ export default async function RootLayout({
    * The dictionary and the main menu are independent — fetch them in parallel
    * so the whole tree is not serialized behind two sequential round trips.
    */
-  const [dictData, { error, isError, menu }] = await Promise.all([
+  const [dictData, { menu }] = await Promise.all([
     getDictionary(),
     getMenuByMarker('main'),
   ]);
@@ -147,46 +146,12 @@ export default async function RootLayout({
   const siteName = await getSiteName();
 
   /**
-   * Only a confirmed "resource is closed" (403) is fatal enough to replace the
-   * whole site with a notice. Any other menu error (transient/network/5xx)
-   * degrades to a normal layout with an empty menu — MainMenu and the mobile
-   * drawer already handle a menu without pages gracefully.
+   * Every menu error degrades to an empty menu — including a 403 "Resource is
+   * closed", which per the error-handling rule only means the admin closed the
+   * MENU resource, not the site: pages stay readable, so blanking the whole
+   * site on it would be wrong. MainMenu and the mobile drawer already handle a
+   * menu without pages gracefully.
    */
-  const isClosed =
-    isError &&
-    error?.statusCode === 403 &&
-    /resource is closed/i.test(error?.message ?? '');
-
-  if (isClosed) {
-    // Root layout MUST always render <html>/<body> — otherwise Next.js
-    // throws "Missing <html> and <body> tags in the root layout".
-    return (
-      <html lang={HTML_LANG}>
-        <body
-          className={`${lato.variable} ${leagueGothic.variable} flex min-h-screen flex-col`}
-        >
-          <main className="flex grow flex-col items-center justify-center gap-3 p-8 text-center">
-            <h1 className="text-2xl font-bold">
-              {dictText(
-                dict,
-                'site_unavailable_title',
-                'Site temporarily unavailable',
-              )}
-            </h1>
-            <p className="text-base text-neutral-600">
-              {dictText(
-                dict,
-                'site_unavailable_desc',
-                'The content service is currently unavailable. Please try again later.',
-              )}
-            </p>
-          </main>
-        </body>
-      </html>
-    );
-  }
-
-  /** Fall back to an empty menu when it failed to load for a non-fatal reason. */
   const safeMenu = (menu ?? { pages: [] }) as IMenusEntity;
 
   return (

@@ -14,6 +14,7 @@ import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmP
 import { isPasswordField } from '@/components/forms/fieldFlags/isPasswordField';
 import { useCmsForm } from '@/components/forms/useCmsForm';
 import { dictText } from '@/components/utils/dictText';
+import { normalizeErrorMessage } from '@/components/utils/normalizeErrorMessage';
 import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import AuthError from '../pages/AuthError';
@@ -171,8 +172,9 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
           }),
         );
         if (isSdkError(result)) {
+          /** Validation 400s send `message` as a string ARRAY — normalize. */
           setError(
-            `Error ${result.statusCode}: ${result.message ?? ''}`.trim(),
+            `Error ${result.statusCode}: ${normalizeErrorMessage(result.message)}`.trim(),
           );
           return;
         }

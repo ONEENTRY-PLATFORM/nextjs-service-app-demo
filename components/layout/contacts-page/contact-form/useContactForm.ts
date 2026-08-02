@@ -1,22 +1,25 @@
 'use client';
 
+import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { Dispatch, FormEvent, SetStateAction } from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
 import { useGetFormByMarkerQuery } from '@/app/api/api/RTKApi';
 import { getFormAttributes } from '@/components/utils/getFormAttributes';
+import { normalizeErrorMessage } from '@/components/utils/normalizeErrorMessage';
+import { sortArrayByPosition } from '@/components/utils/sortArrayByPosition';
 import { toErrorMessage } from '@/components/utils/toErrorMessage';
 
 import { buildContactAnswers } from './buildContactAnswers';
 import { mintCaptchaToken } from './mintCaptchaToken';
-import type { ContactFormField, FieldKey } from './types';
-import { EMPTY_CONTACT_FIELDS } from './types';
 
 /**
  * State and actions the "Write to us" card renders from.
- * @property {Record<FieldKey, string>}                         fields          - Current values, keyed by field
- * @property {(key: FieldKey) => (value: string) => void}       set             - Curried setter for one field
+ * @property {IFormAttribute[]}                                 formFields      - Data fields of the CMS form in admin order (no buttons/captcha); `[]` while the form is empty
+ * @property {boolean}                                          formLoading     - The CMS form definition is still being fetched
+ * @property {Record<string, string>}                           fields          - Current values, keyed by CMS marker
+ * @property {(key: string) => (value: string) => void}         set             - Curried setter for one field
  * @property {boolean}                                          sent            - The success state is showing
  * @property {boolean}                                          loading         - A submit is in flight
  * @property {string}                                           error           - Failure copy (`''` when none)
@@ -27,8 +30,10 @@ import { EMPTY_CONTACT_FIELDS } from './types';
  * @property {(e: FormEvent<HTMLFormElement>) => Promise<void>} handleSubmit    - Submit handler for the `<form>`
  */
 export interface ContactFormState {
-  fields: Record<FieldKey, string>;
-  set: (key: FieldKey) => (value: string) => void;
+  formFields: IFormAttribute[];
+  formLoading: boolean;
+  fields: Record<string, string>;
+  set: (key: string) => (value: string) => void;
   sent: boolean;
   loading: boolean;
   error: string;
@@ -42,20 +47,20 @@ export interface ContactFormState {
 /**
  * useContactForm — the controller of the contacts page's "Write to us" card.
  *
- * Submission goes to the `contact_us` CMS form: local values are mapped onto
- * the form attributes by marker ({@link buildContactAnswers}). Should the form
- * lose its fields in the admin, the submit degrades to the mock's local success
- * state without an API call.
+ * The card renders strictly from the CMS form definition: `formFields` are the
+ * `contact_us` data attributes in admin order, the local values are keyed by
+ * their markers, and the submit maps them back onto the fields
+ * ({@link buildContactAnswers}). No local field list exists — should the form
+ * lose its fields in the admin, the card renders nothing rather than a made-up
+ * layout.
  *
- * A `spam` field makes the reCAPTCHA token mandatory server-side. Without a
- * configured site key (or a loaded reCAPTCHA library) no token can be minted
- * and the CMS rejects the submit, so the form degrades the same way instead of
- * surfacing a 400 to the visitor.
+ * A `spam` field makes the reCAPTCHA token mandatory server-side; it is minted
+ * at submit time and travels as that attribute's value. A submit the CMS
+ * rejects surfaces its failure copy — it never fakes the success state.
  * @returns {ContactFormState} Field values, submit handler and captcha wiring
  */
 export const useContactForm = (): ContactFormState => {
-  const [fields, setFields] =
-    useState<Record<FieldKey, string>>(EMPTY_CONTACT_FIELDS);
+  const [fields, setFields] = useState<Record<string, string>>({});
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -63,7 +68,7 @@ export const useContactForm = (): ContactFormState => {
   const [captchaReady, setCaptchaReady] = useState(false);
 
   /** CMS form definition — its attributes may be `[]`-like or `{}` */
-  const { data } = useGetFormByMarkerQuery({ marker: 'contact_us' });
+  const { data, isLoading } = useGetFormByMarkerQuery({ marker: 'contact_us' });
 
   /**
    * The form's captcha field, if any. Its presence and site key gate whether
@@ -79,12 +84,26 @@ export const useContactForm = (): ContactFormState => {
   /** reCAPTCHA action for scoring — OneEntry stores it in `settings.captcha`. */
   const spamAction = spamField?.settings?.captcha?.action ?? 'login';
 
-  const set = (key: FieldKey) => (value: string) =>
+  /**
+   * Data fields of the CMS form (buttons/captcha excluded) in admin order —
+   * the card renders its inputs from this list, so labels, placeholders and
+   * required flags follow the form definition instead of hardcoded copies.
+   */
+  const formFields = useMemo(
+    () =>
+      sortArrayByPosition(
+        getFormAttributes<IFormAttribute>(data).filter(
+          (field) => field.type !== 'button' && field.type !== 'spam',
+        ),
+      ),
+    [data],
+  );
+
+  const set = (key: string) => (value: string) =>
     setFields((f) => ({ ...f, [key]: value }));
 
   /**
-   * Submit the form to the `contact_us` CMS form when it has fields; degrade
-   * to the mock's local success state while it has none.
+   * Submit the card's values to the `contact_us` CMS form.
    * @param   {FormEvent<HTMLFormElement>} e - Form submission event
    * @returns {Promise<void>}                Resolves when the submit settles
    */
@@ -92,83 +111,72 @@ export const useContactForm = (): ContactFormState => {
     e.preventDefault();
     setError('');
 
-    /** Data fields of the CMS form (buttons/captcha excluded) */
-    const formFields = getFormAttributes<ContactFormField>(data).filter(
-      (field) => field.type !== 'button' && field.type !== 'spam',
-    );
-
-    const canSubmitToCms =
-      formFields.length > 0 &&
-      (!spamField || (spamSiteKey !== '' && captchaReady));
-
     try {
       setLoading(true);
-      if (canSubmitToCms) {
-        const formData = buildContactAnswers({
-          fields: formFields,
-          values: fields,
+      const formData = buildContactAnswers({
+        fields: formFields,
+        values: fields,
+      });
+
+      /**
+       * The captcha travels as the `spam` attribute's value — the CMS
+       * requires the attribute whenever the form defines one, and expects the
+       * validation OBJECT `{ event: { token, siteKey } }`, NOT the bare token
+       * string.
+       */
+      if (spamField) {
+        const token = await mintCaptchaToken({
+          siteKey: spamSiteKey,
+          action: spamAction,
         });
-
-        /**
-         * The captcha travels as the `spam` attribute's value — the CMS
-         * requires the attribute whenever the form defines one, and expects the
-         * validation OBJECT `{ event: { token, siteKey } }`, NOT the bare token
-         * string.
-         */
-        if (spamField) {
-          const token = await mintCaptchaToken({
-            siteKey: spamSiteKey,
-            action: spamAction,
-          });
-          formData.push({
-            marker: spamField.marker,
-            type: 'spam',
-            value: { event: { token, siteKey: spamSiteKey } },
-          });
-        }
-
-        /**
-         * Module routing comes from the form itself (where the CMS should
-         * deliver the submission) — hardcoding 0/'' detaches the answer from
-         * its module config.
-         */
-        const moduleConfig = data?.moduleFormConfigs?.[0];
-
-        /**
-         * `postFormsData` returns `IPostFormResponse | IError` — an API failure
-         * is a value, not a thrown error. Check it so a failed submit does not
-         * show the "Message sent!" success state.
-         */
-        const result = await getApi().FormData.postFormsData({
-          formIdentifier: 'contact_us',
-          formData,
-          formModuleConfigId: moduleConfig?.id ?? 0,
-          moduleEntityIdentifier:
-            moduleConfig?.entityIdentifiers?.[0]?.id ?? '',
-          replayTo: null,
-          /**
-           * Empty status, not `'sent'` — with an empty `moduleFormConfigs` (the
-           * case here) a `'sent'` status makes the backend look up a delivery
-           * config by `formModuleConfigId` (0) and reject with "Incorrect
-           * formIdentifier for provided config". Matches the working reference.
-           */
-          status: '',
+        formData.push({
+          marker: spamField.marker,
+          type: 'spam',
+          value: { event: { token, siteKey: spamSiteKey } },
         });
-        if (isSdkError(result)) {
-          /**
-           * Mirror the success path: the failure copy comes from the form's own
-           * CMS settings when set (`unsuccessMessage`), with the technical
-           * status/message as the fallback while it is empty.
-           */
-          setError(
-            data?.localizeInfos?.unsuccessMessage ||
-              `Error ${result.statusCode}: ${result.message ?? ''}`.trim(),
-          );
-          return;
-        }
+      }
+
+      /**
+       * Module routing comes from the form itself (where the CMS should
+       * deliver the submission) — hardcoding 0/'' detaches the answer from
+       * its module config.
+       */
+      const moduleConfig = data?.moduleFormConfigs?.[0];
+
+      /**
+       * `postFormsData` returns `IPostFormResponse | IError` — an API failure
+       * is a value, not a thrown error. Check it so a failed submit does not
+       * show the "Message sent!" success state.
+       */
+      const result = await getApi().FormData.postFormsData({
+        formIdentifier: 'contact_us',
+        formData,
+        formModuleConfigId: moduleConfig?.id ?? 0,
+        moduleEntityIdentifier: moduleConfig?.entityIdentifiers?.[0]?.id ?? '',
+        replayTo: null,
+        /**
+         * Empty status, not `'sent'` — with an empty `moduleFormConfigs` (the
+         * case here) a `'sent'` status makes the backend look up a delivery
+         * config by `formModuleConfigId` (0) and reject with "Incorrect
+         * formIdentifier for provided config". Matches the working reference.
+         */
+        status: '',
+      });
+      if (isSdkError(result)) {
+        /**
+         * Mirror the success path: the failure copy comes from the form's own
+         * CMS settings when set (`unsuccessMessage`), with the technical
+         * status/message as the fallback while it is empty. Validation 400s
+         * send `message` as a string ARRAY — normalize it.
+         */
+        setError(
+          data?.localizeInfos?.unsuccessMessage ||
+            `Error ${result.statusCode}: ${normalizeErrorMessage(result.message)}`.trim(),
+        );
+        return;
       }
       setSent(true);
-      setFields(EMPTY_CONTACT_FIELDS);
+      setFields({});
       setTimeout(() => setSent(false), 3500);
     } catch (err) {
       /** A thrown (network) failure is still a failed submit — same CMS copy. */
@@ -179,6 +187,8 @@ export const useContactForm = (): ContactFormState => {
   };
 
   return {
+    formFields,
+    formLoading: isLoading,
     fields,
     set,
     sent,

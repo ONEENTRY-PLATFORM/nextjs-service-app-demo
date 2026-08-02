@@ -2,6 +2,7 @@ import { Check, ChevronRight } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import { prefetchOfferBooking } from '@/components/layout/offer-booking/prefetchOfferBooking';
 import { dictText } from '@/components/utils/dictText';
 
 /**
@@ -87,10 +88,12 @@ const OfferDetailPanel = ({
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'rgba(255,255,255,0.32)';
+            prefetchOfferBooking();
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'rgba(255,255,255,0.22)';
           }}
+          onFocus={() => prefetchOfferBooking()}
         >
           {dictText(dict, 'book_offer_text', 'Book Offer')}{' '}
           <ChevronRight size={15} />

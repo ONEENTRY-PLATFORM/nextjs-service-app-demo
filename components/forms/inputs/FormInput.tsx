@@ -1,6 +1,6 @@
 import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
 import type { JSX, Key } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useAppDispatch } from '@/app/store/hooks';
 import { addField } from '@/app/store/reducers/FormFieldsSlice';
@@ -42,11 +42,8 @@ const FormInput = (
    * cast here was working around.
    */
   const flags = field;
-  const validators = (field.validators ?? {}) as {
-    requiredValidator?: { strict?: boolean };
-    emailInspectionValidator?: boolean;
-    stringInspectionValidator?: { stringMin?: number; stringMax?: number };
-  };
+  /** SDK-typed validators map — `IAttributeValidators` covers every read here. */
+  const validators = field.validators;
 
   /**
    * Placeholder and hint are authored per field in the CMS
@@ -85,17 +82,49 @@ const FormInput = (
   /** Extract maximum length validation rule from field validators */
   const maxLength = validators['stringInspectionValidator']?.stringMax;
 
-  /** Update form state in Redux store whenever input value or validity changes */
+  /**
+   * Initial value captured at mount for the one-time store registration; a ref
+   * keeps the mount effect's dependency list free of per-keystroke values.
+   */
+  const initialValueRef = useRef(field.value || '');
+
+  /**
+   * Register the field's initial value in the store once per mount. Mount-time
+   * seeding is load-bearing: submit handlers read untouched fields from the
+   * store bag (`UserForm` sends stored profile values), and remounting a form
+   * must reset stale drafts left by a previously opened form that shares
+   * markers (SignIn / SignUp both render the `reg` form). Typing never goes
+   * through an effect — only through `handleChange` below.
+   */
   useEffect(() => {
     dispatch(
       addField({
         [field.marker]: {
-          valid: valid,
-          value: value,
+          valid: true,
+          value: initialValueRef.current,
         },
       }),
     );
-  }, [value, valid, dispatch, field.marker]);
+  }, [dispatch, field.marker]);
+
+  /**
+   * handleChange — the single write path for the field: updates the local
+   * input state and mirrors it into `FormFieldsSlice` within the same event,
+   * so typing costs one render pass instead of the render → effect →
+   * dispatch → render cascade the common-mistakes rule forbids.
+   * @param {string} next - The new input value
+   */
+  const handleChange = (next: string): void => {
+    setValue(next);
+    dispatch(
+      addField({
+        [field.marker]: {
+          valid: valid,
+          value: next,
+        },
+      }),
+    );
+  };
 
   /** Render nothing if field or type is not defined */
   if (!field || !type) {
@@ -120,7 +149,7 @@ const FormInput = (
           className="border-b border-none border-b-slate-240 py-2 text-base text-slate-400"
           required={required}
           value={value}
-          onChange={(val) => setValue(val.currentTarget.value)}
+          onChange={(val) => handleChange(val.currentTarget.value)}
         >
           {field.listTitles.map((option, i: Key) => {
             return (
@@ -139,7 +168,7 @@ const FormInput = (
           placeholder={placeholder}
           className="border-b border-none border-b-slate-240 py-2 text-base text-slate-400"
           required={required}
-          onChange={(val) => setValue(val.currentTarget.value)}
+          onChange={(val) => handleChange(val.currentTarget.value)}
           value={value}
         />
       )}
@@ -152,7 +181,7 @@ const FormInput = (
           placeholder={placeholder}
           className="relative border-b border-none border-b-slate-240 py-2 text-base text-slate-400"
           required={required}
-          onChange={(val) => setValue(val.currentTarget.value)}
+          onChange={(val) => handleChange(val.currentTarget.value)}
           autoComplete={fieldType === 'password' ? 'password' : ''}
           minLength={minLength}
           maxLength={maxLength}

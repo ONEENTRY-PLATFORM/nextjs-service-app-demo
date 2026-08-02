@@ -7,8 +7,8 @@ import type { JSX } from 'react';
 
 import CardAnimations from '@/app/animations/CardAnimations';
 import type { BookingData } from '@/components/layout/booking-page/types';
-import OfferBookingModal from '@/components/layout/offer-booking';
 import { useOfferBookingLauncher } from '@/components/layout/offer-booking/hooks/useOfferBookingLauncher';
+import OfferBookingModalLazy from '@/components/layout/offer-booking/OfferBookingModalLazy';
 import type { OfferBookingInfo } from '@/components/layout/offer-booking/types';
 import DialogPortal from '@/components/shared/DialogPortal';
 import { productCurrency } from '@/components/shared/productCurrency';
@@ -194,10 +194,11 @@ const OfferCard = ({
         />
       </div>
 
-      {/* Booking modal — portaled out of the animation wrapper's transform */}
+      {/* Booking modal — portaled out of the animation wrapper's transform;
+          the wizard chunk is lazy and warmed by the Book button's hover */}
       {bookingOpen && (
         <DialogPortal>
-          <OfferBookingModal
+          <OfferBookingModalLazy
             offer={offerInfo}
             data={bookingData}
             onClose={closeBooking}
