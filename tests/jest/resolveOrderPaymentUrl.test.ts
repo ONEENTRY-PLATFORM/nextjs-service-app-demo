@@ -20,9 +20,9 @@ const getApiMock = getApi as jest.Mock;
 
 /**
  * Wire the fake Payments module into getApi and hand the spies back.
- * @param   {unknown}                                                      sessions - Resolved value of `getSessionByOrderId`
- * @param   {unknown}                                                      created  - Resolved value of `createSession`
- * @returns {{ getSessionByOrderId: jest.Mock; createSession: jest.Mock }}          The two spies
+ * @param   {unknown} sessions - Resolved value of `getSessionByOrderId`
+ * @param   {unknown} created  - Resolved value of `createSession`
+ * @returns {object}           The two spies — `getSessionByOrderId` and `createSession`
  */
 const mockPayments = (sessions: unknown, created?: unknown) => {
   const getSessionByOrderId = jest.fn().mockResolvedValue(sessions);
