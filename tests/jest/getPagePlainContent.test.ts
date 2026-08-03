@@ -5,9 +5,9 @@ import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 /**
  * Build a page stub carrying an arbitrary `localizeInfos` shape.
  *
- * The runtime shape differs from the SDK's `ILocalizeInfo` (which declares
- * `plainValue` — a field pages never actually send), so the cast is the point of
- * these tests rather than an oversight.
+ * `plainContent` is declared on `ILocalizeInfo` since SDK 1.0.158; the cast
+ * here only exists so a test can attach an arbitrary payload — including the
+ * `plainValue` a page never actually sends.
  * @param   {object}       localizeInfos - Raw localizeInfos payload to attach
  * @returns {IPagesEntity}               Page stub for the helper under test
  */

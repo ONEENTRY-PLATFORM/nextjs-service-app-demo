@@ -159,7 +159,8 @@ describe('getFormAttributes', () => {
   });
 
   it('takes the values of an object-shaped attributes map', () => {
-    // The Forms API returns a populated map once fields exist
+    // The SDK only rewrites the empty `{}`; a populated marker map still
+    // arrives as an object
     const result = getFormAttributes<{ marker: string }>({
       attributes: {
         name: { marker: 'name' },

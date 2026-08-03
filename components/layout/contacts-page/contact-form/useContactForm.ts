@@ -67,7 +67,7 @@ export const useContactForm = (): ContactFormState => {
   /** `true` once the reCAPTCHA v3 library is loaded and ready to mint tokens. */
   const [captchaReady, setCaptchaReady] = useState(false);
 
-  /** CMS form definition — its attributes may be `[]`-like or `{}` */
+  /** CMS form definition — read through `getFormAttributes` for a fresh, array-shaped field list */
   const { data, isLoading } = useGetFormByMarkerQuery({ marker: 'contact_us' });
 
   /**

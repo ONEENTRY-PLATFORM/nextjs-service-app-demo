@@ -31,8 +31,10 @@ export interface CmsForm {
  *
  * Ordering goes through `sortArrayByPosition` rather than an inline `.sort()`
  * so the CMS field order stays authoritative in exactly one place, and
- * `getFormAttributes` normalizes the array-or-object shape the Forms API
- * returns (`{}` for a form with no fields).
+ * `getFormAttributes` hands back a fresh array (the RTK cache entry is frozen,
+ * and `sortArrayByPosition` sorts in place) while absorbing the marker-map
+ * shape the API can still deliver — the field-less `{}` is normalized by the
+ * SDK itself since 1.0.158.
  *
  * An empty marker skips the request instead of asking the CMS for `''` — the
  * profile form only knows its marker once the user has loaded.

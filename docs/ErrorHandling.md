@@ -98,11 +98,11 @@ const apiEndpoints = RTKApi.injectEndpoints({
         url: 'products',
         params
       }),
-      transformResponse: (response: IProductsEntity[] | IError) => {
+      transformResponse: (response: IProductsResponse | IError) => {
         if (isIError(response)) {
           throw response;
         }
-        return response;
+        return response.items;
       },
       transformErrorResponse: (error) => {
         return handleApiError('', error);

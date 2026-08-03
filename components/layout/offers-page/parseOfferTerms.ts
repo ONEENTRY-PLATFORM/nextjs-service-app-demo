@@ -38,16 +38,13 @@ const toPlainLine = (html: string): string =>
  * a missing page or blank content yields `[]` and the "Good to know" block is
  * simply not rendered — a CMS flake never crashes this static route.
  *
- * `htmlContent` is absent from the SDK's `ILocalizeInfo` type but present at
- * runtime (same story as `plainContent` in `getPagePlainContent`) — hence the
- * cast.
+ * `htmlContent` is declared on the SDK's `ILocalizeInfo`, so it is read straight
+ * off the entity (same as `plainContent` in `getPagePlainContent`).
  * @param   {IPagesEntity | undefined} page - CMS `offers` page, or nothing when unresolved
  * @returns {string[]}                      Plain-text term lines, `[]` when the page has none
  */
 export const parseOfferTerms = (page: IPagesEntity | undefined): string[] => {
-  const localizeInfos = page?.localizeInfos as
-    { htmlContent?: string | null } | undefined;
-  const html = localizeInfos?.htmlContent ?? '';
+  const html = page?.localizeInfos?.htmlContent ?? '';
   if (!html.trim()) return [];
 
   const items = [...html.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)].map((m) =>

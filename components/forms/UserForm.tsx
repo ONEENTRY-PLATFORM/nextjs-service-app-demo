@@ -264,7 +264,7 @@ const UserForm = ({ dict }: FormProps): JSX.Element => {
               index={index + 1}
               {...field}
               isSignUpRequired={
-                optionalPassword ? false : field.isSignUpRequired
+                optionalPassword ? false : (field.isSignUpRequired ?? false)
               }
               value={storedValue(field)}
             />

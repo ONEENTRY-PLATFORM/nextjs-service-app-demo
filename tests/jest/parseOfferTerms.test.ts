@@ -5,9 +5,8 @@ import { parseOfferTerms } from '@/components/layout/offers-page/parseOfferTerms
 /**
  * Build a page stub carrying an arbitrary `localizeInfos` shape.
  *
- * The runtime shape differs from the SDK's `ILocalizeInfo` (which never
- * declares `htmlContent`), so the cast is the point of these tests rather than
- * an oversight.
+ * `htmlContent` is declared on `ILocalizeInfo`; the cast here only exists so a
+ * test can attach an arbitrary payload.
  * @param   {object}       localizeInfos - Raw localizeInfos payload to attach
  * @returns {IPagesEntity}               Page stub for the helper under test
  */

@@ -1,40 +1,34 @@
 import 'server-only';
 
-import type { IAttributeValues, IError } from 'oneentry/dist/base/utils';
+import type { IAttributesSetsEntity } from 'oneentry/dist/attribute-sets/attributeSetsInterfaces';
+import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import { cache } from 'react';
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';
 
-/** One attribute of the `system_content` set as the public API returns it. */
-interface SystemContentAttribute {
-  marker?: string;
-  initialValue?: string | null;
-}
-
 /**
  * Cross-request cached read of the `system_content` attribute set's attributes.
  *
- * `getAttributesByMarker` returns the set's attributes with their per-attribute
- * default value (`initialValue`) already delocalized to the SDK `langCode`. That
- * `initialValue` is exactly the field a content editor fills in the admin's
- * attribute-set editor, so it is the single source of truth for the dictionary.
+ * `getAttributesByMarker` returns the set's attributes (`IAttributesSetsEntity`,
+ * the type the SDK declares since 1.0.158 — not the attribute *set*) with their
+ * per-attribute default value (`initialValue`) already delocalized to the SDK
+ * `langCode`. That `initialValue` is exactly the field a content editor fills in
+ * the admin's attribute-set editor, so it is the single source of truth for the
+ * dictionary.
  *
  * The reader never throws (see `createCachedCmsReader`): a transient failure
  * degrades for the current request only instead of poisoning the cache.
  */
 const readSystemContentAttributes = createCachedCmsReader<
   [],
-  SystemContentAttribute[]
+  IAttributesSetsEntity[]
 >({
   cacheKey: 'oneentry-system-content-attributes',
   label: 'getAttributesByMarker(system_content)',
   revalidate: 60,
   tags: ['oneentry', 'oneentry-dictionary'],
-  call: () =>
-    getApi().AttributesSets.getAttributesByMarker('system_content') as Promise<
-      SystemContentAttribute[] | IError
-    >,
+  call: () => getApi().AttributesSets.getAttributesByMarker('system_content'),
 });
 
 /**
@@ -69,10 +63,7 @@ export const getDictionary = cache(async (): Promise<IAttributeValues> => {
   /** Map marker → { value } so consumers keep reading `dict?.<marker>?.value`. */
   return Object.fromEntries(
     attrs
-      .filter((attr) => typeof attr.marker === 'string')
-      .map((attr) => [
-        attr.marker as string,
-        { value: attr.initialValue ?? undefined },
-      ]),
+      .filter((attr) => Boolean(attr.marker))
+      .map((attr) => [attr.marker, { value: attr.initialValue ?? undefined }]),
   ) as IAttributeValues;
 });

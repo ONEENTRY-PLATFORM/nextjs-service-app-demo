@@ -3,12 +3,12 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 /**
  * Plain-text body of a CMS page, for `description` in metadata and JSON-LD.
  *
- * The SDK's `ILocalizeInfo` type declares `plainValue`, but a page never carries
- * that field at runtime — its plain text arrives in `plainContent` (live keys:
- * `title`, `htmlContent`, `plainContent`, `menuTitle`, `mdContent`). Reading
- * `plainValue` therefore always yields `undefined` and silently falls through to
- * the title, which `tsc` cannot catch because the property exists in the type.
- * Hence the cast — it is the runtime shape, not the declared one.
+ * A page carries its plain text in `plainContent`, never in the `plainValue`
+ * the SDK also declares (live keys: `title`, `htmlContent`, `plainContent`,
+ * `menuTitle`, `mdContent`) — reading `plainValue` always yields `undefined`
+ * and silently falls through to the title. `ILocalizeInfo` declares
+ * `plainContent` since SDK 1.0.158, so the field is read straight off the
+ * entity; the cast this helper used to need is gone.
  *
  * Returns `undefined` rather than `''` so callers can chain `?? page.title`
  * without an empty string winning over the fallback.
@@ -18,8 +18,6 @@ import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
 export const getPagePlainContent = (
   page: IPagesEntity | undefined,
 ): string | undefined => {
-  const localizeInfos = page?.localizeInfos as
-    { plainContent?: string | null } | undefined;
-  const plain = localizeInfos?.plainContent?.trim();
+  const plain = page?.localizeInfos?.plainContent?.trim();
   return plain ? plain : undefined;
 };

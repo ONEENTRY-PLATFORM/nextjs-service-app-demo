@@ -63,9 +63,7 @@ const blocks = (html: string, tag: string): string[] =>
  * @returns {SalonCopy}         About paragraphs and highlight bullets
  */
 export const salonContentFromPage = (page: IPagesEntity): SalonCopy => {
-  const html =
-    (page.localizeInfos as { htmlContent?: string | null } | undefined)
-      ?.htmlContent ?? '';
+  const html = page.localizeInfos?.htmlContent ?? '';
   return {
     about: blocks(html, 'p'),
     highlights: blocks(html, 'li'),
