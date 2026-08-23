@@ -1,4 +1,4 @@
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
+import type { IAdminEntity } from 'oneentry/types';
 
 /**
  * Extract a string attribute value from an admin entity.

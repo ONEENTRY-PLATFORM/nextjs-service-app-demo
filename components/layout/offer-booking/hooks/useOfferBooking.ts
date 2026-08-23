@@ -1,6 +1,6 @@
 'use client';
 
-import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces';
+import type { IAccountsEntity } from 'oneentry/types';
 import { useMemo, useState } from 'react';
 
 import { TIMES } from '@/components/layout/booking-page/constants';

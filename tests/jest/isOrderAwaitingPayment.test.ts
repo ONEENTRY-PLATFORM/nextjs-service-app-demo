@@ -1,4 +1,4 @@
-import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
+import type { IOrderByMarkerEntity } from 'oneentry/types';
 
 import { isOrderAwaitingPayment } from '@/app/api/utils/isOrderAwaitingPayment';
 

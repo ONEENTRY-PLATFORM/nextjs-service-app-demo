@@ -1,10 +1,10 @@
 'use client';
 
-import type { IError } from 'oneentry/dist/base/utils';
 import type {
   IBodyPostFormData,
+  IError,
   IPostFormResponse,
-} from 'oneentry/dist/forms-data/formsDataInterfaces';
+} from 'oneentry/types';
 import { useState } from 'react';
 
 import { getApi } from '@/app/api/api/api';

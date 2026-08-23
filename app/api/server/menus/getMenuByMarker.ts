@@ -1,5 +1,4 @@
-import type { IError } from 'oneentry/dist/base/utils';
-import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
+import type { IError, IMenusEntity } from 'oneentry/types';
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';

@@ -1,6 +1,9 @@
-import type { IAttributeValues, ILocalizeInfo } from 'oneentry/dist/base/utils';
-import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type {
+  IAttributeValues,
+  IBlockEntity,
+  ILocalizeInfo,
+  IPagesEntity,
+} from 'oneentry/types';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';

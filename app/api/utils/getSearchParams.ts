@@ -1,4 +1,4 @@
-import type { IFilterParams } from 'oneentry/dist/products/productsInterfaces';
+import type { IFilterParams } from 'oneentry/types';
 
 import { PRODUCT_STATUS_IN_STOCK } from '@/app/api/utils/productStatusMarkers';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import type { IAuthProvidersEntity } from 'oneentry/dist/auth-provider/authProvidersInterfaces';
+import type { IAuthProvidersEntity } from 'oneentry/types';
 import { useMemo } from 'react';
 
 import { useGetAuthProvidersQuery } from '@/app/api/api/RTKApi';

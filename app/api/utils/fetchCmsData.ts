@@ -1,4 +1,4 @@
-import type { IError } from 'oneentry/dist/base/utils';
+import type { IError } from 'oneentry/types';
 
 import { isError } from '@/app/api/api/api';
 import { withTimeout } from '@/app/api/utils/withTimeout';

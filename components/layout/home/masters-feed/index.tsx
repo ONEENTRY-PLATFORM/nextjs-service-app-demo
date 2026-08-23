@@ -1,6 +1,8 @@
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
+import type {
+  IAdminEntity,
+  IAttributeValues,
+  IBlockEntity,
+} from 'oneentry/types';
 import type { JSX } from 'react';
 
 import { getMastersList } from '@/app/api/utils/getMastersList';

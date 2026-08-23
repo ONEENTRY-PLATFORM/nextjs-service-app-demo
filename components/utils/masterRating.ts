@@ -1,4 +1,4 @@
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IAttributeValues } from 'oneentry/types';
 
 /**
  * masterRating — the master's `master_rating` integer, distinguishing "not

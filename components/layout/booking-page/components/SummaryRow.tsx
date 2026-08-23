@@ -25,7 +25,7 @@ const SummaryRow = ({
 }): JSX.Element => (
   <div className="flex items-start gap-3">
     <div
-      className="mt-0.5 flex size-7 flex-shrink-0 items-center justify-center rounded-lg"
+      className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg"
       style={{ background: `${PINK}15`, color: PINK }}
     >
       {icon}

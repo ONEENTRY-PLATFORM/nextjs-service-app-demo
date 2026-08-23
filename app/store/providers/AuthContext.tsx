@@ -1,6 +1,6 @@
 'use client';
 
-import type { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
+import type { IUserEntity } from 'oneentry/types';
 import { createContext } from 'react';
 
 /**

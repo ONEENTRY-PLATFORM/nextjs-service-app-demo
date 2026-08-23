@@ -1,5 +1,4 @@
-import type { IError } from 'oneentry/dist/base/utils';
-import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
+import type { IBlockEntity, IError } from 'oneentry/types';
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';

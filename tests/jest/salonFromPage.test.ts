@@ -1,4 +1,4 @@
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type { IPagesEntity } from 'oneentry/types';
 
 import { salonMapLinks } from '@/app/utils/salonMapLinks';
 import { salonFromPage } from '@/components/utils/salonFromPage';

@@ -1,5 +1,5 @@
 import { expandAttributeTimeIntervals } from 'oneentry';
-import type { IAttributeValue } from 'oneentry/dist/base/utils';
+import type { IAttributeValue } from 'oneentry/types';
 
 /**
  * Materialize a `timeInterval` schedule (a master's `master_schedule` or a

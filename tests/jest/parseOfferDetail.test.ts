@@ -1,4 +1,4 @@
-import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
+import type { IProductsEntity } from 'oneentry/types';
 
 import { offerAccentGradientsData } from '@/components/data/offerAccentGradientsData';
 import { parseOfferDetail } from '@/components/layout/offers-page/parseOfferDetail';

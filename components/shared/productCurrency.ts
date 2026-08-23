@@ -1,4 +1,4 @@
-import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
+import type { IProductsEntity } from 'oneentry/types';
 
 /**
  * Currency code of a product's price, from its CMS `currency` attribute.

@@ -1,4 +1,4 @@
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type { IPagesEntity } from 'oneentry/types';
 
 /**
  * About paragraphs and highlight bullets read from a salon page.

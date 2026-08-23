@@ -1,9 +1,9 @@
 /* eslint-disable jsdoc/reject-function-type */
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type {
+  IAttributeValues,
   IOrderByMarkerEntity,
   IOrderData,
-} from 'oneentry/dist/orders/ordersInterfaces';
+} from 'oneentry/types';
 import type { Dispatch, JSX, SetStateAction } from 'react';
 import { toast } from 'react-toastify';
 

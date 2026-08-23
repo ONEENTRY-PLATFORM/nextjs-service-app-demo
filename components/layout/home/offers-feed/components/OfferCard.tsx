@@ -2,7 +2,7 @@
 
 import { Check } from 'lucide-react';
 import { useTransitionRouter } from 'next-transition-router';
-import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
+import type { IProductsEntity } from 'oneentry/types';
 import type { JSX } from 'react';
 
 import CardAnimations from '@/app/animations/CardAnimations';

@@ -1,6 +1,5 @@
 import parse from 'html-react-parser';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type { IAttributeValues, IPagesEntity } from 'oneentry/types';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';

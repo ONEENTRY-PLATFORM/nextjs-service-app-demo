@@ -1,4 +1,4 @@
-import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
+import type { IProductsEntity } from 'oneentry/types';
 
 import { parseOffer } from '@/components/layout/home/offers-feed/components/parseOffer';
 import { parseOfferDetail } from '@/components/layout/offers-page/parseOfferDetail';

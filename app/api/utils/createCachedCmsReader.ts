@@ -1,5 +1,5 @@
 import { unstable_cache } from 'next/cache';
-import type { IError } from 'oneentry/dist/base/utils';
+import type { IError } from 'oneentry/types';
 import { cache } from 'react';
 
 import { isError } from '@/app/api/api/api';

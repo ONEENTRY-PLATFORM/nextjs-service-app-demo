@@ -1,4 +1,4 @@
-import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
+import type { IFormAttribute } from 'oneentry/types';
 
 /**
  * Whether the CMS flagged the field as a password input.

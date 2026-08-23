@@ -1,6 +1,6 @@
 'use client';
 
-import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
+import type { IFormAttribute } from 'oneentry/types';
 import type { Dispatch, FormEvent, SetStateAction } from 'react';
 import { useMemo, useState } from 'react';
 

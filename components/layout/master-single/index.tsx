@@ -1,6 +1,8 @@
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type {
+  IAdminEntity,
+  IAttributeValues,
+  IPagesEntity,
+} from 'oneentry/types';
 import { type JSX, memo } from 'react';
 
 import { getPageById } from '@/app/api/server/pages/getPageById';

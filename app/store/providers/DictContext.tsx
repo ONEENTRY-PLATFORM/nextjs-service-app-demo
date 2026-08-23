@@ -1,6 +1,6 @@
 'use client';
 
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IAttributeValues } from 'oneentry/types';
 import { createContext } from 'react';
 
 /**

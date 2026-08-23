@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/no-undefined-types */
 'use client';
 
-import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
+import type { IFormAttribute } from 'oneentry/types';
 import type { FormEvent, JSX } from 'react';
 import { useContext, useMemo, useState } from 'react';
 

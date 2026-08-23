@@ -1,7 +1,7 @@
 'use client';
 
 import { Check } from 'lucide-react';
-import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces';
+import type { IAccountsEntity } from 'oneentry/types';
 import type { JSX } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';

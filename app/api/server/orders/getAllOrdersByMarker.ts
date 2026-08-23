@@ -1,5 +1,4 @@
-import type { IError } from 'oneentry/dist/base/utils';
-import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
+import type { IError, IOrderByMarkerEntity } from 'oneentry/types';
 
 import { getApi, isError } from '@/app/api/api/api';
 import { fetchCmsData } from '@/app/api/utils/fetchCmsData';

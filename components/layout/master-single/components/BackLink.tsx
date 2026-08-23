@@ -1,6 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IAttributeValues } from 'oneentry/types';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';

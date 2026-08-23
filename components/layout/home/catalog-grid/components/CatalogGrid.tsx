@@ -1,6 +1,5 @@
 import { Link } from 'next-transition-router';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type { IAttributeValues, IPagesEntity } from 'oneentry/types';
 import type { JSX, Key } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';

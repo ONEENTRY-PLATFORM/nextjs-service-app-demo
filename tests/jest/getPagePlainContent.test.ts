@@ -1,4 +1,4 @@
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type { IPagesEntity } from 'oneentry/types';
 
 import { getPagePlainContent } from '@/app/utils/getPagePlainContent';
 

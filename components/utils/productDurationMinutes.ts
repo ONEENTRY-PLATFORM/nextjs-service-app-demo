@@ -1,4 +1,4 @@
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IAttributeValues } from 'oneentry/types';
 
 /**
  * Duration of a service product in minutes, read from its CMS attributes.

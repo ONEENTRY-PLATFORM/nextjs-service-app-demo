@@ -1,4 +1,4 @@
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type { IPagesEntity } from 'oneentry/types';
 
 /**
  * A salon page read into plain fields — no formatting, no conversions.

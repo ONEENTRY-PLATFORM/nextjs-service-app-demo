@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
+import type { IAdminEntity } from 'oneentry/types';
 import type { JSX } from 'react';
 import { Suspense } from 'react';
 

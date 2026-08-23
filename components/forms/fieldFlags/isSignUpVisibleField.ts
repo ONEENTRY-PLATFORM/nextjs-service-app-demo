@@ -1,4 +1,4 @@
-import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
+import type { IFormAttribute } from 'oneentry/types';
 
 import { isLoginCredential } from '@/components/forms/fieldFlags/isLoginCredential';
 

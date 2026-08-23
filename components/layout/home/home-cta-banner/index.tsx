@@ -1,4 +1,4 @@
-import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
+import type { IBlockEntity } from 'oneentry/types';
 import type { CSSProperties, JSX } from 'react';
 
 import RevealAnimations from '@/app/animations/RevealAnimations';

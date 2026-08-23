@@ -1,6 +1,4 @@
-import type { IAuthFormData } from 'oneentry/dist/auth-provider/authProvidersInterfaces';
-import type { IError } from 'oneentry/dist/base/utils';
-import type { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
+import type { IAuthFormData, IError, IUserEntity } from 'oneentry/types';
 
 import { getApi, isError } from '@/app/api/api/api';
 

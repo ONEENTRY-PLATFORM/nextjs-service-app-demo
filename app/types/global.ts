@@ -1,10 +1,10 @@
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type {
+  IAttributeValues,
+  IFilterParams,
   IOrderProductData,
   IOrdersFormData,
-} from 'oneentry/dist/orders/ordersInterfaces';
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
-import type { IFilterParams } from 'oneentry/dist/products/productsInterfaces';
+  IPagesEntity,
+} from 'oneentry/types';
 import type { ReactNode } from 'react';
 
 /**

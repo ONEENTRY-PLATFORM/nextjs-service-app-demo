@@ -1,4 +1,4 @@
-import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
+import type { IMenusPages } from 'oneentry/types';
 
 /**
  * Menu pages as an array, whatever shape the Menus API returned.

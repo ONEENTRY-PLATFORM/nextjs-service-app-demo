@@ -1,5 +1,5 @@
 import { Link } from 'next-transition-router';
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type { IPagesEntity } from 'oneentry/types';
 import type { JSX } from 'react';
 
 import CardAnimations from '../animations/CardAnimations';

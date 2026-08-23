@@ -1,4 +1,4 @@
-import type { IAttributeValue } from 'oneentry/dist/base/utils';
+import type { IAttributeValue } from 'oneentry/types';
 
 import dayCloseMinutes from '@/components/layout/booking-page/utils/dayCloseMinutes';
 

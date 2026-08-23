@@ -1,9 +1,9 @@
-import type { IError } from 'oneentry/dist/base/utils';
 import type {
   BlockType,
   IBlockEntity,
   IBlocksResponse,
-} from 'oneentry/dist/blocks/blocksInterfaces';
+  IError,
+} from 'oneentry/types';
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';

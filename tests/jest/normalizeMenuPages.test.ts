@@ -1,4 +1,4 @@
-import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
+import type { IMenusPages } from 'oneentry/types';
 
 import { normalizeMenuPages } from '@/components/utils/normalizeMenuPages';
 

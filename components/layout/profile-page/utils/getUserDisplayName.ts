@@ -1,5 +1,4 @@
-import type { FormDataType } from 'oneentry/dist/forms-data/formsDataInterfaces';
-import type { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
+import type { FormDataType, IUserEntity } from 'oneentry/types';
 
 /** A `formData` entry that carries a string `marker` and a `value`. */
 type MarkerField = FormDataType & { marker: string; value: unknown };

@@ -1,31 +1,29 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
-import type { IAuthProvidersEntity } from 'oneentry/dist/auth-provider/authProvidersInterfaces';
-import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
-import type { IFormsEntity } from 'oneentry/dist/forms/formsInterfaces';
-import type {
-  IBaseOrdersEntity,
-  ICreateRefundRequest,
-  IOrderByMarkerEntity,
-  IOrderData,
-  IOrdersEntity,
-} from 'oneentry/dist/orders/ordersInterfaces';
-import type {
-  IPagesEntity,
-  IPositionBlock,
-} from 'oneentry/dist/pages/pagesInterfaces';
 import type {
   IAccountsEntity,
-  ISessionEntity,
-} from 'oneentry/dist/payments/paymentsInterfaces';
-import type {
+  IAdminEntity,
+  IAuthProvidersEntity,
+  IBaseOrdersEntity,
+  IBlockEntity,
+  ICreateRefundRequest,
   IFilterParams,
+  IFormsEntity,
+  IOrderByMarkerEntity,
+  IOrderData,
+  IOrdersByMarkerEntity,
+  IOrdersEntity,
+  IPagesEntity,
+  IPositionBlock,
   IProductsEntity,
   IProductsResponse,
-} from 'oneentry/dist/products/productsInterfaces';
-import type { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
+  ISessionEntity,
+  IUserEntity,
+} from 'oneentry/types';
 
 import { updateUserState } from '../server/users/updateUserState';
+import { expectSdkEntity } from '../utils/expectSdkEntity';
+import { expectSdkList } from '../utils/expectSdkList';
+import { sdkShapeError } from '../utils/sdkShapeError';
 import { getApi, isError } from './api';
 
 interface BlockByMarkerProps {
@@ -111,10 +109,10 @@ export const RTKApi = createApi({
     getBlocksByPageUrl: build.query<IPositionBlock[], BlocksByPageUrlProps>({
       queryFn: async ({ pageUrl }) => {
         const result = await getApi().Pages.getBlocksByPageUrl(pageUrl);
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IPositionBlock[] };
+        return expectSdkList<IPositionBlock>(
+          result,
+          'Pages.getBlocksByPageUrl',
+        );
       },
       providesTags: ['Blocks'],
       keepUnusedDataFor: 600, // 10 minutes for blocks
@@ -143,10 +141,11 @@ export const RTKApi = createApi({
           offset,
           limit,
         });
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IProductsResponse };
+        return expectSdkEntity<IProductsResponse>(
+          result,
+          'Products.getProducts',
+          'items',
+        );
       },
       providesTags: ['Products'],
       keepUnusedDataFor: 300, // 5 minutes for products
@@ -177,10 +176,11 @@ export const RTKApi = createApi({
           undefined,
           { sortOrder: 'DESC', sortKey: 'date', offset, limit },
         );
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IProductsResponse };
+        return expectSdkEntity<IProductsResponse>(
+          result,
+          'Products.getProductsByPageUrl',
+          'items',
+        );
       },
       providesTags: ['Products'],
       keepUnusedDataFor: 300, // 5 minutes for products by URL
@@ -204,10 +204,10 @@ export const RTKApi = createApi({
           items.join(','),
         );
 
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result };
+        return expectSdkList<IProductsEntity>(
+          result,
+          'Products.getProductsByIds',
+        );
       },
       providesTags: ['Products'],
       keepUnusedDataFor: 300, // 5 minutes for products by ID
@@ -263,10 +263,10 @@ export const RTKApi = createApi({
     getProductById: build.query<IProductsEntity, { id: number }>({
       queryFn: async ({ id }) => {
         const result = await getApi().Products.getProductById(id);
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IProductsEntity };
+        return expectSdkEntity<IProductsEntity>(
+          result,
+          'Products.getProductById',
+        );
       },
       providesTags: ['Products'],
       keepUnusedDataFor: 300, // 5 minutes for individual product
@@ -286,10 +286,7 @@ export const RTKApi = createApi({
       queryFn: async ({ id }) => {
         const result = await getApi().Pages.getPageById(id);
 
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IPagesEntity };
+        return expectSdkEntity<IPagesEntity>(result, 'Pages.getPageById');
       },
       providesTags: ['Pages'],
       keepUnusedDataFor: 600, // 10 minutes for pages
@@ -303,10 +300,7 @@ export const RTKApi = createApi({
     getBlockByMarker: build.query<IBlockEntity, BlockByMarkerProps>({
       queryFn: async ({ marker }) => {
         const result = await getApi().Blocks.getBlockByMarker(marker);
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IBlockEntity };
+        return expectSdkEntity<IBlockEntity>(result, 'Blocks.getBlockByMarker');
       },
       providesTags: ['Blocks'],
       keepUnusedDataFor: 600, // 10 minutes for blocks
@@ -326,10 +320,7 @@ export const RTKApi = createApi({
           0,
           100,
         );
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IAdminEntity[] };
+        return expectSdkList<IAdminEntity>(result, 'Admins.getAdminsInfo');
       },
       providesTags: ['Admins'],
       keepUnusedDataFor: 600, // 10 minutes for admins
@@ -342,10 +333,10 @@ export const RTKApi = createApi({
     getAuthProviders: build.query<IAuthProvidersEntity[], string>({
       queryFn: async () => {
         const result = await getApi().AuthProvider.getAuthProviders();
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IAuthProvidersEntity[] };
+        return expectSdkList<IAuthProvidersEntity>(
+          result,
+          'AuthProvider.getAuthProviders',
+        );
       },
       keepUnusedDataFor: 3600, // 1 hour for auth providers
     }),
@@ -358,10 +349,7 @@ export const RTKApi = createApi({
     getFormByMarker: build.query<IFormsEntity, { marker: string }>({
       queryFn: async ({ marker }) => {
         const result = await getApi().Forms.getFormByMarker(marker);
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IFormsEntity };
+        return expectSdkEntity<IFormsEntity>(result, 'Forms.getFormByMarker');
       },
       providesTags: ['Forms'],
       keepUnusedDataFor: 600, // 10 minutes for forms
@@ -374,10 +362,7 @@ export const RTKApi = createApi({
     getMe: build.query<IUserEntity, void>({
       queryFn: async () => {
         const result = await getApi().Users.getUser();
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IUserEntity };
+        return expectSdkEntity<IUserEntity>(result, 'Users.getUser');
       },
       providesTags: ['User'],
       keepUnusedDataFor: 60, // 1 minute for user data
@@ -390,12 +375,16 @@ export const RTKApi = createApi({
     getAccounts: build.query<IAccountsEntity[], object>({
       queryFn: async () => {
         const result = await getApi().Payments.getAccounts();
-        if (isError(result)) {
-          return { error: result };
+        const accounts = expectSdkList<IAccountsEntity>(
+          result,
+          'Payments.getAccounts',
+        );
+        if ('error' in accounts) {
+          return accounts;
         }
         /** Only accounts enabled in the admin panel may be offered at checkout. */
         return {
-          data: (result as IAccountsEntity[]).filter(
+          data: accounts.data.filter(
             (account) => account.isVisible && account.isUsed,
           ),
         };
@@ -412,10 +401,10 @@ export const RTKApi = createApi({
     getOrderStorageByMarker: build.query<IOrdersEntity, { marker: string }>({
       queryFn: async ({ marker }) => {
         const result = await getApi().Orders.getOrdersStorageByMarker(marker);
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IOrdersEntity };
+        return expectSdkEntity<IOrdersEntity>(
+          result,
+          'Orders.getOrdersStorageByMarker',
+        );
       },
       providesTags: ['Orders'],
       keepUnusedDataFor: 60, // 1 minute for orders
@@ -446,12 +435,17 @@ export const RTKApi = createApi({
             offset,
             ORDERS_PAGE_LIMIT,
           );
-          if (isError(result)) {
-            return { error: result };
+          const storage = expectSdkEntity<IOrdersByMarkerEntity>(
+            result,
+            'Orders.getAllOrdersByMarker',
+            'items',
+          );
+          if ('error' in storage) {
+            return storage;
           }
-          const page = result.items ?? [];
+          const page = storage.data.items ?? [];
           all.push(...page);
-          if (page.length < 1 || all.length >= (result.total ?? 0)) {
+          if (page.length < 1 || all.length >= (storage.data.total ?? 0)) {
             break;
           }
         }
@@ -469,10 +463,10 @@ export const RTKApi = createApi({
     getPaymentSessionById: build.query<ISessionEntity, { id: number }>({
       queryFn: async ({ id }) => {
         const result = await getApi().Payments.getSessionById(id);
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as ISessionEntity };
+        return expectSdkEntity<ISessionEntity>(
+          result,
+          'Payments.getSessionById',
+        );
       },
       providesTags: ['Sessions'],
       keepUnusedDataFor: 60, // 1 minute for sessions
@@ -487,10 +481,10 @@ export const RTKApi = createApi({
     getSingleOrder: build.query<IOrderByMarkerEntity, OrderReadProps>({
       queryFn: async ({ id, marker }) => {
         const result = await getApi().Orders.getOrderByMarkerAndId(marker, id);
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IOrderByMarkerEntity };
+        return expectSdkEntity<IOrderByMarkerEntity>(
+          result,
+          'Orders.getOrderByMarkerAndId',
+        );
       },
       providesTags: ['Orders'],
       keepUnusedDataFor: 60, // 1 minute for individual orders
@@ -522,10 +516,7 @@ export const RTKApi = createApi({
     createOrder: build.mutation<IBaseOrdersEntity, CreateOrderProps>({
       queryFn: async ({ marker, body }) => {
         const result = await getApi().Orders.createOrder(marker, body);
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IBaseOrdersEntity };
+        return expectSdkEntity<IBaseOrdersEntity>(result, 'Orders.createOrder');
       },
       invalidatesTags: ['Orders'],
     }),
@@ -544,10 +535,10 @@ export const RTKApi = createApi({
           id,
           body,
         );
-        if (isError(result)) {
-          return { error: result };
-        }
-        return { data: result as IBaseOrdersEntity };
+        return expectSdkEntity<IBaseOrdersEntity>(
+          result,
+          'Orders.updateOrderByMarkerAndId',
+        );
       },
       invalidatesTags: ['Orders'],
     }),
@@ -571,7 +562,23 @@ export const RTKApi = createApi({
         if (isError(result)) {
           return { error: result };
         }
-        return { data: result as boolean };
+        /**
+         * The only endpoint here that answers with a bare `boolean`, so it gets
+         * its own shape check rather than one of the `expectSdk*` guards: in
+         * shell mode a transient failure arrives as a flattened `{}`, which the
+         * old `as boolean` cast would have reported to the caller as a
+         * successful refund request.
+         */
+        if (typeof result !== 'boolean') {
+          return {
+            error: sdkShapeError(
+              'Orders.createRefundRequest',
+              'a boolean',
+              result,
+            ),
+          };
+        }
+        return { data: result };
       },
       invalidatesTags: ['Orders'],
     }),

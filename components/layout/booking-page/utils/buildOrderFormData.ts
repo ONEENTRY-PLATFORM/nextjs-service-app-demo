@@ -1,4 +1,4 @@
-import type { IOrdersFormData } from 'oneentry/dist/orders/ordersInterfaces';
+import type { IOrdersFormData } from 'oneentry/types';
 
 import {
   ORDER_FIELD_INTERVAL,

@@ -1,4 +1,4 @@
-import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
+import type { IOrderByMarkerEntity } from 'oneentry/types';
 
 import { formatUtcDate } from '@/components/layout/profile-page/utils/formatUtcDate';
 import { formatUtcTime } from '@/components/layout/profile-page/utils/formatUtcTime';

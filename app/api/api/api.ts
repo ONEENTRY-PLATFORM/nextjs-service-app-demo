@@ -1,5 +1,5 @@
 import { defineOneEntry } from 'oneentry';
-import type { IError } from 'oneentry/dist/base/utils';
+import type { IError } from 'oneentry/types';
 
 import { REFRESH_TOKEN_KEY } from '@/app/store/auth/authStorage';
 

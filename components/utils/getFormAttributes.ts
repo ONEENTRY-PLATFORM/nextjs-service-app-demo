@@ -1,4 +1,4 @@
-import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
+import type { IFormAttribute } from 'oneentry/types';
 
 /**
  * Extract form attributes (fields) from a OneEntry form entity as an array.

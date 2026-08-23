@@ -1,4 +1,4 @@
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IAttributeValues } from 'oneentry/types';
 
 import { dictText } from '@/components/utils/dictText';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';

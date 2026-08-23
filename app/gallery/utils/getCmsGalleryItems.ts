@@ -1,4 +1,4 @@
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type { IPagesEntity } from 'oneentry/types';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';

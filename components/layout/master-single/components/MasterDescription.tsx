@@ -1,4 +1,4 @@
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
+import type { IAdminEntity } from 'oneentry/types';
 import type { JSX } from 'react';
 
 import { parseSafeCmsHtml } from '@/components/layout/master-single/utils/parseSafeCmsHtml';

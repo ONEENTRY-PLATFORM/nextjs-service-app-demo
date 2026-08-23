@@ -1,4 +1,4 @@
-import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
+import type { IProductsEntity } from 'oneentry/types';
 
 import { firstAttrValue } from '@/components/utils/firstAttrValue';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';

@@ -1,7 +1,9 @@
 import { MapPin } from 'lucide-react';
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { IOrderByMarkerEntity } from 'oneentry/dist/orders/ordersInterfaces';
+import type {
+  IAdminEntity,
+  IAttributeValues,
+  IOrderByMarkerEntity,
+} from 'oneentry/types';
 import type { JSX } from 'react';
 import { useEffect, useState } from 'react';
 

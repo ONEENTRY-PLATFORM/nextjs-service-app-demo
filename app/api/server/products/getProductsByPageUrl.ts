@@ -1,8 +1,8 @@
-import type { IError } from 'oneentry/dist/base/utils';
 import type {
+  IError,
   IProductsEntity,
   IProductsResponse,
-} from 'oneentry/dist/products/productsInterfaces';
+} from 'oneentry/types';
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';

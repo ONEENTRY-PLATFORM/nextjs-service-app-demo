@@ -1,4 +1,4 @@
-import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
+import type { IMenusPages } from 'oneentry/types';
 
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';

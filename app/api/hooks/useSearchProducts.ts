@@ -1,6 +1,6 @@
 'use client';
 
-import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
+import type { IProductsEntity } from 'oneentry/types';
 
 import { useSearchProductsQuery } from '@/app/api/api/RTKApi';
 

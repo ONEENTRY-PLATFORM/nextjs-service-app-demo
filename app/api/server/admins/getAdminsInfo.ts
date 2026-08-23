@@ -1,6 +1,4 @@
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
-import type { IError } from 'oneentry/dist/base/utils';
-import type { IFilterParams } from 'oneentry/dist/products/productsInterfaces';
+import type { IAdminEntity, IError, IFilterParams } from 'oneentry/types';
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';

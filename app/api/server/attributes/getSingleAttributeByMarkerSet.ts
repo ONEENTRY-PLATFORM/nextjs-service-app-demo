@@ -1,5 +1,4 @@
-import type { IAttributesSetsEntity } from 'oneentry/dist/attribute-sets/attributeSetsInterfaces';
-import type { IError } from 'oneentry/dist/base/utils';
+import type { IAttributesSetsEntity, IError } from 'oneentry/types';
 
 import { getApi } from '@/app/api/api/api';
 import { createCachedCmsReader } from '@/app/api/utils/createCachedCmsReader';

@@ -1,4 +1,4 @@
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IAttributeValues } from 'oneentry/types';
 
 /**
  * dictText — read a `system_content` string by marker, falling back to a literal.

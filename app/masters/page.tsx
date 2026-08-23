@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type { IAdminEntity, IPagesEntity } from 'oneentry/types';
 import type { JSX } from 'react';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';

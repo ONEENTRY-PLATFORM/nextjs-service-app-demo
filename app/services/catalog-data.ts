@@ -1,6 +1,8 @@
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
-import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
+import type {
+  IAttributeValues,
+  IPagesEntity,
+  IProductsEntity,
+} from 'oneentry/types';
 
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getProductsByPageUrl } from '@/app/api/server/products/getProductsByPageUrl';

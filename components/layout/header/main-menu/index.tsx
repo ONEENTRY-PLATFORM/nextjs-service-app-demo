@@ -1,4 +1,4 @@
-import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
+import type { IMenusEntity } from 'oneentry/types';
 import type { JSX } from 'react';
 
 import { flatMenuToNested } from '@/components/utils/flatMenuToNested';

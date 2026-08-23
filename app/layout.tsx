@@ -2,7 +2,7 @@ import '@/app/globals.css';
 
 import type { Metadata } from 'next';
 import { Lato, League_Gothic } from 'next/font/google';
-import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
+import type { IMenusEntity } from 'oneentry/types';
 import type { JSX, ReactNode } from 'react';
 
 import { LANG_CODE } from '@/app/api/api/api';

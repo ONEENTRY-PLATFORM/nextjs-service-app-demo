@@ -1,9 +1,11 @@
 'use client';
 
 import { useTransitionRouter } from 'next-transition-router';
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type {
+  IAdminEntity,
+  IAttributeValues,
+  IPagesEntity,
+} from 'oneentry/types';
 import type { JSX } from 'react';
 
 import { useAppDispatch } from '@/app/store/hooks';

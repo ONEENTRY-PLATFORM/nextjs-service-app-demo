@@ -1,4 +1,4 @@
-import type { IAttributeValue } from 'oneentry/dist/base/utils';
+import type { IAttributeValue } from 'oneentry/types';
 
 import daySlots from '@/components/layout/booking-page/utils/daySlots';
 

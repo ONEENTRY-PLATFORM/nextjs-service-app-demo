@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 // Aliased: the route-segment `export const dynamic` below owns the name `dynamic`.
 import nextDynamic from 'next/dynamic';
-import type { IBlockEntity } from 'oneentry/dist/blocks/blocksInterfaces';
+import type { IBlockEntity } from 'oneentry/types';
 import type { JSX } from 'react';
 import { cache } from 'react';
 

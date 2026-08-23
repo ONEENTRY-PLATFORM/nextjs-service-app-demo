@@ -1,6 +1,6 @@
 'use client';
 
-import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
+import type { IFormAttribute } from 'oneentry/types';
 import { useMemo } from 'react';
 
 import { useGetFormByMarkerQuery } from '@/app/api/api/RTKApi';

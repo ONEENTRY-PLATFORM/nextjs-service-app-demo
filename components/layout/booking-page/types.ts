@@ -4,7 +4,7 @@
  * fallback and passed into the client wizard, so they must stay JSON-safe.
  */
 
-import type { IAttributeValue } from 'oneentry/dist/base/utils';
+import type { IAttributeValue } from 'oneentry/types';
 
 /**
  * A salon location — a child page of `salons` in the CMS.

@@ -1,4 +1,4 @@
-import type { IMenusPages } from 'oneentry/dist/menus/menusInterfaces';
+import type { IMenusPages } from 'oneentry/types';
 
 /**
  * Convert a flat menu structure to a nested structure based on parent-child relationships.

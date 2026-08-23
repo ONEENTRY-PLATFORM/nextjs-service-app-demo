@@ -1,11 +1,11 @@
 'use client';
 
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
 import type {
+  IAdminEntity,
+  IAttributeValues,
   IOrderByMarkerEntity,
   IOrderData,
-} from 'oneentry/dist/orders/ordersInterfaces';
+} from 'oneentry/types';
 import type { JSX } from 'react';
 import { useCallback, useRef, useState } from 'react';
 

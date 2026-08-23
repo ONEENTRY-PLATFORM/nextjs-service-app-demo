@@ -2,7 +2,7 @@
 
 import { ArrowUpRight, Scissors } from 'lucide-react';
 import Link from 'next/link';
-import type { IProductsEntity } from 'oneentry/dist/products/productsInterfaces';
+import type { IProductsEntity } from 'oneentry/types';
 import type { Dispatch, JSX, SetStateAction } from 'react';
 
 import { useGetPageByIdQuery } from '@/app/api/api/RTKApi';

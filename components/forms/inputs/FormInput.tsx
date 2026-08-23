@@ -1,4 +1,4 @@
-import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
+import type { IFormAttribute } from 'oneentry/types';
 import type { JSX, Key } from 'react';
 import { useEffect, useRef, useState } from 'react';
 

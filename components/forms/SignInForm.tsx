@@ -1,8 +1,10 @@
 'use client';
 
-import type { IAuthPostBody } from 'oneentry/dist/auth-provider/authProvidersInterfaces';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
+import type {
+  IAttributeValues,
+  IAuthPostBody,
+  IFormAttribute,
+} from 'oneentry/types';
 import type { FormEvent, JSX } from 'react';
 import { useContext, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';

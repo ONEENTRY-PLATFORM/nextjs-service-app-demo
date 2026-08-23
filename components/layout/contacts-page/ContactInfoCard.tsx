@@ -8,7 +8,7 @@ import {
   Phone,
   Twitter,
 } from 'lucide-react';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IAttributeValues } from 'oneentry/types';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';

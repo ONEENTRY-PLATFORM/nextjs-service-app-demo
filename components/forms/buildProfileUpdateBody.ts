@@ -1,6 +1,4 @@
-import type { IAuthData } from 'oneentry/dist/auth-provider/authProvidersInterfaces';
-import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
-import type { IUserBody } from 'oneentry/dist/users/usersInterfaces';
+import type { IAuthData, IFormAttribute, IUserBody } from 'oneentry/types';
 
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isLoginCredential } from '@/components/forms/fieldFlags/isLoginCredential';

@@ -1,6 +1,6 @@
 'use client';
 
-import type { IError } from 'oneentry/dist/base/utils';
+import type { IError } from 'oneentry/types';
 import { useEffect } from 'react';
 
 import { readRefreshToken } from './authStorage';

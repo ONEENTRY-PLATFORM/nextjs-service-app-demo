@@ -1,6 +1,6 @@
 'use client';
 
-import type { IAccountsEntity } from 'oneentry/dist/payments/paymentsInterfaces';
+import type { IAccountsEntity } from 'oneentry/types';
 import { useContext, useState } from 'react';
 
 import { usePaymentAccounts } from '@/app/api/hooks/usePaymentAccounts';

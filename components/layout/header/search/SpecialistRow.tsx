@@ -2,7 +2,7 @@
 
 import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
+import type { IAdminEntity } from 'oneentry/types';
 import type { Dispatch, JSX, SetStateAction } from 'react';
 
 import Image from '@/components/shared/Image';

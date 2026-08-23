@@ -1,7 +1,6 @@
 import 'server-only';
 
-import type { IAttributesSetsEntity } from 'oneentry/dist/attribute-sets/attributeSetsInterfaces';
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IAttributesSetsEntity, IAttributeValues } from 'oneentry/types';
 import { cache } from 'react';
 
 import { getApi } from '@/app/api/api/api';

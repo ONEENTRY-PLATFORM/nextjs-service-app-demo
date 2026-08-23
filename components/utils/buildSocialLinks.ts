@@ -1,4 +1,4 @@
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
+import type { IAttributeValues } from 'oneentry/types';
 
 import type { SocialEntry } from '@/components/data/socialData';
 import { socialData } from '@/components/data/socialData';

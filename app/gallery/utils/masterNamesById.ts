@@ -1,4 +1,4 @@
-import type { IAdminEntity } from 'oneentry/dist/admins/adminsInterfaces';
+import type { IAdminEntity } from 'oneentry/types';
 
 /**
  * `master_name` of every master admin keyed by admin id, for resolving the

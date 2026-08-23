@@ -1,4 +1,4 @@
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type { IPagesEntity } from 'oneentry/types';
 
 /**
  * Plain-text body of a CMS page, for `description` in metadata and JSON-LD.

@@ -1,4 +1,4 @@
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
+import type { IPagesEntity } from 'oneentry/types';
 
 import type { SalonPhoto } from '@/components/layout/salon-page/types';
 import { getGalleryImageUrls } from '@/components/utils/getGalleryImageUrls';

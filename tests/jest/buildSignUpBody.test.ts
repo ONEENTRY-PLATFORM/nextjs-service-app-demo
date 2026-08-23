@@ -1,4 +1,4 @@
-import type { IFormAttribute } from 'oneentry/dist/forms/formsInterfaces';
+import type { IFormAttribute } from 'oneentry/types';
 
 import { buildSignUpBody } from '@/components/forms/buildSignUpBody';
 import { isSignUpVisibleField } from '@/components/forms/fieldFlags/isSignUpVisibleField';

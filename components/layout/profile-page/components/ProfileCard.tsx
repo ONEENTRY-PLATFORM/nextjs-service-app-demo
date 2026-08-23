@@ -1,8 +1,10 @@
 'use client';
 
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { IPagesEntity } from 'oneentry/dist/pages/pagesInterfaces';
-import type { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
+import type {
+  IAttributeValues,
+  IPagesEntity,
+  IUserEntity,
+} from 'oneentry/types';
 import type { JSX } from 'react';
 
 import UserForm from '@/components/forms/UserForm';

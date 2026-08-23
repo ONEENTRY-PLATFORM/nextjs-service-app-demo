@@ -1,5 +1,4 @@
-import type { IAttributeValues } from 'oneentry/dist/base/utils';
-import type { IMenusEntity } from 'oneentry/dist/menus/menusInterfaces';
+import type { IAttributeValues, IMenusEntity } from 'oneentry/types';
 import type { ReactElement } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
