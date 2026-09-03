@@ -1,19 +1,27 @@
+import type { IAttributeValues } from 'oneentry/types';
 import type { JSX } from 'react';
 
-import { copyrightsData } from '@/components/data/copyrightsData';
+import { dictText } from '@/components/utils/dictText';
 
 /**
  * Copyrights component
- * Displays copyright information including date and company name.
- * @returns {JSX.Element} JSX.Element
+ *
+ * The line comes from the `footer_copyright_text` dictionary marker, where the
+ * year is the `%year%` placeholder — the dictionary rejects `{}` braces, and a
+ * hardcoded year silently goes stale every January. It is substituted at render
+ * time, so an ISR revalidation carries the new year on its own.
+ * @param   {object}           props      - Component properties
+ * @param   {IAttributeValues} props.dict - Dictionary object containing localized text values from OneEntry CMS
+ * @returns {JSX.Element}                 JSX.Element
  */
-const Copyrights = (): JSX.Element => {
-  return (
-    <>
-      <span className="leading-5">{copyrightsData.date}</span>
-      <span className="leading-5">{copyrightsData.company}</span>
-    </>
-  );
+const Copyrights = ({ dict }: { dict: IAttributeValues }): JSX.Element => {
+  const line = dictText(
+    dict,
+    'footer_copyright_text',
+    '@ %year% Thalia Beauty Studio',
+  ).replace('%year%', String(new Date().getFullYear()));
+
+  return <span className="leading-5">{line}</span>;
 };
 
 export default Copyrights;

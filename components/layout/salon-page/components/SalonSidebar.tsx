@@ -4,6 +4,7 @@ import type { ComponentType, JSX } from 'react';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useDict } from '@/app/store/providers/useDict';
 import { dictText } from '@/components/utils/dictText';
+import { openingHoursValue } from '@/components/utils/openingHoursValue';
 
 import type { SalonDetail } from '../types';
 
@@ -99,7 +100,7 @@ const SalonSidebar = ({ salon }: { salon: SalonDetail }): JSX.Element => {
             icon={Clock}
             color={c}
             label={dictText(dict, 'salon_hours_label', 'Hours')}
-            value={dictText(dict, 'salon_hours_value', 'Daily 10:00–22:00')}
+            value={openingHoursValue(salon.hours, dict)}
           />
         </div>
       </RevealAnimations>

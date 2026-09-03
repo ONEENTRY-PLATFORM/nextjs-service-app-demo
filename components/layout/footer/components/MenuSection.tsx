@@ -210,7 +210,7 @@ const MenuSection = async ({
 
       {/* Copyrights */}
       <div className="mt-10 text-sm">
-        <Copyrights />
+        <Copyrights dict={dict} />
       </div>
     </div>
   );

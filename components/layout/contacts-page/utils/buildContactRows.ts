@@ -2,6 +2,7 @@ import type { IAttributeValues } from 'oneentry/types';
 
 import { dictText } from '@/components/utils/dictText';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
+import { openingHoursValue } from '@/components/utils/openingHoursValue';
 import type { CmsSalon } from '@/components/utils/salonFromPage';
 
 /**
@@ -70,13 +71,10 @@ export const buildContactRows = ({
     });
   }
 
-  const daily = dictText(dict, 'stat_daily_text', 'Daily');
   rows.push({
     icon: 'clock',
     label: dictText(dict, 'salon_hours_label', 'Working hours'),
-    value: hours
-      ? `${daily} ${hours}`
-      : dictText(dict, 'salon_hours_value', 'Daily 10:00–22:00'),
+    value: openingHoursValue(hours, dict),
     href: '#',
   });
 

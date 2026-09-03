@@ -21,6 +21,7 @@ import SectionHeading from '@/components/shared/SectionHeading';
 import { dictText } from '@/components/utils/dictText';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
+import { openingHoursValue } from '@/components/utils/openingHoursValue';
 import parseOpeningTime from '@/components/utils/parseOpeningTime';
 import { plainTextFromTextAttr } from '@/components/utils/plainTextFromTextAttr';
 import { salonFromPage } from '@/components/utils/salonFromPage';
@@ -97,6 +98,8 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
   );
   /** Counters strip: the hours cell only works while the week is uniform. */
   const openingSummary = summarizeOpeningHours(openingRows);
+  /** One-line hours for the location cards — CMS week, dictionary as fallback. */
+  const hoursText = openingHoursValue(openingSummary?.hours, dict);
 
   const title = page?.localizeInfos?.title || 'Contacts';
   /** Hero texts and background live in the page's `page_simple` attributes. */
@@ -137,7 +140,7 @@ const ContactsPageLayout = async (): Promise<JSX.Element> => {
       />
 
       {/* Location cards */}
-      <SalonLocations salons={salons} />
+      <SalonLocations salons={salons} hoursText={hoursText} />
 
       {/* Get in touch */}
       <section className="bg-white pt-2 pb-6 md:pt-6 md:pb-10">

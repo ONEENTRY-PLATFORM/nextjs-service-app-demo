@@ -18,14 +18,17 @@ export type { ContactSalon };
  * cards ({@link SalonCard}; stacked on mobile, a horizontal snap row on tablet,
  * a 3-column grid on desktop) and the scroll dots shown only where the row
  * scrolls.
- * @param   {object}         props        - Component properties
- * @param   {ContactSalon[]} props.salons - Salons to render
- * @returns {JSX.Element}                 Locations section
+ * @param   {object}         props           - Component properties
+ * @param   {ContactSalon[]} props.salons    - Salons to render
+ * @param   {string}         props.hoursText - Opening hours line shown on every card
+ * @returns {JSX.Element}                    Locations section
  */
 const SalonLocations = ({
   salons,
+  hoursText,
 }: {
   salons: ContactSalon[];
+  hoursText: string;
 }): JSX.Element => {
   const dict = useDict();
   /** Index of the card closest to the scroll position — drives the dots */
@@ -77,7 +80,12 @@ const SalonLocations = ({
               style={{ scrollbarWidth: 'none' }}
             >
               {salons.map((salon, i) => (
-                <SalonCard key={salon.id} salon={salon} idx={i} />
+                <SalonCard
+                  key={salon.id}
+                  salon={salon}
+                  idx={i}
+                  hoursText={hoursText}
+                />
               ))}
             </div>
 

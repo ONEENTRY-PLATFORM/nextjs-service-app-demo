@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
+import { getBlockByMarker } from '@/app/api/server/blocks/getBlockByMarker';
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { resolveCmsPage } from '@/app/utils/resolveCmsPage';
@@ -12,7 +13,9 @@ import type { SalonDetail } from '@/components/layout/salon-page/types';
 import { salonContentFromPage } from '@/components/layout/salon-page/utils/salonContentFromPage';
 import { salonPhotosFromPage } from '@/components/layout/salon-page/utils/salonPhotosFromPage';
 import { formatUaePhone } from '@/components/utils/formatUaePhone';
+import parseOpeningTime from '@/components/utils/parseOpeningTime';
 import { salonFromPage } from '@/components/utils/salonFromPage';
+import summarizeOpeningHours from '@/components/utils/summarizeOpeningHours';
 
 /**
  * CMS content is the same for everyone — prerender this route and refresh it
@@ -68,6 +71,19 @@ export default async function SalonDetailLayout({
   /** About paragraphs and highlight bullets, read from the CMS page body. */
   const { about, highlights } = salonContentFromPage(page);
 
+  /**
+   * Opening hours of the studio — the shared CMS `opening_time` block, collapsed
+   * to one range. `null` (a week with differing days, or no block at all) lets
+   * the sidebar fall back to the dictionary line.
+   */
+  const openingResult = await getBlockByMarker('opening_time');
+  const hours =
+    summarizeOpeningHours(
+      parseOpeningTime(
+        openingResult.block?.attributeValues?.opening_time?.value,
+      ),
+    )?.hours ?? null;
+
   const detail: SalonDetail = {
     name: salon.name,
     address: salon.address,
@@ -77,6 +93,7 @@ export default async function SalonDetailLayout({
     about,
     highlights,
     photos,
+    hours,
   };
 
   return <SalonPageContent salon={detail} />;

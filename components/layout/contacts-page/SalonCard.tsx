@@ -15,17 +15,20 @@ import type { ContactSalon } from './types';
  * phone, number badge, hours pill, map iframe and the CTA row ("Call us" on
  * mobile, "Directions" on desktop) plus the outlined "View studio" link to the
  * salon detail page (`/salons/{url}`).
- * @param   {object}       props       - Component properties
- * @param   {ContactSalon} props.salon - Salon to render
- * @param   {number}       props.idx   - Card index (number badge, animation order)
- * @returns {JSX.Element}              Location card
+ * @param   {object}       props           - Component properties
+ * @param   {ContactSalon} props.salon     - Salon to render
+ * @param   {number}       props.idx       - Card index (number badge, animation order)
+ * @param   {string}       props.hoursText - Opening hours line (CMS `opening_time`, dictionary as fallback)
+ * @returns {JSX.Element}                  Location card
  */
 const SalonCard = ({
   salon,
   idx,
+  hoursText,
 }: {
   salon: ContactSalon;
   idx: number;
+  hoursText: string;
 }): JSX.Element => {
   const dict = useDict();
   /** Hover state drives the accent-colored shadow/border (dynamic color) */
@@ -105,7 +108,7 @@ const SalonCard = ({
               className="text-sm font-medium"
               style={{ color: salon.color }}
             >
-              {dictText(dict, 'salon_hours_value', 'Daily 10:00–22:00')}
+              {hoursText}
             </span>
           </div>
         </div>
