@@ -6,6 +6,7 @@ import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesBy
 import { getPageByUrl } from '@/app/api/server/pages/getPageByUrl';
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
+import { getServiceCategoryMap } from '@/app/api/utils/getServiceCategoryMap';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import MastersPageContent from '@/components/layout/masters-page';
@@ -29,14 +30,6 @@ import { salonLabel } from '@/components/utils/salonLabel';
  */
 export const dynamic = 'force-static';
 export const revalidate = 60;
-
-/** Services child page `pageUrl` → main price-list category */
-const CATEGORY_BY_PAGEURL: Record<string, MastersMainCategory> = {
-  hair: 'HAIR',
-  face: 'FACE',
-  body: 'BODY',
-  nails: 'NAILS',
-};
 
 /**
  * Map a CMS admin onto the normalized specialist shape of the masters page.
@@ -119,11 +112,11 @@ const toMasterItem = ({
  */
 const MastersPageLayout = async (): Promise<JSX.Element> => {
   /** All five reads are independent — fetch them in parallel to cut TTFB. */
-  const [dict, { admins }, servicesResult, salonsResult, pageResult] =
+  const [dict, { admins }, categoryByServiceId, salonsResult, pageResult] =
     await Promise.all([
       getDictionary(),
       getMastersList(),
-      getChildPagesByParentUrl('services'),
+      getServiceCategoryMap(),
       getChildPagesByParentUrl('salons'),
       getPageByUrl('masters'),
     ]);
@@ -137,31 +130,6 @@ const MastersPageLayout = async (): Promise<JSX.Element> => {
    * masters. `getPageByUrl` reports failures in its envelope, it never throws.
    */
   const heading = pageResult.page?.localizeInfos?.title || 'Specialists';
-
-  /**
-   * Service page id → main category. Keyed by BOTH the 4 main category pages
-   * and their subcategory children, because `master_services` references
-   * products whose `value.parentId` is a subcategory page id.
-   */
-  const categoryByServiceId = new Map<number, MastersMainCategory>();
-  const mainCats = (servicesResult.pages ?? []).filter(
-    (sp: IPagesEntity) => CATEGORY_BY_PAGEURL[sp.pageUrl],
-  );
-  mainCats.forEach((sp: IPagesEntity) => {
-    const cat = CATEGORY_BY_PAGEURL[sp.pageUrl];
-    if (cat) categoryByServiceId.set(sp.id, cat);
-  });
-  /** Map each subcategory (child of a main category) to that main category. */
-  const subcatGroups = await Promise.all(
-    mainCats.map(async (sp: IPagesEntity) => ({
-      cat: CATEGORY_BY_PAGEURL[sp.pageUrl],
-      children: (await getChildPagesByParentUrl(sp.pageUrl)).pages,
-    })),
-  );
-  subcatGroups.forEach(({ cat, children }) => {
-    if (!cat) return;
-    children?.forEach((c: IPagesEntity) => categoryByServiceId.set(c.id, cat));
-  });
 
   /** Salon filter options from the CMS salon pages */
   const cmsSalons: SalonOption[] =

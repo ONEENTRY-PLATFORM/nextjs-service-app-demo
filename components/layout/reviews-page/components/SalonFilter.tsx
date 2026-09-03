@@ -3,19 +3,19 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
+import type { SalonOption } from '@/components/layout/masters-page/taxonomy';
 import { dictText } from '@/components/utils/dictText';
 
 import { DARK, MUTED, PINK } from '../constants';
-import type { ReviewSalon } from '../data';
 
 /**
  * SalonFilter — the salon selector: a dropdown on mobile / small tablet and a three-column
  * grid of cards on desktop. The active salon uses the PINK brand gradient;
  * clicking the active desktop card clears the filter (back to all studios).
  * @param   {object}                  props          - Component properties
- * @param   {ReviewSalon[]}           props.salons   - Salon locations
- * @param   {string|null}             props.salonId  - Active salon id (`null` = all studios)
- * @param   {(id: string|null)=>void} props.onSelect - Select a salon (or `null` for all)
+ * @param   {SalonOption[]}           props.salons   - Salon locations
+ * @param   {number|null}             props.salonId  - Active salon page id (`null` = all studios)
+ * @param   {(id: number|null)=>void} props.onSelect - Select a salon (or `null` for all)
  * @returns {JSX.Element}                            Salon filter
  */
 const SalonFilter = ({
@@ -23,9 +23,9 @@ const SalonFilter = ({
   salonId,
   onSelect,
 }: {
-  salons: ReviewSalon[];
-  salonId: string | null;
-  onSelect: (id: string | null) => void;
+  salons: SalonOption[];
+  salonId: number | null;
+  onSelect: (id: number | null) => void;
 }): JSX.Element => {
   const dict = useDict();
   const [open, setOpen] = useState(false);

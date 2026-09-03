@@ -1,12 +1,15 @@
 'use client';
 
 import type { JSX } from 'react';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
 
+import { OpenDrawerContext } from '@/app/store/providers/OpenDrawerContext';
 import { useDict } from '@/app/store/providers/useDict';
 import CloseButton from '@/components/shared/CloseButton';
 import DialogPortal from '@/components/shared/DialogPortal';
+import type { ReviewPhoto } from '@/components/shared/review-modal/types';
+import { useSubmitReview } from '@/components/shared/review-modal/useSubmitReview';
 import { useDialogA11y } from '@/components/shared/useDialogA11y';
 import { dictText } from '@/components/utils/dictText';
 
@@ -18,29 +21,61 @@ import StarPicker from './components/StarPicker';
  * 5 photo thumbnails, a pink-bordered textarea and a gradient Confirm button
  * enabled once a rating and some text are set.
  *
- * Client-side only, exactly like the mock: the CMS reviews storage is not
- * populated yet, so confirming thanks the visitor with a toast and closes.
- * @param   {object}      props         - Component properties
- * @param   {() => void}  props.onClose - Close handler
- * @returns {JSX.Element}               JSX.Element representing the review modal
+ * The review is stored in the `master_review` CMS form. The form is not
+ * anonymous, so a signed-out visitor gets the sign-in popup instead of a
+ * submit; an accepted review goes to moderation, hence the thank-you copy
+ * rather than a promise that it is already on the page.
+ * @param   {object}      props          - Component properties
+ * @param   {number}      props.masterId - Admin id of the specialist being reviewed
+ * @param   {() => void}  props.onClose  - Close handler
+ * @returns {JSX.Element}                JSX.Element representing the review modal
  */
-const ReviewModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
+const ReviewModal = ({
+  masterId,
+  onClose,
+}: {
+  masterId: number;
+  onClose: () => void;
+}): JSX.Element => {
   const dict = useDict();
   const [rating, setRating] = useState(0);
   const [text, setText] = useState('');
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<ReviewPhoto[]>([]);
+
+  /** Sign-in popup, opened when a signed-out visitor confirms. */
+  const { setOpen, setComponent, setDirection } = useContext(OpenDrawerContext);
+  const { isAuth, loading, error, submit } = useSubmitReview();
 
   /** Dialog a11y: focus trap/restore, scroll lock and Escape → close. */
   const dialogRef = useDialogA11y({ isOpen: true, onClose });
 
   /** Confirm unlocks once a rating and non-empty text are provided */
-  const ready = rating > 0 && text.trim().length > 0;
+  const ready = rating > 0 && text.trim().length > 0 && !loading;
 
-  /** Thank the visitor and close (no persistence — parity with the mock) */
-  const handleConfirm = () => {
+  /**
+   * Send the review, or route a signed-out visitor to the sign-in popup.
+   * @returns {Promise<void>} Resolves once the submit settles
+   */
+  const handleConfirm = async (): Promise<void> => {
     if (!ready) {
       return;
     }
+
+    if (!isAuth) {
+      onClose();
+      /** Sign In opens as the "base" step — slide in from the left. */
+      setDirection('backward');
+      setOpen(true);
+      setComponent('SignInForm');
+      return;
+    }
+
+    const sent = await submit({ masterId, rating, text: text.trim(), photos });
+    if (!sent) {
+      return;
+    }
+
+    photos.forEach((photo) => URL.revokeObjectURL(photo.url));
     toast(
       dictText(dict, 'review_thank_you_toast', 'Thank you for your review!'),
     );
@@ -112,6 +147,13 @@ const ReviewModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
               />
             </div>
 
+            {/* Failure copy from the CMS form / API — never a silent no-op */}
+            {error && (
+              <p className="text-sm text-fuchsia-500" role="alert">
+                {error}
+              </p>
+            )}
+
             {/* Confirm */}
             <button
               onClick={handleConfirm}
@@ -123,7 +165,9 @@ const ReviewModal = ({ onClose }: { onClose: () => void }): JSX.Element => {
                   : 'cursor-not-allowed bg-slate-50 text-neutral-300')
               }
             >
-              {dictText(dict, 'confirm_text', 'Confirm')}
+              {isAuth
+                ? dictText(dict, 'confirm_text', 'Confirm')
+                : dictText(dict, 'sign_in_text', 'Sign in')}
             </button>
           </div>
         </div>

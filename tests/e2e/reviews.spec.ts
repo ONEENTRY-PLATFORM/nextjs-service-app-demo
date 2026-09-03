@@ -1,8 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-// The reviews page (`/reviews`) is driven by local data until reviews move to
-// the CMS, so it renders regardless of the OneEntry `reviews` page. It offers
-// salon / category / specialist filters over a grid of review cards.
+// The reviews page (`/reviews`) renders the `master_review` form storage, joined
+// with each specialist's salon and service category. It renders regardless of the
+// OneEntry `reviews` page entity and offers salon / category / specialist filters
+// over a grid of review cards.
 test.describe('Reviews page', () => {
   test('renders the heading and review cards', async ({ page }) => {
     await page.goto('/reviews');
@@ -17,7 +18,7 @@ test.describe('Reviews page', () => {
       reviews.getByRole('heading', { name: 'Reviews', level: 1 }),
     ).toBeVisible();
 
-    // The card grid is populated from the local dataset
+    // The card grid is populated from the CMS reviews storage
     await expect(reviews.getByTestId('review-card').first()).toBeVisible();
     expect(await reviews.getByTestId('review-card').count()).toBeGreaterThan(0);
   });

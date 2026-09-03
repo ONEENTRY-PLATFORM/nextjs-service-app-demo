@@ -8,8 +8,8 @@ import type {
 import type { JSX } from 'react';
 
 import UserForm from '@/components/forms/UserForm';
+import { getUserDisplayName } from '@/components/utils/getUserDisplayName';
 
-import { getUserDisplayName } from '../utils/getUserDisplayName';
 import Avatar from './Avatar';
 import SignOutButton from './SignOutButton';
 

@@ -5,7 +5,6 @@ import { useDict } from '@/app/store/providers/useDict';
 import { dictText } from '@/components/utils/dictText';
 
 import { DARK, MUTED, PINK } from '../constants';
-import { MASTER_CAT } from '../data';
 
 /**
  * MasterFilter — the specialist filter: a free-text search input on mobile / small tablet and a
@@ -13,8 +12,7 @@ import { MASTER_CAT } from '../data';
  * brand gradient. The desktop pills are additionally narrowed by the current
  * category and search query (both mobile-only inputs, so no-ops on desktop).
  * @param   {object}            props              - Component properties
- * @param   {string[]}          props.masters      - Salon-filtered specialist names
- * @param   {string|null}       props.cat          - Active category (`null` = all)
+ * @param   {string[]}          props.masters      - Specialist names already narrowed by salon, category and search
  * @param   {string}            props.masterSearch - Mobile free-text search value
  * @param   {(v: string)=>void} props.onSearch     - Update the search value
  * @param   {string}            props.master       - Active specialist name or `All`
@@ -23,27 +21,19 @@ import { MASTER_CAT } from '../data';
  */
 const MasterFilter = ({
   masters,
-  cat,
   masterSearch,
   onSearch,
   master,
   onMaster,
 }: {
   masters: string[];
-  cat: string | null;
   masterSearch: string;
   onSearch: (v: string) => void;
   master: string;
   onMaster: (m: string) => void;
 }): JSX.Element => {
   const dict = useDict();
-  const q = masterSearch.trim().toLowerCase();
-  const pills = [
-    'All',
-    ...masters.filter(
-      (m) => (!cat || MASTER_CAT[m] === cat) && m.toLowerCase().includes(q),
-    ),
-  ];
+  const pills = ['All', ...masters];
 
   return (
     <div className="pt-4 pb-2">

@@ -6,7 +6,12 @@ describe('ReviewSlide', () => {
   it('renders the review title, text and star rating', () => {
     render(
       <ReviewSlide
-        item={{ title: 'Great salon', text: 'Loved the haircut!', rating: 4 }}
+        item={{
+          id: 'r1',
+          title: 'Great salon',
+          text: 'Loved the haircut!',
+          rating: 4,
+        }}
       />,
     );
 

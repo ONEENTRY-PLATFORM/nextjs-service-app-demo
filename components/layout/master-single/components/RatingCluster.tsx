@@ -20,16 +20,19 @@ import { dictText } from '@/components/utils/dictText';
  * @param   {number | null} props.rating       - Rating value (0–5), or `null` while unrated — the stars stay hidden then.
  * @param   {number}        props.reviewsCount - Number of reviews for this specialist.
  * @param   {string}        props.masterName   - Specialist name (pre-selects the reviews-page filter).
+ * @param   {number}        props.masterId     - Specialist admin id (the review is filed against it).
  * @returns {JSX.Element}                      JSX.Element representing the rating cluster.
  */
 const RatingCluster = ({
   rating,
   reviewsCount,
   masterName,
+  masterId,
 }: {
   rating: number | null;
   reviewsCount: number;
   masterName: string;
+  masterId: number;
 }): JSX.Element => {
   const dict = useDict();
   /** Whether the review modal is open */
@@ -61,7 +64,9 @@ const RatingCluster = ({
       >
         {dictText(dict, 'leave_review_text', 'Leave a review')}
       </button>
-      {reviewOpen && <ReviewModal onClose={() => setReviewOpen(false)} />}
+      {reviewOpen && (
+        <ReviewModal masterId={masterId} onClose={() => setReviewOpen(false)} />
+      )}
     </div>
   );
 };

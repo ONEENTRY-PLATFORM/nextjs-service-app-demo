@@ -58,7 +58,7 @@ const OrderButtonsGroup = ({
           <div className="flex-1">
             <RepeatOrder dict={dict} orderData={order} />
           </div>
-          <LeaveReviewButton />
+          <LeaveReviewButton masterId={master.id} />
         </>
       ) : (
         /** Canceled orders: only offer to book again, right-aligned as in the mock */

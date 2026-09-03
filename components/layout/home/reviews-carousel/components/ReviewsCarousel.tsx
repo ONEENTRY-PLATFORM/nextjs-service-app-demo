@@ -6,10 +6,10 @@ import type { JSX } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useDict } from '@/app/store/providers/useDict';
-import { reviewsData } from '@/components/data/reviewsData';
 import { dictText } from '@/components/utils/dictText';
 
 import ReviewsAnimations from '../animations/ReviewsAnimations';
+import type { ReviewSlideItem } from './ReviewSlide';
 import ReviewSlide from './ReviewSlide';
 
 /** Brand pink (`--color-accent-pink`) for the active dot background. */
@@ -23,9 +23,15 @@ const AUTOPLAY_DELAY = 5000;
  * Index-based single-review slider:
  * a centered review that fades on change, desktop side arrows, and a row of
  * dots (flanked by prev/next arrows on mobile). Autoplays and pauses on hover.
- * @returns {JSX.Element} React component that renders the reviews slider
+ * @param   {object}        props         - Component properties
+ * @param   {ReviewSlide[]} props.reviews - Reviews to rotate through, newest first
+ * @returns {JSX.Element}                 React component that renders the reviews slider
  */
-const ReviewsCarousel = (): JSX.Element => {
+const ReviewsCarousel = ({
+  reviews,
+}: {
+  reviews: ReviewSlideItem[];
+}): JSX.Element => {
   /** UI-text dictionary (system_content) with English fallbacks */
   const dict = useDict();
   /** Index of the currently displayed review */
@@ -34,7 +40,7 @@ const ReviewsCarousel = (): JSX.Element => {
   const [paused, setPaused] = useState(false);
 
   /** Total number of reviews */
-  const total = reviewsData.length;
+  const total = reviews.length;
 
   /** Show the previous review, wrapping around */
   const prev = useCallback(
@@ -59,7 +65,7 @@ const ReviewsCarousel = (): JSX.Element => {
   }
 
   /** Currently active review (guarded index access for noUncheckedIndexedAccess) */
-  const current = reviewsData[index] ?? reviewsData[0];
+  const current = reviews[index] ?? reviews[0];
   if (!current) {
     return <></>;
   }
@@ -106,10 +112,10 @@ const ReviewsCarousel = (): JSX.Element => {
             <ChevronLeft size={22} />
           </button>
           <div className="flex items-center gap-2">
-            {reviewsData.map((item, i) => (
+            {reviews.map((item, i) => (
               <button
                 type="button"
-                key={item.title}
+                key={item.id}
                 onClick={() => setIndex(i)}
                 aria-label={`${dictText(dict, 'go_to_review_aria', 'Go to review')} ${i + 1}`}
                 className="size-2 rounded-full transition-all"

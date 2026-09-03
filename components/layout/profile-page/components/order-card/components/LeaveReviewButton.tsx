@@ -9,11 +9,13 @@ import { dictText } from '@/components/utils/dictText';
 
 /**
  * LeaveReviewButton — the gradient "Leave a review" action on completed
- * visits. Opens the shared {@link ReviewModal} (rating picker, photos, text)
- * which thanks the visitor on confirm.
- * @returns {JSX.Element} JSX.Element representing the leave-a-review action
+ * visits. Opens the shared {@link ReviewModal} (rating picker, photos, text),
+ * which files the review against the specialist of that visit.
+ * @param   {object}      props          - Component properties
+ * @param   {number}      props.masterId - Admin id of the specialist who served the visit
+ * @returns {JSX.Element}                JSX.Element representing the leave-a-review action
  */
-const LeaveReviewButton = (): JSX.Element => {
+const LeaveReviewButton = ({ masterId }: { masterId: number }): JSX.Element => {
   const dict = useDict();
 
   /** Whether the review modal is open */
@@ -29,7 +31,9 @@ const LeaveReviewButton = (): JSX.Element => {
       >
         {dictText(dict, 'leave_review_text', 'Leave a review')}
       </button>
-      {reviewOpen && <ReviewModal onClose={() => setReviewOpen(false)} />}
+      {reviewOpen && (
+        <ReviewModal masterId={masterId} onClose={() => setReviewOpen(false)} />
+      )}
     </>
   );
 };

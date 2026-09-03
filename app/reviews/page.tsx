@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { JSX } from 'react';
 
+import { getReviewsView } from '@/app/api/utils/getReviewsView';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import ReviewsPageContent from '@/components/layout/reviews-page';
 
@@ -13,9 +14,10 @@ export const revalidate = 60;
 /**
  * ReviewsPageLayout — the "/reviews" page.
  *
- * The page is driven by local data (`components/layout/reviews-page/data.ts`)
- * until reviews move to the CMS, so it never 404s when the OneEntry `reviews`
- * page is missing — the content renders regardless.
+ * Reviews come from the `master_review` form storage, joined with the
+ * specialists' salon and service category (`getReviewsView`). The page never
+ * 404s over missing CMS content: an empty storage renders the empty state, and
+ * the OneEntry `reviews` page entity only feeds the metadata.
  * @param   {object}                     props              - Page properties
  * @param   {Promise<{master?: string}>} props.searchParams - Optional `?master=` to pre-select a specialist
  * @returns {Promise<JSX.Element>}                          JSX element representing the reviews page
@@ -26,13 +28,20 @@ const ReviewsPageLayout = async ({
 }: {
   searchParams: Promise<{ master?: string }>;
 }): Promise<JSX.Element> => {
-  const { master } = await searchParams;
+  const [{ master }, { reviews, salons }] = await Promise.all([
+    searchParams,
+    getReviewsView(),
+  ]);
 
   return (
     <div className="flex w-full flex-col bg-white">
       {/* Gradient accent strip */}
       <div className="h-1.25 bg-gradient-stats" />
-      <ReviewsPageContent initialMaster={master} />
+      <ReviewsPageContent
+        reviews={reviews}
+        salons={salons}
+        initialMaster={master}
+      />
     </div>
   );
 };

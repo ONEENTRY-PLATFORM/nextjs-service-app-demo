@@ -1,8 +1,9 @@
 import { MessageCircle } from 'lucide-react';
 import type { JSX } from 'react';
 
+import type { ReviewView } from '@/components/layout/reviews-page/types';
+
 import { PINK } from '../constants';
-import type { Review } from '../data';
 import Stars from './Stars';
 
 /**
@@ -10,10 +11,10 @@ import Stars from './Stars';
  * the CYAN {@link Stars}; a justified body; and a footer with the PINK
  * MessageCircle icon and specialist name.
  * @param   {object}      props        - Component properties
- * @param   {Review}      props.review - The review to render
+ * @param   {ReviewView}  props.review - The review to render
  * @returns {JSX.Element}              Review card
  */
-const ReviewCard = ({ review }: { review: Review }): JSX.Element => (
+const ReviewCard = ({ review }: { review: ReviewView }): JSX.Element => (
   <div
     data-testid="review-card"
     className="flex h-full flex-col gap-3 rounded-2xl border-[1.5px] border-slate-150 p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)]"

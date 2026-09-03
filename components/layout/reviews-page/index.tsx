@@ -9,6 +9,12 @@ import GridItemAnimations from '@/app/animations/GridItemAnimations';
 import RevealAnimations from '@/app/animations/RevealAnimations';
 import { useScrollTriggerRefresh } from '@/app/animations/utils/useScrollTriggerRefresh';
 import { useDict } from '@/app/store/providers/useDict';
+import type {
+  MastersMainCategory,
+  SalonOption,
+} from '@/components/layout/masters-page/taxonomy';
+import { MASTERS_MAIN_CATS } from '@/components/layout/masters-page/taxonomy';
+import type { ReviewView } from '@/components/layout/reviews-page/types';
 import { dictText } from '@/components/utils/dictText';
 
 import CategoryChips from './components/CategoryChips';
@@ -17,98 +23,125 @@ import ReviewCard from './components/ReviewCard';
 import SalonFilter from './components/SalonFilter';
 import Stars from './components/Stars';
 import { INK } from './constants';
-import type { MasterCategory } from './data';
-import { MASTER_CAT, MASTER_SALON, REVIEW_SALONS, REVIEWS } from './data';
-
-/** Categories in the mock's fixed display order. */
-const CAT_ORDER: readonly MasterCategory[] = ['Hair', 'Face', 'Body', 'Nails'];
 
 /**
  * ReviewsPageContent — the reviews page body: a back link, the "Reviews" heading with an average
  * rating summary, the salon / category / specialist filters and a responsive
- * grid of review cards. All filtering runs client-side over the local
- * {@link REVIEWS} data; the CYAN accent is used for ratings/stars while the
- * PINK brand gradient marks active filters and specialist names.
+ * grid of review cards. Filtering runs client-side over the reviews the server
+ * passed in; the CYAN accent is used for ratings/stars while the PINK brand
+ * gradient marks active filters and specialist names.
  *
- * Degrades to an empty-state message when no review matches the current
- * filters — never throws over missing data.
- * @param   {object}      props                 - Component properties
- * @param   {string}      [props.initialMaster] - Specialist to pre-select (e.g. from `?master=`)
- * @returns {JSX.Element}                       Reviews page content
+ * Degrades to an empty-state message when no review matches the current filters
+ * — and to the same message when the CMS has no reviews at all.
+ * @param   {object}        props                 - Component properties
+ * @param   {ReviewView[]}  props.reviews         - Reviews from the CMS, newest first
+ * @param   {SalonOption[]} props.salons          - Salon filter options
+ * @param   {string}        [props.initialMaster] - Specialist to pre-select (e.g. from `?master=`)
+ * @returns {JSX.Element}                         Reviews page content
  */
 const ReviewsPageContent = ({
+  reviews,
+  salons,
   initialMaster,
 }: {
+  reviews: ReviewView[];
+  salons: SalonOption[];
   initialMaster?: string | undefined;
 }): JSX.Element => {
   const dict = useDict();
-  /** Selected salon id — `null` = all studios. */
-  const [salonId, setSalonId] = useState<string | null>(
-    initialMaster ? (MASTER_SALON[initialMaster] ?? null) : null,
-  );
+  /** Salon of the pre-selected specialist, so `?master=` opens their studio. */
+  const initialSalonId =
+    reviews.find((review) => review.master === initialMaster)?.salonId ?? null;
+
+  /** Selected salon page id — `null` = all studios. */
+  const [salonId, setSalonId] = useState<number | null>(initialSalonId);
   /** Mobile category filter — `null` = all. */
-  const [cat, setCat] = useState<string | null>(null);
+  const [cat, setCat] = useState<MastersMainCategory | null>(null);
   /** Mobile free-text specialist search. */
   const [masterSearch, setMasterSearch] = useState('');
   /** Active specialist name or `All`. */
   const [master, setMaster] = useState<string>(initialMaster ?? 'All');
 
-  /** Specialists present in the selected salon, sorted. */
-  const masters = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          REVIEWS.filter(
-            (r) => !salonId || MASTER_SALON[r.master] === salonId,
-          ).map((r) => r.master),
-        ),
-      ).sort(),
-    [salonId],
+  /** Reviews of the selected salon (all studios when none is selected). */
+  const salonReviews = useMemo(
+    () => reviews.filter((review) => !salonId || review.salonId === salonId),
+    [reviews, salonId],
   );
 
-  /** Categories present among the current (salon-filtered) masters. */
+  /** Categories present among the current (salon-filtered) reviews. */
   const cats = useMemo(
-    () => CAT_ORDER.filter((c) => masters.some((m) => MASTER_CAT[m] === c)),
-    [masters],
+    () =>
+      MASTERS_MAIN_CATS.filter((option) =>
+        salonReviews.some((review) => review.category === option.id),
+      ),
+    [salonReviews],
   );
+
+  /** Specialist pills: narrowed by the category and the search box. */
+  const masters = useMemo(() => {
+    const query = masterSearch.trim().toLowerCase();
+    return Array.from(
+      new Set(
+        salonReviews
+          .filter(
+            (review) =>
+              review.master &&
+              (!cat || review.category === cat) &&
+              review.master.toLowerCase().includes(query),
+          )
+          .map((review) => review.master),
+      ),
+    ).sort();
+  }, [salonReviews, cat, masterSearch]);
 
   /**
    * Select a salon, dropping a specialist pick that no longer belongs to it.
    * Resetting here (in the event handler) instead of an effect avoids the
    * cascading re-render React warns about.
-   * @param   {string | null} id - Salon id, or `null` for all studios
+   * @param   {number | null} id - Salon page id, or `null` for all studios
    * @returns {void}
    */
-  const handleSalon = (id: string | null): void => {
+  const handleSalon = (id: number | null): void => {
     setSalonId(id);
-    if (master !== 'All' && id && MASTER_SALON[master] !== id) {
+    if (
+      master !== 'All' &&
+      id &&
+      !reviews.some(
+        (review) => review.master === master && review.salonId === id,
+      )
+    ) {
       setMaster('All');
     }
   };
 
   /**
    * Select a category, dropping a specialist pick outside it.
-   * @param   {string | null} next - Category name, or `null` for all
+   * @param   {MastersMainCategory | null} next - Category, or `null` for all
    * @returns {void}
    */
-  const handleCat = (next: string | null): void => {
+  const handleCat = (next: MastersMainCategory | null): void => {
     setCat(next);
-    if (master !== 'All' && next && MASTER_CAT[master] !== next) {
+    if (
+      master !== 'All' &&
+      next &&
+      !reviews.some(
+        (review) => review.master === master && review.category === next,
+      )
+    ) {
       setMaster('All');
     }
   };
 
   /** Reviews matching every active filter. */
   const filtered = useMemo(() => {
-    const q = masterSearch.trim().toLowerCase();
-    return REVIEWS.filter(
-      (r) =>
-        (!salonId || MASTER_SALON[r.master] === salonId) &&
-        (!cat || MASTER_CAT[r.master] === cat) &&
-        (master === 'All' || r.master === master) &&
-        (!q || r.master.toLowerCase().includes(q)),
+    const query = masterSearch.trim().toLowerCase();
+    return salonReviews.filter(
+      (review) =>
+        (!cat || review.category === cat) &&
+        (master === 'All' || review.master === master) &&
+        (!query || review.master.toLowerCase().includes(query)),
     );
-  }, [salonId, cat, master, masterSearch]);
+  }, [salonReviews, cat, master, masterSearch]);
 
   /** Average rating over the filtered set (`—` when empty). */
   const avg = filtered.length
@@ -156,17 +189,12 @@ const ReviewsPageContent = ({
 
       {/* Filters — fade-only reveal (they hold dropdown/scroll controls) */}
       <RevealAnimations fade>
-        <SalonFilter
-          salons={REVIEW_SALONS}
-          salonId={salonId}
-          onSelect={handleSalon}
-        />
+        <SalonFilter salons={salons} salonId={salonId} onSelect={handleSalon} />
 
         <CategoryChips cats={cats} cat={cat} onSelect={handleCat} />
 
         <MasterFilter
           masters={masters}
-          cat={cat}
           masterSearch={masterSearch}
           onSearch={setMasterSearch}
           master={master}

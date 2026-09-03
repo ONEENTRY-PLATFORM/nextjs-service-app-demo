@@ -7,8 +7,8 @@ import { type JSX, memo } from 'react';
 
 import { getPageById } from '@/app/api/server/pages/getPageById';
 import { getPagesByIds } from '@/app/api/server/pages/getPagesByIds';
+import { getReviews } from '@/app/api/server/reviews/getReviews';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
-import { REVIEWS } from '@/components/layout/reviews-page/data';
 import { entityLinks } from '@/components/utils/entityLinks';
 import { fileBlurDataUrl } from '@/components/utils/fileBlurDataUrl';
 import { fileDisplayUrl } from '@/components/utils/fileDisplayUrl';
@@ -121,12 +121,12 @@ const MasterSingleLayout = async ({
     .filter((chip) => chip.title);
 
   /**
-   * Review count for the header cluster — the reviews page runs on the local
-   * mock dataset while the CMS reviews storage is empty, so the count comes
-   * from the same source the "Reviews" link leads to.
+   * Review count for the header cluster — read from the same CMS storage the
+   * "Reviews" link leads to, so the number and the page can never disagree.
    */
-  const reviewsCount = REVIEWS.filter(
-    (review) => review.master === name,
+  const { reviews = [] } = await getReviews();
+  const reviewsCount = reviews.filter(
+    (review) => review.masterId === master.id,
   ).length;
 
   return (
@@ -174,6 +174,7 @@ const MasterSingleLayout = async ({
                 rating={rating}
                 reviewsCount={reviewsCount}
                 masterName={name}
+                masterId={master.id}
               />
             </div>
             <MasterExperience experience={experience} />

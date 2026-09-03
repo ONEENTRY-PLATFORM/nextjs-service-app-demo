@@ -5,25 +5,28 @@ import type { JSX } from 'react';
 import StarsGroup from '@/components/shared/StarsGroup';
 
 /**
+ * ReviewSlideItem — one review as the home slider renders it.
+ * @property {string} id     - Review record id, used as the slide key
+ * @property {string} title  - Reviewer name
+ * @property {string} text   - Review body
+ * @property {number} rating - Star rating, 0–5
+ */
+export type ReviewSlideItem = {
+  id: string;
+  title: string;
+  text: string;
+  rating: number;
+};
+
+/**
  * ReviewSlide component displays a single customer review slide.
  *
  * Renders one review — reviewer name, rating stars and review text — centered.
- * @param   {object}      props             - Component properties
- * @param   {object}      props.item        - Review data including title, text and rating
- * @param   {string}      props.item.title  - Reviewer name
- * @param   {string}      props.item.text   - Review content text
- * @param   {number}      props.item.rating - Review rating (0-5)
- * @returns {JSX.Element}                   JSX.Element representing a review slide
+ * @param   {object}          props      - Component properties
+ * @param   {ReviewSlideItem} props.item - Review data including title, text and rating
+ * @returns {JSX.Element}                JSX.Element representing a review slide
  */
-const ReviewSlide = ({
-  item,
-}: {
-  item: {
-    title: string;
-    text: string;
-    rating: number;
-  };
-}): JSX.Element => {
+const ReviewSlide = ({ item }: { item: ReviewSlideItem }): JSX.Element => {
   /** Destructure title, text and rating from the review item */
   const { title, text, rating } = item;
 
