@@ -24,11 +24,13 @@ import RescheduleOrderButton from './RescheduleOrderButton';
  * appointment in place: the in-card edit mode (`EditOrderButton` /
  * `SaveOrderButton`, both kept on disk) had no way to pick a new day, which is
  * the whole point of moving a visit.
- * @param   {object}               props        - OrderCard Props
- * @param   {IAttributeValues}     props.dict   - Dictionary containing localized strings
- * @param   {IOrderByMarkerEntity} props.order  - Order information to display
- * @param   {IAdminEntity}         props.master - Master information associated with the order
- * @returns {JSX.Element}                       JSX.Element
+ * @param   {object}               props          - OrderCard Props
+ * @param   {IAttributeValues}     props.dict     - Dictionary containing localized strings
+ * @param   {IOrderByMarkerEntity} props.order    - Order information to display
+ * @param   {IAdminEntity}         [props.master] - Specialist who served the visit. Absent when that admin is no
+ *                                                longer in the published list — a deleted or hidden specialist must not take
+ *                                                the whole profile page down with it, so the review button is dropped instead.
+ * @returns {JSX.Element}                         JSX.Element
  */
 const OrderButtonsGroup = ({
   dict,
@@ -37,7 +39,7 @@ const OrderButtonsGroup = ({
 }: {
   dict: IAttributeValues;
   order: IOrderByMarkerEntity;
-  master: IAdminEntity;
+  master?: IAdminEntity | undefined;
 }): JSX.Element => {
   /** Extract the status identifier from the order to determine which buttons to show */
   const { statusIdentifier } = order;
@@ -58,7 +60,7 @@ const OrderButtonsGroup = ({
           <div className="flex-1">
             <RepeatOrder dict={dict} orderData={order} />
           </div>
-          <LeaveReviewButton masterId={master.id} />
+          {master ? <LeaveReviewButton masterId={master.id} /> : null}
         </>
       ) : (
         /** Canceled orders: only offer to book again, right-aligned as in the mock */

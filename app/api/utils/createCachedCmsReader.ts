@@ -43,6 +43,24 @@ const claimedKeys = new Set<string>();
  * the next one retries, instead of serving a cache-poisoned empty result for the
  * whole revalidate window.
  *
+ * That only holds for a failure that arrives as a THROW. The SDK's shell mode reports a 5xx,
+ * a dropped connection and a non-JSON answer as a RETURNED `IError`, and a returned value is
+ * exactly what `unstable_cache` stores — so those were cached after all, for the full window.
+ * `next build` made it visible: one blip on `/salons/<handle>` was cached, all three of Next's
+ * prerender attempts read the same cached failure, and the build died on a page whose CMS
+ * record was fine the whole time.
+ *
+ * So a returned `IError` is classified. `404` and `403` are stable facts about the content —
+ * gone, or closed to this caller — and are returned and cached. Everything else is thrown, which
+ * keeps it out of the cache and lands in the `catch` below as the same envelope the caller
+ * already expects; the next request then asks the CMS again rather than reading the failure back.
+ *
+ * Deliberately no retry here. One was tried and removed: under a real outage every read on the
+ * page retried with backoff, `/contacts` stopped answering inside 30s, and the graceful-degradation
+ * specs timed out on a page whose whole point is to render without the CMS. Retrying is the
+ * caller's decision — at build time `staticGenerationRetryCount` already makes it, and it works
+ * now precisely because the failure is no longer cached for it to re-read.
+ *
  * The optional `validate` guard exists because the SDK's shell mode flattens a
  * dropped connection into a bare `{}` that `isError` cannot see: without a
  * guard that `{}` would be cached as a successful payload for the whole
@@ -85,12 +103,20 @@ export const createCachedCmsReader = <TArgs extends unknown[], TData>({
   const impl = unstable_cache(
     async (...args: TArgs): Promise<CmsReadResult<TData>> => {
       const data = await fetchCmsData(() => call(...args), label);
-      if (isError(data)) {
+
+      if (!isError(data)) {
+        /** A throw here skips the cache write — see the `validate` option JSDoc. */
+        validate?.(data as TData);
+        return { isError: false, data: data as TData };
+      }
+
+      /** A fact about the content rather than about the CMS: cache it. */
+      if (data.statusCode === 404 || data.statusCode === 403) {
         return { isError: true, error: data };
       }
-      /** A throw here skips the cache write — see the `validate` option JSDoc. */
-      validate?.(data as TData);
-      return { isError: false, data: data as TData };
+
+      /** Not cached — see the class note in the JSDoc above. */
+      throw data;
     },
     [cacheKey],
     { revalidate, tags },

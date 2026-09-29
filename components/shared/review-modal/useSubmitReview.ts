@@ -1,6 +1,6 @@
 'use client';
 
-import type { FormDataType } from 'oneentry/types';
+import type { FormDataPostType } from 'oneentry/types';
 import { useContext, useState } from 'react';
 
 import { getApi, isError as isSdkError } from '@/app/api/api/api';
@@ -81,7 +81,9 @@ export const useSubmitReview = (): SubmitReviewState => {
       return false;
     }
 
-    const formData: FormDataType[] = [
+    // Submission shapes, not the ones a read returns: a `text` field takes a
+    // one-element array with exactly one representation and no editor params.
+    const formData: FormDataPostType[] = [
       { marker: 'rating', type: 'real', value: rating },
       { marker: 'review_text', type: 'text', value: [{ plainValue: text }] },
       {
@@ -90,7 +92,7 @@ export const useSubmitReview = (): SubmitReviewState => {
         value: getUserDisplayName(user),
       },
       { marker: 'review_master', type: 'string', value: String(masterId) },
-    ] as FormDataType[];
+    ] as FormDataPostType[];
 
     /**
      * Photos ride along as the `groupOfImages` field: `postFormsData` uploads
@@ -103,7 +105,7 @@ export const useSubmitReview = (): SubmitReviewState => {
         marker: 'review_photos',
         type: 'groupOfImages',
         value: photos.map((photo) => photo.file),
-      } as unknown as FormDataType);
+      } as unknown as FormDataPostType);
     }
 
     try {

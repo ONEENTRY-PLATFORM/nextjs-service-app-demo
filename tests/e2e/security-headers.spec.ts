@@ -40,6 +40,9 @@ test('static pages are served from the ISR cache, not re-rendered per request', 
   expect(second, 'second homepage response').not.toBeNull();
 
   const cacheHeader = second!.headers()['x-nextjs-cache'];
-  expect(cacheHeader, 'x-nextjs-cache must be present on a prerendered route').toBeDefined();
+  expect(
+    cacheHeader,
+    'x-nextjs-cache must be present on a prerendered route',
+  ).toBeDefined();
   expect(['HIT', 'STALE']).toContain(cacheHeader);
 });

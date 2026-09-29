@@ -110,7 +110,7 @@ const VisitGroups = ({
                   index={base + j + 1}
                   dict={dict}
                   order={order}
-                  master={masterData as IAdminEntity}
+                  {...(masterData ? { master: masterData } : {})}
                   durations={durations}
                 />
               ))}

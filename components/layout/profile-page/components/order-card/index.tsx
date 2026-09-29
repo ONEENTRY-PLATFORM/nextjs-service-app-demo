@@ -53,7 +53,7 @@ async function fetchSalon(
  * @param   {object}               props           - Component props
  * @param   {IAttributeValues}     props.dict      - Dictionary containing localized strings
  * @param   {IOrderByMarkerEntity} props.order     - Order entity containing order details
- * @param   {IAdminEntity}         props.master    - Master entity associated with the order
+ * @param   {IAdminEntity}         [props.master]  - Master entity associated with the order, absent when the visit's specialist is no longer published
  * @param   {number}               props.index     - Index of the card for animation purposes
  * @param   {Map<number, number>}  props.durations - Product id → duration in minutes, for the service lines
  * @returns {JSX.Element}                          JSX element representing the order card
@@ -67,7 +67,7 @@ const OrderCard = ({
 }: {
   dict: IAttributeValues;
   order: IOrderByMarkerEntity;
-  master: IAdminEntity;
+  master?: IAdminEntity | undefined;
   index: number;
   durations: Map<number, number>;
 }): JSX.Element => {

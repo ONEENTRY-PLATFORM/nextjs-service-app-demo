@@ -19,7 +19,13 @@ test.describe('Contacts page', () => {
     // Salons exist in the CMS, so the empty-state must NOT be shown
     await expect(page.getByTestId('contacts-salons-empty')).toHaveCount(0);
 
-    await expect(page.getByTestId('contact-form')).toBeVisible();
+    // Scrolled to first: the form is revealed by `RevealAnimations`, a ScrollTrigger that fires
+    // at `top 88%` of the viewport. Below the fold it sits at its `autoAlpha: 0` start — present,
+    // laid out, `visibility: hidden` — and `toBeVisible` does not scroll on its own the way an
+    // action does. A reader reaches it by scrolling; so does this.
+    const form = page.getByTestId('contact-form');
+    await form.scrollIntoViewIfNeeded();
+    await expect(form).toBeVisible();
   });
 
   test('a "View studio" link opens the salon detail page', async ({ page }) => {
@@ -30,6 +36,8 @@ test.describe('Contacts page', () => {
       .getByTestId('contacts-page')
       .getByRole('link', { name: /view studio/i })
       .first();
+    // Same reveal-on-scroll as the form above.
+    await viewStudio.scrollIntoViewIfNeeded();
     await expect(viewStudio).toBeVisible({ timeout: 30_000 });
 
     const href = await viewStudio.getAttribute('href');

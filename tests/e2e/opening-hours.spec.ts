@@ -27,6 +27,10 @@ test.describe('Opening hours from the CMS', () => {
     test.skip(!(await section.count()), '`opening_time` is empty in the CMS');
 
     await expect(section).toBeAttached();
+    // Scrolled to first: `RevealAnimations` is a ScrollTrigger firing at `top 88%`, so below the
+    // fold the section sits at its `autoAlpha: 0` start and the `:visible` filter below matches
+    // nothing. A reader reaches it by scrolling; so does this.
+    await section.scrollIntoViewIfNeeded();
     // Seven weekday cards (the desktop grid); the hidden mobile branch adds its
     // own copies only when the days differ, so filter to the visible ones
     const days = section.locator(

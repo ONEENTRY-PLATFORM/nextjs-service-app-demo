@@ -21,6 +21,16 @@ const SESSION_BY_ORDER_RE = /\/api\/content\/payments\/sessions\/order\/\d+/;
 const CREATE_SESSION_RE = /\/api\/content\/payments\/sessions$/;
 
 /** Fixture order ids: one per status bucket, plus the unpaid online booking. */
+/**
+ * Admin id the fixture orders are booked with.
+ *
+ * `masters` is server-rendered (`getMastersList()` on the profile page), so `page.route` cannot
+ * fake it: the id has to be one this stand really publishes, or `VisitGroups` finds no master and
+ * the completed card drops its "Leave a review" button. Resolved once from the live `/masters`
+ * listing in `test.beforeAll` below; the placeholder only survives if that lookup finds nothing.
+ */
+let FIXTURE_MASTER_ID = 0;
+
 const ORDER_ID = {
   upcoming: 900001,
   completed: 900002,
@@ -71,7 +81,7 @@ const makeOrder = (
   currency: 'AED',
   products: [{ id: 71, title: 'E2E fixture service', quantity: 1 }],
   formData: [
-    { marker: 'master', type: 'entity', value: [0] },
+    { marker: 'master', type: 'entity', value: [FIXTURE_MASTER_ID] },
     {
       marker: 'interval',
       type: 'timeInterval',
@@ -80,8 +90,15 @@ const makeOrder = (
   ],
 });
 
-/** One order per bucket, with a second upcoming one left unpaid on Stripe. */
-const FIXTURE_ORDERS = [
+/**
+ * One order per bucket, with a second upcoming one left unpaid on Stripe.
+ *
+ * Built per call rather than once at import time: `makeOrder` reads
+ * {@link FIXTURE_MASTER_ID}, which is only known after `test.beforeAll` has asked the site which
+ * specialists it publishes.
+ * @returns {Record<string, unknown>[]} The four fixture orders.
+ */
+const fixtureOrders = (): Record<string, unknown>[] => [
   makeOrder(ORDER_ID.upcoming, 'upcoming', 'Upcoming'),
   makeOrder(ORDER_ID.unpaid, 'upcoming', 'Upcoming', {
     identifier: 'stripe',
@@ -106,7 +123,7 @@ const FIXTURE_ORDERS = [
  * @param   {Page}                      page               - Playwright page
  * @param   {object}                    [opts]             - Route behaviour overrides
  * @param   {string}                    [opts.updateError] - Reject updates with this API error message instead of acknowledging them
- * @param   {Record<string, unknown>[]} [opts.orders]      - Serve these orders instead of {@link FIXTURE_ORDERS}
+ * @param   {Record<string, unknown>[]} [opts.orders]      - Serve these orders instead of {@link fixtureOrders}
  * @param   {Record<string, unknown>[]} [opts.freshOrders] - Answer the single-order GET from these instead of `orders` — lets a test diverge the re-read from the cached list (payment landing late, or an empty pool forcing the 404 → cached fallback)
  * @returns {Promise<void>}                                Resolves once the route is installed
  */
@@ -118,7 +135,7 @@ const mockOrders = async (
     freshOrders?: Record<string, unknown>[];
   } = {},
 ): Promise<void> => {
-  const { updateError, orders = FIXTURE_ORDERS, freshOrders = orders } = opts;
+  const { updateError, orders = fixtureOrders(), freshOrders = orders } = opts;
   await page.route(ORDERS_LIST_RE, async (route) => {
     const method = route.request().method();
     // `…/marker/{marker}/orders/900001?…` — the trailing id separates the
@@ -239,6 +256,15 @@ const openBucket = async (page: Page, status: string): Promise<void> => {
 test.describe('Profile — visit history', () => {
   // Desktop: the profile renders both columns without the mobile tab switcher
   test.use({ viewport: { width: 1280, height: 900 } });
+
+  // Pick a specialist the stand actually publishes — see FIXTURE_MASTER_ID.
+  test.beforeAll(async ({ request }) => {
+    const html = await request.get('/masters').then((r) => r.text());
+    const id = html.match(/\/masters\/(\d+)/)?.[1];
+    if (id) {
+      FIXTURE_MASTER_ID = Number(id);
+    }
+  });
 
   test.beforeEach(() => {
     test.skip(!hasCreds(), 'E2E_USER_EMAIL / E2E_USER_PASSWORD not set');

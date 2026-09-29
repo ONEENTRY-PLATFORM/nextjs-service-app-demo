@@ -97,8 +97,12 @@ test.describe('Master profile — details', () => {
     const review = page.getByTestId('review-modal');
     await expect(review).toBeVisible();
 
-    // Confirm unlocks only once a rating AND text are given (client-only flow)
-    const confirm = review.getByRole('button', { name: 'Confirm' });
+    // The submit button unlocks only once a rating AND text are given (client-only flow).
+    // Its label follows the session — `Confirm` when signed in, `Sign in` for a guest, which is
+    // what this spec is: the gating (`disabled={!ready}`) is identical either way.
+    const confirm = review.getByRole('button', {
+      name: /^(confirm|sign in)$/i,
+    });
     await expect(confirm).toBeDisabled();
     await review.getByRole('button', { name: 'Rate 4 star(s)' }).click();
     await expect(confirm).toBeDisabled();

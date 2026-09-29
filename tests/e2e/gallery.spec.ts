@@ -31,7 +31,13 @@ test.describe('Gallery lightbox', () => {
   test('arrow keys page through the photos', async ({ page }) => {
     await page.goto('/gallery');
 
-    const items = page.getByTestId('gallery-page').getByTestId('gallery-item');
+    // `.filter({ visible: true })`, not a bare count: the grid renders each photo twice — one
+    // copy per layout — so `gallery-item` matches 200 elements for 100 photos. The lightbox
+    // counter is built from the photos, and the spec compared it against the element count.
+    const items = page
+      .getByTestId('gallery-page')
+      .getByTestId('gallery-item')
+      .filter({ visible: true });
     await expect(items.first()).toBeVisible({ timeout: 30_000 });
     const total = await items.count();
     test.skip(total < 2, 'needs at least two photos to page through');

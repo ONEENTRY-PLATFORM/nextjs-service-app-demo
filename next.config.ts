@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
   // clobbers the `.next` folder the local `next dev` server is serving from.
   distDir: process.env.E2E_BUILD === '1' ? '.next-e2e' : '.next',
   experimental: {
+    /**
+     * Prerender workers. Next defaults to one per core, and the CMS does not survive that
+     * fanout: a build at the default width answers with an error for a share of its reads,
+     * and since `resolveCmsPage` refuses to bake a 404 over an unavailable CMS, the whole
+     * build dies on whichever page drew the short straw. Four keeps the reads clean.
+     */
+    cpus: 4,
+    /** And a page that still draws one gets another go instead of failing the build. */
+    staticGenerationRetryCount: 3,
     staleTimes: {
       dynamic: 30,
       static: 180,
