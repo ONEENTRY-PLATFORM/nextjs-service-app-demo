@@ -1,5 +1,6 @@
 import { getChildPagesByParentUrl } from '@/app/api/server/pages/getChildPagesByParentUrl';
 import { getMastersList } from '@/app/api/utils/getMastersList';
+import { isMaster } from '@/app/api/utils/isMaster';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
 
 /**
@@ -65,8 +66,9 @@ export async function GET(): Promise<Response> {
       (page: { pageUrl: string }) => `salons/${page.pageUrl}`,
     ) || [];
 
+  /** Only specialists — plain CMS accounts have no public page. */
   const masters =
-    admins?.map((admin: { id: number }) => `masters/${admin.id}`) || [];
+    admins?.filter(isMaster).map((admin) => `masters/${admin.id}`) || [];
 
   /** Combine all paths */
   const allPaths = [

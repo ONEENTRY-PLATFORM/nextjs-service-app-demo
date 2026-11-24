@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 
 import { getDictionary } from '@/app/api/utils/dictionaries';
 import { getMastersList } from '@/app/api/utils/getMastersList';
+import { isMaster } from '@/app/api/utils/isMaster';
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
 import { cmsPageMetadata } from '@/app/utils/cmsPageMetadata';
 import { getSiteUrl } from '@/app/utils/getSiteUrl';
@@ -67,7 +68,8 @@ export default async function MasterPageLayout({
   const adminId = parseInt(handle, 10);
   const admin = admins.find((a: IAdminEntity) => a.id === adminId);
 
-  if (!admin) {
+  /** A plain CMS account (no master data) is not a specialist page. */
+  if (!admin || !isMaster(admin)) {
     notFound();
   }
 
@@ -112,7 +114,7 @@ export async function generateStaticParams(): Promise<
   const { admins, isError } = await getMastersList();
 
   if (!isError && admins) {
-    admins.forEach((admin: IAdminEntity) => {
+    admins.filter(isMaster).forEach((admin: IAdminEntity) => {
       params.push({ handle: admin.id.toString() });
     });
   }
