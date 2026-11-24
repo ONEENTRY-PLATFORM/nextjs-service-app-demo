@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
-import { expect, test } from '@playwright/test';
+
+import { expect, test } from './fixtures/test';
 
 // The home hero carousel (`HeroSlider`) and the a11y work behind it (§5.10 of
 // MISMATCH-LOG): manual prev/next/dot navigation, auto-advance, pause while a

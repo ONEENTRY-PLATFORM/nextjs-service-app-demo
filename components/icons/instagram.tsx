@@ -1,5 +1,6 @@
-import { Instagram } from 'lucide-react';
 import type { JSX } from 'react';
+
+import { Instagram } from './brandIcons';
 
 /**
  * Instagram icon — lucide.

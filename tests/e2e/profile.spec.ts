@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The profile route is auth-gated: without a session it renders the 401
 // "authorization required" screen (`AuthError`) with a sign-in action, rather

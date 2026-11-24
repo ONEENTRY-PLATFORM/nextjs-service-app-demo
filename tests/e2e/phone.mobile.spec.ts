@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // Phone-only surfaces, run by the `Mobile Chrome` project (Pixel 5 — 393px,
 // touch). These components are hidden from the desktop suite by breakpoint:

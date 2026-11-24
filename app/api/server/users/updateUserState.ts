@@ -1,6 +1,7 @@
-import type { IAuthFormData, IError, IUserEntity } from 'oneentry/types';
+import type { IError, IUserEntity } from 'oneentry/types';
 
 import { getApi, isError } from '@/app/api/api/api';
+import type { SignUpFormEntry } from '@/components/forms/buildSignUpBody';
 
 type Cart = Record<string, number> | object;
 
@@ -32,7 +33,7 @@ export const updateUserState = async ({
   }
   const user = fresh as IUserEntity;
 
-  const formData: IAuthFormData[] = (user.formData ?? [])
+  const formData: SignUpFormEntry[] = (user.formData ?? [])
     .filter(
       (item): item is { marker: string; type: string; value: string } =>
         typeof (item as { marker?: unknown }).marker === 'string' &&

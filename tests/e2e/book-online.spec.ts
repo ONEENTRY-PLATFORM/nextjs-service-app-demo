@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The header renders the gradient "Book Online" pill twice (BookOnlineLink): a
 // compact one centered in the header row on mobile (`md:hidden`) and a larger one

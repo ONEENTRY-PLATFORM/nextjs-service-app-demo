@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The contacts page (`app/contacts/page.tsx`) renders the salon location cards
 // from the CMS `salons` child pages, a "Get in Touch" form and the opening

@@ -1,7 +1,10 @@
 import { defineOneEntry } from 'oneentry';
 import type { IError } from 'oneentry/types';
 
-import { REFRESH_TOKEN_KEY } from '@/app/store/auth/authStorage';
+import {
+  readRefreshToken,
+  REFRESH_TOKEN_KEY,
+} from '@/app/store/auth/authStorage';
 
 const PROJECT_URL = process.env.NEXT_PUBLIC_ONEENTRY_URL as string;
 const APP_TOKEN = process.env.NEXT_PUBLIC_ONEENTRY_TOKEN as string;
@@ -48,6 +51,9 @@ const saveFunction = async (refreshToken: string): Promise<void> => {
 };
 
 /**
+ * `loadFunction` lets the SDK re-read the token another tab has just rotated
+ * and retry the refresh once, instead of signing this tab out (SDK ≥ 1.0.183).
+ *
  * Internal SDK instance. Accessed everywhere via {@link getApi}; its auth state
  * is mutated by {@link reDefine} / {@link clearSession} / {@link syncTokens}.
  *
@@ -67,6 +73,7 @@ let apiInstance = defineOneEntry(PROJECT_URL, {
   langCode: LANG_CODE,
   auth: {
     saveFunction,
+    loadFunction: readRefreshToken,
   },
 });
 
@@ -123,6 +130,7 @@ export function clearSession(): void {
     langCode: LANG_CODE,
     auth: {
       saveFunction,
+      loadFunction: readRefreshToken,
     },
   });
 }
@@ -155,6 +163,7 @@ export async function reDefine(
     langCode: LANG_CODE,
     auth: {
       saveFunction,
+      loadFunction: readRefreshToken,
       refreshToken,
       providerMarker,
     },

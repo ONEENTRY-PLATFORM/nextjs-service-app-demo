@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The mobile header (< lg) collapses the main menu behind a hamburger that
 // toggles the inline `MobileNavPanel` (a grid-rows height animation under the

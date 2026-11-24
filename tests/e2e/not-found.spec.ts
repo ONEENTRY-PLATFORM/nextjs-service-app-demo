@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // Unknown handles on the dynamic routes must land on the shared not-found UI
 // (`app/not-found.tsx`) instead of an empty shell or a 5xx. smoke.spec only

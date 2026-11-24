@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The booking page is the step wizard: a hero, an entry screen with two flows and the
 // "Your Appointment" summary in the right column (desktop).

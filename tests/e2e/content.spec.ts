@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 test.describe('CMS content pages', () => {
   test('services page renders catalog categories from the Pages API', async ({

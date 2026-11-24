@@ -3,8 +3,10 @@
   "//exclude": "MUST declare an explicit `exclude`: `extends` inherits the root config's `exclude` (which lists `tests/jest`) when this file omits its own, so the inherited `../../tests/jest` cancels our `include` and NO test file is type-checked — `tsc:jest` silently becomes a 1-file no-op, and editors/ESLint treat every test as 'not in any project'.",
   "extends": "../../tsconfig.json",
   "//paths": "No `baseUrl` (deprecated, gone in TS 7.0) — `paths` resolve relative to THIS config's dir, so `@/*` maps to the repo root two levels up (`../../*`).",
+  "//types": "TS 6 no longer pulls in every @types package by default — `types` lists the globals the tests use (node, jest).",
   "compilerOptions": {
     "incremental": false,
+    "types": ["node", "jest"],
     "paths": { "@/*": ["../../*"] }
   },
   "include": ["**/*.ts", "**/*.tsx", "../../jest.setup.ts"],

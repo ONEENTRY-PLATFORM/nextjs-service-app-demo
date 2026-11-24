@@ -1,21 +1,24 @@
-import type {
-  IAuthFormData,
-  IFormAttribute,
-  ISignUpData,
-} from 'oneentry/types';
+import type { IFormAttribute, ISignUpData } from 'oneentry/types';
 
 import { isConfirmPasswordField } from '@/components/forms/fieldFlags/isConfirmPasswordField';
 import { isLoginCredential } from '@/components/forms/fieldFlags/isLoginCredential';
 
 /**
+ * One string field of the sign-up `formData`. A type alias, not an interface:
+ * the SDK's `FormDataType` includes `Record<string, unknown>`, which only a
+ * type alias satisfies (an interface has no implicit index signature).
+ */
+export type SignUpFormEntry = { marker: string; type: string; value: string };
+
+/**
  * The sign-up request body.
  *
- * Narrows the SDK's `formData`, declared as `IAuthFormData | IAuthFormData[]`,
- * to the array this builder always produces — so callers and tests can map over
- * it without re-narrowing.
+ * Narrows the SDK's `formData`, declared as `FormDataType | FormDataType[]`,
+ * to the array of string fields this builder always produces — so callers and
+ * tests can map over it without re-narrowing.
  */
 export interface SignUpBody extends ISignUpData {
-  formData: IAuthFormData[];
+  formData: SignUpFormEntry[];
 }
 
 /** Live values of the form, keyed by field marker (`FormFieldsSlice`). */

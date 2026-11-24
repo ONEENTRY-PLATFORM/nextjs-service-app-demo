@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+
+import { expect, test } from './fixtures/test';
 
 // Accessibility smoke over the key public pages with axe-core (WCAG 2.0/2.1 A/AA).
 // The bar is "no CRITICAL violations" — critical issues (missing form labels,

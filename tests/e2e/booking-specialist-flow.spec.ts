@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The booking wizard offers two entry flows; booking-flow.spec walks the
 // studio-first one. This covers the OTHER flow — specialist-first — where the

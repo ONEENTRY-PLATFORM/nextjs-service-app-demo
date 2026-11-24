@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
-import { expect, test } from '@playwright/test';
+
+import { expect, test } from './fixtures/test';
 
 // "Компоненты обязаны деградировать без ошибок" (CLAUDE.md) and the
 // `withTimeout` invariant of MISMATCH-LOG §5.12: when the CMS is unreachable a

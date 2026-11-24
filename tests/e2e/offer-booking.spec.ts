@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The offers page "Book Offer" button (OfferDetailCard.handleBook) opens the
 // offer booking modal (components/layout/offer-booking, mock

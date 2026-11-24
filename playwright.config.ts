@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 // The Playwright runner does not read Next.js env files itself (unlike the
 // webServer) — load them manually so process.env.E2E_* is defined in specs.
 // This project keeps its variables in .env; .env.local wins when present
-dotenv.config({ path: '.env.local' });
-dotenv.config({ path: '.env' });
+dotenv.config({ path: '.env.local', quiet: true });
+dotenv.config({ path: '.env', quiet: true });
 
 export default defineConfig({
   testDir: './tests/e2e',

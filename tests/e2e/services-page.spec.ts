@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The services catalog (`ServicesCatalog`) is the interactive core of the
 // services page: a search box over the whole catalogue and category tabs that

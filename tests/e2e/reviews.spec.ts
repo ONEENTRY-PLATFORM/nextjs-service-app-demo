@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The reviews page (`/reviews`) renders the `master_review` form storage, joined
 // with each specialist's salon and service category. It renders regardless of the

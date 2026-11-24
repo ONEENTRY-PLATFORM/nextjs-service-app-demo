@@ -1,5 +1,6 @@
-import { Twitter } from 'lucide-react';
 import type { JSX } from 'react';
+
+import { Twitter } from './brandIcons';
 
 /**
  * Twitter icon — lucide.

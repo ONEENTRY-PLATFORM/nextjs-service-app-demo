@@ -1,17 +1,9 @@
-import {
-  ChevronRight,
-  Clock,
-  Facebook,
-  Instagram,
-  Mail,
-  MapPin,
-  Phone,
-  Twitter,
-} from 'lucide-react';
+import { ChevronRight, Clock, Mail, MapPin, Phone } from 'lucide-react';
 import type { IAttributeValues } from 'oneentry/types';
 import type { JSX } from 'react';
 
 import { ServerProvider } from '@/app/store/providers/ServerProvider';
+import { Facebook, Instagram, Twitter } from '@/components/icons/brandIcons';
 import { buildContactRows } from '@/components/layout/contacts-page/utils/buildContactRows';
 import { buildSocialLinks } from '@/components/utils/buildSocialLinks';
 import { dictText } from '@/components/utils/dictText';

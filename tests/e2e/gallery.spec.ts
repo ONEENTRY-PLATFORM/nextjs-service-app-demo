@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The gallery page grid opens each photo in a fullscreen lightbox
 // (`GalleryLightbox`) with keyboard navigation. content.spec already asserts

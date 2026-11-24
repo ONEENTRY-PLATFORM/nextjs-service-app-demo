@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The offers page (`app/offers/page.tsx`) renders full-width offer detail cards
 // from the CMS `offer` products, or a graceful "no offers" message when the CMS

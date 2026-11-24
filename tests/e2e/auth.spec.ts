@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
-import { expect, test } from '@playwright/test';
 
 import { credentials } from '../credentials';
+import { expect, test } from './fixtures/test';
 
 // Auth goes through the drawer sign-in form (`SignInForm`). The CMS `email`
 // provider (email + password, no activation code) is enabled, and the fields

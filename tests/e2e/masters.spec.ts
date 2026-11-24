@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The specialist profile route (`/masters/[handle]`) renders a master resolved
 // from the OneEntry admins. This walks from the masters grid to a profile —

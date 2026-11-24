@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
-import { expect, test } from '@playwright/test';
+
+import { expect, test } from './fixtures/test';
 
 // Depth of the specialist profile (`master-single` + `portfolio-grid`):
 // the portfolio lightbox, the salon chips, the review modal and the booking

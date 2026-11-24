@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The CMS `opening_time` block (a `timeInterval` attribute) feeds two places:
 // the contacts "Opening Hours" section (`OpeningHours` → `OpeningHoursDayCard`)

@@ -8,6 +8,19 @@ import ContactFormField from './ContactFormField';
 import ContactTextareaField from './ContactTextareaField';
 
 /**
+ * isRequired — whether a CMS `requiredValidator` makes the field mandatory.
+ * The SDK declares it as `{ strict }` or a bare boolean.
+ * @param   {NonNullable<IFormAttribute['validators']>['requiredValidator']} rule - The validator, if any
+ * @returns {boolean}                                                             True when the field is required
+ */
+const isRequired = (
+  rule: NonNullable<IFormAttribute['validators']>['requiredValidator'],
+): boolean =>
+  typeof rule === 'object' && rule !== null
+    ? rule.strict === true
+    : rule === true;
+
+/**
  * ContactCmsFields component — the CMS-driven inputs of the "Write to us"
  * card, rendered from the `contact_us` form attributes.
  *
@@ -15,7 +28,7 @@ import ContactTextareaField from './ContactTextareaField';
  * further short fields go full width, `text` attributes render as textareas at
  * the end. Labels and placeholders come from the CMS field
  * (`localizeInfos.title`, `additionalFields.placeholder`) with dictionary
- * fallbacks; required flags come from `validators.requiredValidator.strict`.
+ * fallbacks; required flags come from `validators.requiredValidator`.
  * @param   {object}                               props        - Component properties
  * @param   {IFormAttribute[]}                     props.fields - Data fields of the CMS form in admin order
  * @param   {Record<string, string>}               props.values - Current values keyed by CMS marker
@@ -50,7 +63,7 @@ const ContactCmsFields = ({
     return {
       label: field.localizeInfos?.title || fallback.label,
       placeholder: cmsPlaceholder || fallback.placeholder,
-      required: field.validators?.requiredValidator?.strict === true,
+      required: isRequired(field.validators?.requiredValidator),
       value: values[field.marker] ?? '',
       onChange: set(field.marker),
     };

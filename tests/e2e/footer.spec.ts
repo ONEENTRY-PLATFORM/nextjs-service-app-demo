@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The footer builds its Services / About-us columns from the OneEntry `services`
 // and `about_us` menus. This confirms the CMS-driven menu renders and navigates.

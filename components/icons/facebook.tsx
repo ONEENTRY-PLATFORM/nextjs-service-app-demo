@@ -1,5 +1,6 @@
-import { Facebook } from 'lucide-react';
 import type { JSX } from 'react';
+
+import { Facebook } from './brandIcons';
 
 /**
  * Facebook icon — lucide.

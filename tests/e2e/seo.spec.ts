@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // SEO metadata smoke. Beauty has no robots.txt / sitemap.xml routes, so this
 // asserts the per-page metadata that `generateMetadata` emits (title,

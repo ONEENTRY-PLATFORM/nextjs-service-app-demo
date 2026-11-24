@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
-import { expect, test } from '@playwright/test';
 
 import { hasCreds, signInTestUser } from './fixtures/helpers';
+import { expect, test } from './fixtures/test';
 
 // The signed-in visit history (`ProfileHistory` → `VisitSection` → `VisitGroups`
 // → `OrderCard`) and its per-status actions. The order list is served from a

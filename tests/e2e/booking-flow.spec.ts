@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // Deeper coverage of the booking wizard than booking.spec: this walks the
 // studio-first flow across three steps and asserts the "Your Appointment"

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 test.describe('Header navigation and search', () => {
   // The header search trigger is `hidden lg:flex` — only rendered from 1024px up

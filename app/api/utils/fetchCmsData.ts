@@ -80,11 +80,19 @@ const releaseSlot = (): void => {
  * HTTP statuses that mean "try again", not "this is the answer". Anything else a
  * OneEntry endpoint returns (404 not found, 400 bad request, 401/403 auth) is a
  * STABLE logical result: retrying cannot change it, and it is safe to cache.
+ *
+ * `0` is the SDK's "no usable answer": a dropped connection, or a `200` whose
+ * body is not JSON — the platform has been seen answering every endpoint with
+ * its admin HTML page for minutes at a time. It is an outage, not an answer.
  * @param   {number}  status - The `statusCode` from an `IError` response
  * @returns {boolean}        `true` when the failure is transient / infrastructural
  */
 const isTransientStatus = (status: number): boolean =>
-  status >= 500 || status === 429 || status === 408 || status === 425;
+  status === 0 ||
+  status >= 500 ||
+  status === 429 ||
+  status === 408 ||
+  status === 425;
 
 /**
  * backoffFor — exponential backoff between retries, with jitter during the build.

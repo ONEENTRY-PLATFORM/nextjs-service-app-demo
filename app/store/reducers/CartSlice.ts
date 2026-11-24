@@ -1,7 +1,7 @@
 'use client';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 /**
  * Cart selection — the single booking pre-selection the wizard restores.
@@ -112,16 +112,27 @@ export const { addServiceToCart, removeAllServices, setCartVersion } =
  * Select the booking pre-selection (salon / product / master IDs).
  *
  * Read sites hydrate the entities themselves through RTK Query hooks.
+ * Memoized: a plain selector built a new object on every call, so
+ * `useSelector` saw a "changed" result each time and re-rendered its
+ * subscriber needlessly (react-redux warns about it in development).
  * @param   {object}        state             - The Redux store state.
  * @param   {CartState}     state.cartReducer - The cart reducer state.
  * @returns {CartSelection}                   The current selection IDs.
  */
-export const selectCartSelection = (state: {
+export const selectCartSelection: (state: {
   cartReducer: CartState;
-}): CartSelection => {
-  const { salonId, productId, masterId } = state.cartReducer;
-  return { salonId, productId, masterId };
-};
+}) => CartSelection = createSelector(
+  [
+    (state: { cartReducer: CartState }) => state.cartReducer.salonId,
+    (state: { cartReducer: CartState }) => state.cartReducer.productId,
+    (state: { cartReducer: CartState }) => state.cartReducer.masterId,
+  ],
+  (salonId, productId, masterId): CartSelection => ({
+    salonId,
+    productId,
+    masterId,
+  }),
+);
 
 /**
  * 1 when the cart holds any selection, 0 when it is empty — the nav badge count.

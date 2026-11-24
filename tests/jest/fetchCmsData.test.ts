@@ -37,7 +37,8 @@ describe('fetchCmsData', () => {
     },
   );
 
-  it.each([500, 502, 503, 429, 408])(
+  // 0 = the SDK's "no usable answer" (dropped connection / non-JSON body)
+  it.each([0, 500, 502, 503, 429, 408])(
     'throws on a transient %d status after exhausting retries',
     async (statusCode) => {
       const call = jest.fn(async () => ({ statusCode, message: 'transient' }));

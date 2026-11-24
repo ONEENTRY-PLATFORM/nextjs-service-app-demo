@@ -1,4 +1,6 @@
-import { expect, type Page, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
+
+import { expect, test } from './fixtures/test';
 
 // Structured data (JSON-LD) is emitted inline on five surfaces: the root layout
 // (Organization, on every page), the home page (WebSite) and the three detail

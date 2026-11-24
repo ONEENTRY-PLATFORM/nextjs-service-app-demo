@@ -1,10 +1,9 @@
-import { expect, test } from '@playwright/test';
-
 import {
   hasCreds,
   signInTestUser,
   walkBookingToDateTime,
 } from './fixtures/helpers';
+import { expect, test } from './fixtures/test';
 
 /**
  * booking-stripe.spec.ts — live Stripe checkout for the booking flow.

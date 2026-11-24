@@ -1,6 +1,5 @@
-import { expect, test } from '@playwright/test';
-
 import { hasCreds, signInTestUser } from './fixtures/helpers';
+import { expect, test } from './fixtures/test';
 
 // Signing out through the header user menu (`UserProfileMenu` →
 // `LogoutMenuItem`): the session tokens must be dropped from localStorage and

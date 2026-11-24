@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // Locks in the hardening headers declared in `next.config.ts` and the ISR cache
 // header that only a production server emits. Both are invisible in the UI, so

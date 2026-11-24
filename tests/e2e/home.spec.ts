@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The homepage stitches together several CMS-driven sections. Each is revealed
 // by a GSAP scroll animation, so presence is asserted with `toBeAttached`

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/test';
 
 // The Stripe hosted checkout returns the client to /payment_success or
 // /payment_canceled (the URLs are configured on the OneEntry account). Both
